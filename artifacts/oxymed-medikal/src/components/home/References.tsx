@@ -36,7 +36,7 @@ type Ref = { id: number; title: string; city?: string | null };
 const CARD_W = 200;
 const CARD_MX = 12; // total horizontal margin (6px each side)
 const CARD_STEP = CARD_W + CARD_MX;
-const TARGET_DURATION_S = 32;
+const TARGET_DURATION_S = 60;
 const EASE = 0.055; // interpolation factor — lower = smoother slow-down
 
 function Marquee({ refs }: { refs: Ref[] }) {
