@@ -105,92 +105,95 @@ function ProjectsSection() {
     data: allRefsData,
     isLoading: allLoading,
     isError: allError,
-  } = useListReferences({ limit: 200 });
+  } = useListReferences({ limit: 500 });
   const allRefs = allRefsData?.items ?? [];
-
   const categories = ["TÜM PROJELER", ...Array.from(
     new Set(allRefs.map((r) => r.category).filter(Boolean) as string[])
   )];
 
-  const displayRefs = activeCategory
-    ? allRefs.filter((r) => r.category === activeCategory)
-    : allRefs;
+  const {
+    data: filteredData,
+    isLoading: filteredLoading,
+    isError: filteredError,
+  } = useListReferences({
+    category: activeCategory,
+    limit: 50,
+  });
+  const displayRefs = filteredData?.items ?? [];
 
   return (
     <section className="bg-steel-50 py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {allError ? (
-          <ErrorMessage message="Referanslar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
-        ) : (
-          <>
-            <div className="mb-8 flex flex-wrap gap-2">
-              {allLoading
-                ? [1, 2, 3, 4].map((i) => <div key={i} className="h-9 w-36 animate-pulse rounded bg-steel-200" />)
-                : categories.map((cat) => {
-                    const isAll = cat === "TÜM PROJELER";
-                    const active = isAll ? !activeCategory : activeCategory === cat;
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => setActiveCategory(isAll ? undefined : cat)}
-                        className={`rounded px-4 py-2 text-[12px] font-extrabold transition ${
-                          active
-                            ? "bg-oxynavy-950 text-white"
-                            : "border border-steel-200 bg-white text-oxynavy-950 hover:bg-oxynavy-950 hover:text-white"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    );
-                  })}
-            </div>
-
-            {allLoading ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-56 animate-pulse rounded-lg bg-steel-200" />
-                ))}
-              </div>
-            ) : displayRefs.length === 0 ? (
-              <div className="rounded-xl border-2 border-dashed border-steel-200 py-16 text-center">
-                <p className="text-steel-500">Bu kategoride proje bulunamadı.</p>
-              </div>
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {displayRefs.map((project) => (
-                  <article
-                    key={project.id}
-                    className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
+        <div className="mb-8 flex flex-wrap gap-2">
+          {allLoading
+            ? [1, 2, 3, 4].map((i) => <div key={i} className="h-9 w-36 animate-pulse rounded bg-steel-200" />)
+            : categories.map((cat) => {
+                const isAll = cat === "TÜM PROJELER";
+                const active = isAll ? !activeCategory : activeCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(isAll ? undefined : cat)}
+                    className={`rounded px-4 py-2 text-[12px] font-extrabold transition ${
+                      active
+                        ? "bg-oxynavy-950 text-white"
+                        : "border border-steel-200 bg-white text-oxynavy-950 hover:bg-oxynavy-950 hover:text-white"
+                    }`}
                   >
-                    <div className="aspect-[1.6] overflow-hidden">
-                      <img
-                        src={project.imageUrl ?? "/assets/images/corporate-hero-facility.png"}
-                        alt={project.title}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <div className="flex items-center gap-2">
-                        {project.projectType && (
-                          <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-[11px] font-extrabold text-oxynavy-700">
-                            {project.projectType}
-                          </span>
-                        )}
-                        {project.capacity && (
-                          <span className="text-[11px] font-semibold text-steel-500">{project.capacity}</span>
-                        )}
-                      </div>
-                      <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>
-                      <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
-                        Proje Detayları
-                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                      </a>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </>
+                    {cat}
+                  </button>
+                );
+              })}
+        </div>
+
+        {allError && <ErrorMessage message="Proje kategorileri yüklenemedi." />}
+
+        {filteredError ? (
+          <ErrorMessage message="Referanslar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
+        ) : filteredLoading ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-56 animate-pulse rounded-lg bg-steel-200" />
+            ))}
+          </div>
+        ) : displayRefs.length === 0 ? (
+          <div className="rounded-xl border-2 border-dashed border-steel-200 py-16 text-center">
+            <p className="text-steel-500">Bu kategoride proje bulunamadı.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {displayRefs.map((project) => (
+              <article
+                key={project.id}
+                className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
+              >
+                <div className="aspect-[1.6] overflow-hidden">
+                  <img
+                    src={project.imageUrl ?? "/assets/images/corporate-hero-facility.png"}
+                    alt={project.title}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-2">
+                    {project.projectType && (
+                      <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-[11px] font-extrabold text-oxynavy-700">
+                        {project.projectType}
+                      </span>
+                    )}
+                    {project.capacity && (
+                      <span className="text-[11px] font-semibold text-steel-500">{project.capacity}</span>
+                    )}
+                  </div>
+                  <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>
+                  <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
+                    Proje Detayları
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
         )}
       </div>
     </section>

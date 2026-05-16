@@ -25,6 +25,12 @@ type FormState = {
   notes: string;
 };
 
+type FieldErrors = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+};
+
 const EMPTY: FormState = {
   fullName: "",
   email: "",
@@ -98,30 +104,48 @@ function QuoteRequestSection() {
 
 function QuoteForm() {
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   const createMut = useCreateQuote({
     mutation: {
       onSuccess: () => {
         setSubmitted(true);
         setForm(EMPTY);
+        setFieldErrors({});
       },
       onError: () => {
-        setError("Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.");
+        setApiError("Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.");
       },
     },
   });
 
   function set(field: keyof FormState, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
-    setError("");
+    if (field in fieldErrors) {
+      setFieldErrors((e) => ({ ...e, [field]: undefined }));
+    }
+    setApiError("");
+  }
+
+  function validate(): FieldErrors {
+    const errors: FieldErrors = {};
+    if (!form.fullName.trim()) errors.fullName = "Ad Soyad zorunludur.";
+    if (!form.email.trim()) {
+      errors.email = "E-posta zorunludur.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errors.email = "Geçerli bir e-posta adresi giriniz.";
+    }
+    if (!form.phone.trim()) errors.phone = "Telefon numarası zorunludur.";
+    return errors;
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.fullName || !form.email || !form.phone) {
-      setError("Lütfen zorunlu alanları doldurunuz (Ad Soyad, E-posta, Telefon).");
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
     createMut.mutate({
@@ -163,6 +187,7 @@ function QuoteForm() {
     <form
       className="rounded-lg border border-steel-100 bg-white px-8 py-5 shadow-[0_20px_45px_rgba(2,20,35,0.12)]"
       onSubmit={handleSubmit}
+      noValidate
     >
       <div>
         <h2 className="text-[22px] font-extrabold leading-tight text-oxynavy-950">Teklif Talep Formu</h2>
@@ -170,9 +195,29 @@ function QuoteForm() {
       </div>
 
       <div className="mt-6 grid gap-x-5 gap-y-3 md:grid-cols-3">
-        <Field label="Ad Soyad *" placeholder="Adınız ve soyadınız" value={form.fullName} onChange={(v) => set("fullName", v)} />
-        <Field label="E-posta *" placeholder="ornek@mail.com" type="email" value={form.email} onChange={(v) => set("email", v)} />
-        <Field label="Telefon *" placeholder="5XX XXX XX XX" type="tel" value={form.phone} onChange={(v) => set("phone", v)} />
+        <Field
+          label="Ad Soyad *"
+          placeholder="Adınız ve soyadınız"
+          value={form.fullName}
+          onChange={(v) => set("fullName", v)}
+          error={fieldErrors.fullName}
+        />
+        <Field
+          label="E-posta *"
+          placeholder="ornek@mail.com"
+          type="email"
+          value={form.email}
+          onChange={(v) => set("email", v)}
+          error={fieldErrors.email}
+        />
+        <Field
+          label="Telefon *"
+          placeholder="5XX XXX XX XX"
+          type="tel"
+          value={form.phone}
+          onChange={(v) => set("phone", v)}
+          error={fieldErrors.phone}
+        />
       </div>
 
       <div className="mt-3 grid gap-x-5 gap-y-3 md:grid-cols-2">
@@ -197,9 +242,9 @@ function QuoteForm() {
         />
       </label>
 
-      {error && (
+      {apiError && (
         <div className="mt-3 rounded border border-red-200 bg-red-50 px-4 py-2.5 text-[12px] font-semibold text-red-700">
-          {error}
+          {apiError}
         </div>
       )}
 
@@ -238,9 +283,10 @@ type FieldProps = {
   type?: string;
   value: string;
   onChange: (value: string) => void;
+  error?: string;
 };
 
-function Field({ label, placeholder, type = "text", value, onChange }: FieldProps) {
+function Field({ label, placeholder, type = "text", value, onChange, error }: FieldProps) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-[12px] font-semibold text-oxynavy-950">{label}</span>
@@ -249,8 +295,13 @@ function Field({ label, placeholder, type = "text", value, onChange }: FieldProp
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-8 w-full rounded border border-steel-200 bg-white px-3.5 text-[12px] text-oxynavy-950 outline-none transition placeholder:text-steel-500 focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
+        className={`h-8 w-full rounded border bg-white px-3.5 text-[12px] text-oxynavy-950 outline-none transition placeholder:text-steel-500 focus:ring-4 ${
+          error
+            ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+            : "border-steel-200 focus:border-oxynavy-500 focus:ring-oxynavy-100"
+        }`}
       />
+      {error && <p className="mt-1 text-[11px] font-semibold text-red-600">{error}</p>}
     </label>
   );
 }

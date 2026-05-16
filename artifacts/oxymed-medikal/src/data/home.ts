@@ -6,32 +6,9 @@ export type FeatureItem = {
   description: string;
 };
 
-export type ProductGroup = {
-  title: string;
-  description: string;
-  image: string;
-  href: string;
-};
-
-export type StatItem = {
-  value: string;
-  label: string;
-};
-
-export type ReferenceLogo = {
-  name: string;
-  detail?: string;
-};
-
 export type FooterColumn = {
   title: string;
   links: { label: string; href: string }[];
-};
-
-export const contact = {
-  phone: "+90 232 870 0 222",
-  email: "info@oxymed.com.tr",
-  address: "10016 Sk. No:5 AOSB Çiğli / İzmir / TÜRKİYE"
 };
 
 export const languages = ["TR", "EN"];
@@ -43,12 +20,6 @@ export const navItems = [
   { label: "REFERANSLAR", href: "/referanslar" },
   { label: "HABERLER", href: "/haberler" },
   { label: "İLETİŞİM", href: "/#iletisim" }
-];
-
-export const socialLinks = [
-  { label: "LinkedIn", href: "#" },
-  { label: "Instagram", href: "#" },
-  { label: "YouTube", href: "#" }
 ];
 
 export const features: FeatureItem[] = [
@@ -77,49 +48,6 @@ export const features: FeatureItem[] = [
     title: "UZUN ÖMÜRLÜ",
     description: "Dayanıklı malzeme ve uzun ömürlü kullanım"
   }
-];
-
-export const productGroups: ProductGroup[] = [
-  {
-    title: "YATAK BAŞI ÜNİTELERİ",
-    description: "Elektrik, medikal gaz ve data üniteleri ile güvenli ve konforlu çözümler.",
-    image: "/assets/images/product-bed-head-unit.png",
-    href: "/urunler#yatak-basi-uniteleri"
-  },
-  {
-    title: "PENDANT SİSTEMLERİ",
-    description: "Ameliyathane, yoğun bakım ve acil üniteler için esnek pendant çözümleri.",
-    image: "/assets/images/product-pendant-system.png",
-    href: "/urunler#pendant-sistemleri"
-  },
-  {
-    title: "MEDİKAL GAZ SİSTEMLERİ",
-    description: "Oksijen, vakum, hava, AGS ve azot gaz sistemleri.",
-    image: "/assets/images/product-medical-gas.png",
-    href: "/urunler#medikal-gaz-sistemleri"
-  },
-  {
-    title: "ELEKTRİK & DATA SİSTEMLERİ",
-    description: "Elektrik, zayıf akım ve data sistemleri ile kesintisiz iletişim.",
-    image: "/assets/images/product-electrical-data.png",
-    href: "/urunler#elektrik-data-sistemleri"
-  }
-];
-
-export const stats: StatItem[] = [
-  { value: "15+", label: "YILLIK TECRÜBE" },
-  { value: "200+", label: "TAMAMLANAN PROJE" },
-  { value: "50+", label: "ÜLKEYE İHRACAT" },
-  { value: "100%", label: "MÜŞTERİ MEMNUNİYETİ" }
-];
-
-export const references: ReferenceLogo[] = [
-  { name: "ACIBADEM", detail: "Healthcare Services" },
-  { name: "MEDICANA", detail: "Sağlık Grubu" },
-  { name: "T.C. SAĞLIK BAKANLIĞI" },
-  { name: "ŞİŞLİ HAMİDİYE ETFAL" },
-  { name: "İSTANBUL ÜNİVERSİTESİ CERRAHPAŞA" },
-  { name: "LÖSANTE", detail: "Çocuk ve Yetişkin Hastanesi" }
 ];
 
 export const footerColumns: FooterColumn[] = [
