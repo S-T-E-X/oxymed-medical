@@ -197,10 +197,6 @@ function ProjectsSection() {
 }
 
 function MapSection() {
-  const { data: refsData } = useListReferences({ limit: 8 });
-  const refs = refsData?.items ?? [];
-  const withImages = refs.filter((r) => r.imageUrl);
-
   return (
     <section className="bg-oxynavy-950 py-14 text-white lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -208,40 +204,13 @@ function MapSection() {
           <h2 className="text-2xl font-extrabold sm:text-3xl">{referencesMap.title}</h2>
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/78">{referencesMap.description}</p>
         </div>
-
-        {withImages.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {withImages.map((ref) => (
-              <div
-                key={ref.id}
-                className="group relative overflow-hidden rounded-lg bg-white/6"
-              >
-                <img
-                  src={ref.imageUrl!}
-                  alt={ref.title}
-                  className="aspect-[4/3] w-full object-cover opacity-90 transition duration-500 group-hover:opacity-100 group-hover:scale-[1.03]"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-3">
-                  <p className="text-sm font-extrabold leading-tight text-white">{ref.title}</p>
-                  {ref.city && (
-                    <p className="mt-0.5 text-[11px] font-semibold text-white/72">{ref.city}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-[4/3] w-full rounded-lg border border-dashed border-white/20 bg-white/4 flex items-center justify-center"
-              >
-                <span className="text-[11px] text-white/36 font-semibold">Görsel eklenecek</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="mt-10 flex justify-center">
+          <img
+            src="/assets/turkiyeharitasi.webp"
+            alt="Türkiye Referans Haritası"
+            className="w-full max-w-4xl"
+          />
+        </div>
       </div>
     </section>
   );

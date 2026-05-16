@@ -112,6 +112,7 @@ function NewsModal({
           </div>
           <div>
             <label className="label">Kapak Görseli</label>
+            <p className="mb-1.5 text-[11px] text-slate-400">Önerilen boyut: <span className="font-semibold text-slate-500">1200 × 630 px</span> — yatay (landscape) format, WebP veya JPG</p>
             <div className="flex gap-2">
               <input className="input flex-1" value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://..." />
               <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">

@@ -400,6 +400,10 @@ paths:
       tags: [news]
       summary: List news posts
       parameters:
+        - name: slug
+          in: query
+          schema:
+            type: string
         - name: category
           in: query
           schema:

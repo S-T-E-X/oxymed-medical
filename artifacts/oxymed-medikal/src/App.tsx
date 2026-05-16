@@ -15,6 +15,7 @@ import MediaPage from "./admin/MediaPage";
 import CorporatePage from "./pages/CorporatePage";
 import HomePage from "./pages/HomePage";
 import NewsPage from "./pages/NewsPage";
+import NewsDetailPage from "./pages/NewsDetailPage";
 import ProductsPage from "./pages/ProductsPage";
 import QuotePage from "./pages/QuotePage";
 import ReferencesPage from "./pages/ReferencesPage";
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/urunler" element={<ProductsPage />} />
           <Route path="/referanslar" element={<ReferencesPage />} />
           <Route path="/haberler" element={<NewsPage />} />
+          <Route path="/haberler/:slug" element={<NewsDetailPage />} />
           <Route path="/teklif-al" element={<QuotePage />} />
 
           <Route path="/admin/login" element={<LoginPage />} />

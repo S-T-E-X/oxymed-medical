@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, Clock, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useListNews } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
@@ -139,13 +140,15 @@ function NewsContent() {
                     key={post.id}
                     className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
                   >
-                    <div className="aspect-[1.6] overflow-hidden">
-                      <img
-                        src={post.imageUrl ?? "/assets/images/product-medical-gas.png"}
-                        alt={post.title}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-                      />
-                    </div>
+                    <Link to={`/haberler/${post.slug}`} className="block">
+                      <div className="aspect-[1.6] overflow-hidden">
+                        <img
+                          src={post.imageUrl ?? "/assets/images/product-medical-gas.png"}
+                          alt={post.title}
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                        />
+                      </div>
+                    </Link>
                     <div className="p-5">
                       <div className="flex items-center gap-3">
                         {post.category && (
@@ -158,14 +161,18 @@ function NewsContent() {
                           {formatDate(post.publishedAt)}
                         </span>
                       </div>
-                      <h3 className="mt-3 text-base font-extrabold text-oxynavy-950 leading-tight">{post.title}</h3>
+                      <h3 className="mt-3 text-base font-extrabold text-oxynavy-950 leading-tight">
+                        <Link to={`/haberler/${post.slug}`} className="transition hover:text-oxynavy-600">
+                          {post.title}
+                        </Link>
+                      </h3>
                       {post.excerpt && (
                         <p className="mt-2 text-[13px] leading-6 text-steel-700 line-clamp-3">{post.excerpt}</p>
                       )}
-                      <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
+                      <Link to={`/haberler/${post.slug}`} className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
                         Devamını Oku
                         <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                      </a>
+                      </Link>
                     </div>
                   </article>
                 ))}
@@ -185,7 +192,7 @@ function NewsContent() {
               ) : (
                 <div className="mt-5 space-y-4">
                   {popularNews.map((post) => (
-                    <a key={post.id} href="#" className="flex gap-3 group">
+                    <Link key={post.id} to={`/haberler/${post.slug}`} className="flex gap-3 group">
                       <div className="h-14 w-20 shrink-0 overflow-hidden rounded">
                         <img
                           src={post.imageUrl ?? "/assets/images/product-medical-gas.png"}
@@ -197,7 +204,7 @@ function NewsContent() {
                         <p className="text-[13px] font-bold text-oxynavy-950 leading-tight line-clamp-2 group-hover:text-oxynavy-700 transition">{post.title}</p>
                         <p className="mt-1 text-[11px] text-steel-500">{formatDate(post.publishedAt)}</p>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               )}

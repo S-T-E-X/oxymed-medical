@@ -8,11 +8,11 @@ export default function Logo({ inverted = false }: LogoProps) {
   return (
     <Link
       to="/"
-      className={`inline-flex items-center ${inverted ? "rounded bg-white px-4 py-3" : ""}`}
+      className="inline-flex items-center"
       aria-label="Oxymed Medikal Anasayfa"
     >
       <img
-        src="/assets/brand/oxymed-logo.webp"
+        src={inverted ? "/assets/oxymedlogobeyaz.webp" : "/assets/brand/oxymed-logo.webp"}
         alt="Oxymed Medikal"
         className="h-auto w-[190px] sm:w-[220px]"
       />

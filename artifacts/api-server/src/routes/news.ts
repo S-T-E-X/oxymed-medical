@@ -27,10 +27,15 @@ router.get("/news", async (req, res): Promise<void> => {
   const offset = (page - 1) * limit;
   const category = req.query["category"] as string | undefined;
   const publishedStr = req.query["published"] as string | undefined;
+  const slug = req.query["slug"] as string | undefined;
 
   let query = db.select().from(newsTable).orderBy(desc(newsTable.publishedAt)).$dynamic();
   let countQuery = db.select({ count: count() }).from(newsTable).$dynamic();
 
+  if (slug) {
+    query = query.where(eq(newsTable.slug, slug));
+    countQuery = countQuery.where(eq(newsTable.slug, slug));
+  }
   if (category && category !== "TÜM HABERLER") {
     query = query.where(eq(newsTable.category, category));
     countQuery = countQuery.where(eq(newsTable.category, category));

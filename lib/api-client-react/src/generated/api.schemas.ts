@@ -391,6 +391,7 @@ limit?: number;
 };
 
 export type ListNewsParams = {
+slug?: string;
 category?: string;
 published?: boolean;
 page?: number;

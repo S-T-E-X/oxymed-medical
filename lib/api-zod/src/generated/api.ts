@@ -334,6 +334,7 @@ export const DeleteProductParams = zod.object({
  * @summary List news posts
  */
 export const ListNewsQueryParams = zod.object({
+  "slug": zod.coerce.string().optional(),
   "category": zod.coerce.string().optional(),
   "published": zod.coerce.boolean().optional(),
   "page": zod.coerce.number().optional(),
