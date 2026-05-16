@@ -5,7 +5,9 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { MediaFile } from './mediaFile';
 
-export interface HealthStatus {
-  status: string;
+export interface MediaListResponse {
+  items: MediaFile[];
+  total: number;
 }

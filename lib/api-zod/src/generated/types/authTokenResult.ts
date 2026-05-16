@@ -5,7 +5,9 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminUser } from './adminUser';
 
-export interface HealthStatus {
-  status: string;
+export interface AuthTokenResult {
+  token: string;
+  user: AdminUser;
 }

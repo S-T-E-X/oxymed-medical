@@ -5,7 +5,9 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { QuoteItem } from './quoteItem';
 
-export interface HealthStatus {
-  status: string;
+export interface QuoteListResponse {
+  items: QuoteItem[];
+  total: number;
 }

@@ -30,3 +30,8 @@ externalPort = 8081
 [[ports]]
 localPort = 23646
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+JWT_SECRET = "oxymed-jwt-secret-2024-secure"

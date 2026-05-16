@@ -3,20 +3,38 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Oxymed Medikal API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Admin authentication
+  - name: sliders
+    description: Homepage sliders
+  - name: products
+    description: Products and categories
+  - name: news
+    description: News posts
+  - name: references
+    description: Reference projects
+  - name: quotes
+    description: Quote requests
+  - name: corporate
+    description: Corporate content sections
+  - name: settings
+    description: Site settings
+  - name: media
+    description: Media library and file uploads
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +42,1485 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # AUTH
+  /auth/login:
+    post:
+      operationId: adminLogin
+      tags: [auth]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokenResult"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: adminMe
+      tags: [auth]
+      summary: Get current admin user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current admin user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # SLIDERS
+  /sliders:
+    get:
+      operationId: listSliders
+      tags: [sliders]
+      summary: List all sliders
+      parameters:
+        - name: activeOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of sliders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slider"
+    post:
+      operationId: createSlider
+      tags: [sliders]
+      summary: Create slider
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SliderInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slider"
+
+  /sliders/{id}:
+    get:
+      operationId: getSlider
+      tags: [sliders]
+      summary: Get slider by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Slider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slider"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateSlider
+      tags: [sliders]
+      summary: Update slider
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SliderUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slider"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteSlider
+      tags: [sliders]
+      summary: Delete slider
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # PRODUCT CATEGORIES
+  /product-categories:
+    get:
+      operationId: listProductCategories
+      tags: [products]
+      summary: List product categories
+      responses:
+        "200":
+          description: List of product categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductCategory"
+    post:
+      operationId: createProductCategory
+      tags: [products]
+      summary: Create product category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductCategory"
+
+  /product-categories/{id}:
+    patch:
+      operationId: updateProductCategory
+      tags: [products]
+      summary: Update product category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCategoryUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductCategory"
+    delete:
+      operationId: deleteProductCategory
+      tags: [products]
+      summary: Delete product category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # PRODUCTS
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List products
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: published
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get product by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # NEWS
+  /news:
+    get:
+      operationId: listNews
+      tags: [news]
+      summary: List news posts
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: published
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of news
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsListResponse"
+    post:
+      operationId: createNews
+      tags: [news]
+      summary: Create news post
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsItem"
+
+  /news/{id}:
+    get:
+      operationId: getNewsItem
+      tags: [news]
+      summary: Get news by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: News item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsItem"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateNews
+      tags: [news]
+      summary: Update news post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsItem"
+    delete:
+      operationId: deleteNews
+      tags: [news]
+      summary: Delete news post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # REFERENCES
+  /references:
+    get:
+      operationId: listReferences
+      tags: [references]
+      summary: List reference projects
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of references
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferenceListResponse"
+    post:
+      operationId: createReference
+      tags: [references]
+      summary: Create reference project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReferenceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferenceItem"
+
+  /references/{id}:
+    patch:
+      operationId: updateReference
+      tags: [references]
+      summary: Update reference project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReferenceUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferenceItem"
+    delete:
+      operationId: deleteReference
+      tags: [references]
+      summary: Delete reference project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # QUOTE REQUESTS
+  /quotes:
+    get:
+      operationId: listQuotes
+      tags: [quotes]
+      summary: List quote requests (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of quote requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteListResponse"
+    post:
+      operationId: createQuote
+      tags: [quotes]
+      summary: Submit a quote request (public)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteInput"
+      responses:
+        "201":
+          description: Quote request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteItem"
+
+  /quotes/{id}:
+    get:
+      operationId: getQuote
+      tags: [quotes]
+      summary: Get quote request by id (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Quote request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteItem"
+    patch:
+      operationId: updateQuoteStatus
+      tags: [quotes]
+      summary: Update quote request status (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteItem"
+
+  # CORPORATE
+  /corporate:
+    get:
+      operationId: listCorporateSections
+      tags: [corporate]
+      summary: List all corporate sections
+      responses:
+        "200":
+          description: Corporate sections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CorporateSection"
+
+  /corporate/{sectionKey}:
+    get:
+      operationId: getCorporateSection
+      tags: [corporate]
+      summary: Get corporate section by key
+      parameters:
+        - name: sectionKey
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Corporate section
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorporateSection"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: upsertCorporateSection
+      tags: [corporate]
+      summary: Create or update corporate section
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sectionKey
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CorporateSectionInput"
+      responses:
+        "200":
+          description: Upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorporateSection"
+
+  # SETTINGS
+  /settings:
+    get:
+      operationId: listSettings
+      tags: [settings]
+      summary: Get all site settings
+      responses:
+        "200":
+          description: Settings as key-value map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettingsMap"
+
+  /settings/{settingKey}:
+    put:
+      operationId: upsertSetting
+      tags: [settings]
+      summary: Create or update a setting
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: settingKey
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingInput"
+      responses:
+        "200":
+          description: Setting upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Setting"
+
+  # MEDIA
+  /media:
+    get:
+      operationId: listMediaFiles
+      tags: [media]
+      summary: List media files (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of media files
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaListResponse"
+
+  /media/upload:
+    post:
+      operationId: uploadMedia
+      tags: [media]
+      summary: Upload a media file (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaUploadInput"
+      responses:
+        "201":
+          description: Uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaFile"
+
+  /media/request-upload-url:
+    post:
+      operationId: requestMediaUploadUrl
+      tags: [media]
+      summary: Request presigned upload URL for a media file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PresignedUrlInput"
+      responses:
+        "200":
+          description: Presigned URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignedUrlResponse"
+
+  /media/{id}:
+    delete:
+      operationId: deleteMediaFile
+      tags: [media]
+      summary: Delete a media file
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # DASHBOARD STATS
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [auth]
+      summary: Get dashboard statistics (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    # AUTH
+    AdminLoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthTokenResult:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/AdminUser"
+
+    AdminUser:
+      type: object
+      required: [id, email, name]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+
+    # SLIDERS
+    Slider:
+      type: object
+      required: [id, title, sortOrder, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        subtitle:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        ctaPrimaryText:
+          type: ["string", "null"]
+        ctaPrimaryHref:
+          type: ["string", "null"]
+        ctaSecondaryText:
+          type: ["string", "null"]
+        ctaSecondaryHref:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    SliderInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        ctaPrimaryText:
+          type: string
+        ctaPrimaryHref:
+          type: string
+        ctaSecondaryText:
+          type: string
+        ctaSecondaryHref:
+          type: string
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    SliderUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        ctaPrimaryText:
+          type: ["string", "null"]
+        ctaPrimaryHref:
+          type: ["string", "null"]
+        ctaSecondaryText:
+          type: ["string", "null"]
+        ctaSecondaryHref:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    # PRODUCT CATEGORIES
+    ProductCategory:
+      type: object
+      required: [id, name, slug, sortOrder, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ProductCategoryInput:
+      type: object
+      required: [name, slug]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        sortOrder:
+          type: integer
+
+    ProductCategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+
+    # PRODUCTS
+    ProductSpec:
+      type: object
+      required: [label, value]
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+
+    Product:
+      type: object
+      required: [id, title, published, sortOrder, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        categoryId:
+          type: ["integer", "null"]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSpec"
+        sortOrder:
+          type: integer
+        published:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ProductInput:
+      type: object
+      required: [title]
+      properties:
+        categoryId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSpec"
+        sortOrder:
+          type: integer
+        published:
+          type: boolean
+
+    ProductUpdate:
+      type: object
+      properties:
+        categoryId:
+          type: ["integer", "null"]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSpec"
+        sortOrder:
+          type: integer
+        published:
+          type: boolean
+
+    ProductListResponse:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        total:
+          type: integer
+
+    # NEWS
+    NewsItem:
+      type: object
+      required: [id, title, category, slug, published, publishedAt, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        category:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        slug:
+          type: string
+        published:
+          type: boolean
+        publishedAt:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    NewsInput:
+      type: object
+      required: [title, slug]
+      properties:
+        title:
+          type: string
+        excerpt:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        imageUrl:
+          type: string
+        slug:
+          type: string
+        published:
+          type: boolean
+        publishedAt:
+          type: string
+
+    NewsUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        category:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        slug:
+          type: string
+        published:
+          type: boolean
+        publishedAt:
+          type: string
+
+    NewsListResponse:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsItem"
+        total:
+          type: integer
+
+    # REFERENCES
+    ReferenceItem:
+      type: object
+      required: [id, title, projectType, category, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        projectType:
+          type: string
+        capacity:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        category:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    ReferenceInput:
+      type: object
+      required: [title, projectType]
+      properties:
+        title:
+          type: string
+        projectType:
+          type: string
+        capacity:
+          type: string
+        city:
+          type: string
+        imageUrl:
+          type: string
+        category:
+          type: string
+
+    ReferenceUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        projectType:
+          type: string
+        capacity:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        category:
+          type: string
+
+    ReferenceListResponse:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceItem"
+        total:
+          type: integer
+
+    # QUOTES
+    QuoteItem:
+      type: object
+      required: [id, fullName, email, phone, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        company:
+          type: ["string", "null"]
+        jobTitle:
+          type: ["string", "null"]
+        projectType:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        applicationArea:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        status:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    QuoteInput:
+      type: object
+      required: [fullName, email, phone]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        company:
+          type: string
+        jobTitle:
+          type: string
+        projectType:
+          type: string
+        city:
+          type: string
+        applicationArea:
+          type: string
+        notes:
+          type: string
+
+    QuoteStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    QuoteListResponse:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuoteItem"
+        total:
+          type: integer
+
+    # CORPORATE
+    CorporateSection:
+      type: object
+      required: [id, sectionKey, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        sectionKey:
+          type: string
+        title:
+          type: ["string", "null"]
+        subtitle:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    CorporateSectionInput:
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        content:
+          type: string
+        imageUrl:
+          type: string
+
+    # SETTINGS
+    Setting:
+      type: object
+      required: [id, settingKey, settingValue]
+      properties:
+        id:
+          type: integer
+        settingKey:
+          type: string
+        settingValue:
+          type: string
+
+    SettingInput:
+      type: object
+      required: [settingValue]
+      properties:
+        settingValue:
+          type: string
+
+    SettingsMap:
+      type: object
+      additionalProperties:
+        type: string
+
+    # MEDIA
+    MediaFile:
+      type: object
+      required: [id, filename, objectPath, createdAt]
+      properties:
+        id:
+          type: integer
+        filename:
+          type: string
+        objectPath:
+          type: string
+        mimeType:
+          type: ["string", "null"]
+        size:
+          type: ["integer", "null"]
+        alt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    MediaUploadInput:
+      type: object
+      required: [filename, objectPath]
+      properties:
+        filename:
+          type: string
+        objectPath:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+        alt:
+          type: string
+
+    MediaListResponse:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MediaFile"
+        total:
+          type: integer
+
+    PresignedUrlInput:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+        size:
+          type: integer
+        contentType:
+          type: string
+
+    PresignedUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+
+    # DASHBOARD
+    DashboardStats:
+      type: object
+      required: [products, news, references, pendingQuotes, totalQuotes, sliders]
+      properties:
+        products:
+          type: integer
+        news:
+          type: integer
+        references:
+          type: integer
+        pendingQuotes:
+          type: integer
+        totalQuotes:
+          type: integer
+        sliders:
+          type: integer

@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
+export interface MediaUploadInput {
+  filename: string;
+  objectPath: string;
+  mimeType?: string;
+  size?: number;
+  alt?: string;
 }
