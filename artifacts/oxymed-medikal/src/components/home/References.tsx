@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useListReferences } from "@workspace/api-client-react";
@@ -32,9 +33,52 @@ export default function References() {
 
 type Ref = { id: number; title: string; city?: string | null };
 
+const CARD_W = 200;
+const CARD_MX = 12; // total horizontal margin (6px each side)
+const CARD_STEP = CARD_W + CARD_MX;
+const TARGET_DURATION_S = 32;
+const EASE = 0.055; // interpolation factor — lower = smoother slow-down
+
 function Marquee({ refs }: { refs: Ref[] }) {
   const navigate = useNavigate();
-  const doubled = [...refs, ...refs];
+  const trackRef = useRef<HTMLDivElement>(null);
+  const stateRef = useRef({ pos: 0, speed: 0, targetSpeed: 0, halfW: 0 });
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    function halfWidth() {
+      return track!.scrollWidth / 2;
+    }
+
+    const normalSpeed = halfWidth() / (TARGET_DURATION_S * 60);
+    stateRef.current = { pos: 0, speed: normalSpeed, targetSpeed: normalSpeed, halfW: halfWidth() };
+
+    function tick() {
+      const s = stateRef.current;
+      s.halfW = halfWidth();
+      s.speed += (s.targetSpeed - s.speed) * EASE;
+      s.pos -= s.speed;
+      if (s.pos <= -s.halfW) s.pos += s.halfW;
+      track!.style.transform = `translate3d(${s.pos}px, 0, 0)`;
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [refs.length]);
+
+  function onEnter() {
+    stateRef.current.targetSpeed = 0;
+  }
+
+  function onLeave() {
+    const track = trackRef.current;
+    if (!track) return;
+    stateRef.current.targetSpeed = (track.scrollWidth / 2) / (TARGET_DURATION_S * 60);
+  }
 
   function handleCardClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -42,22 +86,31 @@ function Marquee({ refs }: { refs: Ref[] }) {
     navigate("/referanslar");
   }
 
+  const doubled = [...refs, ...refs];
+
   return (
     <div
-      className="marquee-container mt-8 overflow-hidden"
+      className="mt-8 overflow-hidden"
       style={{
         maskImage: "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
         WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
       }}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
     >
-      <div className="marquee-track flex w-max">
+      <div
+        ref={trackRef}
+        className="flex w-max"
+        style={{ willChange: "transform" }}
+      >
         {doubled.map((ref, i) => (
           <Link
             key={`${ref.id}-${i}`}
             to="/referanslar"
             onClick={handleCardClick}
-            className="mx-3 flex h-[72px] w-[200px] shrink-0 flex-col items-center justify-center rounded border border-steel-100 bg-white px-4 shadow-[0_4px_14px_rgba(2,20,35,0.045)] transition hover:border-oxynavy-200 hover:shadow-[0_6px_18px_rgba(2,20,35,0.08)]"
-            aria-label={`${ref.title} referansına git`}
+            className="mx-1.5 flex shrink-0 flex-col items-center justify-center rounded border border-steel-100 bg-white px-4 py-3 shadow-[0_4px_14px_rgba(2,20,35,0.045)] transition hover:border-oxynavy-200 hover:shadow-[0_6px_18px_rgba(2,20,35,0.08)]"
+            style={{ width: CARD_W, height: 72 }}
+            aria-label={ref.title}
           >
             <p className="text-center text-[13px] font-extrabold leading-tight text-oxynavy-800">
               {ref.title}
