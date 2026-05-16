@@ -47,7 +47,11 @@ function ReferencesHero() {
           <div className="flex items-center gap-2 text-xs font-medium text-white/78">
             {referencesHero.breadcrumb.map((item, index) => (
               <span key={item} className="inline-flex items-center gap-2">
-                {item}
+                {index === 0 ? (
+                  <a href="/" className="hover:text-white transition">{item}</a>
+                ) : (
+                  <span>{item}</span>
+                )}
                 {index < referencesHero.breadcrumb.length - 1 ? <span className="text-white/44">›</span> : null}
               </span>
             ))}

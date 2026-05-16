@@ -17,4 +17,5 @@ export interface SliderInput {
   ctaSecondaryHref?: string;
   sortOrder?: number;
   isActive?: boolean;
+  showCatalogButton?: boolean;
 }

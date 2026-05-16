@@ -17,6 +17,7 @@ const SliderBody = z.object({
   ctaSecondaryHref: z.string().optional(),
   sortOrder: z.coerce.number().int().optional(),
   isActive: z.boolean().optional(),
+  showCatalogButton: z.boolean().optional(),
 });
 
 const SliderUpdateBody = SliderBody.partial();

@@ -48,6 +48,7 @@ export interface Slider {
   ctaSecondaryHref?: string | null;
   sortOrder: number;
   isActive: boolean;
+  showCatalogButton?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -63,6 +64,7 @@ export interface SliderInput {
   ctaSecondaryHref?: string;
   sortOrder?: number;
   isActive?: boolean;
+  showCatalogButton?: boolean;
 }
 
 export interface SliderUpdate {
@@ -81,6 +83,39 @@ export interface SliderUpdate {
   ctaSecondaryText?: string | null;
   /** @nullable */
   ctaSecondaryHref?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+  showCatalogButton?: boolean;
+}
+
+export interface Catalog {
+  id: number;
+  title: string;
+  language: string;
+  /** @nullable */
+  category?: string | null;
+  pdfUrl: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CatalogInput {
+  title: string;
+  language?: string;
+  category?: string;
+  pdfUrl: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CatalogUpdate {
+  title?: string;
+  language?: string;
+  /** @nullable */
+  category?: string | null;
+  pdfUrl?: string;
   sortOrder?: number;
   isActive?: boolean;
 }
@@ -381,6 +416,12 @@ export interface DashboardStats {
 
 export type ListSlidersParams = {
 activeOnly?: boolean;
+};
+
+export type ListCatalogsParams = {
+activeOnly?: boolean;
+language?: string;
+category?: string;
 };
 
 export type ListProductsParams = {

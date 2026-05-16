@@ -24,4 +24,5 @@ export interface SliderUpdate {
   ctaSecondaryHref?: string | null;
   sortOrder?: number;
   isActive?: boolean;
+  showCatalogButton?: boolean;
 }

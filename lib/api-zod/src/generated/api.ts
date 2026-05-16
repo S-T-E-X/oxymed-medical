@@ -63,6 +63,7 @@ export const ListSlidersResponseItem = zod.object({
   "ctaSecondaryHref": zod.string().nullish(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
+  "showCatalogButton": zod.boolean().optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -82,7 +83,8 @@ export const CreateSliderBody = zod.object({
   "ctaSecondaryText": zod.string().optional(),
   "ctaSecondaryHref": zod.string().optional(),
   "sortOrder": zod.number().optional(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "showCatalogButton": zod.boolean().optional()
 })
 
 
@@ -105,6 +107,7 @@ export const GetSliderResponse = zod.object({
   "ctaSecondaryHref": zod.string().nullish(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
+  "showCatalogButton": zod.boolean().optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -127,7 +130,8 @@ export const UpdateSliderBody = zod.object({
   "ctaSecondaryText": zod.string().nullish(),
   "ctaSecondaryHref": zod.string().nullish(),
   "sortOrder": zod.number().optional(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "showCatalogButton": zod.boolean().optional()
 })
 
 export const UpdateSliderResponse = zod.object({
@@ -142,6 +146,7 @@ export const UpdateSliderResponse = zod.object({
   "ctaSecondaryHref": zod.string().nullish(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
+  "showCatalogButton": zod.boolean().optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -151,6 +156,99 @@ export const UpdateSliderResponse = zod.object({
  * @summary Delete slider
  */
 export const DeleteSliderParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List catalogs
+ */
+export const ListCatalogsQueryParams = zod.object({
+  "activeOnly": zod.coerce.boolean().optional(),
+  "language": zod.coerce.string().optional(),
+  "category": zod.coerce.string().optional()
+})
+
+export const ListCatalogsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "language": zod.string(),
+  "category": zod.string().nullish(),
+  "pdfUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListCatalogsResponse = zod.array(ListCatalogsResponseItem)
+
+
+/**
+ * @summary Create catalog
+ */
+export const CreateCatalogBody = zod.object({
+  "title": zod.string(),
+  "language": zod.string().optional(),
+  "category": zod.string().optional(),
+  "pdfUrl": zod.string(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Get catalog by id
+ */
+export const GetCatalogParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetCatalogResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "language": zod.string(),
+  "category": zod.string().nullish(),
+  "pdfUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Update catalog
+ */
+export const UpdateCatalogParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateCatalogBody = zod.object({
+  "title": zod.string().optional(),
+  "language": zod.string().optional(),
+  "category": zod.string().nullish(),
+  "pdfUrl": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateCatalogResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "language": zod.string(),
+  "category": zod.string().nullish(),
+  "pdfUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Delete catalog
+ */
+export const DeleteCatalogParams = zod.object({
   "id": zod.coerce.number()
 })
 

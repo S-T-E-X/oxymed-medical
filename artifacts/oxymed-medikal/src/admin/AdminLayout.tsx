@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import {
   Bell,
+  BookOpen,
   Box,
   Building2,
   Eye,
@@ -22,6 +23,7 @@ import { useAuth } from "./AuthContext";
 const navItems = [
   { label: "Kontrol Paneli", icon: LayoutDashboard, to: "/admin/dashboard" },
   { label: "Slider Yönetimi", icon: ImageIcon, to: "/admin/sliders" },
+  { label: "Kataloglar", icon: BookOpen, to: "/admin/kataloglar" },
   { label: "Ürünler", icon: Box, to: "/admin/products" },
   { label: "Haberler", icon: Newspaper, to: "/admin/haberler" },
   { label: "Referanslar", icon: Wrench, to: "/admin/referanslar" },

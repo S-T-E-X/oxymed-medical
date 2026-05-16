@@ -23,6 +23,7 @@ type SliderFormData = {
   ctaSecondaryHref: string;
   sortOrder: number;
   isActive: boolean;
+  showCatalogButton: boolean;
 };
 
 const EMPTY: SliderFormData = {
@@ -36,6 +37,7 @@ const EMPTY: SliderFormData = {
   ctaSecondaryHref: "",
   sortOrder: 0,
   isActive: true,
+  showCatalogButton: false,
 };
 
 function SliderModal({
@@ -118,10 +120,14 @@ function SliderModal({
               <input className="input" value={form.ctaSecondaryHref} onChange={(e) => set("ctaSecondaryHref", e.target.value)} placeholder="/teklif-al" />
             </div>
           </div>
-          <div>
+          <div className="space-y-2">
             <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
               <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
               Aktif
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+              <input type="checkbox" checked={form.showCatalogButton} onChange={(e) => set("showCatalogButton", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
+              Katalog İndir Butonu Göster
             </label>
           </div>
         </div>
@@ -177,6 +183,7 @@ export default function SlidersPage() {
       ctaSecondaryText: data.ctaSecondaryText || undefined,
       ctaSecondaryHref: data.ctaSecondaryHref || undefined,
       isActive: data.isActive,
+      showCatalogButton: data.showCatalogButton,
     };
     if (modal.slider) {
       updateMutEdit.mutate({ id: modal.slider.id, data: payload });
@@ -337,6 +344,7 @@ export default function SlidersPage() {
             ctaSecondaryHref: modal.slider.ctaSecondaryHref ?? "",
             sortOrder: modal.slider.sortOrder,
             isActive: modal.slider.isActive,
+            showCatalogButton: modal.slider.showCatalogButton ?? false,
           } : EMPTY}
           onClose={() => setModal({ open: false, slider: null })}
           onSave={handleSave}

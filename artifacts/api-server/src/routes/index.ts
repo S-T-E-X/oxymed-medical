@@ -10,6 +10,7 @@ import quotesRouter from "./quotes";
 import corporateRouter from "./corporate";
 import settingsRouter from "./settings";
 import mediaRouter from "./media";
+import catalogsRouter from "./catalogs";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(quotesRouter);
 router.use(corporateRouter);
 router.use(settingsRouter);
 router.use(mediaRouter);
+router.use(catalogsRouter);
 
 export default router;

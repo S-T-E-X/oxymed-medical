@@ -28,6 +28,8 @@ tags:
     description: Site settings
   - name: media
     description: Media library and file uploads
+  - name: catalogs
+    description: Product catalogs
 
 paths:
   /healthz:
@@ -197,6 +199,101 @@ paths:
           required: true
           schema:
             type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # CATALOGS
+  /catalogs:
+    get:
+      operationId: listCatalogs
+      tags: [catalogs]
+      summary: List catalogs
+      parameters:
+        - name: activeOnly
+          in: query
+          schema:
+            type: boolean
+        - name: language
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of catalogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Catalog"
+    post:
+      operationId: createCatalog
+      tags: [catalogs]
+      summary: Create catalog
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+
+  /catalogs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getCatalog
+      tags: [catalogs]
+      summary: Get catalog by id
+      responses:
+        "200":
+          description: Catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+    patch:
+      operationId: updateCatalog
+      tags: [catalogs]
+      summary: Update catalog
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+    delete:
+      operationId: deleteCatalog
+      tags: [catalogs]
+      summary: Delete catalog
+      security:
+        - bearerAuth: []
       responses:
         "204":
           description: Deleted
@@ -982,6 +1079,8 @@ components:
           type: integer
         isActive:
           type: boolean
+        showCatalogButton:
+          type: boolean
         createdAt:
           type: string
         updatedAt:
@@ -1011,6 +1110,8 @@ components:
           type: integer
         isActive:
           type: boolean
+        showCatalogButton:
+          type: boolean
 
     SliderUpdate:
       type: object
@@ -1031,6 +1132,65 @@ components:
           type: ["string", "null"]
         ctaSecondaryHref:
           type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        showCatalogButton:
+          type: boolean
+
+    # CATALOGS
+    Catalog:
+      type: object
+      required: [id, title, language, pdfUrl, sortOrder, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        language:
+          type: string
+        category:
+          type: ["string", "null"]
+        pdfUrl:
+          type: string
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    CatalogInput:
+      type: object
+      required: [title, pdfUrl]
+      properties:
+        title:
+          type: string
+        language:
+          type: string
+        category:
+          type: string
+        pdfUrl:
+          type: string
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    CatalogUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        language:
+          type: string
+        category:
+          type: ["string", "null"]
+        pdfUrl:
+          type: string
         sortOrder:
           type: integer
         isActive:
