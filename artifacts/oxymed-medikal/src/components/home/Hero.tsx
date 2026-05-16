@@ -3,8 +3,8 @@ import { ArrowDownToLine, ArrowLeft, ArrowRight } from "lucide-react";
 import { useListSliders } from "@workspace/api-client-react";
 
 export default function Hero() {
-  const { data: allSliders = [], isError } = useListSliders();
-  const sliders = allSliders
+  const { data: allSliders, isLoading, isError } = useListSliders();
+  const sliders = (allSliders ?? [])
     .filter((s) => s.isActive)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -17,7 +17,33 @@ export default function Hero() {
   }, [sliders.length]);
 
   const hero = sliders[current];
-  const showFallback = isError || !hero;
+  const showFallback = isError || (!isLoading && !hero);
+
+  if (isLoading) {
+    return (
+      <section className="relative isolate min-h-[620px] overflow-hidden bg-oxynavy-950 sm:min-h-[600px] lg:min-h-[570px]">
+        <div className="absolute inset-0 animate-pulse bg-oxynavy-900" />
+        <div className="relative mx-auto flex min-h-[620px] max-w-7xl items-center px-4 py-16 sm:min-h-[600px] sm:px-6 lg:min-h-[570px] lg:px-8">
+          <div className="max-w-[590px] space-y-6 pt-6">
+            <div className="h-4 w-32 rounded bg-white/10" />
+            <div className="space-y-3">
+              <div className="h-14 w-80 rounded bg-white/10" />
+              <div className="h-14 w-64 rounded bg-white/10" />
+            </div>
+            <div className="h-1 w-16 bg-white/10" />
+            <div className="space-y-2">
+              <div className="h-4 w-96 rounded bg-white/10" />
+              <div className="h-4 w-72 rounded bg-white/10" />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <div className="h-12 w-36 rounded bg-white/10" />
+              <div className="h-12 w-36 rounded bg-white/10" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative isolate min-h-[620px] overflow-hidden bg-oxynavy-950 sm:min-h-[600px] lg:min-h-[570px]">
