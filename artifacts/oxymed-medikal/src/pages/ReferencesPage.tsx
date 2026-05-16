@@ -1,13 +1,10 @@
-import { useListReferences, useListSettings } from "@workspace/api-client-react";
+import { useState } from "react";
+import { useListReferences } from "@workspace/api-client-react";
 import { Building2, ChevronRight, Circle, Globe2, HeartHandshake, Hospital, MapPinned, Play, Quote, ShieldCheck, Sparkles, Stethoscope, Truck, Users } from "lucide-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import { referencesHero, referencesMap, referenceMetrics, referenceTabs } from "../data/references";
 import { Link } from "react-router-dom";
-
-function formatCount(value: number) {
-  return `${value.toLocaleString("tr-TR")}+`;
-}
 
 export default function ReferencesPage() {
   return (
@@ -39,7 +36,7 @@ function HeroSection() {
             {referencesHero.breadcrumb.join(" › ")}
           </div>
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.35em] text-white/64">
-            {referencesHero.kicker}
+            {referencesHero.eyebrow}
           </p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
             {referencesHero.title}
@@ -104,7 +101,7 @@ function ReferencesGrid() {
             >
               <div className="aspect-[1.6] overflow-hidden">
                 <img
-                  src={ref.imageUrl}
+                  src={ref.imageUrl ?? "/assets/images/product-medical-gas.png"}
                   alt={ref.title}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
                 />
@@ -115,7 +112,7 @@ function ReferencesGrid() {
                   {ref.city && <span className="text-[11px] text-steel-500">{ref.city}</span>}
                 </div>
                 <h3 className="mt-3 text-lg font-extrabold leading-tight text-oxynavy-950">{ref.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-steel-700">{ref.description}</p>
+                <p className="mt-2 text-sm leading-6 text-steel-700">{ref.city ?? ""}</p>
               </div>
             </article>
           ))}
@@ -137,7 +134,7 @@ function MapSection() {
           <img
             src="/assets/turkiyeharitasi.webp"
             alt="Türkiye Referans Haritası"
-            className="w-full max-w-xl opacity-90"
+            className="w-full max-w-[16rem] opacity-90"
           />
         </div>
       </div>
