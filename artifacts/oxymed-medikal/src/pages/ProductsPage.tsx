@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ArrowDownToLine,
   ArrowRight,
@@ -12,11 +13,12 @@ import {
   Stethoscope,
   Wrench
 } from "lucide-react";
+import { useListProductCategories, useListProducts } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
-import { productCategories, productHero, productPageFeatures, products } from "../data/products";
+import { productHero, productPageFeatures } from "../data/products";
 
-const categoryIcons = [Factory, Wrench, Boxes, CircuitBoard, Stethoscope, SlidersHorizontal, Settings];
+const categoryIcons = [Factory, Wrench, Boxes, CircuitBoard, Stethoscope, SlidersHorizontal, Settings, Wrench];
 
 const featureIconMap = {
   production: Factory,
@@ -62,59 +64,98 @@ function ProductsHero() {
 }
 
 function ProductsContent() {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
+  const { data: categories = [], isLoading: catsLoading } = useListProductCategories();
+  const { data: productsData, isLoading: prodsLoading } = useListProducts({
+    categoryId: selectedCategoryId,
+    published: true,
+    limit: 50,
+  });
+  const products = productsData?.items ?? [];
+
+  const activeCategory = categories.find((c) => c.id === selectedCategoryId);
+
   return (
     <section className="relative pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ProductFeatureStrip />
 
         <div className="grid gap-8 pt-8 lg:grid-cols-[250px_minmax(0,1fr)]">
-          <ProductsSidebar />
+          <ProductsSidebar
+            categories={categories}
+            isLoading={catsLoading}
+            selectedCategoryId={selectedCategoryId}
+            onSelect={setSelectedCategoryId}
+          />
+
           <div>
             <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-[27px] font-extrabold leading-tight text-oxynavy-950">Yatak Başı Üniteleri</h2>
+                <h2 className="text-[27px] font-extrabold leading-tight text-oxynavy-950">
+                  {activeCategory?.name ?? "Tüm Ürünler"}
+                </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-steel-700">
-                  Hasta odalarında konfor, güvenlik ve fonksiyonelliği bir araya getiren yatak başı ünitelerimiz;
-                  ihtiyaca göre özelleştirilebilir modüler yapısıyla her projeye uygundur.
+                  {activeCategory
+                    ? `${activeCategory.name} kategorisindeki ürünlerimiz.`
+                    : "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz medikal çözümler."}
                 </p>
               </div>
-              <a
-                href="#yatak-basi-uniteleri"
-                className="inline-flex h-10 shrink-0 items-center justify-center gap-3 rounded border border-oxynavy-900 px-5 text-xs font-extrabold text-oxynavy-950 transition hover:bg-oxynavy-950 hover:text-white"
-              >
-                TÜM YATAK BAŞI ÜNİTELERİ
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
+              {products.length > 0 && (
+                <span className="inline-flex h-10 shrink-0 items-center justify-center gap-1 rounded border border-oxynavy-200 px-4 text-xs font-bold text-steel-600">
+                  {products.length} ürün
+                </span>
+              )}
             </div>
 
-            <div id="yatak-basi-uniteleri" className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
-                <article
-                  key={product.title}
-                  className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)]"
-                >
-                  <div className="aspect-[1.72] overflow-hidden bg-steel-100">
-                    <img src={product.image} alt={product.title} className="h-full w-full object-cover" />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-extrabold text-oxynavy-950">{product.title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-steel-700">{product.description}</p>
-                    <div className="mt-5 grid grid-cols-3 gap-2 text-[11px]">
-                      {product.specs.map((spec) => (
-                        <div key={spec.label}>
-                          <span className="block text-steel-500">{spec.label}</span>
-                          <strong className="mt-1 block font-bold text-oxynavy-950">{spec.value}</strong>
-                        </div>
-                      ))}
-                    </div>
-                    <a href="#" className="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-950">
-                      DETAYLARI İNCELE
-                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
+            {prodsLoading ? (
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {[1, 2, 3, 4].map((i) => <div key={i} className="h-64 animate-pulse rounded-lg bg-steel-200" />)}
+              </div>
+            ) : products.length === 0 ? (
+              <div className="mt-6 rounded-xl border-2 border-dashed border-steel-200 py-16 text-center">
+                <p className="text-steel-400">Bu kategoride ürün bulunamadı.</p>
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {products.map((product) => {
+                  const specs = (product.specs ?? []) as { label: string; value: string }[];
+                  return (
+                    <article
+                      key={product.id}
+                      className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)]"
+                    >
+                      <div className="aspect-[1.72] overflow-hidden bg-steel-100">
+                        <img
+                          src={product.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
+                          alt={product.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="p-5">
+                        <h3 className="text-lg font-extrabold text-oxynavy-950">{product.title}</h3>
+                        {product.description && (
+                          <p className="mt-3 text-sm leading-6 text-steel-700 line-clamp-2">{product.description}</p>
+                        )}
+                        {specs.length > 0 && (
+                          <div className="mt-5 grid grid-cols-3 gap-2 text-[11px]">
+                            {specs.slice(0, 3).map((spec) => (
+                              <div key={spec.label}>
+                                <span className="block text-steel-500">{spec.label}</span>
+                                <strong className="mt-1 block font-bold text-oxynavy-950">{spec.value}</strong>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <a href="#" className="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-950">
+                          DETAYLARI İNCELE
+                          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        </a>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -143,26 +184,44 @@ function ProductFeatureStrip() {
   );
 }
 
-function ProductsSidebar() {
+type SidebarProps = {
+  categories: { id: number; name: string; slug: string }[];
+  isLoading: boolean;
+  selectedCategoryId: number | undefined;
+  onSelect: (id: number | undefined) => void;
+};
+
+function ProductsSidebar({ categories, isLoading, selectedCategoryId, onSelect }: SidebarProps) {
   return (
     <aside className="space-y-5">
       <nav className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.05)]">
-        {productCategories.map((category, index) => {
-          const Icon = categoryIcons[index];
-          const active = index === 0;
-          return (
-            <a
-              key={category}
-              href={index === 0 ? "#yatak-basi-uniteleri" : "#"}
-              className={`flex h-14 items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition last:border-b-0 ${
-                active ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
-              }`}
-            >
-              <Icon className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
-              {category}
-            </a>
-          );
-        })}
+        <button
+          onClick={() => onSelect(undefined)}
+          className={`flex h-14 w-full items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition ${
+            !selectedCategoryId ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
+          }`}
+        >
+          <Factory className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
+          Tüm Ürünler
+        </button>
+        {isLoading
+          ? [1, 2, 3].map((i) => <div key={i} className="h-14 animate-pulse bg-steel-50" />)
+          : categories.map((category, index) => {
+              const Icon = categoryIcons[index % categoryIcons.length];
+              const active = selectedCategoryId === category.id;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => onSelect(active ? undefined : category.id)}
+                  className={`flex h-14 w-full items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition last:border-b-0 ${
+                    active ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
+                  }`}
+                >
+                  <Icon className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
+                  {category.name}
+                </button>
+              );
+            })}
       </nav>
 
       <a

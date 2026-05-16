@@ -1,4 +1,6 @@
-import { ArrowRight, Clock3, Headphones, Lock, Paperclip, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, CheckCircle, Clock3, Headphones, Lock, Paperclip, ShieldCheck } from "lucide-react";
+import { useCreateQuote } from "@workspace/api-client-react";
 import ImageSlot from "../components/common/ImageSlot";
 import FeatureBar from "../components/home/FeatureBar";
 import Footer from "../components/layout/Footer";
@@ -9,6 +11,30 @@ const benefitIconMap = {
   clock: Clock3,
   shield: ShieldCheck,
   support: Headphones
+};
+
+type FormState = {
+  fullName: string;
+  email: string;
+  phone: string;
+  company: string;
+  jobTitle: string;
+  projectType: string;
+  city: string;
+  applicationArea: string;
+  notes: string;
+};
+
+const EMPTY: FormState = {
+  fullName: "",
+  email: "",
+  phone: "",
+  company: "",
+  jobTitle: "",
+  projectType: "",
+  city: "",
+  applicationArea: "",
+  notes: "",
 };
 
 export default function QuotePage() {
@@ -71,10 +97,72 @@ function QuoteRequestSection() {
 }
 
 function QuoteForm() {
+  const [form, setForm] = useState<FormState>(EMPTY);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  const createMut = useCreateQuote({
+    mutation: {
+      onSuccess: () => {
+        setSubmitted(true);
+        setForm(EMPTY);
+      },
+      onError: () => {
+        setError("Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin.");
+      },
+    },
+  });
+
+  function set(field: keyof FormState, value: string) {
+    setForm((f) => ({ ...f, [field]: value }));
+    setError("");
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.fullName || !form.email || !form.phone) {
+      setError("Lütfen zorunlu alanları doldurunuz (Ad Soyad, E-posta, Telefon).");
+      return;
+    }
+    createMut.mutate({
+      data: {
+        fullName: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        company: form.company || undefined,
+        jobTitle: form.jobTitle || undefined,
+        projectType: form.projectType || undefined,
+        city: form.city || undefined,
+        applicationArea: form.applicationArea || undefined,
+        notes: form.notes || undefined,
+      },
+    });
+  }
+
+  if (submitted) {
+    return (
+      <div className="flex items-center justify-center rounded-lg border border-steel-100 bg-white px-8 py-12 shadow-[0_20px_45px_rgba(2,20,35,0.12)]">
+        <div className="text-center">
+          <CheckCircle className="mx-auto h-16 w-16 text-emerald-500" />
+          <h2 className="mt-5 text-2xl font-extrabold text-oxynavy-950">Talebiniz Alındı!</h2>
+          <p className="mt-3 max-w-[320px] text-sm leading-6 text-steel-600">
+            Teklif talebiniz başarıyla iletildi. En kısa sürede uzman ekibimiz sizinle iletişime geçecektir.
+          </p>
+          <button
+            onClick={() => setSubmitted(false)}
+            className="mt-8 inline-flex items-center gap-2 rounded bg-oxynavy-950 px-6 py-3 text-sm font-bold text-white transition hover:bg-oxynavy-800"
+          >
+            Yeni Teklif Talebi
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form
       className="rounded-lg border border-steel-100 bg-white px-8 py-5 shadow-[0_20px_45px_rgba(2,20,35,0.12)]"
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={handleSubmit}
     >
       <div>
         <h2 className="text-[22px] font-extrabold leading-tight text-oxynavy-950">Teklif Talep Formu</h2>
@@ -82,20 +170,20 @@ function QuoteForm() {
       </div>
 
       <div className="mt-6 grid gap-x-5 gap-y-3 md:grid-cols-3">
-        <Field label="Ad Soyad *" placeholder="Adınız ve soyadınız" />
-        <Field label="E-posta *" placeholder="ornek@mail.com" type="email" />
-        <Field label="Telefon *" placeholder="5XX XXX XX XX" type="tel" />
+        <Field label="Ad Soyad *" placeholder="Adınız ve soyadınız" value={form.fullName} onChange={(v) => set("fullName", v)} />
+        <Field label="E-posta *" placeholder="ornek@mail.com" type="email" value={form.email} onChange={(v) => set("email", v)} />
+        <Field label="Telefon *" placeholder="5XX XXX XX XX" type="tel" value={form.phone} onChange={(v) => set("phone", v)} />
       </div>
 
       <div className="mt-3 grid gap-x-5 gap-y-3 md:grid-cols-2">
-        <Field label="Firma / Kurum" placeholder="Firma veya kurum adı" />
-        <Field label="Görev / Unvan" placeholder="Göreviniz veya unvanınız" />
+        <Field label="Firma / Kurum" placeholder="Firma veya kurum adı" value={form.company} onChange={(v) => set("company", v)} />
+        <Field label="Görev / Unvan" placeholder="Göreviniz veya unvanınız" value={form.jobTitle} onChange={(v) => set("jobTitle", v)} />
       </div>
 
       <div className="mt-3 grid gap-x-5 gap-y-3 md:grid-cols-3">
-        <SelectField label="Proje Türü *" options={projectTypes} />
-        <SelectField label="İl / İlçe *" options={cities} />
-        <SelectField label="Uygulama Alanı *" options={applicationAreas} />
+        <SelectField label="Proje Türü *" options={projectTypes} value={form.projectType} onChange={(v) => set("projectType", v)} />
+        <SelectField label="İl / İlçe *" options={cities} value={form.city} onChange={(v) => set("city", v)} />
+        <SelectField label="Uygulama Alanı *" options={applicationAreas} value={form.applicationArea} onChange={(v) => set("applicationArea", v)} />
       </div>
 
       <label className="mt-3 block">
@@ -103,9 +191,17 @@ function QuoteForm() {
         <textarea
           rows={2}
           placeholder="Projeniz hakkında bilgi veriniz..."
+          value={form.notes}
+          onChange={(e) => set("notes", e.target.value)}
           className="h-[54px] w-full resize-none rounded border border-steel-200 bg-white px-3.5 py-2.5 text-[12px] text-oxynavy-950 outline-none transition placeholder:text-steel-500 focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
         />
       </label>
+
+      {error && (
+        <div className="mt-3 rounded border border-red-200 bg-red-50 px-4 py-2.5 text-[12px] font-semibold text-red-700">
+          {error}
+        </div>
+      )}
 
       <div className="mt-3 grid gap-5 lg:grid-cols-[1fr_0.78fr] lg:items-end">
         <label className="block">
@@ -120,9 +216,10 @@ function QuoteForm() {
 
         <button
           type="submit"
-          className="inline-flex h-[58px] items-center justify-center gap-3 rounded bg-oxynavy-950 px-8 text-[13px] font-extrabold text-white transition hover:bg-oxynavy-800"
+          disabled={createMut.isPending}
+          className="inline-flex h-[58px] items-center justify-center gap-3 rounded bg-oxynavy-950 px-8 text-[13px] font-extrabold text-white transition hover:bg-oxynavy-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          TEKLİF TALEP ET
+          {createMut.isPending ? "GÖNDERİLİYOR…" : "TEKLİF TALEP ET"}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
@@ -139,15 +236,19 @@ type FieldProps = {
   label: string;
   placeholder: string;
   type?: string;
+  value: string;
+  onChange: (value: string) => void;
 };
 
-function Field({ label, placeholder, type = "text" }: FieldProps) {
+function Field({ label, placeholder, type = "text", value, onChange }: FieldProps) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-[12px] font-semibold text-oxynavy-950">{label}</span>
       <input
         type={type}
         placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         className="h-8 w-full rounded border border-steel-200 bg-white px-3.5 text-[12px] text-oxynavy-950 outline-none transition placeholder:text-steel-500 focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
       />
     </label>
@@ -157,16 +258,22 @@ function Field({ label, placeholder, type = "text" }: FieldProps) {
 type SelectFieldProps = {
   label: string;
   options: string[];
+  value: string;
+  onChange: (value: string) => void;
 };
 
-function SelectField({ label, options }: SelectFieldProps) {
+function SelectField({ label, options, value, onChange }: SelectFieldProps) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-[12px] font-semibold text-oxynavy-950">{label}</span>
-      <select className="h-8 w-full rounded border border-steel-200 bg-white px-3.5 text-[12px] text-steel-700 outline-none transition focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100">
-        <option>Seçiniz</option>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 w-full rounded border border-steel-200 bg-white px-3.5 text-[12px] text-steel-700 outline-none transition focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
+      >
+        <option value="">Seçiniz</option>
         {options.map((option) => (
-          <option key={option}>{option}</option>
+          <option key={option} value={option}>{option}</option>
         ))}
       </select>
     </label>

@@ -1,6 +1,16 @@
-import { stats } from "../../data/home";
+import { useListSettings } from "@workspace/api-client-react";
 
 export default function StatsSection() {
+  const { data: settings } = useListSettings();
+  const s = settings as Record<string, string> | undefined;
+
+  const statsData = [
+    { value: s?.["yearsExperience"] ?? "15+", label: "YILLIK TECRÜBE" },
+    { value: s?.["completedProjects"] ?? "200+", label: "TAMAMLANAN PROJE" },
+    { value: s?.["exportCountries"] ?? "50+", label: "ÜLKEYE İHRACAT" },
+    { value: s?.["customerSatisfaction"] ?? "100%", label: "MÜŞTERİ MEMNUNİYETİ" },
+  ];
+
   return (
     <section id="kurumsal" className="bg-oxynavy-950 text-white">
       <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[0.95fr_0.8fr_1.45fr]">
@@ -25,7 +35,7 @@ export default function StatsSection() {
         </div>
 
         <div className="grid grid-cols-2 items-center divide-x divide-y divide-white/10 px-4 pb-10 sm:px-8 lg:grid-cols-4 lg:divide-y-0 lg:px-10 lg:pb-0">
-          {stats.map((item) => (
+          {statsData.map((item) => (
             <div key={item.label} className="px-4 py-7 text-center lg:py-0">
               <strong className="block text-4xl font-light leading-none text-white sm:text-5xl lg:text-[54px]">
                 {item.value}

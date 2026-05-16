@@ -1,7 +1,8 @@
 import { Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useListSettings } from "@workspace/api-client-react";
 import Logo from "./Logo";
-import { contact, footerColumns, socialLinks } from "../../data/home";
+import { footerColumns } from "../../data/home";
 
 const socialIconMap = {
   LinkedIn: Linkedin,
@@ -14,6 +15,19 @@ type FooterProps = {
 };
 
 export default function Footer({ compact = false }: FooterProps) {
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+
+  const phone = settings?.["phone"] ?? "+90 232 870 0 222";
+  const email = settings?.["email"] ?? "info@oxymed.com.tr";
+  const address = settings?.["address"] ?? "10016 Sk. No:5 AOSB Çiğli / İzmir / TÜRKİYE";
+
+  const socialLinks = [
+    { label: "LinkedIn", href: settings?.["linkedin"] ?? "#" },
+    { label: "Instagram", href: settings?.["instagram"] ?? "#" },
+    { label: "YouTube", href: settings?.["youtube"] ?? "#" },
+  ];
+
   return (
     <footer id="iletisim" className="bg-oxynavy-950 text-white">
       <div className={`mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ${compact ? "py-8" : "py-14 lg:py-16"}`}>
@@ -58,18 +72,18 @@ export default function Footer({ compact = false }: FooterProps) {
             <ul className={`${compact ? "mt-4 space-y-4" : "mt-6 space-y-5"} text-sm leading-6 text-white/74`}>
               <li className="flex gap-3">
                 <MapPin className="mt-1 h-4 w-4 shrink-0 text-white" aria-hidden="true" />
-                <span>{contact.address}</span>
+                <span>{address}</span>
               </li>
               <li>
-                <a href={`tel:${contact.phone}`} className="flex gap-3 transition hover:text-white">
+                <a href={`tel:${phone}`} className="flex gap-3 transition hover:text-white">
                   <Phone className="mt-0.5 h-4 w-4 shrink-0 text-white" aria-hidden="true" />
-                  {contact.phone}
+                  {phone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${contact.email}`} className="flex gap-3 transition hover:text-white">
+                <a href={`mailto:${email}`} className="flex gap-3 transition hover:text-white">
                   <Mail className="mt-0.5 h-4 w-4 shrink-0 text-white" aria-hidden="true" />
-                  {contact.email}
+                  {email}
                 </a>
               </li>
             </ul>

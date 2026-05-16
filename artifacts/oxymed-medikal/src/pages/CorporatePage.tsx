@@ -1,16 +1,18 @@
 import { ArrowRight, Building2, Eye, Gem, Globe2, MapPinned, ShieldCheck, Target, UsersRound } from "lucide-react";
+import { useListCorporateSections, useListSettings } from "@workspace/api-client-react";
 import ImageSlot from "../components/common/ImageSlot";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
-import { corporateAbout, corporateHero, corporateStats, corporateValues, qualityCards } from "../data/corporate";
+import { corporateHero, qualityCards } from "../data/corporate";
 
 const valueIconMap = {
-  target: Target,
-  eye: Eye,
-  gem: Gem,
-  shield: ShieldCheck
-};
+  vision: Eye,
+  mission: Target,
+  values: Gem,
+  quality: ShieldCheck,
+} as const;
 
+const defaultValueIcons = [Target, Eye, Gem, ShieldCheck];
 const statIconMap = [Building2, MapPinned, MapPinned, UsersRound, Globe2];
 
 export default function CorporatePage() {
@@ -60,18 +62,43 @@ function CorporateHero() {
 }
 
 function CorporateIntro() {
+  const { data: sections = [], isLoading } = useListCorporateSections();
+
+  const about = sections.find((s) => s.sectionKey === "about");
+  const valueSections = sections.filter((s) =>
+    ["vision", "mission", "values", "quality"].includes(s.sectionKey)
+  );
+
+  if (isLoading) {
+    return (
+      <section className="bg-white py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-6 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => <div key={i} className="h-48 animate-pulse rounded-lg bg-steel-100" />)}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-white py-16 lg:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.25fr_0.95fr] lg:items-center lg:px-8">
         <div>
-          <p className="text-xs font-extrabold text-oxynavy-700">{corporateAbout.eyebrow}</p>
+          <p className="text-xs font-extrabold text-oxynavy-700">HAKKIMIZDA</p>
           <h2 className="mt-5 text-3xl font-extrabold leading-tight text-oxynavy-950 sm:text-4xl">
-            {corporateAbout.title}
+            {about?.title ?? "Sağlık İçin Teknoloji, Güvenilir Çözümler"}
           </h2>
           <div className="mt-7 space-y-5 text-sm leading-7 text-steel-700">
-            {corporateAbout.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
+            {about?.content
+              ? about.content.split("\n\n").filter(Boolean).map((para, i) => <p key={i}>{para}</p>)
+              : (
+                <>
+                  <p>OXYMED Medikal, medikal gaz sistemleri, yatak başı üniteleri, pendant sistemleri ve ameliyathane çözümleri alanlarında tasarım, üretim ve uygulama yapan yerli bir medikal teknoloji firmasıdır.</p>
+                  <p>Kurulduğumuz günden bu yana, modern üretim altyapımız, deneyimli ekibimiz ve kalite odaklı yaklaşımımızla; Türkiye'de ve yurt dışında birçok hastane, klinik ve sağlık kuruluşuna çözümler sunmaya devam ediyoruz.</p>
+                </>
+              )
+            }
           </div>
           <a
             href="#kalite"
@@ -85,27 +112,47 @@ function CorporateIntro() {
         <div className="overflow-hidden rounded-lg border border-steel-100 shadow-[0_14px_35px_rgba(2,20,35,0.08)]">
           <ImageSlot
             tone="factory"
-            image="/assets/images/corporate-production-floor.png"
+            image={about?.imageUrl ?? "/assets/images/corporate-production-floor.png"}
             alt="Oxymed üretim tesisi"
             className="aspect-[1.6]"
           />
         </div>
 
         <div className="space-y-6">
-          {corporateValues.map((item) => {
-            const Icon = valueIconMap[item.icon as keyof typeof valueIconMap];
-            return (
-              <article key={item.title} className="flex gap-5">
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-oxynavy-950 text-white">
-                  <Icon className="h-6 w-6 stroke-[1.6]" aria-hidden="true" />
-                </span>
-                <div>
-                  <h3 className="text-lg font-extrabold text-oxynavy-950">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-steel-700">{item.description}</p>
-                </div>
-              </article>
-            );
-          })}
+          {valueSections.length > 0
+            ? valueSections.map((section, i) => {
+                const Icon = valueIconMap[section.sectionKey as keyof typeof valueIconMap] ?? defaultValueIcons[i % 4];
+                return (
+                  <article key={section.id} className="flex gap-5">
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-oxynavy-950 text-white">
+                      <Icon className="h-6 w-6 stroke-[1.6]" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <h3 className="text-lg font-extrabold text-oxynavy-950">{section.title}</h3>
+                      {section.content && (
+                        <p className="mt-2 text-sm leading-6 text-steel-700">{section.content}</p>
+                      )}
+                    </div>
+                  </article>
+                );
+              })
+            : [
+                { icon: Target, title: "Misyonumuz", description: "Sağlık alanında teknolojiyi yakından takip ederek, insan hayatını destekleyen güvenilir ve yenilikçi çözümler üretmek." },
+                { icon: Eye, title: "Vizyonumuz", description: "Ulusal ve uluslararası pazarda tercih edilen, kalitesi ve gücüyle öne çıkan bir medikal teknoloji markası olmak." },
+                { icon: Gem, title: "Değerlerimiz", description: "Güven, kalite, yenilikçilik, müşteri memnuniyeti ve sürdürülebilirlik temel değerlerimizdir." },
+                { icon: ShieldCheck, title: "Kalite Anlayışımız", description: "ISO 9001, ISO 13485 ve CE standartlarına uygun üretim yaparak, en yüksek kaliteyi sunuyoruz." },
+              ].map((item) => (
+                <article key={item.title} className="flex gap-5">
+                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-oxynavy-950 text-white">
+                    <item.icon className="h-6 w-6 stroke-[1.6]" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-extrabold text-oxynavy-950">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-steel-700">{item.description}</p>
+                  </div>
+                </article>
+              ))
+          }
         </div>
       </div>
     </section>
@@ -113,6 +160,17 @@ function CorporateIntro() {
 }
 
 function CorporateStats() {
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+
+  const corporateStats = [
+    { value: settings?.["yearsExperience"] ?? "15+", label: "Yıllık Tecrübe" },
+    { value: settings?.["completedProjects"] ?? "170+", label: "Tamamlanan Proje" },
+    { value: settings?.["exportCountries"] ?? "50+", label: "İl & Bölge" },
+    { value: "100+", label: "Uzman Ekip" },
+    { value: "10+", label: "Ülkeye İhracat" },
+  ];
+
   return (
     <section className="bg-oxynavy-900 text-white">
       <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-white/12 px-4 sm:grid-cols-2 sm:divide-x sm:divide-y-0 sm:px-6 lg:grid-cols-5 lg:px-8">

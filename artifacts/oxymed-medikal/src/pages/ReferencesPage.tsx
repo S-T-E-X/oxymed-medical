@@ -1,9 +1,20 @@
+import { useState } from "react";
 import { ArrowRight, BedDouble, Building2, HeartHandshake, Stethoscope, Timer, Users } from "lucide-react";
+import { useListReferences, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
-import { referenceCategories, referenceProjects, referencesHero, referencesMap, referencesOverviewStats } from "../data/references";
+import { referencesHero, referencesMap } from "../data/references";
 
 const overviewIconMap = [Building2, Stethoscope, Users, HeartHandshake, BedDouble, Timer];
+
+const CATEGORIES = [
+  "TÜM PROJELER",
+  "ŞEHİR HASTANELERİ",
+  "DEVLET HASTANELERİ",
+  "ÜNİVERSİTE HASTANELERİ",
+  "ÖZEL HASTANELER",
+  "YURT DIŞI PROJELER"
+];
 
 export default function ReferencesPage() {
   return (
@@ -21,6 +32,8 @@ export default function ReferencesPage() {
 }
 
 function ReferencesHero() {
+  const { data: refsData } = useListReferences({ limit: 1 });
+
   return (
     <section className="relative isolate overflow-hidden bg-oxynavy-950 text-white">
       <img
@@ -40,7 +53,9 @@ function ReferencesHero() {
             ))}
           </div>
           <p className="mt-7 text-sm font-extrabold text-white/82">{referencesHero.eyebrow}</p>
-          <h1 className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">{referencesHero.title}</h1>
+          <h1 className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">
+            {refsData?.total ? `${refsData.total}+ Proje` : referencesHero.title}
+          </h1>
           <div className="mt-5 h-1 w-14 bg-white" />
           <p className="mt-7 max-w-[470px] text-sm font-medium leading-7 text-white/88 sm:text-base">
             {referencesHero.description}
@@ -52,10 +67,23 @@ function ReferencesHero() {
 }
 
 function OverviewStats() {
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+  const { data: refsData } = useListReferences({ limit: 1 });
+
+  const overviewStats = [
+    { value: refsData?.total ? `${refsData.total}+` : "170+", label: "Tamamlanan Proje" },
+    { value: "120+", label: "Kamu Projesi" },
+    { value: "50+", label: "Özel Sektör Projesi" },
+    { value: settings?.["exportCountries"] ?? "50+", label: "İl & Bölge" },
+    { value: "1.000+", label: "Yatak Kapasitesi" },
+    { value: settings?.["yearsExperience"] ?? "15+", label: "Yıllık Tecrübe" },
+  ];
+
   return (
     <section className="border-b border-steel-100 bg-white">
       <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-steel-100 px-4 sm:grid-cols-3 sm:px-6 lg:grid-cols-6 lg:divide-y-0 lg:px-8">
-        {referencesOverviewStats.map((stat, index) => {
+        {overviewStats.map((stat, index) => {
           const Icon = overviewIconMap[index];
           return (
             <div key={stat.label} className="flex flex-col items-center gap-2 py-8 text-center">
@@ -71,53 +99,82 @@ function OverviewStats() {
 }
 
 function ProjectsSection() {
+  const [activeCategory, setActiveCategory] = useState<string | undefined>();
+
+  const { data: refsData, isLoading } = useListReferences({
+    category: activeCategory,
+    limit: 50,
+  });
+  const refs = refsData?.items ?? [];
+
   return (
     <section className="bg-steel-50 py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-wrap gap-2">
-          {referenceCategories.map((category, index) => (
-            <button
-              key={category}
-              className={`rounded px-4 py-2 text-[12px] font-extrabold transition ${
-                index === 0
-                  ? "bg-oxynavy-950 text-white"
-                  : "border border-steel-200 bg-white text-oxynavy-950 hover:bg-oxynavy-950 hover:text-white"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+          {CATEGORIES.map((cat) => {
+            const isAll = cat === "TÜM PROJELER";
+            const active = isAll ? !activeCategory : activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(isAll ? undefined : cat)}
+                className={`rounded px-4 py-2 text-[12px] font-extrabold transition ${
+                  active
+                    ? "bg-oxynavy-950 text-white"
+                    : "border border-steel-200 bg-white text-oxynavy-950 hover:bg-oxynavy-950 hover:text-white"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {referenceProjects.map((project) => (
-            <article
-              key={project.title}
-              className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
-            >
-              <div className="aspect-[1.6] overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2">
-                  <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-[11px] font-extrabold text-oxynavy-700">
-                    {project.type}
-                  </span>
-                  <span className="text-[11px] font-semibold text-steel-500">{project.capacity}</span>
+        {isLoading ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-56 animate-pulse rounded-lg bg-steel-200" />
+            ))}
+          </div>
+        ) : refs.length === 0 ? (
+          <div className="rounded-xl border-2 border-dashed border-steel-200 py-16 text-center">
+            <p className="text-steel-500">Bu kategoride proje bulunamadı.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {refs.map((project) => (
+              <article
+                key={project.id}
+                className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
+              >
+                <div className="aspect-[1.6] overflow-hidden">
+                  <img
+                    src={project.imageUrl ?? "/assets/images/corporate-hero-facility.png"}
+                    alt={project.title}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  />
                 </div>
-                <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>
-                <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
-                  Proje Detayları
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-2">
+                    {project.projectType && (
+                      <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-[11px] font-extrabold text-oxynavy-700">
+                        {project.projectType}
+                      </span>
+                    )}
+                    {project.capacity && (
+                      <span className="text-[11px] font-semibold text-steel-500">{project.capacity}</span>
+                    )}
+                  </div>
+                  <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>
+                  <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
+                    Proje Detayları
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { ChevronDown, Instagram, Linkedin, Mail, Menu, Phone, X, Youtube } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useListSettings } from "@workspace/api-client-react";
 import Logo from "./Logo";
-import { contact, languages, navItems, socialLinks } from "../../data/home";
+import { languages, navItems } from "../../data/home";
 
 const socialIconMap = {
   LinkedIn: Linkedin,
@@ -20,19 +21,30 @@ function isActivePath(currentPath: string, href: string) {
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { pathname } = useLocation();
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+
+  const phone = settings?.["phone"] ?? "+90 232 870 0 222";
+  const email = settings?.["email"] ?? "info@oxymed.com.tr";
+
+  const socialLinks = [
+    { label: "LinkedIn", href: settings?.["linkedin"] ?? "#" },
+    { label: "Instagram", href: settings?.["instagram"] ?? "#" },
+    { label: "YouTube", href: settings?.["youtube"] ?? "#" },
+  ];
 
   return (
     <header className="relative z-30 bg-white shadow-[0_2px_16px_rgba(2,20,35,0.05)]">
       <div className="bg-oxynavy-950 text-white">
         <div className="mx-auto flex min-h-9 max-w-7xl items-center justify-between gap-4 px-4 text-[11px] font-medium sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-white/82">
-            <a className="inline-flex items-center gap-2 transition hover:text-white" href={`tel:${contact.phone}`}>
+            <a className="inline-flex items-center gap-2 transition hover:text-white" href={`tel:${phone}`}>
               <Phone className="h-3.5 w-3.5" aria-hidden="true" />
-              {contact.phone}
+              {phone}
             </a>
-            <a className="inline-flex items-center gap-2 transition hover:text-white" href={`mailto:${contact.email}`}>
+            <a className="inline-flex items-center gap-2 transition hover:text-white" href={`mailto:${email}`}>
               <Mail className="h-3.5 w-3.5" aria-hidden="true" />
-              {contact.email}
+              {email}
             </a>
           </div>
 
