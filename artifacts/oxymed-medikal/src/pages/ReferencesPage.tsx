@@ -206,7 +206,7 @@ function MapSection() {
           <img
             src="/assets/turkiyeharitasi.webp"
             alt="Türkiye Referans Haritası"
-            className="block h-auto w-auto max-h-[180px] max-w-[180px] shrink-0 object-contain opacity-90"
+            className="block h-auto w-auto max-h-[260px] max-w-[260px] shrink-0 object-contain opacity-90"
           />
         </div>
       </div>
