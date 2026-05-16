@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, BedDouble, Building2, HeartHandshake, Stethoscope, Timer, Users, AlertCircle } from "lucide-react";
+import { BedDouble, Building2, HeartHandshake, Stethoscope, Timer, Users, AlertCircle } from "lucide-react";
 import { useListReferences, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
@@ -186,10 +186,6 @@ function ProjectsSection() {
                     )}
                   </div>
                   <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>
-                  <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
-                    Proje Detayları
-                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                  </a>
                 </div>
               </article>
             ))}
@@ -201,6 +197,10 @@ function ProjectsSection() {
 }
 
 function MapSection() {
+  const { data: refsData } = useListReferences({ limit: 8 });
+  const refs = refsData?.items ?? [];
+  const withImages = refs.filter((r) => r.imageUrl);
+
   return (
     <section className="bg-oxynavy-950 py-14 text-white lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -208,23 +208,40 @@ function MapSection() {
           <h2 className="text-2xl font-extrabold sm:text-3xl">{referencesMap.title}</h2>
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/78">{referencesMap.description}</p>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {[
-            { city: "İstanbul", count: "42 Proje" },
-            { city: "Ankara", count: "28 Proje" },
-            { city: "İzmir", count: "18 Proje" },
-            { city: "Bursa", count: "14 Proje" },
-            { city: "Antalya", count: "12 Proje" },
-            { city: "Konya", count: "10 Proje" },
-            { city: "Adana", count: "8 Proje" },
-            { city: "Diğer İller", count: "38 Proje" }
-          ].map((item) => (
-            <div key={item.city} className="rounded-lg border border-white/10 bg-white/6 px-5 py-4 text-center">
-              <p className="text-base font-extrabold">{item.city}</p>
-              <p className="mt-1 text-sm text-white/72">{item.count}</p>
-            </div>
-          ))}
-        </div>
+
+        {withImages.length > 0 ? (
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {withImages.map((ref) => (
+              <div
+                key={ref.id}
+                className="group relative overflow-hidden rounded-lg bg-white/6"
+              >
+                <img
+                  src={ref.imageUrl!}
+                  alt={ref.title}
+                  className="aspect-[4/3] w-full object-cover opacity-90 transition duration-500 group-hover:opacity-100 group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-3">
+                  <p className="text-sm font-extrabold leading-tight text-white">{ref.title}</p>
+                  {ref.city && (
+                    <p className="mt-0.5 text-[11px] font-semibold text-white/72">{ref.city}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="aspect-[4/3] w-full rounded-lg border border-dashed border-white/20 bg-white/4 flex items-center justify-center"
+              >
+                <span className="text-[11px] text-white/36 font-semibold">Görsel eklenecek</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
