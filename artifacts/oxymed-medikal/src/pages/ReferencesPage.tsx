@@ -107,9 +107,7 @@ function ProjectsSection() {
     isError: allError,
   } = useListReferences({ limit: 500 });
   const allRefs = allRefsData?.items ?? [];
-  const categories = ["TÜM PROJELER", ...Array.from(
-    new Set(allRefs.map((r) => r.category).filter(Boolean) as string[])
-  )];
+  const categories = ["TÜM PROJELER", ...Array.from(new Set(allRefs.map((r) => r.category).filter(Boolean) as string[]))];
 
   const {
     data: filteredData,
@@ -204,11 +202,11 @@ function MapSection() {
           <h2 className="text-2xl font-extrabold sm:text-3xl">{referencesMap.title}</h2>
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/78">{referencesMap.description}</p>
         </div>
-        <div className="mt-10 flex justify-center">
+        <div className="mt-10 flex justify-center overflow-hidden">
           <img
             src="/assets/turkiyeharitasi.webp"
             alt="Türkiye Referans Haritası"
-            className="w-full max-w-[18rem] opacity-90"
+            className="block h-auto w-auto max-h-[180px] max-w-[180px] shrink-0 object-contain opacity-90"
           />
         </div>
       </div>
