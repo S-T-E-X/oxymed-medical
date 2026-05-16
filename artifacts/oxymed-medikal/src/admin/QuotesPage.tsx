@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  getGetQuoteQueryKey,
   getListQuotesQueryKey,
   useGetQuote,
   useListQuotes,
@@ -30,9 +31,10 @@ function QuoteDetailModal({ id, onClose }: { id: number; onClose: () => void }) 
 
   const updateMut = useUpdateQuoteStatus({
     mutation: {
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         toast.success("Durum güncellendi");
         qc.invalidateQueries({ queryKey: getListQuotesQueryKey() });
+        qc.invalidateQueries({ queryKey: getGetQuoteQueryKey(variables.id) });
       },
       onError: () => toast.error("Güncelleme başarısız"),
     },

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAdminLogin } from "@workspace/api-client-react";
 import { useAuth } from "./AuthContext";
 
@@ -24,8 +24,7 @@ export default function LoginPage() {
   });
 
   if (isAuthenticated) {
-    navigate("/admin/dashboard", { replace: true });
-    return null;
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   function handleSubmit(e: React.FormEvent) {

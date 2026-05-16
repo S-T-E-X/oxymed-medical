@@ -18,11 +18,14 @@ export function useImageUpload() {
         contentType: file.type || "application/octet-stream",
       });
 
-      await fetch(uploadURL, {
+      const putRes = await fetch(uploadURL, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": file.type || "application/octet-stream" },
       });
+      if (!putRes.ok) {
+        throw new Error(`Upload failed: ${putRes.status} ${putRes.statusText}`);
+      }
 
       await uploadMedia({
         filename: file.name,
