@@ -5,15 +5,15 @@ import {
   useGetQuote,
   useListQuotes,
   useUpdateQuoteStatus,
-  type QuoteItem,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { Eye, X } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { value: "new", label: "Yeni", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  { value: "in_progress", label: "İnceleniyor", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
-  { value: "closed", label: "Kapatıldı", cls: "bg-slate-100 text-slate-600 ring-slate-200" },
+  { value: "in_progress", label: "İncelendi", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
+  { value: "resolved", label: "Teklif Hazır", cls: "bg-blue-50 text-blue-700 ring-blue-200" },
+  { value: "archived", label: "Arşiv", cls: "bg-slate-100 text-slate-600 ring-slate-200" },
 ];
 
 function statusLabel(s: string) {
@@ -33,7 +33,6 @@ function QuoteDetailModal({ id, onClose }: { id: number; onClose: () => void }) 
       onSuccess: () => {
         toast.success("Durum güncellendi");
         qc.invalidateQueries({ queryKey: getListQuotesQueryKey() });
-        qc.invalidateQueries({ queryKey: ["getQuote", id] });
       },
       onError: () => toast.error("Güncelleme başarısız"),
     },
@@ -51,18 +50,37 @@ function QuoteDetailModal({ id, onClose }: { id: number; onClose: () => void }) 
           <div className="p-8 text-center text-slate-400">Yükleniyor…</div>
         ) : (
           <div className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <span className={`rounded-full px-3 py-1 text-[12px] font-bold ring-1 ${statusClass(quote.status)}`}>
-                {statusLabel(quote.status)}
-              </span>
-              <select
-                value={quote.status}
-                onChange={(e) => updateMut.mutate({ id, data: { status: e.target.value } })}
-                className="input h-9 w-40 text-sm"
-                disabled={updateMut.isPending}
-              >
-                {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Mevcut Durum</p>
+                <span className={`rounded-full px-3 py-1 text-[12px] font-bold ring-1 ${statusClass(quote.status)}`}>
+                  {statusLabel(quote.status)}
+                </span>
+              </div>
+              <div className="text-right">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Durumu Güncelle</p>
+                <div className="flex gap-1 flex-wrap justify-end">
+                  {STATUS_OPTIONS.map((o) => (
+                    <button
+                      key={o.value}
+                      onClick={() => updateMut.mutate({ id, data: { status: o.value } })}
+                      disabled={o.value === quote.status || updateMut.isPending}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${o.value === quote.status ? "opacity-40 cursor-default" : "hover:opacity-80 cursor-pointer"}`}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-4 flex items-center gap-2 text-xs text-slate-400">
+              {STATUS_OPTIONS.map((o, i) => (
+                <span key={o.value} className="flex items-center gap-1">
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ${o.cls} ${quote.status === o.value ? "ring-2" : "opacity-50"}`}>{o.label}</span>
+                  {i < STATUS_OPTIONS.length - 1 && <span className="text-slate-300">→</span>}
+                </span>
+              ))}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -111,6 +129,10 @@ export default function QuotesPage() {
   const quotes = quotesData?.items ?? [];
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
+  const counts = {
+    new: quotes.filter((q) => q.status === "new").length,
+  };
+
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -120,11 +142,23 @@ export default function QuotesPage() {
         </div>
         <div className="flex items-center gap-2">
           <label className="text-sm font-semibold text-slate-600">Filtrele:</label>
-          <select className="input h-9 w-40 text-sm" value={statusFilter ?? ""} onChange={(e) => setStatusFilter(e.target.value || undefined)}>
+          <select className="input h-9 w-44 text-sm" value={statusFilter ?? ""} onChange={(e) => setStatusFilter(e.target.value || undefined)}>
             <option value="">Tümü</option>
             {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {STATUS_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            onClick={() => setStatusFilter(statusFilter === o.value ? undefined : o.value)}
+            className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${statusFilter === o.value ? "ring-2" : "opacity-70 hover:opacity-100"}`}
+          >
+            {o.label}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (

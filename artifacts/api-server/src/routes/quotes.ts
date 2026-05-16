@@ -64,7 +64,7 @@ router.get("/quotes/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(quote);
 });
 
-const QUOTE_STATUSES = ["new", "in_progress", "closed"] as const;
+const QUOTE_STATUSES = ["new", "in_progress", "resolved", "archived"] as const;
 
 router.patch("/quotes/:id", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);

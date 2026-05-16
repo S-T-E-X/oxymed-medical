@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getListSlidersQueryKey,
@@ -9,7 +9,7 @@ import {
   type Slider,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Edit2, ImageIcon, Plus, ToggleLeft, ToggleRight, Trash2, X } from "lucide-react";
+import { Edit2, GripVertical, ImageIcon, Plus, ToggleLeft, ToggleRight, Trash2, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 
 type SliderFormData = {
@@ -118,17 +118,11 @@ function SliderModal({
               <input className="input" value={form.ctaSecondaryHref} onChange={(e) => set("ctaSecondaryHref", e.target.value)} placeholder="/teklif-al" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label">Sıra</label>
-              <input type="number" className="input" value={form.sortOrder} onChange={(e) => set("sortOrder", Number(e.target.value))} />
-            </div>
-            <div className="flex items-end pb-1">
-              <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
-                <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
-                Aktif
-              </label>
-            </div>
+          <div>
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+              <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
+              Aktif
+            </label>
           </div>
         </div>
         <div className="flex justify-end gap-3 border-t border-slate-100 px-6 py-4">
@@ -147,11 +141,27 @@ export default function SlidersPage() {
   const { data: sliders = [], isLoading } = useListSliders();
   const [modal, setModal] = useState<{ open: boolean; slider: Slider | null }>({ open: false, slider: null });
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: getListSlidersQueryKey() });
+  const [orderedSliders, setOrderedSliders] = useState<Slider[]>([]);
+  const dragId = useRef<number | null>(null);
+  const [dragOverId, setDragOverId] = useState<number | null>(null);
 
+  const displaySliders = orderedSliders.length > 0 ? orderedSliders : [...sliders].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const invalidate = () => {
+    setOrderedSliders([]);
+    qc.invalidateQueries({ queryKey: getListSlidersQueryKey() });
+  };
+
+  const updateMut = useUpdateSlider({
+    mutation: {
+      onSuccess: () => { },
+      onError: () => toast.error("Güncelleme başarısız"),
+    },
+  });
   const createMut = useCreateSlider({ mutation: { onSuccess: () => { toast.success("Slider oluşturuldu"); invalidate(); setModal({ open: false, slider: null }); }, onError: () => toast.error("Kayıt başarısız") } });
-  const updateMut = useUpdateSlider({ mutation: { onSuccess: () => { toast.success("Slider güncellendi"); invalidate(); setModal({ open: false, slider: null }); }, onError: () => toast.error("Güncelleme başarısız") } });
   const deleteMut = useDeleteSlider({ mutation: { onSuccess: () => { toast.success("Slider silindi"); invalidate(); }, onError: () => toast.error("Silme başarısız") } });
+
+  const updateMutEdit = useUpdateSlider({ mutation: { onSuccess: () => { toast.success("Slider güncellendi"); invalidate(); setModal({ open: false, slider: null }); }, onError: () => toast.error("Güncelleme başarısız") } });
 
   function openNew() { setModal({ open: true, slider: null }); }
   function openEdit(s: Slider) { setModal({ open: true, slider: s }); }
@@ -166,11 +176,10 @@ export default function SlidersPage() {
       ctaPrimaryHref: data.ctaPrimaryHref || undefined,
       ctaSecondaryText: data.ctaSecondaryText || undefined,
       ctaSecondaryHref: data.ctaSecondaryHref || undefined,
-      sortOrder: data.sortOrder,
       isActive: data.isActive,
     };
     if (modal.slider) {
-      updateMut.mutate({ id: modal.slider.id, data: payload });
+      updateMutEdit.mutate({ id: modal.slider.id, data: payload });
     } else {
       createMut.mutate({ data: payload });
     }
@@ -178,6 +187,7 @@ export default function SlidersPage() {
 
   function handleToggleActive(s: Slider) {
     updateMut.mutate({ id: s.id, data: { isActive: !s.isActive } });
+    invalidate();
   }
 
   function handleDelete(id: number) {
@@ -186,14 +196,62 @@ export default function SlidersPage() {
     }
   }
 
-  const saving = createMut.isPending || updateMut.isPending;
+  function onDragStart(id: number) {
+    dragId.current = id;
+  }
+
+  function onDragOver(e: React.DragEvent, id: number) {
+    e.preventDefault();
+    setDragOverId(id);
+  }
+
+  function onDragLeave() {
+    setDragOverId(null);
+  }
+
+  async function onDrop(targetId: number) {
+    setDragOverId(null);
+    const fromId = dragId.current;
+    if (fromId === null || fromId === targetId) return;
+    dragId.current = null;
+
+    const base = displaySliders;
+    const fromIdx = base.findIndex((s) => s.id === fromId);
+    const toIdx = base.findIndex((s) => s.id === targetId);
+    if (fromIdx === -1 || toIdx === -1) return;
+
+    const reordered = [...base];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+
+    const withNewOrder = reordered.map((s, i) => ({ ...s, sortOrder: i }));
+    setOrderedSliders(withNewOrder);
+
+    const changed = withNewOrder.filter((s, i) => s.sortOrder !== base[i]?.sortOrder || s.id !== base[i]?.id);
+    try {
+      await Promise.all(
+        withNewOrder.map((s, i) =>
+          base[i]?.sortOrder !== i || base.find((b) => b.id === s.id)?.sortOrder !== i
+            ? updateMut.mutateAsync({ id: s.id, data: { sortOrder: i } })
+            : Promise.resolve()
+        )
+      );
+      toast.success("Sıralama kaydedildi");
+      invalidate();
+    } catch {
+      toast.error("Sıralama kaydedilemedi");
+      setOrderedSliders([]);
+    }
+  }
+
+  const saving = createMut.isPending || updateMutEdit.isPending;
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-950">Slider Yönetimi</h1>
-          <p className="mt-1 text-sm text-slate-500">Ana sayfa hero slider'larını yönetin</p>
+          <p className="mt-1 text-sm text-slate-500">Ana sayfa hero slider'larını yönetin · Kartları sürükleyerek sıralayın</p>
         </div>
         <button onClick={openNew} className="btn-primary flex items-center gap-2">
           <Plus className="h-4 w-4" /> Yeni Slider
@@ -204,22 +262,40 @@ export default function SlidersPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => <div key={i} className="h-48 animate-pulse rounded-xl bg-slate-100" />)}
         </div>
-      ) : sliders.length === 0 ? (
+      ) : displaySliders.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-slate-200 py-16 text-center">
           <p className="text-slate-400">Henüz slider yok</p>
           <button onClick={openNew} className="btn-primary mt-4">İlk slider'ı ekle</button>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[...sliders].sort((a, b) => a.sortOrder - b.sortOrder).map((s) => (
-            <div key={s.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-              {s.imageUrl ? (
-                <img src={s.imageUrl} alt={s.title} className="h-36 w-full object-cover" />
-              ) : (
-                <div className="flex h-36 w-full items-center justify-center bg-slate-100">
-                  <ImageIcon className="h-10 w-10 text-slate-300" />
+          {displaySliders.map((s, idx) => (
+            <div
+              key={s.id}
+              draggable
+              onDragStart={() => onDragStart(s.id)}
+              onDragOver={(e) => onDragOver(e, s.id)}
+              onDragLeave={onDragLeave}
+              onDrop={() => onDrop(s.id)}
+              className={`overflow-hidden rounded-xl border-2 bg-white shadow-sm transition select-none ${
+                dragOverId === s.id ? "border-blue-400 shadow-lg scale-[1.02]" : "border-slate-200"
+              }`}
+            >
+              <div className="relative">
+                {s.imageUrl ? (
+                  <img src={s.imageUrl} alt={s.title} className="h-36 w-full object-cover" />
+                ) : (
+                  <div className="flex h-36 w-full items-center justify-center bg-slate-100">
+                    <ImageIcon className="h-10 w-10 text-slate-300" />
+                  </div>
+                )}
+                <div className="absolute left-2 top-2 flex h-7 w-7 cursor-grab items-center justify-center rounded-lg bg-white/80 text-slate-500 shadow backdrop-blur-sm active:cursor-grabbing">
+                  <GripVertical className="h-4 w-4" />
                 </div>
-              )}
+                <div className="absolute right-2 top-2 flex h-7 items-center justify-center rounded-lg bg-white/80 px-2 text-[11px] font-bold text-slate-600 shadow backdrop-blur-sm">
+                  #{idx + 1}
+                </div>
+              </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -230,7 +306,6 @@ export default function SlidersPage() {
                     {s.isActive ? "Aktif" : "Pasif"}
                   </span>
                 </div>
-                <p className="mt-1 text-[11px] text-slate-400">Sıra: {s.sortOrder}</p>
                 <div className="mt-3 flex items-center gap-2">
                   <button onClick={() => handleToggleActive(s)} className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">
                     {s.isActive ? <ToggleRight className="h-4 w-4 text-emerald-500" /> : <ToggleLeft className="h-4 w-4" />}

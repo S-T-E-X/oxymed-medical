@@ -10,6 +10,7 @@ import {
   useListProductCategories,
   useListProducts,
   useUpdateProduct,
+  useUpdateProductCategory,
   type Product,
   type ProductCategory,
 } from "@workspace/api-client-react";
@@ -158,6 +159,7 @@ export default function ProductsPage() {
 
   const [modal, setModal] = useState<{ open: boolean; product: Product | null }>({ open: false, product: null });
   const [catName, setCatName] = useState("");
+  const [editCat, setEditCat] = useState<{ id: number; name: string } | null>(null);
 
   const invalidateProd = () => qc.invalidateQueries({ queryKey: getListProductsQueryKey() });
   const invalidateCat = () => qc.invalidateQueries({ queryKey: getListProductCategoriesQueryKey() });
@@ -167,6 +169,13 @@ export default function ProductsPage() {
   const deleteMut = useDeleteProduct({ mutation: { onSuccess: () => { toast.success("Ürün silindi"); invalidateProd(); }, onError: () => toast.error("Silme başarısız") } });
   const createCatMut = useCreateProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori oluşturuldu"); invalidateCat(); setCatName(""); }, onError: () => toast.error("Kategori eklenemedi") } });
   const deleteCatMut = useDeleteProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori silindi"); invalidateCat(); }, onError: () => toast.error("Silme başarısız") } });
+  const updateCatMut = useUpdateProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori güncellendi"); invalidateCat(); setEditCat(null); }, onError: () => toast.error("Güncelleme başarısız") } });
+
+  function handleSaveCat() {
+    if (!editCat || !editCat.name.trim()) return;
+    const slug = editCat.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    updateCatMut.mutate({ id: editCat.id, data: { name: editCat.name.trim(), slug } });
+  }
 
   function handleSave(data: ProductForm) {
     const payload = {
@@ -211,10 +220,31 @@ export default function ProductsPage() {
         <h2 className="mb-4 text-sm font-bold text-slate-900">Kategoriler</h2>
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
-            <div key={c.id} className="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-3 pr-1.5 py-1 text-sm font-semibold text-slate-700">
-              {c.name}
-              <button onClick={() => handleDeleteCat(c.id)} className="ml-1 flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-red-100 hover:text-red-500"><X className="h-3 w-3" /></button>
-            </div>
+            editCat?.id === c.id ? (
+              <div key={c.id} className="flex items-center gap-1">
+                <input
+                  className="input h-8 w-40 text-sm"
+                  value={editCat.name}
+                  onChange={(e) => setEditCat({ ...editCat, name: e.target.value })}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveCat(); if (e.key === "Escape") setEditCat(null); }}
+                  autoFocus
+                />
+                <button onClick={handleSaveCat} disabled={updateCatMut.isPending} className="btn-primary h-8 px-2.5 text-xs">
+                  {updateCatMut.isPending ? "…" : "Kaydet"}
+                </button>
+                <button onClick={() => setEditCat(null)} className="btn-secondary h-8 px-2.5 text-xs">İptal</button>
+              </div>
+            ) : (
+              <div key={c.id} className="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-3 pr-1.5 py-1 text-sm font-semibold text-slate-700">
+                {c.name}
+                <button onClick={() => setEditCat({ id: c.id, name: c.name })} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-blue-100 hover:text-blue-500">
+                  <Edit2 className="h-2.5 w-2.5" />
+                </button>
+                <button onClick={() => handleDeleteCat(c.id)} className="flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-red-100 hover:text-red-500">
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )
           ))}
           <div className="flex gap-1">
             <input className="input h-8 w-36 text-sm" value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="Yeni kategori" onKeyDown={(e) => e.key === "Enter" && catName && createCatMut.mutate({ data: { name: catName, slug: catName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") } })} />
