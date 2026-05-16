@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-oxynavy-50: #edf5fb;
+  --color-oxynavy-100: #d9e9f5;
+  --color-oxynavy-500: #1c5a77;
+  --color-oxynavy-700: #08314a;
+  --color-oxynavy-800: #05273d;
+  --color-oxynavy-900: #041d31;
+  --color-oxynavy-950: #021423;
+
+  --color-steel-50: #f7f9fb;
+  --color-steel-100: #edf1f5;
+  --color-steel-200: #dce4eb;
+  --color-steel-500: #6f7f8d;
+  --color-steel-600: #576773;
+  --color-steel-700: #3d4b56;
+
+  --shadow-soft: 0 14px 35px rgba(2, 20, 35, 0.08);
+  --shadow-lift: 0 20px 45px rgba(2, 20, 35, 0.12);
+
+  --font-sans: Inter, ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
+}
+
+:root {
+  color: #041d31;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: #ffffff;
+  font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  color: #ffffff;
+  background: #08314a;
+}

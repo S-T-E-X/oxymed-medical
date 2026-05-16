@@ -1,0 +1,154 @@
+import { ArrowRight, BedDouble, Building2, HeartHandshake, Stethoscope, Timer, Users } from "lucide-react";
+import Footer from "../components/layout/Footer";
+import Header from "../components/layout/Header";
+import { referenceCategories, referenceProjects, referencesHero, referencesMap, referencesOverviewStats } from "../data/references";
+
+const overviewIconMap = [Building2, Stethoscope, Users, HeartHandshake, BedDouble, Timer];
+
+export default function ReferencesPage() {
+  return (
+    <div className="min-h-screen bg-white text-oxynavy-950">
+      <Header />
+      <main>
+        <ReferencesHero />
+        <OverviewStats />
+        <ProjectsSection />
+        <MapSection />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function ReferencesHero() {
+  return (
+    <section className="relative isolate overflow-hidden bg-oxynavy-950 text-white">
+      <img
+        src="/assets/images/corporate-hero-facility.png"
+        alt="Referans proje"
+        className="absolute inset-0 h-full w-full object-cover opacity-60"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950 via-oxynavy-950/80 to-oxynavy-950/30" />
+      <div className="relative mx-auto min-h-[300px] max-w-7xl px-4 py-12 sm:px-6 lg:min-h-[360px] lg:px-8 lg:py-16">
+        <div className="max-w-xl">
+          <div className="flex items-center gap-2 text-xs font-medium text-white/78">
+            {referencesHero.breadcrumb.map((item, index) => (
+              <span key={item} className="inline-flex items-center gap-2">
+                {item}
+                {index < referencesHero.breadcrumb.length - 1 ? <span className="text-white/44">›</span> : null}
+              </span>
+            ))}
+          </div>
+          <p className="mt-7 text-sm font-extrabold text-white/82">{referencesHero.eyebrow}</p>
+          <h1 className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">{referencesHero.title}</h1>
+          <div className="mt-5 h-1 w-14 bg-white" />
+          <p className="mt-7 max-w-[470px] text-sm font-medium leading-7 text-white/88 sm:text-base">
+            {referencesHero.description}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function OverviewStats() {
+  return (
+    <section className="border-b border-steel-100 bg-white">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-steel-100 px-4 sm:grid-cols-3 sm:px-6 lg:grid-cols-6 lg:divide-y-0 lg:px-8">
+        {referencesOverviewStats.map((stat, index) => {
+          const Icon = overviewIconMap[index];
+          return (
+            <div key={stat.label} className="flex flex-col items-center gap-2 py-8 text-center">
+              <Icon className="h-8 w-8 text-oxynavy-700 stroke-[1.4]" aria-hidden="true" />
+              <strong className="mt-1 block text-3xl font-light text-oxynavy-950">{stat.value}</strong>
+              <span className="text-[11px] font-extrabold text-steel-500">{stat.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function ProjectsSection() {
+  return (
+    <section className="bg-steel-50 py-14 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-wrap gap-2">
+          {referenceCategories.map((category, index) => (
+            <button
+              key={category}
+              className={`rounded px-4 py-2 text-[12px] font-extrabold transition ${
+                index === 0
+                  ? "bg-oxynavy-950 text-white"
+                  : "border border-steel-200 bg-white text-oxynavy-950 hover:bg-oxynavy-950 hover:text-white"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {referenceProjects.map((project) => (
+            <article
+              key={project.title}
+              className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
+            >
+              <div className="aspect-[1.6] overflow-hidden">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-[11px] font-extrabold text-oxynavy-700">
+                    {project.type}
+                  </span>
+                  <span className="text-[11px] font-semibold text-steel-500">{project.capacity}</span>
+                </div>
+                <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>
+                <a href="#" className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
+                  Proje Detayları
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MapSection() {
+  return (
+    <section className="bg-oxynavy-950 py-14 text-white lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-extrabold sm:text-3xl">{referencesMap.title}</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/78">{referencesMap.description}</p>
+        </div>
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {[
+            { city: "İstanbul", count: "42 Proje" },
+            { city: "Ankara", count: "28 Proje" },
+            { city: "İzmir", count: "18 Proje" },
+            { city: "Bursa", count: "14 Proje" },
+            { city: "Antalya", count: "12 Proje" },
+            { city: "Konya", count: "10 Proje" },
+            { city: "Adana", count: "8 Proje" },
+            { city: "Diğer İller", count: "38 Proje" }
+          ].map((item) => (
+            <div key={item.city} className="rounded-lg border border-white/10 bg-white/6 px-5 py-4 text-center">
+              <p className="text-base font-extrabold">{item.city}</p>
+              <p className="mt-1 text-sm text-white/72">{item.count}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
