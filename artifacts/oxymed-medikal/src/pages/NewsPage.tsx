@@ -149,29 +149,29 @@ function NewsContent() {
                         />
                       </div>
                     </Link>
-                    <div className="p-5">
+                    <div className="p-6">
                       <div className="flex items-center gap-3">
                         {post.category && (
-                          <span className="rounded bg-oxynavy-50 px-2 py-0.5 text-[11px] font-extrabold text-oxynavy-700">
+                          <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-xs font-extrabold text-oxynavy-700">
                             {post.category}
                           </span>
                         )}
-                        <span className="flex items-center gap-1 text-[11px] text-steel-500">
-                          <Clock className="h-3 w-3" aria-hidden="true" />
+                        <span className="flex items-center gap-1.5 text-xs text-steel-500">
+                          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
                           {formatDate(post.publishedAt)}
                         </span>
                       </div>
-                      <h3 className="mt-3 text-base font-extrabold text-oxynavy-950 leading-tight">
+                      <h3 className="mt-3 text-xl font-extrabold text-oxynavy-950 leading-snug">
                         <Link to={`/haberler/${post.slug}`} className="transition hover:text-oxynavy-600">
                           {post.title}
                         </Link>
                       </h3>
                       {post.excerpt && (
-                        <p className="mt-2 text-[13px] leading-6 text-steel-700 line-clamp-3">{post.excerpt}</p>
+                        <p className="mt-3 text-sm leading-7 text-steel-700 line-clamp-3">{post.excerpt}</p>
                       )}
-                      <Link to={`/haberler/${post.slug}`} className="mt-4 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
+                      <Link to={`/haberler/${post.slug}`} className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500">
                         Devamını Oku
-                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </Link>
                     </div>
                   </article>

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, newsTable } from "@workspace/db";
-import { eq, desc, count } from "drizzle-orm";
+import { and, eq, desc, count } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
 
@@ -29,27 +29,21 @@ router.get("/news", async (req, res): Promise<void> => {
   const publishedStr = req.query["published"] as string | undefined;
   const slug = req.query["slug"] as string | undefined;
 
-  let query = db.select().from(newsTable).orderBy(desc(newsTable.publishedAt)).$dynamic();
-  let countQuery = db.select({ count: count() }).from(newsTable).$dynamic();
+  const conditions = [];
+  if (slug) conditions.push(eq(newsTable.slug, slug));
+  if (category && category !== "TÜM HABERLER") conditions.push(eq(newsTable.category, category));
+  if (publishedStr !== undefined) conditions.push(eq(newsTable.published, publishedStr === "true"));
 
-  if (slug) {
-    query = query.where(eq(newsTable.slug, slug));
-    countQuery = countQuery.where(eq(newsTable.slug, slug));
-  }
-  if (category && category !== "TÜM HABERLER") {
-    query = query.where(eq(newsTable.category, category));
-    countQuery = countQuery.where(eq(newsTable.category, category));
-  }
-  if (publishedStr !== undefined) {
-    const pub = publishedStr === "true";
-    query = query.where(eq(newsTable.published, pub));
-    countQuery = countQuery.where(eq(newsTable.published, pub));
-  }
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const baseQuery = db.select().from(newsTable).orderBy(desc(newsTable.publishedAt));
+  const baseCount = db.select({ count: count() }).from(newsTable);
 
   const [items, [totalRow]] = await Promise.all([
-    query.limit(limit).offset(offset),
-    countQuery,
+    (whereClause ? baseQuery.where(whereClause) : baseQuery).limit(limit).offset(offset),
+    (whereClause ? baseCount.where(whereClause) : baseCount),
   ]);
+
   res.json({ items, total: totalRow?.count ?? 0 });
 });
 

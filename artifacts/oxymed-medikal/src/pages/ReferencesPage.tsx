@@ -208,7 +208,7 @@ function MapSection() {
           <img
             src="/assets/turkiyeharitasi.webp"
             alt="Türkiye Referans Haritası"
-            className="w-full max-w-4xl"
+            className="w-full max-w-xl opacity-90"
           />
         </div>
       </div>

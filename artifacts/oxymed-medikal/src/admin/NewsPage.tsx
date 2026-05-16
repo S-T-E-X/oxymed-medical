@@ -5,12 +5,27 @@ import {
   useCreateNews,
   useDeleteNews,
   useListNews,
+  useListSettings,
+  useUpsertSetting,
   useUpdateNews,
   type NewsItem,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Edit2, ImageIcon, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Edit2, ImageIcon, Plus, Tag, Trash2, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+
+const DEFAULT_CATEGORIES = ["Genel", "Sektör Haberleri", "Ürün Haberleri", "Duyuru", "Blog"];
+const SETTINGS_KEY = "news_categories";
+
+function useNewsCategories() {
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+  const raw = settings?.[SETTINGS_KEY];
+  try {
+    if (raw) return JSON.parse(raw) as string[];
+  } catch {}
+  return DEFAULT_CATEGORIES;
+}
 
 type NewsForm = {
   title: string;
@@ -38,16 +53,95 @@ function slugify(s: string) {
   return s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9ğüşıöç-]/g, "").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ş/g,"s").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ç/g,"c");
 }
 
+function CategoryManager({ categories, onSave }: { categories: string[]; onSave: (cats: string[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const [list, setList] = useState<string[]>(categories);
+  const [newCat, setNewCat] = useState("");
+
+  function add() {
+    const trimmed = newCat.trim();
+    if (!trimmed || list.includes(trimmed)) return;
+    setList([...list, trimmed]);
+    setNewCat("");
+  }
+
+  function remove(cat: string) {
+    setList(list.filter((c) => c !== cat));
+  }
+
+  function save() {
+    onSave(list);
+    setOpen(false);
+  }
+
+  function reset() {
+    setList(categories);
+    setOpen(false);
+  }
+
+  return (
+    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50">
+      <button
+        onClick={() => { setList(categories); setOpen((v) => !v); }}
+        className="flex w-full items-center justify-between px-5 py-3 text-sm font-bold text-amber-800"
+      >
+        <span className="flex items-center gap-2">
+          <Tag className="h-4 w-4" />
+          Kategorileri Yönet
+        </span>
+        {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+      </button>
+
+      {open && (
+        <div className="border-t border-amber-200 px-5 pb-5 pt-4">
+          <p className="mb-3 text-xs text-amber-700">Kategorileri ekleyip çıkarabilirsiniz. Kaydetmek için "Kaydet" butonuna basın.</p>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {list.map((cat) => (
+              <span key={cat} className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-white px-3 py-1 text-xs font-semibold text-amber-900">
+                {cat}
+                <button onClick={() => remove(cat)} className="text-amber-400 hover:text-red-500 transition">
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+            {list.length === 0 && (
+              <p className="text-xs text-amber-500 italic">Kategori listesi boş</p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <input
+              className="input flex-1 text-sm"
+              value={newCat}
+              onChange={(e) => setNewCat(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && add()}
+              placeholder="Yeni kategori adı"
+            />
+            <button onClick={add} className="btn-secondary flex items-center gap-1 text-sm">
+              <Plus className="h-3.5 w-3.5" /> Ekle
+            </button>
+          </div>
+          <div className="mt-4 flex gap-2 justify-end">
+            <button onClick={reset} className="btn-secondary text-sm">İptal</button>
+            <button onClick={save} className="btn-primary text-sm">Kaydet</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function NewsModal({
   initial,
   onClose,
   onSave,
   saving,
+  categories,
 }: {
   initial: NewsForm;
   onClose: () => void;
   onSave: (data: NewsForm) => void;
   saving: boolean;
+  categories: string[];
 }) {
   const [form, setForm] = useState<NewsForm>(initial);
   const { uploadFile, uploading } = useImageUpload();
@@ -71,8 +165,6 @@ function NewsModal({
       toast.error("Görsel yüklenemedi");
     }
   }
-
-  const categories = ["Genel", "Sektör Haberleri", "Ürün Haberleri", "Duyuru", "Blog"];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -103,6 +195,9 @@ function NewsModal({
               <label className="label">Kategori</label>
               <select className="input" value={form.category} onChange={(e) => set("category", e.target.value)}>
                 {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                {!categories.includes(form.category) && form.category && (
+                  <option value={form.category}>{form.category}</option>
+                )}
               </select>
             </div>
             <div>
@@ -147,6 +242,22 @@ export default function NewsPage() {
   const news = newsData?.items ?? [];
   const [modal, setModal] = useState<{ open: boolean; item: NewsItem | null }>({ open: false, item: null });
 
+  const categories = useNewsCategories();
+
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+
+  const upsertMut = useUpsertSetting({
+    mutation: {
+      onSuccess: () => toast.success("Kategoriler kaydedildi"),
+      onError: () => toast.error("Kayıt başarısız"),
+    },
+  });
+
+  function handleSaveCategories(cats: string[]) {
+    upsertMut.mutate({ settingKey: SETTINGS_KEY, data: { settingValue: JSON.stringify(cats) } });
+  }
+
   const invalidate = () => qc.invalidateQueries({ queryKey: getListNewsQueryKey() });
   const createMut = useCreateNews({ mutation: { onSuccess: () => { toast.success("Haber oluşturuldu"); invalidate(); setModal({ open: false, item: null }); }, onError: () => toast.error("Kayıt başarısız") } });
   const updateMut = useUpdateNews({ mutation: { onSuccess: () => { toast.success("Haber güncellendi"); invalidate(); setModal({ open: false, item: null }); }, onError: () => toast.error("Güncelleme başarısız") } });
@@ -174,6 +285,8 @@ export default function NewsPage() {
     if (confirm("Bu haberi silmek istediğinizden emin misiniz?")) deleteMut.mutate({ id });
   }
 
+  void settings;
+
   const saving = createMut.isPending || updateMut.isPending;
 
   return (
@@ -187,6 +300,8 @@ export default function NewsPage() {
           <Plus className="h-4 w-4" /> Yeni Haber
         </button>
       </div>
+
+      <CategoryManager categories={categories} onSave={handleSaveCategories} />
 
       {isLoading ? (
         <div className="space-y-3">{[1,2,3].map((i) => <div key={i} className="h-20 animate-pulse rounded-lg bg-slate-100" />)}</div>
@@ -266,6 +381,7 @@ export default function NewsPage() {
           onClose={() => setModal({ open: false, item: null })}
           onSave={handleSave}
           saving={saving}
+          categories={categories}
         />
       )}
     </section>
