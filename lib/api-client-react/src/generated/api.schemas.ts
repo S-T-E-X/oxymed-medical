@@ -217,6 +217,9 @@ export interface ReferenceItem {
   city?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  logoUrl?: string | null;
+  showInMarquee: boolean;
   category: string;
   createdAt: string;
   updatedAt: string;
@@ -228,6 +231,8 @@ export interface ReferenceInput {
   capacity?: string;
   city?: string;
   imageUrl?: string;
+  logoUrl?: string;
+  showInMarquee?: boolean;
   category?: string;
 }
 
@@ -240,6 +245,9 @@ export interface ReferenceUpdate {
   city?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  logoUrl?: string | null;
+  showInMarquee?: boolean;
   category?: string;
 }
 
@@ -362,36 +370,6 @@ export interface PresignedUrlResponse {
   objectPath: string;
 }
 
-export interface MarqueeItem {
-  id: number;
-  /** @nullable */
-  logoUrl?: string | null;
-  /** @nullable */
-  text?: string | null;
-  sortOrder: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface MarqueeItemInput {
-  /** @nullable */
-  logoUrl?: string | null;
-  /** @nullable */
-  text?: string | null;
-  sortOrder?: number;
-  isActive?: boolean;
-}
-
-export interface MarqueeItemUpdate {
-  /** @nullable */
-  logoUrl?: string | null;
-  /** @nullable */
-  text?: string | null;
-  sortOrder?: number;
-  isActive?: boolean;
-}
-
 export interface DashboardStats {
   products: number;
   news: number;
@@ -423,6 +401,7 @@ export type ListReferencesParams = {
 category?: string;
 page?: number;
 limit?: number;
+showInMarquee?: boolean;
 };
 
 export type ListQuotesParams = {
@@ -434,9 +413,5 @@ limit?: number;
 export type ListMediaFilesParams = {
 page?: number;
 limit?: number;
-};
-
-export type ListMarqueeItemsParams = {
-activeOnly?: boolean;
 };
 

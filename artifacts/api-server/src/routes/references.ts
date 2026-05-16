@@ -12,6 +12,8 @@ const ReferenceBody = z.object({
   capacity: z.string().optional().nullable(),
   city: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
+  logoUrl: z.string().optional().nullable(),
+  showInMarquee: z.boolean().optional(),
   category: z.string().optional(),
 });
 
@@ -24,6 +26,7 @@ router.get("/references", async (req, res): Promise<void> => {
   const limit = parseInt((req.query["limit"] as string) ?? "50", 10);
   const offset = (page - 1) * limit;
   const category = req.query["category"] as string | undefined;
+  const showInMarquee = req.query["showInMarquee"] === "true";
 
   let query = db.select().from(referencesTable).orderBy(desc(referencesTable.createdAt)).$dynamic();
   let countQuery = db.select({ count: count() }).from(referencesTable).$dynamic();
@@ -31,6 +34,11 @@ router.get("/references", async (req, res): Promise<void> => {
   if (category && category !== "TÜM PROJELER") {
     query = query.where(eq(referencesTable.category, category));
     countQuery = countQuery.where(eq(referencesTable.category, category));
+  }
+
+  if (showInMarquee) {
+    query = query.where(eq(referencesTable.showInMarquee, true));
+    countQuery = countQuery.where(eq(referencesTable.showInMarquee, true));
   }
 
   const [items, [totalRow]] = await Promise.all([

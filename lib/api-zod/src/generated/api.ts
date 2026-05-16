@@ -442,7 +442,8 @@ export const DeleteNewsParams = zod.object({
 export const ListReferencesQueryParams = zod.object({
   "category": zod.coerce.string().optional(),
   "page": zod.coerce.number().optional(),
-  "limit": zod.coerce.number().optional()
+  "limit": zod.coerce.number().optional(),
+  "showInMarquee": zod.coerce.boolean().optional()
 })
 
 export const ListReferencesResponse = zod.object({
@@ -453,6 +454,8 @@ export const ListReferencesResponse = zod.object({
   "capacity": zod.string().nullish(),
   "city": zod.string().nullish(),
   "imageUrl": zod.string().nullish(),
+  "logoUrl": zod.string().nullish(),
+  "showInMarquee": zod.boolean(),
   "category": zod.string(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
@@ -470,6 +473,8 @@ export const CreateReferenceBody = zod.object({
   "capacity": zod.string().optional(),
   "city": zod.string().optional(),
   "imageUrl": zod.string().optional(),
+  "logoUrl": zod.string().optional(),
+  "showInMarquee": zod.boolean().optional(),
   "category": zod.string().optional()
 })
 
@@ -487,6 +492,8 @@ export const UpdateReferenceBody = zod.object({
   "capacity": zod.string().nullish(),
   "city": zod.string().nullish(),
   "imageUrl": zod.string().nullish(),
+  "logoUrl": zod.string().nullish(),
+  "showInMarquee": zod.boolean().optional(),
   "category": zod.string().optional()
 })
 
@@ -497,6 +504,8 @@ export const UpdateReferenceResponse = zod.object({
   "capacity": zod.string().nullish(),
   "city": zod.string().nullish(),
   "imageUrl": zod.string().nullish(),
+  "logoUrl": zod.string().nullish(),
+  "showInMarquee": zod.boolean(),
   "category": zod.string(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
@@ -746,87 +755,6 @@ export const RequestMediaUploadUrlResponse = zod.object({
  * @summary Delete a media file
  */
 export const DeleteMediaFileParams = zod.object({
-  "id": zod.coerce.number()
-})
-
-
-/**
- * @summary List marquee items
- */
-export const ListMarqueeItemsQueryParams = zod.object({
-  "activeOnly": zod.coerce.boolean().optional()
-})
-
-export const ListMarqueeItemsResponseItem = zod.object({
-  "id": zod.number(),
-  "logoUrl": zod.string().nullish(),
-  "text": zod.string().nullish(),
-  "sortOrder": zod.number(),
-  "isActive": zod.boolean(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-})
-export const ListMarqueeItemsResponse = zod.array(ListMarqueeItemsResponseItem)
-
-
-/**
- * @summary Create marquee item
- */
-export const CreateMarqueeItemBody = zod.object({
-  "logoUrl": zod.string().nullish(),
-  "text": zod.string().nullish(),
-  "sortOrder": zod.number().optional(),
-  "isActive": zod.boolean().optional()
-})
-
-
-/**
- * @summary Get marquee item by id
- */
-export const GetMarqueeItemParams = zod.object({
-  "id": zod.coerce.number()
-})
-
-export const GetMarqueeItemResponse = zod.object({
-  "id": zod.number(),
-  "logoUrl": zod.string().nullish(),
-  "text": zod.string().nullish(),
-  "sortOrder": zod.number(),
-  "isActive": zod.boolean(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-})
-
-
-/**
- * @summary Update marquee item
- */
-export const UpdateMarqueeItemParams = zod.object({
-  "id": zod.coerce.number()
-})
-
-export const UpdateMarqueeItemBody = zod.object({
-  "logoUrl": zod.string().nullish(),
-  "text": zod.string().nullish(),
-  "sortOrder": zod.number().optional(),
-  "isActive": zod.boolean().optional()
-})
-
-export const UpdateMarqueeItemResponse = zod.object({
-  "id": zod.number(),
-  "logoUrl": zod.string().nullish(),
-  "text": zod.string().nullish(),
-  "sortOrder": zod.number(),
-  "isActive": zod.boolean(),
-  "createdAt": zod.string(),
-  "updatedAt": zod.string()
-})
-
-
-/**
- * @summary Delete marquee item
- */
-export const DeleteMarqueeItemParams = zod.object({
   "id": zod.coerce.number()
 })
 

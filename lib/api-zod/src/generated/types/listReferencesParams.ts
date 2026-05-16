@@ -10,4 +10,5 @@ export type ListReferencesParams = {
 category?: string;
 page?: number;
 limit?: number;
+showInMarquee?: boolean;
 };

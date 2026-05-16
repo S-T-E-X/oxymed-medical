@@ -12,7 +12,6 @@ import AdminCorporatePage from "./admin/CorporatePage";
 import SettingsPage from "./admin/SettingsPage";
 import QuotesPage from "./admin/QuotesPage";
 import MediaPage from "./admin/MediaPage";
-import MarqueePage from "./admin/MarqueePage";
 import CorporatePage from "./pages/CorporatePage";
 import HomePage from "./pages/HomePage";
 import NewsPage from "./pages/NewsPage";
@@ -52,7 +51,6 @@ export default function App() {
             <Route path="ayarlar" element={<SettingsPage />} />
             <Route path="teklifler" element={<QuotesPage />} />
             <Route path="medya" element={<MediaPage />} />
-            <Route path="marquee" element={<MarqueePage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -9,6 +9,8 @@ export const referencesTable = pgTable("references", {
   capacity: text("capacity"),
   city: text("city"),
   imageUrl: text("image_url"),
+  logoUrl: text("logo_url"),
+  showInMarquee: boolean("show_in_marquee").notNull().default(false),
   category: text("category").notNull().default("ŞEHİR HASTANELERİ"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),

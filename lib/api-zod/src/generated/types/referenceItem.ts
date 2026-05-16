@@ -16,6 +16,9 @@ export interface ReferenceItem {
   city?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  logoUrl?: string | null;
+  showInMarquee: boolean;
   category: string;
   createdAt: string;
   updatedAt: string;

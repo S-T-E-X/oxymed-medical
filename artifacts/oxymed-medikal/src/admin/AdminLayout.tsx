@@ -12,7 +12,6 @@ import {
   Newspaper,
   Package,
   Settings,
-  Star,
   UserRound,
   Wrench,
   X,
@@ -29,7 +28,6 @@ const navItems = [
   { label: "Kurumsal", icon: Building2, to: "/admin/kurumsal" },
   { label: "Medya", icon: Package, to: "/admin/medya" },
   { label: "Teklifler", icon: UserRound, to: "/admin/teklifler" },
-  { label: "Marquee Yönetimi", icon: Star, to: "/admin/marquee" },
   { label: "Site Ayarları", icon: Settings, to: "/admin/ayarlar" },
 ];
 

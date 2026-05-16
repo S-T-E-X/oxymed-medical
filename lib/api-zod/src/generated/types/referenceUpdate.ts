@@ -15,5 +15,8 @@ export interface ReferenceUpdate {
   city?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  logoUrl?: string | null;
+  showInMarquee?: boolean;
   category?: string;
 }

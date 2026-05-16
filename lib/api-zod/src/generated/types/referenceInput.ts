@@ -12,5 +12,7 @@ export interface ReferenceInput {
   capacity?: string;
   city?: string;
   imageUrl?: string;
+  logoUrl?: string;
+  showInMarquee?: boolean;
   category?: string;
 }
