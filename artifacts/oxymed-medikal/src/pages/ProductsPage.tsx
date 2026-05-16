@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  AlertCircle,
   ArrowDownToLine,
   ArrowRight,
   Boxes,
@@ -27,6 +28,15 @@ const featureIconMap = {
   durability: ShieldCheck,
   support: Headphones
 };
+
+function ErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+      <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
+      {message}
+    </div>
+  );
+}
 
 export default function ProductsPage() {
   return (
@@ -65,8 +75,8 @@ function ProductsHero() {
 
 function ProductsContent() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
-  const { data: categories = [], isLoading: catsLoading } = useListProductCategories();
-  const { data: productsData, isLoading: prodsLoading } = useListProducts({
+  const { data: categories = [], isLoading: catsLoading, isError: catsError } = useListProductCategories();
+  const { data: productsData, isLoading: prodsLoading, isError: prodsError } = useListProducts({
     categoryId: selectedCategoryId,
     published: true,
     limit: 50,
@@ -84,6 +94,7 @@ function ProductsContent() {
           <ProductsSidebar
             categories={categories}
             isLoading={catsLoading}
+            isError={catsError}
             selectedCategoryId={selectedCategoryId}
             onSelect={setSelectedCategoryId}
           />
@@ -107,7 +118,11 @@ function ProductsContent() {
               )}
             </div>
 
-            {prodsLoading ? (
+            {prodsError ? (
+              <div className="mt-6">
+                <ErrorMessage message="Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
+              </div>
+            ) : prodsLoading ? (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {[1, 2, 3, 4].map((i) => <div key={i} className="h-64 animate-pulse rounded-lg bg-steel-200" />)}
               </div>
@@ -187,11 +202,12 @@ function ProductFeatureStrip() {
 type SidebarProps = {
   categories: { id: number; name: string; slug: string }[];
   isLoading: boolean;
+  isError: boolean;
   selectedCategoryId: number | undefined;
   onSelect: (id: number | undefined) => void;
 };
 
-function ProductsSidebar({ categories, isLoading, selectedCategoryId, onSelect }: SidebarProps) {
+function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, onSelect }: SidebarProps) {
   return (
     <aside className="space-y-5">
       <nav className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.05)]">
@@ -204,24 +220,28 @@ function ProductsSidebar({ categories, isLoading, selectedCategoryId, onSelect }
           <Factory className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
           Tüm Ürünler
         </button>
-        {isLoading
-          ? [1, 2, 3].map((i) => <div key={i} className="h-14 animate-pulse bg-steel-50" />)
-          : categories.map((category, index) => {
-              const Icon = categoryIcons[index % categoryIcons.length];
-              const active = selectedCategoryId === category.id;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => onSelect(active ? undefined : category.id)}
-                  className={`flex h-14 w-full items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition last:border-b-0 ${
-                    active ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
-                  }`}
-                >
-                  <Icon className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
-                  {category.name}
-                </button>
-              );
-            })}
+        {isError ? (
+          <div className="px-5 py-3 text-[12px] text-red-600">Kategoriler yüklenemedi.</div>
+        ) : isLoading ? (
+          [1, 2, 3].map((i) => <div key={i} className="h-14 animate-pulse bg-steel-50" />)
+        ) : (
+          categories.map((category, index) => {
+            const Icon = categoryIcons[index % categoryIcons.length];
+            const active = selectedCategoryId === category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() => onSelect(active ? undefined : category.id)}
+                className={`flex h-14 w-full items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition last:border-b-0 ${
+                  active ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
+                }`}
+              >
+                <Icon className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
+                {category.name}
+              </button>
+            );
+          })
+        )}
       </nav>
 
       <a

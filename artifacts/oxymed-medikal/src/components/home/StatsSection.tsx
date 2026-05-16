@@ -1,7 +1,8 @@
+import { AlertCircle } from "lucide-react";
 import { useListSettings } from "@workspace/api-client-react";
 
 export default function StatsSection() {
-  const { data: settings } = useListSettings();
+  const { data: settings, isError } = useListSettings();
   const s = settings as Record<string, string> | undefined;
 
   const statsData = [
@@ -13,6 +14,12 @@ export default function StatsSection() {
 
   return (
     <section id="kurumsal" className="bg-oxynavy-950 text-white">
+      {isError && (
+        <div className="flex items-center justify-center gap-2 bg-red-900/40 px-4 py-2 text-xs text-red-200">
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+          İstatistikler yüklenemedi, varsayılan değerler gösteriliyor.
+        </div>
+      )}
       <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[0.95fr_0.8fr_1.45fr]">
         <div className="relative min-h-[260px] overflow-hidden lg:min-h-[310px]">
           <img

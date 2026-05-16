@@ -1,4 +1,4 @@
-import { ArrowRight, Building2, Eye, Gem, Globe2, MapPinned, ShieldCheck, Target, UsersRound } from "lucide-react";
+import { AlertCircle, ArrowRight, Building2, Eye, Gem, Globe2, MapPinned, ShieldCheck, Target, UsersRound } from "lucide-react";
 import { useListCorporateSections, useListSettings } from "@workspace/api-client-react";
 import ImageSlot from "../components/common/ImageSlot";
 import Footer from "../components/layout/Footer";
@@ -14,6 +14,15 @@ const valueIconMap = {
 
 const defaultValueIcons = [Target, Eye, Gem, ShieldCheck];
 const statIconMap = [Building2, MapPinned, MapPinned, UsersRound, Globe2];
+
+function ErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+      <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
+      {message}
+    </div>
+  );
+}
 
 export default function CorporatePage() {
   return (
@@ -62,12 +71,22 @@ function CorporateHero() {
 }
 
 function CorporateIntro() {
-  const { data: sections = [], isLoading } = useListCorporateSections();
+  const { data: sections = [], isLoading, isError } = useListCorporateSections();
 
   const about = sections.find((s) => s.sectionKey === "about");
   const valueSections = sections.filter((s) =>
     ["vision", "mission", "values", "quality"].includes(s.sectionKey)
   );
+
+  if (isError) {
+    return (
+      <section className="bg-white py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ErrorMessage message="Kurumsal içerik yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
+        </div>
+      </section>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -160,7 +179,7 @@ function CorporateIntro() {
 }
 
 function CorporateStats() {
-  const { data: rawSettings } = useListSettings();
+  const { data: rawSettings, isError } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
 
   const corporateStats = [
@@ -173,6 +192,12 @@ function CorporateStats() {
 
   return (
     <section className="bg-oxynavy-900 text-white">
+      {isError && (
+        <div className="flex items-center justify-center gap-2 bg-red-900/40 px-4 py-2 text-xs text-red-200">
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+          İstatistikler yüklenemedi, varsayılan değerler gösteriliyor.
+        </div>
+      )}
       <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-white/12 px-4 sm:grid-cols-2 sm:divide-x sm:divide-y-0 sm:px-6 lg:grid-cols-5 lg:px-8">
         {corporateStats.map((stat, index) => {
           const Icon = statIconMap[index];

@@ -3,7 +3,7 @@ import { ArrowDownToLine, ArrowLeft, ArrowRight } from "lucide-react";
 import { useListSliders } from "@workspace/api-client-react";
 
 export default function Hero() {
-  const { data: allSliders = [] } = useListSliders();
+  const { data: allSliders = [], isError } = useListSliders();
   const sliders = allSliders
     .filter((s) => s.isActive)
     .sort((a, b) => a.sortOrder - b.sortOrder);
@@ -17,6 +17,7 @@ export default function Hero() {
   }, [sliders.length]);
 
   const hero = sliders[current];
+  const showFallback = isError || !hero;
 
   return (
     <section className="relative isolate min-h-[620px] overflow-hidden bg-oxynavy-950 sm:min-h-[600px] lg:min-h-[570px]">
@@ -39,7 +40,7 @@ export default function Hero() {
 
       <div className="relative mx-auto flex min-h-[620px] max-w-7xl items-center px-4 py-16 sm:min-h-[600px] sm:px-6 lg:min-h-[570px] lg:px-8">
         <div className="max-w-[590px] pt-6 text-white">
-          {hero ? (
+          {!showFallback ? (
             <>
               {hero.subtitle && (
                 <p className="text-sm font-bold uppercase tracking-widest text-white/78">{hero.subtitle}</p>
