@@ -64,9 +64,11 @@ router.get("/quotes/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(quote);
 });
 
+const QUOTE_STATUSES = ["new", "in_progress", "closed"] as const;
+
 router.patch("/quotes/:id", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
-  const parsed = z.object({ status: z.string().min(1) }).safeParse(req.body);
+  const parsed = z.object({ status: z.enum(QUOTE_STATUSES) }).safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
