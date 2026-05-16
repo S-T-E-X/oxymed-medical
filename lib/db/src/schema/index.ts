@@ -8,3 +8,4 @@ export * from "./quoteRequests";
 export * from "./corporateSections";
 export * from "./siteSettings";
 export * from "./mediaFiles";
+export * from "./marqueeItems";

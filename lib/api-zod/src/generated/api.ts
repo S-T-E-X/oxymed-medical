@@ -751,6 +751,87 @@ export const DeleteMediaFileParams = zod.object({
 
 
 /**
+ * @summary List marquee items
+ */
+export const ListMarqueeItemsQueryParams = zod.object({
+  "activeOnly": zod.coerce.boolean().optional()
+})
+
+export const ListMarqueeItemsResponseItem = zod.object({
+  "id": zod.number(),
+  "logoUrl": zod.string().nullish(),
+  "text": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListMarqueeItemsResponse = zod.array(ListMarqueeItemsResponseItem)
+
+
+/**
+ * @summary Create marquee item
+ */
+export const CreateMarqueeItemBody = zod.object({
+  "logoUrl": zod.string().nullish(),
+  "text": zod.string().nullish(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Get marquee item by id
+ */
+export const GetMarqueeItemParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetMarqueeItemResponse = zod.object({
+  "id": zod.number(),
+  "logoUrl": zod.string().nullish(),
+  "text": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Update marquee item
+ */
+export const UpdateMarqueeItemParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateMarqueeItemBody = zod.object({
+  "logoUrl": zod.string().nullish(),
+  "text": zod.string().nullish(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateMarqueeItemResponse = zod.object({
+  "id": zod.number(),
+  "logoUrl": zod.string().nullish(),
+  "text": zod.string().nullish(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Delete marquee item
+ */
+export const DeleteMarqueeItemParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
  * @summary Get dashboard statistics (admin only)
  */
 export const GetDashboardStatsResponse = zod.object({

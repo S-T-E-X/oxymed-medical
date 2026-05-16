@@ -28,6 +28,8 @@ tags:
     description: Site settings
   - name: media
     description: Media library and file uploads
+  - name: marquee
+    description: Marquee logo/text items for homepage scroll strip
 
 paths:
   /healthz:
@@ -879,6 +881,117 @@ paths:
         "204":
           description: Deleted
 
+  # MARQUEE
+  /marquee:
+    get:
+      operationId: listMarqueeItems
+      tags: [marquee]
+      summary: List marquee items
+      parameters:
+        - name: activeOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of marquee items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarqueeItem"
+    post:
+      operationId: createMarqueeItem
+      tags: [marquee]
+      summary: Create marquee item
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarqueeItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarqueeItem"
+
+  /marquee/{id}:
+    get:
+      operationId: getMarqueeItem
+      tags: [marquee]
+      summary: Get marquee item by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: MarqueeItem
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarqueeItem"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateMarqueeItem
+      tags: [marquee]
+      summary: Update marquee item
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarqueeItemUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarqueeItem"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteMarqueeItem
+      tags: [marquee]
+      summary: Delete marquee item
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
   # DASHBOARD STATS
   /dashboard/stats:
     get:
@@ -1506,6 +1619,50 @@ components:
           type: string
         objectPath:
           type: string
+
+    # MARQUEE
+    MarqueeItem:
+      type: object
+      required: [id, sortOrder, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        logoUrl:
+          type: ["string", "null"]
+        text:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    MarqueeItemInput:
+      type: object
+      properties:
+        logoUrl:
+          type: ["string", "null"]
+        text:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    MarqueeItemUpdate:
+      type: object
+      properties:
+        logoUrl:
+          type: ["string", "null"]
+        text:
+          type: ["string", "null"]
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
 
     # DASHBOARD
     DashboardStats:

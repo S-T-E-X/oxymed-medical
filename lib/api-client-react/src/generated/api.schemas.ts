@@ -362,6 +362,36 @@ export interface PresignedUrlResponse {
   objectPath: string;
 }
 
+export interface MarqueeItem {
+  id: number;
+  /** @nullable */
+  logoUrl?: string | null;
+  /** @nullable */
+  text?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MarqueeItemInput {
+  /** @nullable */
+  logoUrl?: string | null;
+  /** @nullable */
+  text?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface MarqueeItemUpdate {
+  /** @nullable */
+  logoUrl?: string | null;
+  /** @nullable */
+  text?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
 export interface DashboardStats {
   products: number;
   news: number;
@@ -404,5 +434,9 @@ limit?: number;
 export type ListMediaFilesParams = {
 page?: number;
 limit?: number;
+};
+
+export type ListMarqueeItemsParams = {
+activeOnly?: boolean;
 };
 

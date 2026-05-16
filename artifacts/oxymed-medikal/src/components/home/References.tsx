@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useListReferences } from "@workspace/api-client-react";
+import { useListMarqueeItems } from "@workspace/api-client-react";
 
 export default function References() {
-  const { data: refsData, isLoading, isError } = useListReferences({ limit: 48 });
-  const refs = refsData?.items ?? [];
+  const { data: items, isLoading, isError } = useListMarqueeItems({ activeOnly: true });
+  const activeItems = items ?? [];
 
   return (
     <section id="referanslar" className="bg-white py-12 sm:py-14">
@@ -24,22 +24,26 @@ export default function References() {
             <div key={i} className="h-[72px] w-[190px] shrink-0 animate-pulse rounded border border-steel-100 bg-steel-100" />
           ))}
         </div>
-      ) : refs.length > 0 ? (
-        <Marquee refs={refs} />
+      ) : activeItems.length > 0 ? (
+        <Marquee items={activeItems} />
       ) : null}
     </section>
   );
 }
 
-type Ref = { id: number; title: string; city?: string | null };
+type MarqueeItemData = {
+  id: number;
+  logoUrl?: string | null;
+  text?: string | null;
+};
 
 const CARD_W = 200;
-const CARD_MX = 12; // total horizontal margin (6px each side)
+const CARD_MX = 12;
 const CARD_STEP = CARD_W + CARD_MX;
 const TARGET_DURATION_S = 60;
-const EASE = 0.055; // interpolation factor — lower = smoother slow-down
+const EASE = 0.055;
 
-function Marquee({ refs }: { refs: Ref[] }) {
+function Marquee({ items }: { items: MarqueeItemData[] }) {
   const navigate = useNavigate();
   const trackRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef({ pos: 0, speed: 0, targetSpeed: 0, halfW: 0 });
@@ -68,7 +72,7 @@ function Marquee({ refs }: { refs: Ref[] }) {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [refs.length]);
+  }, [items.length]);
 
   function onEnter() {
     stateRef.current.targetSpeed = 0;
@@ -86,7 +90,7 @@ function Marquee({ refs }: { refs: Ref[] }) {
     navigate("/referanslar");
   }
 
-  const doubled = [...refs, ...refs];
+  const doubled = [...items, ...items];
 
   return (
     <div
@@ -103,21 +107,25 @@ function Marquee({ refs }: { refs: Ref[] }) {
         className="flex w-max"
         style={{ willChange: "transform" }}
       >
-        {doubled.map((ref, i) => (
+        {doubled.map((item, i) => (
           <Link
-            key={`${ref.id}-${i}`}
+            key={`${item.id}-${i}`}
             to="/referanslar"
             onClick={handleCardClick}
-            className="mx-1.5 flex shrink-0 flex-col items-center justify-center rounded border border-steel-100 bg-white px-4 py-3 shadow-[0_4px_14px_rgba(2,20,35,0.045)] transition hover:border-oxynavy-200 hover:shadow-[0_6px_18px_rgba(2,20,35,0.08)]"
+            className="mx-1.5 flex shrink-0 items-center justify-center rounded border border-steel-100 bg-white px-4 shadow-[0_4px_14px_rgba(2,20,35,0.045)] transition hover:border-oxynavy-200 hover:shadow-[0_6px_18px_rgba(2,20,35,0.08)]"
             style={{ width: CARD_W, height: 72 }}
-            aria-label={ref.title}
+            aria-label={item.text ?? "Referans"}
           >
-            <p className="text-center text-[13px] font-extrabold leading-tight text-oxynavy-800">
-              {ref.title}
-            </p>
-            {ref.city && (
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-steel-500">
-                {ref.city}
+            {item.logoUrl ? (
+              <img
+                src={item.logoUrl}
+                alt={item.text ?? "Referans logosu"}
+                className="max-h-[48px] max-w-[160px] object-contain"
+                draggable={false}
+              />
+            ) : (
+              <p className="text-center text-[13px] font-extrabold leading-tight text-oxynavy-800">
+                {item.text}
               </p>
             )}
           </Link>
@@ -126,3 +134,6 @@ function Marquee({ refs }: { refs: Ref[] }) {
     </div>
   );
 }
+
+// Suppress unused import warning — CARD_STEP used for layout reference
+void CARD_STEP;
