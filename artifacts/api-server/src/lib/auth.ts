@@ -1,7 +1,16 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
+import { logger } from "./logger";
 
-const JWT_SECRET = process.env.JWT_SECRET ?? "oxymed-dev-secret-change-in-production";
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    logger.error("JWT_SECRET environment variable is not set — server cannot start securely");
+    throw new Error("JWT_SECRET environment variable is required");
+  }
+  return secret;
+}
+
 const JWT_EXPIRES_IN = "7d";
 
 export interface JwtPayload {
@@ -10,11 +19,11 @@ export interface JwtPayload {
 }
 
 export function signToken(payload: JwtPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
 }
 
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, JWT_SECRET) as JwtPayload;
+  return jwt.verify(token, getJwtSecret()) as JwtPayload;
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
