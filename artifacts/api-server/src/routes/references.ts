@@ -40,6 +40,16 @@ router.get("/references", async (req, res): Promise<void> => {
   res.json({ items, total: totalRow?.count ?? 0 });
 });
 
+router.get("/references/:id", async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+  const [ref] = await db.select().from(referencesTable).where(eq(referencesTable.id, id));
+  if (!ref) {
+    res.status(404).json({ error: "Reference not found" });
+    return;
+  }
+  res.json(ref);
+});
+
 router.post("/references", requireAuth, async (req, res): Promise<void> => {
   const parsed = ReferenceBody.safeParse(req.body);
   if (!parsed.success) {

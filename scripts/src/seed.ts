@@ -22,7 +22,7 @@ async function seed() {
     .onConflictDoNothing();
   console.log("✅ Admin user seeded (admin@oxymed.com.tr / oxymed2024!)");
 
-  // Sliders
+  // 3 Sliders
   await db
     .insert(slidersTable)
     .values([
@@ -57,9 +57,9 @@ async function seed() {
       },
     ])
     .onConflictDoNothing();
-  console.log("✅ Sliders seeded");
+  console.log("✅ 3 sliders seeded");
 
-  // Product categories
+  // 4 Product categories
   const [cat1, cat2, cat3, cat4] = await db
     .insert(productCategoriesTable)
     .values([
@@ -67,18 +67,17 @@ async function seed() {
       { name: "Pendant Sistemleri", slug: "pendant-sistemleri", sortOrder: 2 },
       { name: "Medikal Gaz Sistemleri", slug: "medikal-gaz-sistemleri", sortOrder: 3 },
       { name: "Elektrik & Data Sistemleri", slug: "elektrik-data-sistemleri", sortOrder: 4 },
-      { name: "Alarm & İzleme Sistemleri", slug: "alarm-izleme-sistemleri", sortOrder: 5 },
     ])
     .onConflictDoNothing()
     .returning();
-  console.log("✅ Product categories seeded");
+  console.log("✅ 4 product categories seeded");
 
   const catId1 = cat1?.id;
   const catId2 = cat2?.id;
   const catId3 = cat3?.id;
   const catId4 = cat4?.id;
 
-  // Products
+  // 4 Products
   await db
     .insert(productsTable)
     .values([
@@ -96,19 +95,6 @@ async function seed() {
         published: true,
       },
       {
-        categoryId: catId1,
-        title: "Delüks Yatak Başı Ünitesi",
-        description: "Geniş konfigürasyon seçenekleri ve estetik tasarımıyla premium hasta odaları için.",
-        imageUrl: "/assets/images/product-pendant-system.png",
-        specs: [
-          { label: "Gaz Prizi", value: "4 - 8 Adet" },
-          { label: "Elektrik Prizi", value: "6 - 12 Adet" },
-          { label: "Uzunluk", value: "1500 - 3000 mm" },
-        ],
-        sortOrder: 2,
-        published: true,
-      },
-      {
         categoryId: catId2,
         title: "Pendant Sistemi",
         description: "Ameliyathane ve yoğun bakım için esnek, döner kollu medikal pendant çözümleri.",
@@ -118,7 +104,7 @@ async function seed() {
           { label: "Kol Uzunluğu", value: "700 - 1500 mm" },
           { label: "Dönüş Açısı", value: "340°" },
         ],
-        sortOrder: 3,
+        sortOrder: 2,
         published: true,
       },
       {
@@ -131,7 +117,7 @@ async function seed() {
           { label: "Ekran", value: "LCD / LED" },
           { label: "Çıkış", value: "Röle + RS485" },
         ],
-        sortOrder: 4,
+        sortOrder: 3,
         published: true,
       },
       {
@@ -144,14 +130,14 @@ async function seed() {
           { label: "Data Prizi", value: "RJ45 / HDMI" },
           { label: "Montaj", value: "Duvar / Kolona" },
         ],
-        sortOrder: 5,
+        sortOrder: 4,
         published: true,
       },
     ])
     .onConflictDoNothing();
-  console.log("✅ Products seeded");
+  console.log("✅ 4 products seeded");
 
-  // News
+  // 4 News posts
   await db
     .insert(newsTable)
     .values([
@@ -174,15 +160,6 @@ async function seed() {
         publishedAt: new Date("2024-05-20"),
       },
       {
-        title: "TS EN ISO 7396-1 Standardı Nedir?",
-        excerpt: "Medikal gaz boru hattı sistemleri için uluslararası standardın gereklilikleri ve önemi.",
-        category: "TEKNİK BİLGİLER",
-        imageUrl: "/assets/images/product-bed-head-unit.png",
-        slug: "ts-en-iso-7396-1-standardi-nedir",
-        published: true,
-        publishedAt: new Date("2024-05-15"),
-      },
-      {
         title: "İstanbul Başakşehir Çam ve Sakura Şehir Hastanesi Projesi Tamamlandı",
         excerpt: "Yatak başı üniteleri, pendant sistemleri ve medikal gaz altyapısı başarıyla teslim edildi.",
         category: "PROJELER",
@@ -190,24 +167,6 @@ async function seed() {
         slug: "istanbul-basaksehir-cam-sakura-sehir-hastanesi",
         published: true,
         publishedAt: new Date("2024-05-02"),
-      },
-      {
-        title: "Ankara Bilkent Şehir Hastanesi Yoğun Bakım Ünitesi Teslimatı",
-        excerpt: "Yoğun bakım üniteleri için özel tasarlanan medikal gaz çözümleri başarıyla devreye alındı.",
-        category: "PROJELER",
-        imageUrl: "/assets/images/stats-facility.png",
-        slug: "ankara-bilkent-sehir-hastanesi-yogun-bakim",
-        published: true,
-        publishedAt: new Date("2024-04-25"),
-      },
-      {
-        title: "CNC Üretim Hatlarımızda Kalite ve Hassasiyet",
-        excerpt: "Yüksek hassasiyetli CNC makinelerimiz ile medikal parçaların üretim süreçleri.",
-        category: "ÜRETİM",
-        imageUrl: "/assets/images/corporate-quality-macro.png",
-        slug: "cnc-uretim-hatlarinda-kalite-hassasiyet",
-        published: true,
-        publishedAt: new Date("2024-04-18"),
       },
       {
         title: "Expomed Eurasia 2024 Fuarı'nda Yerimizi Aldık",
@@ -220,9 +179,9 @@ async function seed() {
       },
     ])
     .onConflictDoNothing();
-  console.log("✅ News seeded");
+  console.log("✅ 4 news posts seeded");
 
-  // References
+  // 6 References
   await db
     .insert(referencesTable)
     .values([
@@ -230,13 +189,11 @@ async function seed() {
       { title: "Ankara Bilkent Şehir Hastanesi", projectType: "Şehir Hastanesi", capacity: "3.704 Yatak", city: "Ankara", imageUrl: "/assets/images/stats-facility.png", category: "ŞEHİR HASTANELERİ" },
       { title: "İzmir Şehir Hastanesi", projectType: "Şehir Hastanesi", capacity: "1.035 Yatak", city: "İzmir", imageUrl: "/assets/images/corporate-production-floor.png", category: "ŞEHİR HASTANELERİ" },
       { title: "Bursa Şehir Hastanesi", projectType: "Şehir Hastanesi", capacity: "1.011 Yatak", city: "Bursa", imageUrl: "/assets/images/corporate-warehouse.png", category: "ŞEHİR HASTANELERİ" },
-      { title: "Konya Şehir Hastanesi", projectType: "Şehir Hastanesi", capacity: "1.045 Yatak", city: "Konya", imageUrl: "/assets/images/corporate-quality-macro.png", category: "ŞEHİR HASTANELERİ" },
       { title: "Acıbadem Maslak Hastanesi", projectType: "Özel Hastane", capacity: "234 Yatak", city: "İstanbul", imageUrl: "/assets/images/corporate-bedhead-line.png", category: "ÖZEL HASTANELER" },
-      { title: "Medicana Çamlıca Hastanesi", projectType: "Özel Hastane", capacity: "180 Yatak", city: "İstanbul", imageUrl: "/assets/images/product-bed-head-unit.png", category: "ÖZEL HASTANELER" },
       { title: "Hacettepe Üniversitesi Hastanesi", projectType: "Üniversite Hastanesi", capacity: "1.200 Yatak", city: "Ankara", imageUrl: "/assets/images/product-pendant-system.png", category: "ÜNİVERSİTE HASTANELERİ" },
     ])
     .onConflictDoNothing();
-  console.log("✅ References seeded");
+  console.log("✅ 6 references seeded");
 
   // Site settings
   await db
@@ -264,14 +221,14 @@ async function seed() {
         sectionKey: "about",
         title: "Hakkımızda",
         subtitle: "2009'dan Bu Yana",
-        content: "Oxymed Medikal, 2009 yılında İzmir'de kurulmuş, medikal gaz sistemleri, yatak başı üniteleri ve pendant sistemleri alanında Türkiye'nin önde gelen yerli üreticilerinden biridir. ISO 9001 ve ISO 13485 kalite yönetim sistemleri ile CE sertifikalarına sahip üretimimizle, yurt içinde 170'ten fazla projede ve 50'den fazla ülkede çözümlerimizi hayata geçirdik.",
+        content: "Oxymed Medikal, 2009 yılında İzmir'de kurulmuş, medikal gaz sistemleri, yatak başı üniteleri ve pendant sistemleri alanında Türkiye'nin önde gelen yerli üreticilerinden biridir.",
         imageUrl: "/assets/images/corporate-production-floor.png",
       },
       {
         sectionKey: "vision",
         title: "Vizyonumuz",
         subtitle: "Geleceğe Bakışımız",
-        content: "Medikal ekipman sektöründe küresel ölçekte tanınan, inovasyonu ve kaliteyi merkeze alan, sürdürülebilir üretim anlayışıyla sağlık sektörüne değer katan öncü bir Türk markası olmak.",
+        content: "Medikal ekipman sektöründe küresel ölçekte tanınan, inovasyonu ve kaliteyi merkeze alan öncü bir Türk markası olmak.",
       },
       {
         sectionKey: "mission",
