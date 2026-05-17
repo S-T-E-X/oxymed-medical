@@ -20,6 +20,8 @@ import NewsDetailPage from "./pages/NewsDetailPage";
 import ProductsPage from "./pages/ProductsPage";
 import QuotePage from "./pages/QuotePage";
 import ReferencesPage from "./pages/ReferencesPage";
+import ServicePage from "./pages/ServicePage";
+import ServiceReportPage from "./pages/ServiceReportPage";
 
 export default function App() {
   return (
@@ -34,6 +36,8 @@ export default function App() {
           <Route path="/haberler" element={<NewsPage />} />
           <Route path="/haberler/:slug" element={<NewsDetailPage />} />
           <Route path="/teklif-al" element={<QuotePage />} />
+          <Route path="/servis" element={<ServicePage />} />
+          <Route path="/servis-raporu" element={<ServiceReportPage />} />
 
           <Route path="/admin/login" element={<LoginPage />} />
           <Route

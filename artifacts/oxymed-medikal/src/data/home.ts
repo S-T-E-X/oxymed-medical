@@ -19,6 +19,7 @@ export const navItems = [
   { label: "ÜRÜNLER", href: "/urunler", hasChildren: true },
   { label: "REFERANSLAR", href: "/referanslar" },
   { label: "HABERLER", href: "/haberler" },
+  { label: "SERVİS", href: "/servis" },
   { label: "İLETİŞİM", href: "/#iletisim" }
 ];
 
