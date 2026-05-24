@@ -123,22 +123,46 @@ export default function QuotePrintPage() {
     if (!printRef.current || !form) return;
     setDownloading(true);
     try {
-      const mod = await import("html2pdf.js");
-      const html2pdf = (mod.default ?? mod) as (...args: unknown[]) => {
-        set: (opts: Record<string, unknown>) => { from: (el: HTMLElement) => { save: () => Promise<void> } };
-      };
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import("jspdf"),
+        import("html2canvas"),
+      ]);
+
+      const pages = Array.from(
+        printRef.current.querySelectorAll<HTMLElement>(".qt-page")
+      );
+      if (pages.length === 0) throw new Error("Render edilecek sayfa yok");
+
+      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      const A4_W = 210;
+      const A4_H = 297;
+
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        const originalShadow = page.style.boxShadow;
+        const originalMargin = page.style.margin;
+        page.style.boxShadow = "none";
+        page.style.margin = "0";
+
+        const canvas = await html2canvas(page, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          windowWidth: page.scrollWidth,
+          windowHeight: page.scrollHeight,
+        });
+
+        page.style.boxShadow = originalShadow;
+        page.style.margin = originalMargin;
+
+        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+        if (i > 0) pdf.addPage("a4", "portrait");
+        pdf.addImage(imgData, "JPEG", 0, 0, A4_W, A4_H, undefined, "FAST");
+      }
+
       const filename = `${form.quoteNo || "teklif-formu"}.pdf`;
-      await html2pdf()
-        .set({
-          margin: 0,
-          filename,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["css", "legacy"] },
-        })
-        .from(printRef.current)
-        .save();
+      pdf.save(filename);
     } catch (err) {
       console.error("PDF generation failed", err);
       setError("PDF oluşturulurken bir hata oluştu.");
