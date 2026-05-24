@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
@@ -32,6 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   setAuthTokenGetter(() => localStorage.getItem(TOKEN_KEY));
 
+  const navigateRef = useRef(navigate);
+  useEffect(() => { navigateRef.current = navigate; }, [navigate]);
+
   const login = useCallback((newToken: string, newUser: AdminUser) => {
     localStorage.setItem(TOKEN_KEY, newToken);
     localStorage.setItem("admin_user", JSON.stringify(newUser));
@@ -46,6 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const logoutRef = useRef(logout);
+  useEffect(() => { logoutRef.current = logout; }, [logout]);
+
   const authFetch = useCallback(async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
     const currentToken = localStorage.getItem(TOKEN_KEY);
     const headers = new Headers(init?.headers);
@@ -54,12 +60,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const res = await fetch(input, { ...init, headers });
     if (res.status === 401) {
-      logout();
+      logoutRef.current();
       toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
-      navigate("/admin/login", { replace: true });
+      navigateRef.current("/admin/login", { replace: true });
     }
     return res;
-  }, [logout, navigate]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated: !!token, authFetch }}>

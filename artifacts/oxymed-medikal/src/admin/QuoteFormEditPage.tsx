@@ -412,7 +412,10 @@ export default function QuoteFormEditPage() {
     if (!id) return;
     setLoading(true);
     authFetch(`/api/quote-forms/${id}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        return r.json();
+      })
       .then((data) => {
         setQuoteNo(data.quoteNo ?? "");
         setItems((data.items ?? []).map(apiItemToDraft));
@@ -448,9 +451,14 @@ export default function QuoteFormEditPage() {
           onayTarihi: data.onayTarihi ?? "",
         }));
       })
-      .catch(() => toast.error("Yüklenemedi"))
+      .catch((err: Error) => {
+        if (err.message !== "401") {
+          toast.error("Teklif formu yüklenemedi");
+        }
+      })
       .finally(() => setLoading(false));
-  }, [id, authFetch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const updateItem = useCallback((index: number, field: keyof ItemDraft, value: ItemDraft[keyof ItemDraft]) => {
     setItems((prev) =>
