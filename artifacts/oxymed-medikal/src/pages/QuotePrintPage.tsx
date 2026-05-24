@@ -128,6 +128,8 @@ export default function QuotePrintPage() {
         import("html2canvas"),
       ]);
 
+      await document.fonts.ready;
+
       const pages = Array.from(
         printRef.current.querySelectorAll<HTMLElement>(".qt-page")
       );
@@ -141,22 +143,36 @@ export default function QuotePrintPage() {
         const page = pages[i];
         const originalShadow = page.style.boxShadow;
         const originalMargin = page.style.margin;
+        const originalOverflow = page.style.overflow;
         page.style.boxShadow = "none";
         page.style.margin = "0";
+        page.style.overflow = "visible";
+
+        const pageW = page.getBoundingClientRect().width;
+        const pageH = page.getBoundingClientRect().height;
 
         const canvas = await html2canvas(page, {
-          scale: 2,
+          scale: 3,
           useCORS: true,
+          allowTaint: false,
           backgroundColor: "#ffffff",
           logging: false,
-          windowWidth: page.scrollWidth,
-          windowHeight: page.scrollHeight,
+          width: pageW,
+          height: pageH,
+          windowWidth: pageW,
+          windowHeight: pageH,
+          x: 0,
+          y: 0,
+          scrollX: 0,
+          scrollY: 0,
+          foreignObjectRendering: false,
         });
 
         page.style.boxShadow = originalShadow;
         page.style.margin = originalMargin;
+        page.style.overflow = originalOverflow;
 
-        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+        const imgData = canvas.toDataURL("image/jpeg", 0.97);
         if (i > 0) pdf.addPage("a4", "portrait");
         pdf.addImage(imgData, "JPEG", 0, 0, A4_W, A4_H, undefined, "FAST");
       }
