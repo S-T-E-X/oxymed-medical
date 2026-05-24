@@ -32,10 +32,12 @@ const DEMO_DATA: QuoteViewData = {
   notlar:
     "Bu teklif, medikal gaz sistemleri kapsamında belirtilen ürünlerin temini, montaj hazırlığı ve teknik destek süreçleri için hazırlanmıştır. Nihai ölçülendirme saha keşfi ve proje onayı sonrasında kesinleştirilecektir.",
   iskonto: 5,
+  iskontoTipi: "yuzde",
   kdv: 20,
   hazirlayan: "Ahmet Yılmaz",
   hazirlayanTelefon: "0(312) 385 49 12",
   hazirlayanEmail: "ahmet.yilmaz@oxymedmedical.com",
+  hazirlayanImzaUrl: "",
   onaylayan: "Mehmet Kaya",
   onaytayanGorev: "Proje Müdürü",
   onayTarihi: "24.05.2026",

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -11,9 +11,39 @@ import {
   ChevronUp,
   Search,
   X,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useListSettings } from "@workspace/api-client-react";
 import { useAuth } from "./AuthContext";
+import { useImageUpload } from "./useImageUpload";
+
+type Preparer = {
+  id: string;
+  ad: string;
+  telefon: string;
+  email: string;
+  imzaUrl: string;
+};
+
+function parsePreparers(raw: string | undefined): Preparer[] {
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .filter((p) => p && typeof p === "object" && typeof p.ad === "string")
+      .map((p) => ({
+        id: String(p.id ?? crypto.randomUUID()),
+        ad: String(p.ad ?? ""),
+        telefon: String(p.telefon ?? ""),
+        email: String(p.email ?? ""),
+        imzaUrl: String(p.imzaUrl ?? ""),
+      }));
+  } catch {
+    return [];
+  }
+}
 
 type Product = {
   id: number;
@@ -54,6 +84,7 @@ type FormDraft = {
   odemeSekli: string;
   paraBirimi: string;
   iskonto: string;
+  iskontoTipi: "yuzde" | "tutar";
   kdv: string;
   hizmetlerText: string;
   sartlarText: string;
@@ -61,6 +92,7 @@ type FormDraft = {
   hazirlayan: string;
   hazirlayanTelefon: string;
   hazirlayanEmail: string;
+  hazirlayanImzaUrl: string;
   onaylayan: string;
   onaytayanGorev: string;
   onayTarihi: string;
@@ -376,6 +408,10 @@ export default function QuoteFormEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { authFetch } = useAuth();
+  const { uploadFile, uploading } = useImageUpload();
+  const imzaInputRef = useRef<HTMLInputElement>(null);
+  const { data: settings } = useListSettings();
+  const preparers = parsePreparers((settings as Record<string, string> | undefined)?.["hazirlayan_kisiler"]);
 
   const [quoteNo, setQuoteNo] = useState("");
   const [tab, setTab] = useState<"items" | "info">("items");
@@ -396,6 +432,7 @@ export default function QuoteFormEditPage() {
     odemeSekli: "%40 sipariş, %60 teslimat öncesi",
     paraBirimi: "EUR",
     iskonto: "0",
+    iskontoTipi: "yuzde",
     kdv: "20",
     hizmetlerText: DEFAULT_HIZMETLER,
     sartlarText: DEFAULT_SARTLAR,
@@ -403,6 +440,7 @@ export default function QuoteFormEditPage() {
     hazirlayan: "",
     hazirlayanTelefon: "",
     hazirlayanEmail: "",
+    hazirlayanImzaUrl: "",
     onaylayan: "",
     onaytayanGorev: "",
     onayTarihi: "",
@@ -433,6 +471,7 @@ export default function QuoteFormEditPage() {
           odemeSekli: data.odemeSekli ?? prev.odemeSekli,
           paraBirimi: data.paraBirimi ?? "EUR",
           iskonto: data.iskonto ?? "0",
+          iskontoTipi: (data.iskontoTipi === "tutar" ? "tutar" : "yuzde") as "yuzde" | "tutar",
           kdv: data.kdv ?? "20",
           hizmetlerText:
             (data.hizmetler ?? []).length > 0
@@ -446,6 +485,7 @@ export default function QuoteFormEditPage() {
           hazirlayan: data.hazirlayan ?? "",
           hazirlayanTelefon: data.hazirlayanTelefon ?? "",
           hazirlayanEmail: data.hazirlayanEmail ?? "",
+          hazirlayanImzaUrl: data.hazirlayanImzaUrl ?? "",
           onaylayan: data.onaylayan ?? "",
           onaytayanGorev: data.onaytayanGorev ?? "",
           onayTarihi: data.onayTarihi ?? "",
@@ -555,6 +595,7 @@ export default function QuoteFormEditPage() {
         odemeSekli: form.odemeSekli || null,
         paraBirimi: form.paraBirimi,
         iskonto: form.iskonto,
+        iskontoTipi: form.iskontoTipi,
         kdv: form.kdv,
         hizmetler: form.hizmetlerText
           .split("\n")
@@ -568,6 +609,7 @@ export default function QuoteFormEditPage() {
         hazirlayan: form.hazirlayan || null,
         hazirlayanTelefon: form.hazirlayanTelefon || null,
         hazirlayanEmail: form.hazirlayanEmail || null,
+        hazirlayanImzaUrl: form.hazirlayanImzaUrl || null,
         onaylayan: form.onaylayan || null,
         onaytayanGorev: form.onaytayanGorev || null,
         onayTarihi: form.onayTarihi || null,
@@ -790,8 +832,26 @@ export default function QuoteFormEditPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="label">İskonto (%)</label>
-                  <input type="number" min={0} max={100} value={form.iskonto} onChange={setField("iskonto")} className="input w-full text-sm" />
+                  <label className="label">İskonto ({form.iskontoTipi === "tutar" ? form.paraBirimi : "%"})</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      max={form.iskontoTipi === "yuzde" ? 100 : undefined}
+                      step={form.iskontoTipi === "tutar" ? "0.01" : "1"}
+                      value={form.iskonto}
+                      onChange={setField("iskonto")}
+                      className="input w-full text-sm"
+                    />
+                    <select
+                      value={form.iskontoTipi}
+                      onChange={(e) => setForm((p) => ({ ...p, iskontoTipi: e.target.value as "yuzde" | "tutar" }))}
+                      className="input w-24 text-sm"
+                    >
+                      <option value="yuzde">%</option>
+                      <option value="tutar">Tutar</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="label">KDV (%)</label>
@@ -836,6 +896,33 @@ export default function QuoteFormEditPage() {
 
             <section>
               <h2 className="mb-3 text-sm font-extrabold uppercase tracking-widest text-slate-400">Teklifi Hazırlayan</h2>
+              {preparers.length > 0 && (
+                <div className="mb-4">
+                  <label className="label">Kayıtlı Kişi Seç</label>
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      const p = preparers.find((x) => x.id === e.target.value);
+                      if (!p) return;
+                      setForm((prev) => ({
+                        ...prev,
+                        hazirlayan: p.ad,
+                        hazirlayanTelefon: p.telefon,
+                        hazirlayanEmail: p.email,
+                        hazirlayanImzaUrl: p.imzaUrl,
+                      }));
+                      toast.success(`"${p.ad}" bilgileri yüklendi`);
+                    }}
+                    className="input w-full text-sm"
+                  >
+                    <option value="">— Kayıtlı kişiden seç (otomatik doldur) —</option>
+                    {preparers.map((p) => (
+                      <option key={p.id} value={p.id}>{p.ad}</option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-slate-400">Site Ayarları → Hazırlayan Kişiler bölümünden yönetebilirsiniz</p>
+                </div>
+              )}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
                   <label className="label">Ad Soyad</label>
@@ -849,6 +936,55 @@ export default function QuoteFormEditPage() {
                   <label className="label">E-posta</label>
                   <input value={form.hazirlayanEmail} onChange={setField("hazirlayanEmail")} className="input w-full text-sm" />
                 </div>
+              </div>
+              <div className="mt-4">
+                <label className="label">İmza / Kaşe Görseli</label>
+                <div className="flex items-center gap-3">
+                  {form.hazirlayanImzaUrl ? (
+                    <div className="relative">
+                      <img src={form.hazirlayanImzaUrl} alt="İmza" className="h-16 w-auto rounded border border-slate-200 bg-white object-contain px-2" />
+                      <button
+                        type="button"
+                        onClick={() => setForm((p) => ({ ...p, hazirlayanImzaUrl: "" }))}
+                        className="absolute -top-2 -right-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
+                        title="Kaldır"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex h-16 w-32 items-center justify-center rounded border border-dashed border-slate-300 text-xs text-slate-400">Görsel yok</div>
+                  )}
+                  <input
+                    ref={imzaInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const { publicUrl } = await uploadFile(file);
+                        setForm((p) => ({ ...p, hazirlayanImzaUrl: publicUrl }));
+                        toast.success("İmza yüklendi");
+                      } catch {
+                        toast.error("Yükleme başarısız");
+                      } finally {
+                        if (imzaInputRef.current) imzaInputRef.current.value = "";
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => imzaInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                  >
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    {form.hazirlayanImzaUrl ? "Değiştir" : "Yükle"}
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-slate-400">Önerilen: 260×55 px PNG/WEBP. Boş bırakılırsa PDF'te imza alanı tamamen gizlenir.</p>
               </div>
             </section>
 

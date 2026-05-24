@@ -1,7 +1,184 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useListSettings, useUpsertSetting } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Save } from "lucide-react";
+import { Save, Plus, Trash2, Upload, X, Loader2 } from "lucide-react";
+import { useImageUpload } from "./useImageUpload";
+
+type Preparer = {
+  id: string;
+  ad: string;
+  telefon: string;
+  email: string;
+  imzaUrl: string;
+};
+
+function parsePreparers(raw: string | undefined): Preparer[] {
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .filter((p) => p && typeof p === "object" && typeof p.ad === "string")
+      .map((p) => ({
+        id: String(p.id ?? crypto.randomUUID()),
+        ad: String(p.ad ?? ""),
+        telefon: String(p.telefon ?? ""),
+        email: String(p.email ?? ""),
+        imzaUrl: String(p.imzaUrl ?? ""),
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function PreparersSection({ currentRaw }: { currentRaw: string }) {
+  const [list, setList] = useState<Preparer[]>(() => parsePreparers(currentRaw));
+  const [dirty, setDirty] = useState(false);
+  const { uploadFile, uploading } = useImageUpload();
+  const uploadIndexRef = useRef<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setList(parsePreparers(currentRaw));
+    setDirty(false);
+  }, [currentRaw]);
+
+  const upsertMut = useUpsertSetting({
+    mutation: {
+      onSuccess: () => { toast.success("Hazırlayan kişiler kaydedildi"); setDirty(false); },
+      onError: () => toast.error("Kayıt başarısız"),
+    },
+  });
+
+  function update(idx: number, field: keyof Preparer, val: string) {
+    setList((prev) => prev.map((p, i) => (i === idx ? { ...p, [field]: val } : p)));
+    setDirty(true);
+  }
+
+  function add() {
+    setList((prev) => [...prev, { id: crypto.randomUUID(), ad: "", telefon: "", email: "", imzaUrl: "" }]);
+    setDirty(true);
+  }
+
+  function remove(idx: number) {
+    setList((prev) => prev.filter((_, i) => i !== idx));
+    setDirty(true);
+  }
+
+  function save() {
+    upsertMut.mutate({ settingKey: "hazirlayan_kisiler", data: { settingValue: JSON.stringify(list) } });
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900">Hazırlayan Kişiler</h2>
+          <p className="mt-1 text-xs text-slate-500">Teklif formu düzenleme sayfasında dropdown'dan hızlıca seçilir; ad/telefon/e-posta/imza otomatik dolar.</p>
+        </div>
+        <button
+          onClick={save}
+          disabled={!dirty || upsertMut.isPending}
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-40"
+        >
+          <Save className="h-4 w-4" /> Kaydet
+        </button>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={async (e) => {
+          const idx = uploadIndexRef.current;
+          const file = e.target.files?.[0];
+          if (file == null || idx == null) return;
+          try {
+            const { publicUrl } = await uploadFile(file);
+            update(idx, "imzaUrl", publicUrl);
+            toast.success("İmza yüklendi");
+          } catch {
+            toast.error("Yükleme başarısız");
+          } finally {
+            uploadIndexRef.current = null;
+            if (fileInputRef.current) fileInputRef.current.value = "";
+          }
+        }}
+      />
+
+      <div className="space-y-4">
+        {list.length === 0 && (
+          <p className="rounded-lg bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">Henüz kayıtlı kişi yok. "Yeni Kişi" ile ekleyin.</p>
+        )}
+        {list.map((p, idx) => (
+          <div key={p.id} className="rounded-lg border border-slate-200 bg-slate-50/50 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Kişi #{idx + 1}</span>
+              <button
+                onClick={() => remove(idx)}
+                className="rounded p-1 text-red-500 hover:bg-red-50"
+                title="Sil"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="label">Ad Soyad</label>
+                <input value={p.ad} onChange={(e) => update(idx, "ad", e.target.value)} className="input w-full text-sm" placeholder="Ad Soyad" />
+              </div>
+              <div>
+                <label className="label">Telefon</label>
+                <input value={p.telefon} onChange={(e) => update(idx, "telefon", e.target.value)} className="input w-full text-sm" placeholder="+90 ..." />
+              </div>
+              <div>
+                <label className="label">E-posta</label>
+                <input type="email" value={p.email} onChange={(e) => update(idx, "email", e.target.value)} className="input w-full text-sm" placeholder="ornek@..." />
+              </div>
+            </div>
+            <div className="mt-3">
+              <label className="label">İmza / Kaşe</label>
+              <div className="flex items-center gap-3">
+                {p.imzaUrl ? (
+                  <div className="relative">
+                    <img src={p.imzaUrl} alt="İmza" className="h-16 w-auto rounded border border-slate-200 bg-white object-contain px-2" />
+                    <button
+                      type="button"
+                      onClick={() => update(idx, "imzaUrl", "")}
+                      className="absolute -top-2 -right-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
+                      title="Kaldır"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex h-16 w-32 items-center justify-center rounded border border-dashed border-slate-300 text-xs text-slate-400">Görsel yok</div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { uploadIndexRef.current = idx; fileInputRef.current?.click(); }}
+                  disabled={uploading}
+                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                >
+                  {uploading && uploadIndexRef.current === idx ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {p.imzaUrl ? "Değiştir" : "Yükle"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <button
+        onClick={add}
+        className="mt-4 flex items-center gap-2 rounded-lg border border-dashed border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+      >
+        <Plus className="h-4 w-4" /> Yeni Kişi Ekle
+      </button>
+    </div>
+  );
+}
 
 const SETTING_GROUPS: Array<{
   label: string;
@@ -139,6 +316,7 @@ export default function SettingsPage() {
               </div>
             </div>
           ))}
+          <PreparersSection currentRaw={settingsMap["hazirlayan_kisiler"] ?? ""} />
         </div>
       )}
     </section>

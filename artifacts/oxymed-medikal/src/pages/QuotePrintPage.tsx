@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Loader2, Download } from "lucide-react";
 import QuoteTemplateView, { type QuoteViewData } from "./QuoteTemplateView";
@@ -21,10 +21,12 @@ type ApiForm = {
   sartlar?: string[];
   notlar?: string | null;
   iskonto?: string | null;
+  iskontoTipi?: "yuzde" | "tutar" | null;
   kdv?: string | null;
   hazirlayan?: string | null;
   hazirlayanTelefon?: string | null;
   hazirlayanEmail?: string | null;
+  hazirlayanImzaUrl?: string | null;
   onaylayan?: string | null;
   onaytayanGorev?: string | null;
   onayTarihi?: string | null;
@@ -66,10 +68,12 @@ function toViewData(form: ApiForm): QuoteViewData {
     sartlar: form.sartlar ?? [],
     notlar: form.notlar ?? "",
     iskonto: parseFloat(form.iskonto ?? "0") || 0,
+    iskontoTipi: form.iskontoTipi ?? "yuzde",
     kdv: parseFloat(form.kdv ?? "20") || 0,
     hazirlayan: form.hazirlayan ?? "",
     hazirlayanTelefon: form.hazirlayanTelefon ?? "",
     hazirlayanEmail: form.hazirlayanEmail ?? "",
+    hazirlayanImzaUrl: form.hazirlayanImzaUrl ?? "",
     onaylayan: form.onaylayan ?? "",
     onaytayanGorev: form.onaytayanGorev ?? "",
     onayTarihi: form.onayTarihi ?? "",
@@ -94,7 +98,6 @@ export default function QuotePrintPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
-  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -120,63 +123,26 @@ export default function QuotePrintPage() {
   }, [id, isAuthenticated]);
 
   const handleDownloadPdf = async () => {
-    if (!printRef.current || !form) return;
+    if (!form) return;
     setDownloading(true);
     try {
-      const [{ default: jsPDF }, htmlToImage] = await Promise.all([
-        import("jspdf"),
-        import("html-to-image"),
-      ]);
-
       await document.fonts.ready;
-      await new Promise((r) => setTimeout(r, 100));
-
-      const pages = Array.from(
-        printRef.current.querySelectorAll<HTMLElement>(".qt-page")
+      const imgs = Array.from(document.querySelectorAll<HTMLImageElement>("img"));
+      await Promise.all(
+        imgs.map((img) =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise<void>((resolve) => {
+                img.addEventListener("load", () => resolve(), { once: true });
+                img.addEventListener("error", () => resolve(), { once: true });
+              })
+        )
       );
-      if (pages.length === 0) throw new Error("Render edilecek sayfa yok");
-
-      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-      const A4_W = 210;
-      const A4_H = 297;
-
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i];
-        const originalShadow = page.style.boxShadow;
-        const originalMargin = page.style.margin;
-        page.style.boxShadow = "none";
-        page.style.margin = "0";
-
-        const rect = page.getBoundingClientRect();
-        const pageW = rect.width;
-        const pageH = rect.height;
-
-        const dataUrl = await htmlToImage.toJpeg(page, {
-          quality: 0.97,
-          pixelRatio: 3,
-          width: pageW,
-          height: pageH,
-          backgroundColor: "#ffffff",
-          cacheBust: true,
-          style: {
-            margin: "0",
-            boxShadow: "none",
-            transform: "none",
-          },
-        });
-
-        page.style.boxShadow = originalShadow;
-        page.style.margin = originalMargin;
-
-        if (i > 0) pdf.addPage("a4", "portrait");
-        pdf.addImage(dataUrl, "JPEG", 0, 0, A4_W, A4_H, undefined, "FAST");
-      }
-
-      const filename = `${form.quoteNo || "teklif-formu"}.pdf`;
-      pdf.save(filename);
-    } catch (err) {
-      console.error("PDF generation failed", err);
-      setError("PDF oluşturulurken bir hata oluştu.");
+      const originalTitle = document.title;
+      document.title = form.quoteNo || "teklif-formu";
+      await new Promise((r) => setTimeout(r, 100));
+      window.print();
+      setTimeout(() => { document.title = originalTitle; }, 1000);
     } finally {
       setDownloading(false);
     }
@@ -222,9 +188,10 @@ export default function QuotePrintPage() {
             onClick={handleDownloadPdf}
             disabled={downloading}
             className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+            title="Açılan pencerede 'PDF olarak kaydet' seçeneğini seçin"
           >
             {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-            {downloading ? "Hazırlanıyor..." : "PDF İndir"}
+            PDF İndir
           </button>
           <button
             onClick={() => window.print()}
@@ -235,7 +202,7 @@ export default function QuotePrintPage() {
           </button>
         </div>
       </div>
-      <div ref={printRef}>
+      <div>
         <QuoteTemplateView data={viewData} />
       </div>
     </>

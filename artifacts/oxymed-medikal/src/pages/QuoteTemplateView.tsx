@@ -42,10 +42,12 @@ export type QuoteViewData = {
   sartlar: string[];
   notlar: string;
   iskonto: number;
+  iskontoTipi: "yuzde" | "tutar";
   kdv: number;
   hazirlayan: string;
   hazirlayanTelefon: string;
   hazirlayanEmail: string;
+  hazirlayanImzaUrl: string;
   onaylayan: string;
   onaytayanGorev: string;
   onayTarihi: string;
@@ -238,11 +240,16 @@ function ItemsTable({
 
 function FooterBlocks({ data }: { data: QuoteViewData }) {
   const araTopam = data.items.reduce((s, it) => s + it.quantity * it.unitPrice, 0);
-  const iskontoAmount = araTopam * data.iskonto / 100;
+  const iskontoAmount = data.iskontoTipi === "tutar"
+    ? Math.min(data.iskonto, araTopam)
+    : araTopam * data.iskonto / 100;
   const kdvBase = araTopam - iskontoAmount;
   const kdvAmount = kdvBase * data.kdv / 100;
   const genelTopam = kdvBase + kdvAmount;
   const cur = data.paraBirimi;
+  const iskontoLabel = data.iskontoTipi === "tutar"
+    ? "İskonto"
+    : `İskonto (%${data.iskonto})`;
 
   return (
     <section className="qt-footer-blocks">
@@ -269,8 +276,8 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
           <h2>Toplam</h2>
           <dl>
             <div><dt>Ara Toplam</dt><dd>{fmtPrice(araTopam, cur)}</dd></div>
-            {data.iskonto > 0 && (
-              <div><dt>İskonto (%{data.iskonto})</dt><dd>-{fmtPrice(iskontoAmount, cur)}</dd></div>
+            {iskontoAmount > 0 && (
+              <div><dt>{iskontoLabel}</dt><dd>-{fmtPrice(iskontoAmount, cur)}</dd></div>
             )}
             {data.kdv > 0 && (
               <div><dt>KDV (%{data.kdv})</dt><dd>{fmtPrice(kdvAmount, cur)}</dd></div>
@@ -295,11 +302,18 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>Telefon</span><b>:</b><em>{data.hazirlayanTelefon}</em>
             <span>E-posta</span><b>:</b><em>{data.hazirlayanEmail}</em>
           </div>
-          <strong>İmza / Kaşe</strong>
-          <div className="qt-signature-image-slot">
-            <span>WEBP imza / kaşe görsel alanı</span>
-            <small>150 x 45 px</small>
-          </div>
+          {data.hazirlayanImzaUrl ? (
+            <>
+              <strong>İmza / Kaşe</strong>
+              <div className="qt-signature-image-slot" style={{ background: "none", border: "none", padding: 0 }}>
+                <img
+                  src={data.hazirlayanImzaUrl}
+                  alt="İmza / Kaşe"
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                />
+              </div>
+            </>
+          ) : null}
           <img className="qt-sign-watermark" src="/assets/brand/oxymed-logo.webp" alt="" aria-hidden="true" />
         </article>
 
@@ -310,7 +324,6 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>Görev</span><b>:</b><em>{data.onaytayanGorev}</em>
             <span>Onay Tarihi</span><b>:</b><em>{data.onayTarihi}</em>
           </div>
-          <strong>İmza / Kaşe</strong>
         </article>
       </div>
 
