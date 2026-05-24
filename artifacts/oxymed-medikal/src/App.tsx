@@ -16,6 +16,9 @@ import MediaPage from "./admin/MediaPage";
 import CatalogsPage from "./admin/CatalogsPage";
 import ProductStockPage from "./admin/ProductStockPage";
 import MaterialStockPage from "./admin/MaterialStockPage";
+import QuoteFormsPage from "./admin/QuoteFormsPage";
+import QuoteFormEditPage from "./admin/QuoteFormEditPage";
+import QuotePrintPage from "./pages/QuotePrintPage";
 import CorporatePage from "./pages/CorporatePage";
 import HomePage from "./pages/HomePage";
 import NewsPage from "./pages/NewsPage";
@@ -45,6 +48,7 @@ export default function App() {
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
           <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
+          <Route path="/teklif-goruntule/:id" element={<QuotePrintPage />} />
 
           <Route path="/admin/login" element={<LoginPage />} />
           <Route
@@ -70,6 +74,8 @@ export default function App() {
             <Route path="kataloglar" element={<CatalogsPage />} />
             <Route path="stok/urunler" element={<ProductStockPage />} />
             <Route path="stok/malzeme" element={<MaterialStockPage />} />
+            <Route path="teklif-formlari" element={<QuoteFormsPage />} />
+            <Route path="teklif-formlari/:id" element={<QuoteFormEditPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

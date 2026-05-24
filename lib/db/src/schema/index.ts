@@ -11,3 +11,4 @@ export * from "./mediaFiles";
 export * from "./catalogs";
 export * from "./productStock";
 export * from "./materialStock";
+export * from "./quoteForms";

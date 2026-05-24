@@ -6,6 +6,7 @@ import {
   Box,
   Building2,
   Eye,
+  FileText,
   ImageIcon,
   LayoutDashboard,
   LogOut,
@@ -31,13 +32,17 @@ const navItems = [
   { label: "Referanslar", icon: Wrench, to: "/admin/referanslar" },
   { label: "Kurumsal", icon: Building2, to: "/admin/kurumsal" },
   { label: "Medya", icon: Package, to: "/admin/medya" },
-  { label: "Teklifler", icon: UserRound, to: "/admin/teklifler" },
   { label: "Site Ayarları", icon: Settings, to: "/admin/ayarlar" },
 ];
 
 const stockNavItems = [
   { label: "Ürün Stok", icon: Layers, to: "/admin/stok/urunler" },
   { label: "Malzeme Stok", icon: ClipboardList, to: "/admin/stok/malzeme" },
+];
+
+const quoteNavItems = [
+  { label: "Teklif Formları", icon: FileText, to: "/admin/teklif-formlari" },
+  { label: "Teklif Talepleri", icon: UserRound, to: "/admin/teklifler" },
 ];
 
 function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -65,6 +70,27 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
         <p className="mb-2 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Ana Menü</p>
         {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
+                  isActive
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-400 hover:bg-white/6 hover:text-white"
+                }`
+              }
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              <span className="truncate">{item.label}</span>
+            </NavLink>
+          );
+        })}
+        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Teklif Sistemi</p>
+        {quoteNavItems.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink
