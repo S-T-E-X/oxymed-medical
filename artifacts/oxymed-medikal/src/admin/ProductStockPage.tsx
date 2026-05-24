@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Package, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "./AuthContext";
 
 interface ProductStockItem {
   productId: number;
@@ -11,19 +12,19 @@ interface ProductStockItem {
   notes: string | null;
 }
 
-function useProductStock() {
+export default function ProductStockPage() {
+  const { authFetch } = useAuth();
   const [data, setData] = useState<ProductStockItem[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [edits, setEdits] = useState<Record<number, { quantity: string; location: string; notes: string }>>({});
+  const [saving, setSaving] = useState<Set<number>>(new Set());
 
   const load = async () => {
     setIsLoading(true);
     setError(false);
     try {
-      const token = localStorage.getItem("admin_token");
-      const res = await fetch("/api/stock/products", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authFetch("/api/stock/products");
       if (!res.ok) throw new Error();
       setData(await res.json());
     } catch {
@@ -32,24 +33,6 @@ function useProductStock() {
       setIsLoading(false);
     }
   };
-
-  return { data, isLoading, error, load };
-}
-
-async function saveStock(productId: number, quantity: number, location: string, notes: string) {
-  const token = localStorage.getItem("admin_token");
-  const res = await fetch(`/api/stock/products/${productId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ quantity, location: location || undefined, notes: notes || undefined }),
-  });
-  if (!res.ok) throw new Error();
-}
-
-export default function ProductStockPage() {
-  const { data, isLoading, error, load } = useProductStock();
-  const [edits, setEdits] = useState<Record<number, { quantity: string; location: string; notes: string }>>({});
-  const [saving, setSaving] = useState<Set<number>>(new Set());
 
   if (data === null && !isLoading && !error) {
     load();
@@ -86,7 +69,12 @@ export default function ProductStockPage() {
 
     setSaving((s) => new Set(s).add(productId));
     try {
-      await saveStock(productId, qty, edit.location, edit.notes);
+      const res = await authFetch(`/api/stock/products/${productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity: qty, location: edit.location || undefined, notes: edit.notes || undefined }),
+      });
+      if (!res.ok) throw new Error();
       toast.success("Stok güncellendi");
       load();
     } catch {

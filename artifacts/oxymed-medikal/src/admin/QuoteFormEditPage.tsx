@@ -133,11 +133,11 @@ function apiItemToDraft(it: {
 }
 
 function ProductSelectorModal({
-  token,
+  authFetch,
   onSelect,
   onClose,
 }: {
-  token: string | null;
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onSelect: (p: Product) => void;
   onClose: () => void;
 }) {
@@ -146,16 +146,14 @@ function ProductSelectorModal({
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("/api/products?limit=200&published=true", {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
+    authFetch("/api/products?limit=200&published=true")
       .then((r) => r.json())
       .then((d: { items: Product[] }) => {
         setProducts(d.items ?? []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [token]);
+  }, [authFetch]);
 
   const filtered = products.filter((p) =>
     (p.quoteTitle ?? p.title).toLowerCase().includes(search.toLowerCase())
@@ -377,7 +375,7 @@ function ItemRow({
 export default function QuoteFormEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { authFetch } = useAuth();
 
   const [quoteNo, setQuoteNo] = useState("");
   const [tab, setTab] = useState<"items" | "info">("items");
@@ -413,9 +411,7 @@ export default function QuoteFormEditPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`/api/quote-forms/${id}`, {
-      headers: { Authorization: `Bearer ${token ?? ""}` },
-    })
+    authFetch(`/api/quote-forms/${id}`)
       .then((r) => r.json())
       .then((data) => {
         setQuoteNo(data.quoteNo ?? "");
@@ -454,7 +450,7 @@ export default function QuoteFormEditPage() {
       })
       .catch(() => toast.error("Yüklenemedi"))
       .finally(() => setLoading(false));
-  }, [id, token]);
+  }, [id, authFetch]);
 
   const updateItem = useCallback((index: number, field: keyof ItemDraft, value: ItemDraft[keyof ItemDraft]) => {
     setItems((prev) =>
@@ -516,12 +512,9 @@ export default function QuoteFormEditPage() {
         unitPrice: it.unitPrice,
         sortOrder: i,
       }));
-      const r = await fetch(`/api/quote-forms/${id}/items`, {
+      const r = await authFetch(`/api/quote-forms/${id}/items`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token ?? ""}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
       if (!r.ok) throw new Error();
@@ -571,12 +564,9 @@ export default function QuoteFormEditPage() {
         onaytayanGorev: form.onaytayanGorev || null,
         onayTarihi: form.onayTarihi || null,
       };
-      const r = await fetch(`/api/quote-forms/${id}`, {
+      const r = await authFetch(`/api/quote-forms/${id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token ?? ""}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
       if (!r.ok) throw new Error();
@@ -888,7 +878,7 @@ export default function QuoteFormEditPage() {
 
       {showProductModal && (
         <ProductSelectorModal
-          token={token}
+          authFetch={authFetch}
           onSelect={addFromProduct}
           onClose={() => setShowProductModal(false)}
         />

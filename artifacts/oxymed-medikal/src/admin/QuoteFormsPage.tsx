@@ -29,13 +29,11 @@ function statusClass(s: string) {
 }
 
 function useQuoteForms() {
-  const { token } = useAuth();
+  const { authFetch } = useAuth();
   return useQuery<{ items: QuoteForm[] }>({
     queryKey: ["quote-forms"],
     queryFn: async () => {
-      const r = await fetch("/api/quote-forms", {
-        headers: { Authorization: `Bearer ${token ?? ""}` },
-      });
+      const r = await authFetch("/api/quote-forms");
       if (!r.ok) throw new Error("Yüklenemedi");
       return r.json();
     },
@@ -43,17 +41,14 @@ function useQuoteForms() {
 }
 
 function useCreateQuoteForm() {
-  const { token } = useAuth();
+  const { authFetch } = useAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: async () => {
-      const r = await fetch("/api/quote-forms", {
+      const r = await authFetch("/api/quote-forms", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token ?? ""}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
       if (!r.ok) throw new Error("Oluşturulamadı");
@@ -69,13 +64,12 @@ function useCreateQuoteForm() {
 }
 
 function useDeleteQuoteForm() {
-  const { token } = useAuth();
+  const { authFetch } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const r = await fetch(`/api/quote-forms/${id}`, {
+      const r = await authFetch(`/api/quote-forms/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token ?? ""}` },
       });
       if (!r.ok) throw new Error("Silinemedi");
     },

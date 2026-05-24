@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 
 const TOKEN_KEY = "admin_token";
@@ -15,6 +17,7 @@ interface AuthContextValue {
   login: (token: string, user: AdminUser) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -25,9 +28,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const raw = localStorage.getItem("admin_user");
     try { return raw ? JSON.parse(raw) : null; } catch { return null; }
   });
+  const navigate = useNavigate();
 
-  // Register the getter on every render so HMR module reloads never reset it.
-  // setAuthTokenGetter just writes a module-level variable — safe to call in render.
   setAuthTokenGetter(() => localStorage.getItem(TOKEN_KEY));
 
   const login = useCallback((newToken: string, newUser: AdminUser) => {
@@ -44,8 +46,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const authFetch = useCallback(async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
+    const currentToken = localStorage.getItem(TOKEN_KEY);
+    const headers = new Headers(init?.headers);
+    if (currentToken) {
+      headers.set("Authorization", `Bearer ${currentToken}`);
+    }
+    const res = await fetch(input, { ...init, headers });
+    if (res.status === 401) {
+      logout();
+      toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+      navigate("/admin/login", { replace: true });
+    }
+    return res;
+  }, [logout, navigate]);
+
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated: !!token, authFetch }}>
       {children}
     </AuthContext.Provider>
   );

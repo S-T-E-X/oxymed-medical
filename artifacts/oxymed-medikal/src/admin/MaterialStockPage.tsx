@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Wrench, Plus, Pencil, Trash2, X, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "./AuthContext";
 
 interface Material {
   id: number;
@@ -15,18 +16,8 @@ interface Material {
 
 const EMPTY_FORM = { name: "", description: "", supplier: "", price: "", quantity: "0", unit: "adet", notes: "" };
 
-async function apiFetch(path: string, options?: RequestInit) {
-  const token = localStorage.getItem("admin_token");
-  const res = await fetch(path, {
-    ...options,
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, ...(options?.headers ?? {}) },
-  });
-  if (!res.ok) throw new Error();
-  if (res.status === 204) return null;
-  return res.json();
-}
-
 export default function MaterialStockPage() {
+  const { authFetch } = useAuth();
   const [items, setItems] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -40,8 +31,9 @@ export default function MaterialStockPage() {
     setIsLoading(true);
     setError(false);
     try {
-      const data = await apiFetch("/api/stock/materials");
-      setItems(data);
+      const res = await authFetch("/api/stock/materials");
+      if (!res.ok) throw new Error();
+      setItems(await res.json());
     } catch {
       setError(true);
     } finally {
@@ -87,13 +79,11 @@ export default function MaterialStockPage() {
 
     setSubmitting(true);
     try {
-      if (editingId !== null) {
-        await apiFetch(`/api/stock/materials/${editingId}`, { method: "PATCH", body: JSON.stringify(body) });
-        toast.success("Malzeme güncellendi");
-      } else {
-        await apiFetch("/api/stock/materials", { method: "POST", body: JSON.stringify(body) });
-        toast.success("Malzeme eklendi");
-      }
+      const res = editingId !== null
+        ? await authFetch(`/api/stock/materials/${editingId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        : await authFetch("/api/stock/materials", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!res.ok) throw new Error();
+      toast.success(editingId !== null ? "Malzeme güncellendi" : "Malzeme eklendi");
       setShowForm(false);
       load();
     } catch {
@@ -107,7 +97,8 @@ export default function MaterialStockPage() {
     if (!confirm("Bu malzemeyi silmek istediğinizden emin misiniz?")) return;
     setDeletingId(id);
     try {
-      await apiFetch(`/api/stock/materials/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/stock/materials/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       toast.success("Malzeme silindi");
       load();
     } catch {
