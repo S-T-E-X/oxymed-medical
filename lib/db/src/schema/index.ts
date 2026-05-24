@@ -9,3 +9,5 @@ export * from "./corporateSections";
 export * from "./siteSettings";
 export * from "./mediaFiles";
 export * from "./catalogs";
+export * from "./productStock";
+export * from "./materialStock";

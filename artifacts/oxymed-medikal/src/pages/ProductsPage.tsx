@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AlertCircle,
   ArrowDownToLine,
@@ -133,40 +134,28 @@ function ProductsContent() {
             ) : (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {products.map((product) => {
-                  const specs = (product.specs ?? []) as { label: string; value: string }[];
-                  return (
+                  const card = (
                     <article
-                      key={product.id}
-                      className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)]"
+                      className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer"
                     >
                       <div className="aspect-[1.72] overflow-hidden bg-steel-100">
                         <img
                           src={product.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
                           alt={product.title}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover transition group-hover:scale-105"
                         />
                       </div>
                       <div className="p-5">
                         <h3 className="text-lg font-extrabold text-oxynavy-950">{product.title}</h3>
-                        {product.description && (
-                          <p className="mt-3 text-sm leading-6 text-steel-700 line-clamp-2">{product.description}</p>
-                        )}
-                        {specs.length > 0 && (
-                          <div className="mt-5 grid grid-cols-3 gap-2 text-[11px]">
-                            {specs.slice(0, 3).map((spec) => (
-                              <div key={spec.label}>
-                                <span className="block text-steel-500">{spec.label}</span>
-                                <strong className="mt-1 block font-bold text-oxynavy-950">{spec.value}</strong>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        <a href="#" className="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-oxynavy-950">
-                          DETAYLARI İNCELE
-                          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                        </a>
                       </div>
                     </article>
+                  );
+                  return product.pageSlug ? (
+                    <Link key={product.id} to={`/urunler/${product.pageSlug}`} className="block">
+                      {card}
+                    </Link>
+                  ) : (
+                    <div key={product.id}>{card}</div>
                   );
                 })}
               </div>

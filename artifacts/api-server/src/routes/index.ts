@@ -11,6 +11,7 @@ import corporateRouter from "./corporate";
 import settingsRouter from "./settings";
 import mediaRouter from "./media";
 import catalogsRouter from "./catalogs";
+import stockRouter from "./stock";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(corporateRouter);
 router.use(settingsRouter);
 router.use(mediaRouter);
 router.use(catalogsRouter);
+router.use("/stock", stockRouter);
 
 export default router;
