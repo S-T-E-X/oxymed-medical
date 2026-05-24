@@ -1,12 +1,45 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db, productsTable, productCategoriesTable } from "@workspace/db";
 import { eq, asc, count } from "drizzle-orm";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, verifyToken } from "../lib/auth";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
 
+function checkIsAdmin(req: Request): boolean {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) return false;
+  try {
+    verifyToken(authHeader.slice(7));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+type ProductRow = typeof productsTable.$inferSelect;
+function stripPrivate(p: ProductRow): Omit<ProductRow, "privateData"> & { privateData: null } {
+  return { ...p, privateData: null };
+}
+
 const ProductSpecSchema = z.object({ label: z.string(), value: z.string() });
+
+const PageDataSchema = z.object({
+  heroSubtitle: z.string().optional(),
+  heroDescription: z.string().optional(),
+  features: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
+  detailCards: z.array(z.object({ title: z.string(), text: z.string(), imageUrl: z.string().optional() })).optional(),
+  useCases: z.array(z.string()).optional(),
+  advantages: z.array(z.string()).optional(),
+  featureTiles: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
+  faq: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
+});
+
+const PrivateDataSchema = z.object({
+  costPrice: z.string().optional(),
+  salePrice: z.string().optional(),
+  materials: z.array(z.string()).optional(),
+});
 
 const ProductCategoryBody = z.object({
   name: z.string().min(1),
@@ -23,6 +56,15 @@ const ProductBody = z.object({
   specs: z.array(ProductSpecSchema).optional(),
   sortOrder: z.coerce.number().int().optional(),
   published: z.boolean().optional(),
+  pageSlug: z.string().optional().nullable(),
+  pageData: PageDataSchema.optional().nullable(),
+  privateData: PrivateDataSchema.optional().nullable(),
+  quoteTitle: z.string().optional().nullable(),
+  quoteBullets: z.array(z.string()).optional(),
+  quoteModelCode: z.string().optional().nullable(),
+  quoteImageUrl: z.string().optional().nullable(),
+  quoteUnit: z.string().optional().nullable(),
+  quoteUnitPrice: z.string().optional().nullable(),
 });
 
 function parseId(raw: string | string[]): number {
@@ -93,11 +135,13 @@ router.get("/products", async (req, res): Promise<void> => {
     countQuery = countQuery.where(eq(productsTable.published, pub));
   }
 
-  const [items, [totalRow]] = await Promise.all([
+  const [rows, [totalRow]] = await Promise.all([
     query.limit(limit).offset(offset),
     countQuery,
   ]);
 
+  const isAdmin = checkIsAdmin(req);
+  const items = isAdmin ? rows : rows.map(stripPrivate);
   res.json({ items, total: totalRow?.count ?? 0 });
 });
 
@@ -111,6 +155,17 @@ router.post("/products", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(product);
 });
 
+router.get("/products/by-slug/:slug", async (req, res): Promise<void> => {
+  const slug = req.params["slug"]!;
+  const [product] = await db.select().from(productsTable).where(eq(productsTable.pageSlug, slug));
+  if (!product) {
+    res.status(404).json({ error: "Product not found" });
+    return;
+  }
+  const isAdmin = checkIsAdmin(req);
+  res.json(isAdmin ? product : stripPrivate(product));
+});
+
 router.get("/products/:id", async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
   const [product] = await db.select().from(productsTable).where(eq(productsTable.id, id));
@@ -118,7 +173,8 @@ router.get("/products/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-  res.json(product);
+  const isAdmin = checkIsAdmin(req);
+  res.json(isAdmin ? product : stripPrivate(product));
 });
 
 router.patch("/products/:id", requireAuth, async (req, res): Promise<void> => {

@@ -335,6 +335,41 @@ export const ListProductsResponse = zod.object({
 })).optional(),
   "sortOrder": zod.number(),
   "published": zod.boolean(),
+  "pageSlug": zod.string().nullish(),
+  "pageData": zod.object({
+  "heroSubtitle": zod.string().optional(),
+  "heroDescription": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "detailCards": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})).optional(),
+  "useCases": zod.array(zod.string()).optional(),
+  "advantages": zod.array(zod.string()).optional(),
+  "featureTiles": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "faq": zod.array(zod.object({
+  "question": zod.string().optional(),
+  "answer": zod.string().optional()
+})).optional()
+}).optional(),
+  "privateData": zod.object({
+  "costPrice": zod.string().optional(),
+  "salePrice": zod.string().optional(),
+  "materials": zod.array(zod.string()).optional()
+}).optional(),
+  "quoteTitle": zod.string().nullish(),
+  "quoteBullets": zod.array(zod.string()).optional(),
+  "quoteModelCode": zod.string().nullish(),
+  "quoteImageUrl": zod.string().nullish(),
+  "quoteUnit": zod.string().nullish(),
+  "quoteUnitPrice": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })),
@@ -355,7 +390,101 @@ export const CreateProductBody = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number().optional(),
-  "published": zod.boolean().optional()
+  "published": zod.boolean().optional(),
+  "pageSlug": zod.string().optional(),
+  "pageData": zod.object({
+  "heroSubtitle": zod.string().optional(),
+  "heroDescription": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "detailCards": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})).optional(),
+  "useCases": zod.array(zod.string()).optional(),
+  "advantages": zod.array(zod.string()).optional(),
+  "featureTiles": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "faq": zod.array(zod.object({
+  "question": zod.string().optional(),
+  "answer": zod.string().optional()
+})).optional()
+}).optional(),
+  "privateData": zod.object({
+  "costPrice": zod.string().optional(),
+  "salePrice": zod.string().optional(),
+  "materials": zod.array(zod.string()).optional()
+}).optional(),
+  "quoteTitle": zod.string().optional(),
+  "quoteBullets": zod.array(zod.string()).optional(),
+  "quoteModelCode": zod.string().optional(),
+  "quoteImageUrl": zod.string().optional(),
+  "quoteUnit": zod.string().optional(),
+  "quoteUnitPrice": zod.string().optional()
+})
+
+
+/**
+ * @summary Get product by page slug
+ */
+export const GetProductBySlugParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const GetProductBySlugResponse = zod.object({
+  "id": zod.number(),
+  "categoryId": zod.number().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "specs": zod.array(zod.object({
+  "label": zod.string(),
+  "value": zod.string()
+})).optional(),
+  "sortOrder": zod.number(),
+  "published": zod.boolean(),
+  "pageSlug": zod.string().nullish(),
+  "pageData": zod.object({
+  "heroSubtitle": zod.string().optional(),
+  "heroDescription": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "detailCards": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})).optional(),
+  "useCases": zod.array(zod.string()).optional(),
+  "advantages": zod.array(zod.string()).optional(),
+  "featureTiles": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "faq": zod.array(zod.object({
+  "question": zod.string().optional(),
+  "answer": zod.string().optional()
+})).optional()
+}).optional(),
+  "privateData": zod.object({
+  "costPrice": zod.string().optional(),
+  "salePrice": zod.string().optional(),
+  "materials": zod.array(zod.string()).optional()
+}).optional(),
+  "quoteTitle": zod.string().nullish(),
+  "quoteBullets": zod.array(zod.string()).optional(),
+  "quoteModelCode": zod.string().nullish(),
+  "quoteImageUrl": zod.string().nullish(),
+  "quoteUnit": zod.string().nullish(),
+  "quoteUnitPrice": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
 })
 
 
@@ -378,6 +507,41 @@ export const GetProductResponse = zod.object({
 })).optional(),
   "sortOrder": zod.number(),
   "published": zod.boolean(),
+  "pageSlug": zod.string().nullish(),
+  "pageData": zod.object({
+  "heroSubtitle": zod.string().optional(),
+  "heroDescription": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "detailCards": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})).optional(),
+  "useCases": zod.array(zod.string()).optional(),
+  "advantages": zod.array(zod.string()).optional(),
+  "featureTiles": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "faq": zod.array(zod.object({
+  "question": zod.string().optional(),
+  "answer": zod.string().optional()
+})).optional()
+}).optional(),
+  "privateData": zod.object({
+  "costPrice": zod.string().optional(),
+  "salePrice": zod.string().optional(),
+  "materials": zod.array(zod.string()).optional()
+}).optional(),
+  "quoteTitle": zod.string().nullish(),
+  "quoteBullets": zod.array(zod.string()).optional(),
+  "quoteModelCode": zod.string().nullish(),
+  "quoteImageUrl": zod.string().nullish(),
+  "quoteUnit": zod.string().nullish(),
+  "quoteUnitPrice": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -400,7 +564,42 @@ export const UpdateProductBody = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number().optional(),
-  "published": zod.boolean().optional()
+  "published": zod.boolean().optional(),
+  "pageSlug": zod.string().nullish(),
+  "pageData": zod.object({
+  "heroSubtitle": zod.string().optional(),
+  "heroDescription": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "detailCards": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})).optional(),
+  "useCases": zod.array(zod.string()).optional(),
+  "advantages": zod.array(zod.string()).optional(),
+  "featureTiles": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "faq": zod.array(zod.object({
+  "question": zod.string().optional(),
+  "answer": zod.string().optional()
+})).optional()
+}).optional(),
+  "privateData": zod.object({
+  "costPrice": zod.string().optional(),
+  "salePrice": zod.string().optional(),
+  "materials": zod.array(zod.string()).optional()
+}).optional(),
+  "quoteTitle": zod.string().nullish(),
+  "quoteBullets": zod.array(zod.string()).optional(),
+  "quoteModelCode": zod.string().nullish(),
+  "quoteImageUrl": zod.string().nullish(),
+  "quoteUnit": zod.string().nullish(),
+  "quoteUnitPrice": zod.string().nullish()
 })
 
 export const UpdateProductResponse = zod.object({
@@ -415,6 +614,41 @@ export const UpdateProductResponse = zod.object({
 })).optional(),
   "sortOrder": zod.number(),
   "published": zod.boolean(),
+  "pageSlug": zod.string().nullish(),
+  "pageData": zod.object({
+  "heroSubtitle": zod.string().optional(),
+  "heroDescription": zod.string().optional(),
+  "features": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "detailCards": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})).optional(),
+  "useCases": zod.array(zod.string()).optional(),
+  "advantages": zod.array(zod.string()).optional(),
+  "featureTiles": zod.array(zod.object({
+  "title": zod.string().optional(),
+  "text": zod.string().optional()
+})).optional(),
+  "faq": zod.array(zod.object({
+  "question": zod.string().optional(),
+  "answer": zod.string().optional()
+})).optional()
+}).optional(),
+  "privateData": zod.object({
+  "costPrice": zod.string().optional(),
+  "salePrice": zod.string().optional(),
+  "materials": zod.array(zod.string()).optional()
+}).optional(),
+  "quoteTitle": zod.string().nullish(),
+  "quoteBullets": zod.array(zod.string()).optional(),
+  "quoteModelCode": zod.string().nullish(),
+  "quoteImageUrl": zod.string().nullish(),
+  "quoteUnit": zod.string().nullish(),
+  "quoteUnitPrice": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

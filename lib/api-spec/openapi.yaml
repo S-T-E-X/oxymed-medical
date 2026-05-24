@@ -425,6 +425,31 @@ paths:
               schema:
                 $ref: "#/components/schemas/Product"
 
+  /products/by-slug/{slug}:
+    get:
+      operationId: getProductBySlug
+      tags: [products]
+      summary: Get product by page slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /products/{id}:
     get:
       operationId: getProduct
@@ -1251,6 +1276,72 @@ components:
         value:
           type: string
 
+    PageData:
+      type: object
+      properties:
+        heroSubtitle:
+          type: string
+        heroDescription:
+          type: string
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              text:
+                type: string
+        detailCards:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              text:
+                type: string
+              imageUrl:
+                type: string
+        useCases:
+          type: array
+          items:
+            type: string
+        advantages:
+          type: array
+          items:
+            type: string
+        featureTiles:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              text:
+                type: string
+        faq:
+          type: array
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              answer:
+                type: string
+
+    PrivateData:
+      type: object
+      properties:
+        costPrice:
+          type: string
+        salePrice:
+          type: string
+        materials:
+          type: array
+          items:
+            type: string
+
     Product:
       type: object
       required: [id, title, published, sortOrder, createdAt, updatedAt]
@@ -1273,6 +1364,26 @@ components:
           type: integer
         published:
           type: boolean
+        pageSlug:
+          type: ["string", "null"]
+        pageData:
+          $ref: "#/components/schemas/PageData"
+        privateData:
+          $ref: "#/components/schemas/PrivateData"
+        quoteTitle:
+          type: ["string", "null"]
+        quoteBullets:
+          type: array
+          items:
+            type: string
+        quoteModelCode:
+          type: ["string", "null"]
+        quoteImageUrl:
+          type: ["string", "null"]
+        quoteUnit:
+          type: ["string", "null"]
+        quoteUnitPrice:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -1298,6 +1409,26 @@ components:
           type: integer
         published:
           type: boolean
+        pageSlug:
+          type: string
+        pageData:
+          $ref: "#/components/schemas/PageData"
+        privateData:
+          $ref: "#/components/schemas/PrivateData"
+        quoteTitle:
+          type: string
+        quoteBullets:
+          type: array
+          items:
+            type: string
+        quoteModelCode:
+          type: string
+        quoteImageUrl:
+          type: string
+        quoteUnit:
+          type: string
+        quoteUnitPrice:
+          type: string
 
     ProductUpdate:
       type: object
@@ -1318,6 +1449,26 @@ components:
           type: integer
         published:
           type: boolean
+        pageSlug:
+          type: ["string", "null"]
+        pageData:
+          $ref: "#/components/schemas/PageData"
+        privateData:
+          $ref: "#/components/schemas/PrivateData"
+        quoteTitle:
+          type: ["string", "null"]
+        quoteBullets:
+          type: array
+          items:
+            type: string
+        quoteModelCode:
+          type: ["string", "null"]
+        quoteImageUrl:
+          type: ["string", "null"]
+        quoteUnit:
+          type: ["string", "null"]
+        quoteUnitPrice:
+          type: ["string", "null"]
 
     ProductListResponse:
       type: object

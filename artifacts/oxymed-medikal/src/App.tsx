@@ -6,6 +6,7 @@ import LoginPage from "./admin/LoginPage";
 import DashboardPage from "./admin/DashboardPage";
 import SlidersPage from "./admin/SlidersPage";
 import AdminProductsPage from "./admin/ProductsPage";
+import ProductEditPage from "./admin/ProductEditPage";
 import AdminNewsPage from "./admin/NewsPage";
 import AdminReferencesPage from "./admin/ReferencesPage";
 import AdminCorporatePage from "./admin/CorporatePage";
@@ -56,6 +57,8 @@ export default function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="sliders" element={<SlidersPage />} />
             <Route path="products" element={<AdminProductsPage />} />
+            <Route path="products/new" element={<ProductEditPage />} />
+            <Route path="products/:id" element={<ProductEditPage />} />
             <Route path="haberler" element={<AdminNewsPage />} />
             <Route path="referanslar" element={<AdminReferencesPage />} />
             <Route path="kurumsal" element={<AdminCorporatePage />} />

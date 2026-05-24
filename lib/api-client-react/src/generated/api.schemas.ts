@@ -151,6 +151,44 @@ export interface ProductSpec {
   value: string;
 }
 
+export type PageDataFeaturesItem = {
+  title?: string;
+  text?: string;
+};
+
+export type PageDataDetailCardsItem = {
+  title?: string;
+  text?: string;
+  imageUrl?: string;
+};
+
+export type PageDataFeatureTilesItem = {
+  title?: string;
+  text?: string;
+};
+
+export type PageDataFaqItem = {
+  question?: string;
+  answer?: string;
+};
+
+export interface PageData {
+  heroSubtitle?: string;
+  heroDescription?: string;
+  features?: PageDataFeaturesItem[];
+  detailCards?: PageDataDetailCardsItem[];
+  useCases?: string[];
+  advantages?: string[];
+  featureTiles?: PageDataFeatureTilesItem[];
+  faq?: PageDataFaqItem[];
+}
+
+export interface PrivateData {
+  costPrice?: string;
+  salePrice?: string;
+  materials?: string[];
+}
+
 export interface Product {
   id: number;
   /** @nullable */
@@ -163,6 +201,21 @@ export interface Product {
   specs?: ProductSpec[];
   sortOrder: number;
   published: boolean;
+  /** @nullable */
+  pageSlug?: string | null;
+  pageData?: PageData;
+  privateData?: PrivateData;
+  /** @nullable */
+  quoteTitle?: string | null;
+  quoteBullets?: string[];
+  /** @nullable */
+  quoteModelCode?: string | null;
+  /** @nullable */
+  quoteImageUrl?: string | null;
+  /** @nullable */
+  quoteUnit?: string | null;
+  /** @nullable */
+  quoteUnitPrice?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -175,6 +228,15 @@ export interface ProductInput {
   specs?: ProductSpec[];
   sortOrder?: number;
   published?: boolean;
+  pageSlug?: string;
+  pageData?: PageData;
+  privateData?: PrivateData;
+  quoteTitle?: string;
+  quoteBullets?: string[];
+  quoteModelCode?: string;
+  quoteImageUrl?: string;
+  quoteUnit?: string;
+  quoteUnitPrice?: string;
 }
 
 export interface ProductUpdate {
@@ -188,6 +250,21 @@ export interface ProductUpdate {
   specs?: ProductSpec[];
   sortOrder?: number;
   published?: boolean;
+  /** @nullable */
+  pageSlug?: string | null;
+  pageData?: PageData;
+  privateData?: PrivateData;
+  /** @nullable */
+  quoteTitle?: string | null;
+  quoteBullets?: string[];
+  /** @nullable */
+  quoteModelCode?: string | null;
+  /** @nullable */
+  quoteImageUrl?: string | null;
+  /** @nullable */
+  quoteUnit?: string | null;
+  /** @nullable */
+  quoteUnitPrice?: string | null;
 }
 
 export interface ProductListResponse {

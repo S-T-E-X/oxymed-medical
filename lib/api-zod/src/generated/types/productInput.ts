@@ -5,6 +5,8 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { PageData } from './pageData';
+import type { PrivateData } from './privateData';
 import type { ProductSpec } from './productSpec';
 
 export interface ProductInput {
@@ -15,4 +17,13 @@ export interface ProductInput {
   specs?: ProductSpec[];
   sortOrder?: number;
   published?: boolean;
+  pageSlug?: string;
+  pageData?: PageData;
+  privateData?: PrivateData;
+  quoteTitle?: string;
+  quoteBullets?: string[];
+  quoteModelCode?: string;
+  quoteImageUrl?: string;
+  quoteUnit?: string;
+  quoteUnitPrice?: string;
 }
