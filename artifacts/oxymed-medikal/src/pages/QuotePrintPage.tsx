@@ -123,12 +123,13 @@ export default function QuotePrintPage() {
     if (!printRef.current || !form) return;
     setDownloading(true);
     try {
-      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      const [{ default: jsPDF }, htmlToImage] = await Promise.all([
         import("jspdf"),
-        import("html2canvas"),
+        import("html-to-image"),
       ]);
 
       await document.fonts.ready;
+      await new Promise((r) => setTimeout(r, 100));
 
       const pages = Array.from(
         printRef.current.querySelectorAll<HTMLElement>(".qt-page")
@@ -143,38 +144,32 @@ export default function QuotePrintPage() {
         const page = pages[i];
         const originalShadow = page.style.boxShadow;
         const originalMargin = page.style.margin;
-        const originalOverflow = page.style.overflow;
         page.style.boxShadow = "none";
         page.style.margin = "0";
-        page.style.overflow = "visible";
 
-        const pageW = page.getBoundingClientRect().width;
-        const pageH = page.getBoundingClientRect().height;
+        const rect = page.getBoundingClientRect();
+        const pageW = rect.width;
+        const pageH = rect.height;
 
-        const canvas = await html2canvas(page, {
-          scale: 3,
-          useCORS: true,
-          allowTaint: false,
-          backgroundColor: "#ffffff",
-          logging: false,
+        const dataUrl = await htmlToImage.toJpeg(page, {
+          quality: 0.97,
+          pixelRatio: 3,
           width: pageW,
           height: pageH,
-          windowWidth: pageW,
-          windowHeight: pageH,
-          x: 0,
-          y: 0,
-          scrollX: 0,
-          scrollY: 0,
-          foreignObjectRendering: false,
+          backgroundColor: "#ffffff",
+          cacheBust: true,
+          style: {
+            margin: "0",
+            boxShadow: "none",
+            transform: "none",
+          },
         });
 
         page.style.boxShadow = originalShadow;
         page.style.margin = originalMargin;
-        page.style.overflow = originalOverflow;
 
-        const imgData = canvas.toDataURL("image/jpeg", 0.97);
         if (i > 0) pdf.addPage("a4", "portrait");
-        pdf.addImage(imgData, "JPEG", 0, 0, A4_W, A4_H, undefined, "FAST");
+        pdf.addImage(dataUrl, "JPEG", 0, 0, A4_W, A4_H, undefined, "FAST");
       }
 
       const filename = `${form.quoteNo || "teklif-formu"}.pdf`;
