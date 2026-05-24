@@ -22,6 +22,8 @@ import QuotePage from "./pages/QuotePage";
 import ReferencesPage from "./pages/ReferencesPage";
 import ServicePage from "./pages/ServicePage";
 import ServiceReportPage from "./pages/ServiceReportPage";
+import GasControlPanelPage from "./pages/GasControlPanelPage";
+import QuoteTemplatePage from "./pages/QuoteTemplatePage";
 
 export default function App() {
   return (
@@ -38,6 +40,8 @@ export default function App() {
           <Route path="/teklif-al" element={<QuotePage />} />
           <Route path="/servis" element={<ServicePage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
+          <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
+          <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
 
           <Route path="/admin/login" element={<LoginPage />} />
           <Route

@@ -30,10 +30,30 @@ const deviceInfo = [
 ];
 
 const serviceHistory = [
-  ["14.05.2026", "Periyodik Bakım", "Yağ değişimi, filtre değişimi, kaçak kontrolü, sensör kalibrasyonu yapıldı.", "Ahmet Yılmaz"],
-  ["15.02.2025", "Periyodik Bakım", "Genel bakım ve sistem testleri yapıldı. Alarm sistemi kontrol edildi.", "Mehmet Kaya"],
-  ["20.11.2024", "Arıza Müdahalesi", "Vakum düşüklüğü arızası giderildi. Sensör değişimi yapıldı.", "Ahmet Yılmaz"],
-  ["10.08.2024", "Periyodik Bakım", "Filtre değişimi ve yağ kontrolü yapıldı.", "Mehmet Kaya"],
+  [
+    "14.05.2026",
+    "Periyodik Bakım",
+    "Yağ değişimi, filtre değişimi, kaçak kontrolü, sensör kalibrasyonu yapıldı.",
+    "Ahmet Yılmaz",
+  ],
+  [
+    "15.02.2025",
+    "Periyodik Bakım",
+    "Genel bakım ve sistem testleri yapıldı. Alarm sistemi kontrol edildi.",
+    "Mehmet Kaya",
+  ],
+  [
+    "20.11.2024",
+    "Arıza Müdahalesi",
+    "Vakum düşüklüğü arızası giderildi. Sensör değişimi yapıldı.",
+    "Ahmet Yılmaz",
+  ],
+  [
+    "10.08.2024",
+    "Periyodik Bakım",
+    "Filtre değişimi ve yağ kontrolü yapıldı.",
+    "Mehmet Kaya",
+  ],
 ];
 
 const benefits = [
@@ -67,15 +87,12 @@ export default function ServicePage() {
       <main>
         <section className="service-hero">
           <div className="service-hero__shade" />
-          <img
-            className="service-hero__jacket-logo"
-            src="/assets/oxymedlogobeyaz.webp"
-            alt=""
-            aria-hidden="true"
-          />
           <div className="service-hero__inner">
             <h1>Servis &amp; Destek</h1>
-            <p>Cihazınıza ait servis geçmişini görüntüleyin, hızlı servis randevusu oluşturun.</p>
+            <p>
+              Cihazınıza ait servis geçmişini görüntüleyin, hızlı servis
+              randevusu oluşturun.
+            </p>
             <nav aria-label="Sayfa yolu" className="service-breadcrumb">
               <Link to="/">Anasayfa</Link>
               <ChevronRight size={14} />
@@ -89,10 +106,17 @@ export default function ServicePage() {
             <div className="service-query-card__content">
               <div>
                 <h2>Cihaz Sorgulama</h2>
-                <p>Cihazınızın seri numarası veya servis kodu ile sorgulama yapın.</p>
+                <p>
+                  Cihazınızın seri numarası veya servis kodu ile sorgulama
+                  yapın.
+                </p>
               </div>
 
-              <div className="service-query-tabs" role="tablist" aria-label="Sorgulama yöntemi">
+              <div
+                className="service-query-tabs"
+                role="tablist"
+                aria-label="Sorgulama yöntemi"
+              >
                 <button type="button" className="active">
                   <Search size={17} />
                   Seri Numarası ile Sorgula
@@ -118,7 +142,10 @@ export default function ServicePage() {
             </div>
 
             <div className="service-query-card__visual">
-              <img src="/assets/images/service-vacuum-system.png" alt="Medikal vakum santrali" />
+              <img
+                src="/assets/images/service-vacuum-system.png"
+                alt="Medikal vakum santrali"
+              />
               <button type="button">
                 <Info size={16} />
                 Seri numarası nerede bulunur?
@@ -134,12 +161,17 @@ export default function ServicePage() {
                   <span>Aktif</span>
                 </div>
                 <div className="service-device-card__body">
-                  <img src="/assets/images/service-vacuum-system.png" alt="Cihaz görseli" />
+                  <img
+                    src="/assets/images/service-vacuum-system.png"
+                    alt="Cihaz görseli"
+                  />
                   <dl>
                     {deviceInfo.map(([label, value]) => (
                       <div key={label}>
                         <dt>{label}</dt>
-                        <dd className={value === "Devam Ediyor" ? "green" : ""}>{value}</dd>
+                        <dd className={value === "Devam Ediyor" ? "green" : ""}>
+                          {value}
+                        </dd>
                       </div>
                     ))}
                   </dl>
@@ -160,20 +192,25 @@ export default function ServicePage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {serviceHistory.map(([date, type, description, person]) => (
-                        <tr key={`${date}-${type}`}>
-                          <td>{date}</td>
-                          <td>{type}</td>
-                          <td>{description}</td>
-                          <td>{person}</td>
-                          <td>
-                            <Link to="/servis-raporu" className="service-pdf-link">
-                              PDF
-                              <FileText size={15} />
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
+                      {serviceHistory.map(
+                        ([date, type, description, person]) => (
+                          <tr key={`${date}-${type}`}>
+                            <td>{date}</td>
+                            <td>{type}</td>
+                            <td>{description}</td>
+                            <td>{person}</td>
+                            <td>
+                              <Link
+                                to="/servis-raporu"
+                                className="service-pdf-link"
+                              >
+                                PDF
+                                <FileText size={15} />
+                              </Link>
+                            </td>
+                          </tr>
+                        ),
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -185,7 +222,10 @@ export default function ServicePage() {
 
             <aside className="service-request-card">
               <h2>Hızlı Servis Talep Formu</h2>
-              <p>Servis talebinizi hızlıca oluşturun, ekibimiz en kısa sürede sizinle iletişime geçsin.</p>
+              <p>
+                Servis talebinizi hızlıca oluşturun, ekibimiz en kısa sürede
+                sizinle iletişime geçsin.
+              </p>
 
               <form>
                 <label>
@@ -226,7 +266,9 @@ export default function ServicePage() {
                 <label>
                   <span>Bulunduğunuz Şehir</span>
                   <select defaultValue="">
-                    <option value="" disabled>Şehir seçiniz</option>
+                    <option value="" disabled>
+                      Şehir seçiniz
+                    </option>
                     <option>Ankara</option>
                     <option>İstanbul</option>
                     <option>İzmir</option>
@@ -235,7 +277,9 @@ export default function ServicePage() {
                 <label>
                   <span>Talep Türü</span>
                   <select defaultValue="">
-                    <option value="" disabled>Talep türünü seçiniz</option>
+                    <option value="" disabled>
+                      Talep türünü seçiniz
+                    </option>
                     <option>Periyodik Bakım</option>
                     <option>Arıza Müdahalesi</option>
                     <option>Yedek Parça</option>
