@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Printer, ArrowLeft, Loader2 } from "lucide-react";
+import { Printer, ArrowLeft, Loader2, Download } from "lucide-react";
 import QuoteTemplateView, { type QuoteViewData } from "./QuoteTemplateView";
 import { useAuth } from "../admin/AuthContext";
 
@@ -86,24 +86,26 @@ function toViewData(form: ApiForm): QuoteViewData {
   };
 }
 
-const TOKEN_KEY = "admin_token";
-
 export default function QuotePrintPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token: ctxToken } = useAuth();
-  const token = ctxToken ?? localStorage.getItem(TOKEN_KEY);
+  const { authFetch, isAuthenticated } = useAuth();
   const [form, setForm] = useState<ApiForm | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/quote-forms/${id}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
+    if (!isAuthenticated) {
+      setError("Bu sayfayı görüntülemek için admin girişi yapmalısınız.");
+      setLoading(false);
+      return;
+    }
+    authFetch(`/api/quote-forms/${id}`)
       .then((r) => {
-        if (!r.ok) throw new Error("Teklif formu bulunamadı");
+        if (!r.ok) throw new Error(r.status === 404 ? "Teklif formu bulunamadı" : "Teklif formu yüklenemedi");
         return r.json() as Promise<ApiForm>;
       })
       .then((data) => {
@@ -114,7 +116,36 @@ export default function QuotePrintPage() {
         setError(e.message);
         setLoading(false);
       });
-  }, [id, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isAuthenticated]);
+
+  const handleDownloadPdf = async () => {
+    if (!printRef.current || !form) return;
+    setDownloading(true);
+    try {
+      const mod = await import("html2pdf.js");
+      const html2pdf = (mod.default ?? mod) as (...args: unknown[]) => {
+        set: (opts: Record<string, unknown>) => { from: (el: HTMLElement) => { save: () => Promise<void> } };
+      };
+      const filename = `${form.quoteNo || "teklif-formu"}.pdf`;
+      await html2pdf()
+        .set({
+          margin: 0,
+          filename,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["css", "legacy"] },
+        })
+        .from(printRef.current)
+        .save();
+    } catch (err) {
+      console.error("PDF generation failed", err);
+      setError("PDF oluşturulurken bir hata oluştu.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -153,15 +184,25 @@ export default function QuotePrintPage() {
         <div className="flex items-center gap-3">
           <span className="text-sm font-bold text-slate-700">{form.quoteNo}</span>
           <button
+            onClick={handleDownloadPdf}
+            disabled={downloading}
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {downloading ? "Hazırlanıyor..." : "PDF İndir"}
+          </button>
+          <button
             onClick={() => window.print()}
             className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
           >
             <Printer className="h-4 w-4" />
-            Yazdır / PDF
+            Yazdır
           </button>
         </div>
       </div>
-      <QuoteTemplateView data={viewData} />
+      <div ref={printRef}>
+        <QuoteTemplateView data={viewData} />
+      </div>
     </>
   );
 }
