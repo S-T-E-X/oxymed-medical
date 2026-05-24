@@ -26,9 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try { return raw ? JSON.parse(raw) : null; } catch { return null; }
   });
 
-  useEffect(() => {
-    setAuthTokenGetter(() => localStorage.getItem(TOKEN_KEY));
-  }, []);
+  // Register the getter on every render so HMR module reloads never reset it.
+  // setAuthTokenGetter just writes a module-level variable — safe to call in render.
+  setAuthTokenGetter(() => localStorage.getItem(TOKEN_KEY));
 
   const login = useCallback((newToken: string, newUser: AdminUser) => {
     localStorage.setItem(TOKEN_KEY, newToken);
