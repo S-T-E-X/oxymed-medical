@@ -8,10 +8,25 @@ import { toast } from "sonner";
 type QuoteForm = {
   id: number;
   quoteNo: string;
+  status: string;
   firmaAdi?: string | null;
   paraBirimi: string;
   createdAt: string;
 };
+
+const STATUS_OPTIONS = [
+  { value: "draft", label: "Taslak", cls: "bg-slate-100 text-slate-600 ring-slate-200" },
+  { value: "sent", label: "Gönderildi", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
+  { value: "approved", label: "Onaylandı", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
+  { value: "rejected", label: "Reddedildi", cls: "bg-red-50 text-red-600 ring-red-200" },
+];
+
+function statusLabel(s: string) {
+  return STATUS_OPTIONS.find((o) => o.value === s)?.label ?? s;
+}
+function statusClass(s: string) {
+  return STATUS_OPTIONS.find((o) => o.value === s)?.cls ?? "bg-slate-100 text-slate-500 ring-slate-200";
+}
 
 function useQuoteForms() {
   const { token } = useAuth();
@@ -78,7 +93,10 @@ export default function QuoteFormsPage() {
   const createMut = useCreateQuoteForm();
   const deleteMut = useDeleteQuoteForm();
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
-  const forms = data?.items ?? [];
+  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const forms = (data?.items ?? []).filter((f) =>
+    statusFilter ? f.status === statusFilter : true
+  );
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
@@ -101,6 +119,24 @@ export default function QuoteFormsPage() {
         </button>
       </div>
 
+      <div className="mb-4 flex flex-wrap gap-2">
+        <button
+          onClick={() => setStatusFilter(undefined)}
+          className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${!statusFilter ? "bg-slate-700 text-white ring-slate-700" : "bg-slate-100 text-slate-500 ring-slate-200 hover:opacity-80"}`}
+        >
+          Tümü
+        </button>
+        {STATUS_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            onClick={() => setStatusFilter(statusFilter === o.value ? undefined : o.value)}
+            className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${statusFilter === o.value ? "ring-2" : "opacity-70 hover:opacity-100"}`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -110,8 +146,12 @@ export default function QuoteFormsPage() {
       ) : forms.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-slate-200 py-20 text-center">
           <FilePlus className="mx-auto mb-3 h-8 w-8 text-slate-300" />
-          <p className="font-semibold text-slate-400">Henüz teklif formu yok</p>
-          <p className="mt-1 text-sm text-slate-400">Yeni oluştur düğmesine tıklayın</p>
+          <p className="font-semibold text-slate-400">
+            {statusFilter ? "Bu filtrede teklif formu yok" : "Henüz teklif formu yok"}
+          </p>
+          {!statusFilter && (
+            <p className="mt-1 text-sm text-slate-400">Yeni oluştur düğmesine tıklayın</p>
+          )}
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -121,6 +161,7 @@ export default function QuoteFormsPage() {
                 <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">Teklif No</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 md:table-cell">Firma</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 sm:table-cell">Para Birimi</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">Durum</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 lg:table-cell">Tarih</th>
                 <th className="px-4 py-3 text-right text-xs font-bold text-slate-500">İşlemler</th>
               </tr>
@@ -135,6 +176,11 @@ export default function QuoteFormsPage() {
                     {f.firmaAdi ?? <span className="italic text-slate-300">—</span>}
                   </td>
                   <td className="hidden px-4 py-3 text-sm text-slate-600 sm:table-cell">{f.paraBirimi}</td>
+                  <td className="px-4 py-3">
+                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ${statusClass(f.status)}`}>
+                      {statusLabel(f.status)}
+                    </span>
+                  </td>
                   <td className="hidden px-4 py-3 text-sm text-slate-500 lg:table-cell">
                     {new Date(f.createdAt).toLocaleDateString("tr-TR")}
                   </td>

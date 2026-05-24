@@ -15,7 +15,7 @@ async function generateQuoteNo(): Promise<string> {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
-  const prefix = `OXM-TFL-${year}-${month}${day}`;
+  const prefix = `OXM-TFL-${year}-${day}${month}`;
 
   const [last] = await db
     .select({ quoteNo: quoteForms.quoteNo })
@@ -43,6 +43,7 @@ const QuoteFormBody = z.object({
   teslimatAdresi: z.string().optional().nullable(),
   teslimatSuresi: z.string().optional().nullable(),
   odemeSekli: z.string().optional().nullable(),
+  status: z.string().optional(),
   paraBirimi: z.string().optional(),
   hizmetler: z.array(z.string()).optional(),
   sartlar: z.array(z.string()).optional(),

@@ -3,6 +3,7 @@ import { integer, jsonb, numeric, pgTable, serial, text, timestamp } from "drizz
 export const quoteForms = pgTable("quote_forms", {
   id: serial("id").primaryKey(),
   quoteNo: text("quote_no").notNull().unique(),
+  status: text("status").notNull().default("draft"),
   firmaAdi: text("firma_adi"),
   firmaAdres: text("firma_adres"),
   firmaTelefon: text("firma_telefon"),
@@ -30,7 +31,7 @@ export const quoteForms = pgTable("quote_forms", {
 
 export const quoteFormItems = pgTable("quote_form_items", {
   id: serial("id").primaryKey(),
-  formId: integer("form_id").notNull(),
+  formId: integer("form_id").notNull().references(() => quoteForms.id, { onDelete: "cascade" }),
   productId: integer("product_id"),
   title: text("title").notNull(),
   bullets: jsonb("bullets").$type<string[]>().default([]),

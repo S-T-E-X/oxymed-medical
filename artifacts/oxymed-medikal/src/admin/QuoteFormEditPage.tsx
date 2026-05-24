@@ -42,6 +42,7 @@ type ItemDraft = {
 };
 
 type FormDraft = {
+  status: string;
   firmaAdi: string;
   firmaAdres: string;
   firmaTelefon: string;
@@ -64,6 +65,13 @@ type FormDraft = {
   onaytayanGorev: string;
   onayTarihi: string;
 };
+
+const STATUS_OPTIONS = [
+  { value: "draft", label: "Taslak", cls: "bg-slate-100 text-slate-600 ring-slate-300" },
+  { value: "sent", label: "Gönderildi", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
+  { value: "approved", label: "Onaylandı", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
+  { value: "rejected", label: "Reddedildi", cls: "bg-red-50 text-red-600 ring-red-200" },
+];
 
 const DEFAULT_HIZMETLER = [
   "Projeye özel teknik keşif ve mühendislik desteği",
@@ -378,6 +386,7 @@ export default function QuoteFormEditPage() {
   const [items, setItems] = useState<ItemDraft[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [form, setForm] = useState<FormDraft>({
+    status: "draft",
     firmaAdi: "",
     firmaAdres: "",
     firmaTelefon: "",
@@ -413,6 +422,7 @@ export default function QuoteFormEditPage() {
         setItems((data.items ?? []).map(apiItemToDraft));
         setForm((prev) => ({
           ...prev,
+          status: data.status ?? "draft",
           firmaAdi: data.firmaAdi ?? "",
           firmaAdres: data.firmaAdres ?? "",
           firmaTelefon: data.firmaTelefon ?? "",
@@ -532,6 +542,7 @@ export default function QuoteFormEditPage() {
     setSaving(true);
     try {
       const body = {
+        status: form.status,
         firmaAdi: form.firmaAdi || null,
         firmaAdres: form.firmaAdres || null,
         firmaTelefon: form.firmaTelefon || null,
@@ -608,6 +619,15 @@ export default function QuoteFormEditPage() {
           <p className="text-sm font-bold text-slate-700">{quoteNo}</p>
           <p className="text-xs text-slate-400">Teklif Formu Düzenle</p>
         </div>
+        <select
+          value={form.status}
+          onChange={setField("status")}
+          className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 outline-none ${STATUS_OPTIONS.find((o) => o.value === form.status)?.cls ?? "bg-slate-100 text-slate-500 ring-slate-200"}`}
+        >
+          {STATUS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
         <a
           href={`/teklif-goruntule/${id}`}
           target="_blank"
