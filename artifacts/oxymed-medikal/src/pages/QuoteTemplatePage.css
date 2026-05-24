@@ -352,12 +352,12 @@
   text-transform: uppercase;
 }
 
-.qt-items th:nth-child(1) { width: 10mm; }
+.qt-items th:nth-child(1) { width: calc(10mm - 3px); }
 .qt-items th:nth-child(2) { width: 50mm; }
 .qt-items th:nth-child(3) { width: 24mm; }
-.qt-items th:nth-child(4) { width: 42mm; }
+.qt-items th:nth-child(4) { width: calc(42mm - 2px); }
 .qt-items th:nth-child(5) { width: 14mm; }
-.qt-items th:nth-child(6) { width: 14mm; }
+.qt-items th:nth-child(6) { width: calc(14mm - 5px); }
 .qt-items th:nth-child(7) { width: 25mm; }
 .qt-items th:nth-child(8) { width: 25mm; }
 
