@@ -18,6 +18,7 @@ import ProductStockPage from "./admin/ProductStockPage";
 import MaterialStockPage from "./admin/MaterialStockPage";
 import QuoteFormsPage from "./admin/QuoteFormsPage";
 import QuoteFormEditPage from "./admin/QuoteFormEditPage";
+import GasControlPanelAdminPage from "./admin/GasControlPanelAdminPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
 import CorporatePage from "./pages/CorporatePage";
 import HomePage from "./pages/HomePage";
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="stok/malzeme" element={<MaterialStockPage />} />
             <Route path="teklif-formlari" element={<QuoteFormsPage />} />
             <Route path="teklif-formlari/:id" element={<QuoteFormEditPage />} />
+            <Route path="kat-kontrol-panosu" element={<GasControlPanelAdminPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

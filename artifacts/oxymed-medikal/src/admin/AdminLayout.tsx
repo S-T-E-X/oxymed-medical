@@ -19,6 +19,7 @@ import {
   X,
   Layers,
   ClipboardList,
+  Gauge,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
@@ -33,6 +34,7 @@ const navItems = [
   { label: "Kurumsal", icon: Building2, to: "/admin/kurumsal" },
   { label: "Medya", icon: Package, to: "/admin/medya" },
   { label: "Site Ayarları", icon: Settings, to: "/admin/ayarlar" },
+  { label: "Kat Kontrol Panosu", icon: Gauge, to: "/admin/kat-kontrol-panosu" },
 ];
 
 const stockNavItems = [

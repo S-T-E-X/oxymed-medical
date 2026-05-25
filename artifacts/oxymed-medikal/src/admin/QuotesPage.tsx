@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import { Eye, X } from "lucide-react";
 
 const STATUS_OPTIONS = [
-  { value: "new", label: "Yeni", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", rowBg: "bg-emerald-50/50" },
-  { value: "in_progress", label: "İncelendi", cls: "bg-amber-50 text-amber-700 ring-amber-200", rowBg: "bg-amber-50/50" },
-  { value: "resolved", label: "Teklif Hazır", cls: "bg-blue-50 text-blue-700 ring-blue-200", rowBg: "bg-blue-50/50" },
-  { value: "archived", label: "Arşiv", cls: "bg-slate-100 text-slate-600 ring-slate-200", rowBg: "" },
+  { value: "new", label: "Yeni", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", rowBg: "bg-emerald-100", borderLeft: "border-l-emerald-500" },
+  { value: "in_progress", label: "İncelendi", cls: "bg-amber-50 text-amber-700 ring-amber-200", rowBg: "bg-amber-100", borderLeft: "border-l-amber-400" },
+  { value: "resolved", label: "Teklif Hazır", cls: "bg-blue-50 text-blue-700 ring-blue-200", rowBg: "bg-blue-100", borderLeft: "border-l-blue-500" },
+  { value: "archived", label: "Arşiv", cls: "bg-slate-100 text-slate-600 ring-slate-200", rowBg: "", borderLeft: "border-l-slate-300" },
 ];
 
 function statusLabel(s: string) {
@@ -25,6 +25,9 @@ function statusClass(s: string) {
 }
 function statusRowBg(s: string) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.rowBg ?? "";
+}
+function statusBorderLeft(s: string) {
+  return STATUS_OPTIONS.find((o) => o.value === s)?.borderLeft ?? "border-l-slate-200";
 }
 
 function QuoteDetailModal({ id, onClose }: { id: number; onClose: () => void }) {
@@ -218,8 +221,8 @@ export default function QuotesPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {quotes.map((q) => (
-                <tr key={q.id} className={`transition ${statusRowBg(q.status)} hover:brightness-95`}>
-                  <td className="px-4 py-3">
+                <tr key={q.id} className={`transition ${statusRowBg(q.status)} hover:brightness-90`}>
+                  <td className={`border-l-4 ${statusBorderLeft(q.status)} px-4 py-3`}>
                     <p className="font-semibold text-slate-900">{q.fullName}</p>
                     <p className="text-xs text-slate-400">{q.email}</p>
                   </td>

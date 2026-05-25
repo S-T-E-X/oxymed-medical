@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useListSettings, useUpsertSetting } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Upload, X, Loader2 } from "lucide-react";
+import { Save, Plus, Trash2, Upload, X, Loader2, Tag } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 
 type Preparer = {
@@ -180,6 +180,111 @@ function PreparersSection({ currentRaw }: { currentRaw: string }) {
   );
 }
 
+const DEFAULT_NEWS_CATEGORIES = ["Genel", "Sektör Haberleri", "Ürün Haberleri", "Duyuru", "Blog"];
+
+function NewsCategoriesSection({ currentRaw }: { currentRaw: string }) {
+  function parse(raw: string): string[] {
+    if (!raw) return DEFAULT_NEWS_CATEGORIES;
+    try {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length > 0) return arr as string[];
+    } catch {}
+    return DEFAULT_NEWS_CATEGORIES;
+  }
+
+  const [cats, setCats] = useState<string[]>(() => parse(currentRaw));
+  const [dirty, setDirty] = useState(false);
+  const [newCat, setNewCat] = useState("");
+
+  useEffect(() => {
+    setCats(parse(currentRaw));
+    setDirty(false);
+  }, [currentRaw]);
+
+  const upsertMut = useUpsertSetting({
+    mutation: {
+      onSuccess: () => { toast.success("Kategoriler kaydedildi"); setDirty(false); },
+      onError: () => toast.error("Kayıt başarısız"),
+    },
+  });
+
+  function add() {
+    const trimmed = newCat.trim();
+    if (!trimmed || cats.includes(trimmed)) return;
+    setCats((prev) => [...prev, trimmed]);
+    setNewCat("");
+    setDirty(true);
+  }
+
+  function remove(idx: number) {
+    setCats((prev) => prev.filter((_, i) => i !== idx));
+    setDirty(true);
+  }
+
+  function save() {
+    upsertMut.mutate({ settingKey: "news_categories", data: { settingValue: JSON.stringify(cats) } });
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900">Haber Kategorileri</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Haberler sayfasında görünen kategori listesini yönetin. Kaydet butonuna tıklamayı unutmayın.
+          </p>
+        </div>
+        <button
+          onClick={save}
+          disabled={!dirty || upsertMut.isPending}
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-40"
+        >
+          {upsertMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          Kaydet
+        </button>
+      </div>
+
+      <div className="mb-4 space-y-2">
+        {cats.length === 0 && (
+          <p className="rounded-lg bg-slate-50 px-4 py-4 text-center text-sm text-slate-400">
+            Kategori yok. Aşağıdan ekleyin.
+          </p>
+        )}
+        {cats.map((cat, idx) => (
+          <div key={idx} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+            <Tag className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+            <span className="flex-1 text-sm font-medium text-slate-800">{cat}</span>
+            <button
+              onClick={() => remove(idx)}
+              className="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600"
+              title="Sil"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <input
+          className="input flex-1 text-sm"
+          placeholder="Yeni kategori adı (Enter ile ekle)"
+          value={newCat}
+          onChange={(e) => setNewCat(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
+        />
+        <button
+          onClick={add}
+          disabled={!newCat.trim()}
+          className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+        >
+          <Plus className="h-4 w-4" /> Ekle
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const SETTING_GROUPS: Array<{
   label: string;
   keys: Array<{ key: string; label: string; type?: "text" | "url" | "email" | "tel" | "textarea" }>;
@@ -316,6 +421,7 @@ export default function SettingsPage() {
               </div>
             </div>
           ))}
+          <NewsCategoriesSection currentRaw={settingsMap["news_categories"] ?? ""} />
           <PreparersSection currentRaw={settingsMap["hazirlayan_kisiler"] ?? ""} />
         </div>
       )}

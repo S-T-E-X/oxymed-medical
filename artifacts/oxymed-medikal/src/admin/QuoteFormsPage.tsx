@@ -15,10 +15,10 @@ type QuoteForm = {
 };
 
 const STATUS_OPTIONS = [
-  { value: "draft", label: "Taslak", cls: "bg-slate-100 text-slate-600 ring-slate-200", rowBg: "" },
-  { value: "sent", label: "Gönderildi", cls: "bg-amber-50 text-amber-700 ring-amber-200", rowBg: "bg-amber-50/50" },
-  { value: "approved", label: "Onaylandı", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", rowBg: "bg-emerald-50/50" },
-  { value: "rejected", label: "Reddedildi", cls: "bg-red-50 text-red-600 ring-red-200", rowBg: "bg-red-50/50" },
+  { value: "draft", label: "Taslak", cls: "bg-slate-100 text-slate-600 ring-slate-200", rowBg: "", borderLeft: "border-l-slate-300" },
+  { value: "sent", label: "Gönderildi", cls: "bg-amber-50 text-amber-700 ring-amber-200", rowBg: "bg-amber-100", borderLeft: "border-l-amber-400" },
+  { value: "approved", label: "Onaylandı", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", rowBg: "bg-emerald-100", borderLeft: "border-l-emerald-500" },
+  { value: "rejected", label: "Reddedildi", cls: "bg-red-50 text-red-600 ring-red-200", rowBg: "bg-red-100", borderLeft: "border-l-red-500" },
 ];
 
 function statusLabel(s: string) {
@@ -29,6 +29,9 @@ function statusClass(s: string) {
 }
 function statusRowBg(s: string) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.rowBg ?? "";
+}
+function statusBorderLeft(s: string) {
+  return STATUS_OPTIONS.find((o) => o.value === s)?.borderLeft ?? "border-l-slate-200";
 }
 
 function useQuoteForms() {
@@ -201,8 +204,8 @@ export default function QuoteFormsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {forms.map((f) => (
-                <tr key={f.id} className={`transition ${statusRowBg(f.status)} hover:brightness-95`}>
-                  <td className="px-4 py-3">
+                <tr key={f.id} className={`transition ${statusRowBg(f.status)} hover:brightness-90`}>
+                  <td className={`border-l-4 ${statusBorderLeft(f.status)} px-4 py-3`}>
                     <p className="font-bold text-slate-900">{f.quoteNo}</p>
                   </td>
                   <td className="hidden px-4 py-3 text-sm text-slate-600 md:table-cell">
