@@ -58,37 +58,37 @@ export default function QuotePage() {
 
 function QuoteRequestSection() {
   return (
-    <section className="relative isolate overflow-hidden border-t border-steel-100 bg-steel-50 lg:h-[520px]">
+    <section className="relative isolate overflow-hidden border-t border-steel-100 bg-steel-50">
       <ImageSlot
         tone="line"
         image="/assets/images/quote-medical-room.png"
         alt="Yatak başı ünitesi ve pendant sistemi bulunan hasta odası"
-        className="absolute inset-y-0 left-0 hidden w-[58%] object-cover object-[60%_center] opacity-[0.86] lg:block"
+        className="absolute inset-y-0 left-0 hidden w-[58%] object-cover object-[60%_center] lg:block"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-white from-[0%] via-white/88 via-[28%] to-white/42" />
-      <div className="absolute inset-y-0 right-0 hidden w-[45%] bg-white/78 lg:block" />
+      <div className="absolute inset-0 bg-gradient-to-r from-white/90 from-[0%] via-white/55 via-[30%] to-white/15" />
+      <div className="absolute inset-y-0 right-0 hidden w-[44%] bg-white/92 backdrop-blur-[2px] lg:block" />
 
-      <div className="relative mx-auto grid h-full max-w-[1312px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[572px_minmax(0,1fr)] lg:gap-12 lg:px-0 lg:py-5">
-        <aside className="pt-2 lg:pt-10">
-          <h1 className="text-[36px] font-extrabold leading-none tracking-tight text-oxynavy-950 sm:text-[42px]">
+      <div className="relative mx-auto grid max-w-[1312px] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[540px_minmax(0,1fr)] lg:gap-14 lg:px-0 lg:py-12">
+        <aside className="flex flex-col justify-center pt-2 lg:pt-4 lg:pb-4">
+          <h1 className="text-[38px] font-extrabold leading-none tracking-tight text-oxynavy-950 sm:text-[46px]">
             TEKLİF AL
           </h1>
           <div className="mt-5 h-[2px] w-14 bg-oxynavy-950" />
-          <p className="mt-6 max-w-[340px] text-base leading-7 text-oxynavy-950/84">
+          <p className="mt-6 max-w-[360px] text-[15px] leading-7 text-oxynavy-950/80">
             İhtiyacınıza en uygun çözümler için size özel teklifimizi hazırlayalım.
           </p>
 
-          <div className="mt-10 space-y-7">
+          <div className="mt-10 space-y-8">
             {quoteBenefits.map((benefit) => {
               const Icon = benefitIconMap[benefit.icon as keyof typeof benefitIconMap];
               return (
-                <article key={benefit.title} className="flex max-w-[420px] items-start gap-5">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-oxynavy-950 text-white shadow-[0_14px_35px_rgba(2,20,35,0.08)]">
+                <article key={benefit.title} className="flex max-w-[400px] items-start gap-5">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-oxynavy-950 text-white shadow-[0_14px_35px_rgba(2,20,35,0.14)]">
                     <Icon className="h-5 w-5 stroke-[1.5]" aria-hidden="true" />
                   </span>
                   <div className="pt-1">
                     <h2 className="text-[13px] font-extrabold text-oxynavy-950">{benefit.title}</h2>
-                    <p className="mt-1.5 text-[12px] leading-5 text-oxynavy-950/78">{benefit.description}</p>
+                    <p className="mt-1.5 text-[13px] leading-5.5 text-oxynavy-950/72">{benefit.description}</p>
                   </div>
                 </article>
               );
@@ -165,7 +165,7 @@ function QuoteForm() {
 
   if (submitted) {
     return (
-      <div className="flex items-center justify-center rounded-lg border border-steel-100 bg-white px-8 py-12 shadow-[0_20px_45px_rgba(2,20,35,0.12)]">
+      <div className="flex items-center justify-center rounded-2xl border border-steel-100 bg-white px-8 py-16 shadow-[0_24px_56px_rgba(2,20,35,0.10)]">
         <div className="text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-emerald-500" />
           <h2 className="mt-5 text-2xl font-extrabold text-oxynavy-950">Talebiniz Alındı!</h2>
@@ -174,7 +174,7 @@ function QuoteForm() {
           </p>
           <button
             onClick={() => setSubmitted(false)}
-            className="mt-8 inline-flex items-center gap-2 rounded bg-oxynavy-950 px-6 py-3 text-sm font-bold text-white transition hover:bg-oxynavy-800"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-oxynavy-950 px-6 py-3 text-sm font-bold text-white transition hover:bg-oxynavy-800"
           >
             Yeni Teklif Talebi
           </button>
@@ -185,16 +185,16 @@ function QuoteForm() {
 
   return (
     <form
-      className="rounded-lg border border-steel-100 bg-white px-8 py-5 shadow-[0_20px_45px_rgba(2,20,35,0.12)]"
+      className="rounded-2xl border border-steel-100 bg-white px-8 py-8 shadow-[0_24px_56px_rgba(2,20,35,0.10)]"
       onSubmit={handleSubmit}
       noValidate
     >
-      <div>
+      <div className="border-b border-steel-100 pb-5">
         <h2 className="text-[22px] font-extrabold leading-tight text-oxynavy-950">Teklif Talep Formu</h2>
-        <p className="mt-1.5 text-[12px] text-steel-700">Aşağıdaki formu doldurarak talebinizi bize iletebilirsiniz.</p>
+        <p className="mt-1.5 text-[13px] text-steel-600">Aşağıdaki formu doldurarak talebinizi bize iletebilirsiniz.</p>
       </div>
 
-      <div className="mt-6 grid gap-x-5 gap-y-3 md:grid-cols-3">
+      <div className="mt-6 grid gap-x-5 gap-y-4 md:grid-cols-3">
         <Field
           label="Ad Soyad *"
           placeholder="Adınız ve soyadınız"
@@ -220,57 +220,57 @@ function QuoteForm() {
         />
       </div>
 
-      <div className="mt-3 grid gap-x-5 gap-y-3 md:grid-cols-2">
+      <div className="mt-4 grid gap-x-5 gap-y-4 md:grid-cols-2">
         <Field label="Firma / Kurum" placeholder="Firma veya kurum adı" value={form.company} onChange={(v) => set("company", v)} />
         <Field label="Görev / Unvan" placeholder="Göreviniz veya unvanınız" value={form.jobTitle} onChange={(v) => set("jobTitle", v)} />
       </div>
 
-      <div className="mt-3 grid gap-x-5 gap-y-3 md:grid-cols-3">
-        <SelectField label="Proje Türü *" options={projectTypes} value={form.projectType} onChange={(v) => set("projectType", v)} />
-        <SelectField label="İl / İlçe *" options={cities} value={form.city} onChange={(v) => set("city", v)} />
-        <SelectField label="Uygulama Alanı *" options={applicationAreas} value={form.applicationArea} onChange={(v) => set("applicationArea", v)} />
+      <div className="mt-4 grid gap-x-5 gap-y-4 md:grid-cols-3">
+        <SelectField label="Proje Türü" options={projectTypes} value={form.projectType} onChange={(v) => set("projectType", v)} />
+        <SelectField label="İl / İlçe" options={cities} value={form.city} onChange={(v) => set("city", v)} />
+        <SelectField label="Uygulama Alanı" options={applicationAreas} value={form.applicationArea} onChange={(v) => set("applicationArea", v)} />
       </div>
 
-      <label className="mt-3 block">
+      <label className="mt-4 block">
         <span className="mb-1.5 block text-[12px] font-semibold text-oxynavy-950">Talep ve Notlarınız</span>
         <textarea
-          rows={2}
+          rows={3}
           placeholder="Projeniz hakkında bilgi veriniz..."
           value={form.notes}
           onChange={(e) => set("notes", e.target.value)}
-          className="h-[54px] w-full resize-none rounded border border-steel-200 bg-white px-3.5 py-2.5 text-[12px] text-oxynavy-950 outline-none transition placeholder:text-steel-500 focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
+          className="w-full resize-none rounded-lg border border-steel-200 bg-white px-3.5 py-3 text-[13px] text-oxynavy-950 outline-none transition placeholder:text-steel-400 focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
         />
       </label>
 
       {apiError && (
-        <div className="mt-3 rounded border border-red-200 bg-red-50 px-4 py-2.5 text-[12px] font-semibold text-red-700">
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[12px] font-semibold text-red-700">
           {apiError}
         </div>
       )}
 
-      <div className="mt-3 grid gap-5 lg:grid-cols-[1fr_0.78fr] lg:items-end">
+      <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
         <label className="block">
           <span className="mb-1.5 block text-[12px] font-semibold text-oxynavy-950">Dosya Yükleyin (Opsiyonel)</span>
-          <span className="flex h-[42px] cursor-pointer items-center justify-center rounded border border-dashed border-steel-200 bg-white px-4 text-center text-[12px] text-steel-700 transition hover:border-oxynavy-400 hover:bg-oxynavy-50">
-            <Paperclip className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
+          <span className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-steel-200 bg-steel-50/60 px-4 text-[12px] text-steel-600 transition hover:border-oxynavy-400 hover:bg-oxynavy-50">
+            <Paperclip className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             Dosya seçin veya sürükleyin
-            <input className="sr-only" type="file" />
+            <input className="sr-only" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png" />
           </span>
-          <span className="mt-1 block text-center text-[10px] text-steel-500">PDF, DWG, JPG, PNG (Maks. 10MB)</span>
+          <span className="mt-1.5 block text-center text-[11px] text-steel-400">PDF, DWG, JPG, PNG (Maks. 100MB)</span>
         </label>
 
         <button
           type="submit"
           disabled={createMut.isPending}
-          className="inline-flex h-[58px] items-center justify-center gap-3 rounded bg-oxynavy-950 px-8 text-[13px] font-extrabold text-white transition hover:bg-oxynavy-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex h-11 items-center justify-center gap-2.5 rounded-lg bg-oxynavy-950 px-7 text-[13px] font-extrabold text-white transition hover:bg-oxynavy-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {createMut.isPending ? "GÖNDERİLİYOR…" : "TEKLİF TALEP ET"}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
 
-      <p className="mt-4 flex items-center gap-2 text-[12px] text-steel-700">
-        <Lock className="h-4 w-4 shrink-0 text-steel-500" aria-hidden="true" />
+      <p className="mt-5 flex items-center gap-2 text-[12px] text-steel-500">
+        <Lock className="h-3.5 w-3.5 shrink-0 text-steel-400" aria-hidden="true" />
         Gönderdiğiniz bilgiler güvenle saklanır ve üçüncü taraflarla paylaşılmaz.
       </p>
     </form>
@@ -295,7 +295,7 @@ function Field({ label, placeholder, type = "text", value, onChange, error }: Fi
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`h-8 w-full rounded border bg-white px-3.5 text-[12px] text-oxynavy-950 outline-none transition placeholder:text-steel-500 focus:ring-4 ${
+        className={`h-9 w-full rounded-lg border bg-white px-3.5 text-[13px] text-oxynavy-950 outline-none transition placeholder:text-steel-400 focus:ring-4 ${
           error
             ? "border-red-400 focus:border-red-500 focus:ring-red-100"
             : "border-steel-200 focus:border-oxynavy-500 focus:ring-oxynavy-100"
@@ -320,7 +320,7 @@ function SelectField({ label, options, value, onChange }: SelectFieldProps) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-8 w-full rounded border border-steel-200 bg-white px-3.5 text-[12px] text-steel-700 outline-none transition focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
+        className="h-9 w-full rounded-lg border border-steel-200 bg-white px-3.5 text-[13px] text-steel-700 outline-none transition focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
       >
         <option value="">Seçiniz</option>
         {options.map((option) => (
