@@ -194,10 +194,10 @@ function NewsModal({
             <div>
               <label className="label">Kategori</label>
               <select className="input" value={form.category} onChange={(e) => set("category", e.target.value)}>
-                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-                {!categories.includes(form.category) && form.category && (
-                  <option value={form.category}>{form.category}</option>
+                {form.category && !categories.includes(form.category) && (
+                  <option value={form.category}>{form.category} (mevcut)</option>
                 )}
+                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
@@ -372,7 +372,7 @@ export default function NewsPage() {
             title: modal.item.title,
             excerpt: modal.item.excerpt ?? "",
             content: modal.item.content ?? "",
-            category: modal.item.category,
+            category: modal.item.category?.trim() || categories[0] || "Genel",
             imageUrl: modal.item.imageUrl ?? "",
             slug: modal.item.slug,
             published: modal.item.published,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilePlus, Pencil, Trash2, Eye, Loader2 } from "lucide-react";
 import { useAuth } from "./AuthContext";
@@ -15,10 +15,10 @@ type QuoteForm = {
 };
 
 const STATUS_OPTIONS = [
-  { value: "draft", label: "Taslak", cls: "bg-slate-100 text-slate-600 ring-slate-200" },
-  { value: "sent", label: "Gönderildi", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
-  { value: "approved", label: "Onaylandı", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  { value: "rejected", label: "Reddedildi", cls: "bg-red-50 text-red-600 ring-red-200" },
+  { value: "draft", label: "Taslak", cls: "bg-slate-100 text-slate-600 ring-slate-200", rowBg: "" },
+  { value: "sent", label: "Gönderildi", cls: "bg-amber-50 text-amber-700 ring-amber-200", rowBg: "bg-amber-50/50" },
+  { value: "approved", label: "Onaylandı", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", rowBg: "bg-emerald-50/50" },
+  { value: "rejected", label: "Reddedildi", cls: "bg-red-50 text-red-600 ring-red-200", rowBg: "bg-red-50/50" },
 ];
 
 function statusLabel(s: string) {
@@ -26,6 +26,9 @@ function statusLabel(s: string) {
 }
 function statusClass(s: string) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.cls ?? "bg-slate-100 text-slate-500 ring-slate-200";
+}
+function statusRowBg(s: string) {
+  return STATUS_OPTIONS.find((o) => o.value === s)?.rowBg ?? "";
 }
 
 function useQuoteForms() {
@@ -63,14 +66,33 @@ function useCreateQuoteForm() {
   });
 }
 
+function useUpdateQuoteFormStatus() {
+  const { authFetch } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const r = await authFetch(`/api/quote-forms/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!r.ok) throw new Error("Güncellenemedi");
+      return r.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["quote-forms"] });
+      toast.success("Durum güncellendi");
+    },
+    onError: () => toast.error("Güncelleme başarısız"),
+  });
+}
+
 function useDeleteQuoteForm() {
   const { authFetch } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      const r = await authFetch(`/api/quote-forms/${id}`, {
-        method: "DELETE",
-      });
+      const r = await authFetch(`/api/quote-forms/${id}`, { method: "DELETE" });
       if (!r.ok) throw new Error("Silinemedi");
     },
     onSuccess: () => {
@@ -86,11 +108,23 @@ export default function QuoteFormsPage() {
   const { data, isLoading } = useQuoteForms();
   const createMut = useCreateQuoteForm();
   const deleteMut = useDeleteQuoteForm();
+  const updateStatusMut = useUpdateQuoteFormStatus();
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
-  const forms = (data?.items ?? []).filter((f) =>
-    statusFilter ? f.status === statusFilter : true
-  );
+  const [search, setSearch] = useState("");
+
+  const forms = useMemo(() => {
+    const all = data?.items ?? [];
+    const byStatus = statusFilter ? all.filter((f) => f.status === statusFilter) : all;
+    if (!search.trim()) return byStatus;
+    const q = search.trim().toLowerCase();
+    return byStatus.filter(
+      (f) =>
+        f.quoteNo.toLowerCase().includes(q) ||
+        (f.firmaAdi ?? "").toLowerCase().includes(q) ||
+        new Date(f.createdAt).toLocaleDateString("tr-TR").includes(q)
+    );
+  }, [data, statusFilter, search]);
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
@@ -104,31 +138,36 @@ export default function QuoteFormsPage() {
           disabled={createMut.isPending}
           className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow hover:bg-blue-700 disabled:opacity-60"
         >
-          {createMut.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <FilePlus className="h-4 w-4" />
-          )}
+          {createMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <FilePlus className="h-4 w-4" />}
           Yeni Teklif Formu
         </button>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => setStatusFilter(undefined)}
-          className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${!statusFilter ? "bg-slate-700 text-white ring-slate-700" : "bg-slate-100 text-slate-500 ring-slate-200 hover:opacity-80"}`}
-        >
-          Tümü
-        </button>
-        {STATUS_OPTIONS.map((o) => (
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <input
+          type="text"
+          placeholder="Teklif no, firma veya tarih ara…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="input h-9 min-w-0 flex-1 text-sm"
+        />
+        <div className="flex flex-wrap gap-2">
           <button
-            key={o.value}
-            onClick={() => setStatusFilter(statusFilter === o.value ? undefined : o.value)}
-            className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${statusFilter === o.value ? "ring-2" : "opacity-70 hover:opacity-100"}`}
+            onClick={() => setStatusFilter(undefined)}
+            className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${!statusFilter ? "bg-slate-700 text-white ring-slate-700" : "bg-slate-100 text-slate-500 ring-slate-200 hover:opacity-80"}`}
           >
-            {o.label}
+            Tümü
           </button>
-        ))}
+          {STATUS_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              onClick={() => setStatusFilter(statusFilter === o.value ? undefined : o.value)}
+              className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${statusFilter === o.value ? "ring-2 opacity-100" : "opacity-70 hover:opacity-100"}`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
@@ -141,9 +180,9 @@ export default function QuoteFormsPage() {
         <div className="rounded-xl border-2 border-dashed border-slate-200 py-20 text-center">
           <FilePlus className="mx-auto mb-3 h-8 w-8 text-slate-300" />
           <p className="font-semibold text-slate-400">
-            {statusFilter ? "Bu filtrede teklif formu yok" : "Henüz teklif formu yok"}
+            {statusFilter || search ? "Bu filtreye uyan teklif formu yok" : "Henüz teklif formu yok"}
           </p>
-          {!statusFilter && (
+          {!statusFilter && !search && (
             <p className="mt-1 text-sm text-slate-400">Yeni oluştur düğmesine tıklayın</p>
           )}
         </div>
@@ -162,7 +201,7 @@ export default function QuoteFormsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {forms.map((f) => (
-                <tr key={f.id} className="hover:bg-slate-50">
+                <tr key={f.id} className={`transition ${statusRowBg(f.status)} hover:brightness-95`}>
                   <td className="px-4 py-3">
                     <p className="font-bold text-slate-900">{f.quoteNo}</p>
                   </td>
@@ -171,9 +210,16 @@ export default function QuoteFormsPage() {
                   </td>
                   <td className="hidden px-4 py-3 text-sm text-slate-600 sm:table-cell">{f.paraBirimi}</td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ${statusClass(f.status)}`}>
-                      {statusLabel(f.status)}
-                    </span>
+                    <select
+                      value={f.status}
+                      disabled={updateStatusMut.isPending}
+                      onChange={(e) => updateStatusMut.mutate({ id: f.id, status: e.target.value })}
+                      className={`cursor-pointer rounded-full border-0 py-0.5 pl-2.5 pr-6 text-[11px] font-bold ring-1 outline-none focus:ring-2 ${statusClass(f.status)}`}
+                    >
+                      {STATUS_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className="hidden px-4 py-3 text-sm text-slate-500 lg:table-cell">
                     {new Date(f.createdAt).toLocaleDateString("tr-TR")}
@@ -184,14 +230,14 @@ export default function QuoteFormsPage() {
                         href={`/teklif-goruntule/${f.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100"
                         title="PDF Önizleme"
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </a>
                       <button
                         onClick={() => navigate(`/admin/teklif-formlari/${f.id}`)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100"
                         title="Düzenle"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -219,10 +265,7 @@ export default function QuoteFormsPage() {
             <p className="mt-1 text-sm text-slate-500">Bu işlem geri alınamaz.</p>
             <div className="mt-5 flex gap-3">
               <button
-                onClick={() => {
-                  deleteMut.mutate(confirmDelete);
-                  setConfirmDelete(null);
-                }}
+                onClick={() => { deleteMut.mutate(confirmDelete); setConfirmDelete(null); }}
                 className="flex-1 rounded-lg bg-red-600 py-2 text-sm font-bold text-white hover:bg-red-700"
               >
                 Evet, Sil

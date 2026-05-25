@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import CatalogModal from "../components/home/CatalogModal";
 import {
   AlertCircle,
   ArrowDownToLine,
@@ -76,6 +77,7 @@ function ProductsHero() {
 
 function ProductsContent() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const { data: categories = [], isLoading: catsLoading, isError: catsError } = useListProductCategories();
   const { data: productsData, isLoading: prodsLoading, isError: prodsError } = useListProducts({
     categoryId: selectedCategoryId,
@@ -98,6 +100,7 @@ function ProductsContent() {
             isError={catsError}
             selectedCategoryId={selectedCategoryId}
             onSelect={setSelectedCategoryId}
+            onCatalogOpen={() => setCatalogOpen(true)}
           />
 
           <div>
@@ -163,6 +166,7 @@ function ProductsContent() {
           </div>
         </div>
       </div>
+      {catalogOpen && <CatalogModal onClose={() => setCatalogOpen(false)} />}
     </section>
   );
 }
@@ -194,9 +198,10 @@ type SidebarProps = {
   isError: boolean;
   selectedCategoryId: number | undefined;
   onSelect: (id: number | undefined) => void;
+  onCatalogOpen: () => void;
 };
 
-function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, onSelect }: SidebarProps) {
+function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, onSelect, onCatalogOpen }: SidebarProps) {
   return (
     <aside className="space-y-5">
       <nav className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.05)]">
@@ -233,9 +238,10 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
         )}
       </nav>
 
-      <a
-        href="#katalog"
-        className="flex items-center gap-4 rounded-lg border border-steel-100 bg-white p-5 shadow-[0_12px_30px_rgba(2,20,35,0.05)] transition hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
+      <button
+        type="button"
+        onClick={onCatalogOpen}
+        className="flex w-full items-center gap-4 rounded-lg border border-steel-100 bg-white p-5 shadow-[0_12px_30px_rgba(2,20,35,0.05)] transition hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
       >
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-steel-200 text-oxynavy-950">
           <ArrowDownToLine className="h-5 w-5" aria-hidden="true" />
@@ -245,7 +251,7 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
           <span className="mt-1 block text-xs text-steel-600">PDF / 12.4 MB</span>
         </span>
         <ArrowRight className="h-4 w-4 shrink-0 text-oxynavy-950" aria-hidden="true" />
-      </a>
+      </button>
     </aside>
   );
 }

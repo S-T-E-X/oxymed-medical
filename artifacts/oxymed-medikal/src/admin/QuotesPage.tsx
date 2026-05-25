@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getGetQuoteQueryKey,
@@ -11,18 +11,20 @@ import { toast } from "sonner";
 import { Eye, X } from "lucide-react";
 
 const STATUS_OPTIONS = [
-  { value: "new", label: "Yeni", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  { value: "in_progress", label: "İncelendi", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
-  { value: "resolved", label: "Teklif Hazır", cls: "bg-blue-50 text-blue-700 ring-blue-200" },
-  { value: "archived", label: "Arşiv", cls: "bg-slate-100 text-slate-600 ring-slate-200" },
+  { value: "new", label: "Yeni", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", rowBg: "bg-emerald-50/50" },
+  { value: "in_progress", label: "İncelendi", cls: "bg-amber-50 text-amber-700 ring-amber-200", rowBg: "bg-amber-50/50" },
+  { value: "resolved", label: "Teklif Hazır", cls: "bg-blue-50 text-blue-700 ring-blue-200", rowBg: "bg-blue-50/50" },
+  { value: "archived", label: "Arşiv", cls: "bg-slate-100 text-slate-600 ring-slate-200", rowBg: "" },
 ];
 
 function statusLabel(s: string) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.label ?? s;
 }
-
 function statusClass(s: string) {
-  return STATUS_OPTIONS.find((o) => o.value === s)?.cls ?? "bg-slate-100 text-slate-500";
+  return STATUS_OPTIONS.find((o) => o.value === s)?.cls ?? "bg-slate-100 text-slate-500 ring-slate-200";
+}
+function statusRowBg(s: string) {
+  return STATUS_OPTIONS.find((o) => o.value === s)?.rowBg ?? "";
 }
 
 function QuoteDetailModal({ id, onClose }: { id: number; onClose: () => void }) {
@@ -127,13 +129,37 @@ function Field({ label, value }: { label: string; value?: string | null }) {
 
 export default function QuotesPage() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
-  const { data: quotesData, isLoading } = useListQuotes({ status: statusFilter, limit: 50 });
-  const quotes = quotesData?.items ?? [];
+  const [search, setSearch] = useState("");
+  const { data: quotesData, isLoading } = useListQuotes({ limit: 200 });
+  const qc = useQueryClient();
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  const counts = {
-    new: quotes.filter((q) => q.status === "new").length,
-  };
+  const updateStatusMut = useUpdateQuoteStatus({
+    mutation: {
+      onSuccess: (_data, variables) => {
+        toast.success("Durum güncellendi");
+        qc.invalidateQueries({ queryKey: getListQuotesQueryKey() });
+        if (selectedId !== null) {
+          qc.invalidateQueries({ queryKey: getGetQuoteQueryKey(variables.id) });
+        }
+      },
+      onError: () => toast.error("Güncelleme başarısız"),
+    },
+  });
+
+  const quotes = useMemo(() => {
+    const all = quotesData?.items ?? [];
+    const byStatus = statusFilter ? all.filter((q) => q.status === statusFilter) : all;
+    if (!search.trim()) return byStatus;
+    const q = search.trim().toLowerCase();
+    return byStatus.filter(
+      (item) =>
+        item.fullName.toLowerCase().includes(q) ||
+        (item.company ?? "").toLowerCase().includes(q) ||
+        item.phone.toLowerCase().includes(q) ||
+        new Date(item.createdAt).toLocaleDateString("tr-TR").includes(q)
+    );
+  }, [quotesData, statusFilter, search]);
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
@@ -142,32 +168,40 @@ export default function QuotesPage() {
           <h1 className="text-2xl font-bold text-slate-950">Teklif Talepleri</h1>
           <p className="mt-1 text-sm text-slate-500">Gelen teklif taleplerini görüntüleyin ve yönetin</p>
         </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-semibold text-slate-600">Filtrele:</label>
-          <select className="input h-9 w-44 text-sm" value={statusFilter ?? ""} onChange={(e) => setStatusFilter(e.target.value || undefined)}>
-            <option value="">Tümü</option>
-            {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-        </div>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        {STATUS_OPTIONS.map((o) => (
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <input
+          type="text"
+          placeholder="Ad soyad, şirket, telefon veya tarih ara…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="input h-9 min-w-0 flex-1 text-sm"
+        />
+        <div className="flex flex-wrap gap-2">
           <button
-            key={o.value}
-            onClick={() => setStatusFilter(statusFilter === o.value ? undefined : o.value)}
-            className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${statusFilter === o.value ? "ring-2" : "opacity-70 hover:opacity-100"}`}
+            onClick={() => setStatusFilter(undefined)}
+            className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${!statusFilter ? "bg-slate-700 text-white ring-slate-700" : "bg-slate-100 text-slate-500 ring-slate-200 hover:opacity-80"}`}
           >
-            {o.label}
+            Tümü
           </button>
-        ))}
+          {STATUS_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              onClick={() => setStatusFilter(statusFilter === o.value ? undefined : o.value)}
+              className={`rounded-full px-3 py-1 text-[11px] font-bold ring-1 transition ${o.cls} ${statusFilter === o.value ? "ring-2 opacity-100" : "opacity-70 hover:opacity-100"}`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
         <div className="space-y-3">{[1,2,3,4,5].map((i) => <div key={i} className="h-16 animate-pulse rounded-lg bg-slate-100" />)}</div>
       ) : quotes.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-slate-200 py-16 text-center">
-          <p className="text-slate-400">Bu filtrede teklif talebi yok</p>
+          <p className="text-slate-400">{statusFilter || search ? "Bu filtreye uyan teklif talebi yok" : "Henüz teklif talebi yok"}</p>
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -184,7 +218,7 @@ export default function QuotesPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {quotes.map((q) => (
-                <tr key={q.id} className="hover:bg-slate-50">
+                <tr key={q.id} className={`transition ${statusRowBg(q.status)} hover:brightness-95`}>
                   <td className="px-4 py-3">
                     <p className="font-semibold text-slate-900">{q.fullName}</p>
                     <p className="text-xs text-slate-400">{q.email}</p>
@@ -195,12 +229,24 @@ export default function QuotesPage() {
                     {new Date(q.createdAt).toLocaleDateString("tr-TR")}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ${statusClass(q.status)}`}>
-                      {statusLabel(q.status)}
-                    </span>
+                    <select
+                      value={q.status}
+                      disabled={updateStatusMut.isPending}
+                      onChange={(e) =>
+                        updateStatusMut.mutate({ id: q.id, data: { status: e.target.value } })
+                      }
+                      className={`cursor-pointer rounded-full border-0 py-0.5 pl-2.5 pr-6 text-[11px] font-bold ring-1 outline-none focus:ring-2 ${statusClass(q.status)}`}
+                    >
+                      {STATUS_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => setSelectedId(q.id)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 ml-auto">
+                    <button
+                      onClick={() => setSelectedId(q.id)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-100 ml-auto"
+                    >
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </td>
