@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Factory, CheckCircle2, AlertCircle, Package,
   Play, Box, ClipboardCheck, QrCode, ShieldCheck, RefreshCw,
-  Copy, ExternalLink, Trash2, ChevronDown,
+  Copy, ExternalLink, Trash2, Printer, Plus, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "./AuthContext";
@@ -135,6 +135,7 @@ const TABS = [
   { id: "malzeme", label: "Malzeme & BOM", icon: Box },
   { id: "seriler", label: "Seri Numaraları", icon: QrCode },
   { id: "kalite", label: "Kalite Kontrol", icon: ClipboardCheck },
+  { id: "etiket", label: "QR & Etiketler", icon: Printer },
   { id: "garanti", label: "Garanti", icon: ShieldCheck },
 ];
 
@@ -154,6 +155,12 @@ export default function ProductionDetailPage() {
   const [actionLoading, setActionLoading] = useState("");
   const [statusChanging, setStatusChanging] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+
+  // BOM editing
+  const [bomMaterials, setBomMaterials] = useState<{ id: number; name: string; unit: string }[]>([]);
+  const [newBomMaterialId, setNewBomMaterialId] = useState<number | "">("");
+  const [newBomQty, setNewBomQty] = useState(1);
+  const [bomSaving, setBomSaving] = useState(false);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -178,8 +185,55 @@ export default function ProductionDetailPage() {
     if (res.ok) setBom(await res.json());
   }
 
+  async function loadMaterials() {
+    const res = await authFetch("/api/stock/materials");
+    if (res.ok) {
+      const data = await res.json();
+      setBomMaterials(data.items ?? data);
+    }
+  }
+
+  async function saveBom(newBom: { materialId: number; requiredQty: number }[]) {
+    if (!order?.productId) return;
+    setBomSaving(true);
+    try {
+      const res = await authFetch(`/api/production/bom/${order.productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBom),
+      });
+      if (!res.ok) throw new Error();
+      setBom(await res.json());
+      toast.success("BOM güncellendi");
+    } catch {
+      toast.error("BOM kaydedilemedi");
+    } finally {
+      setBomSaving(false);
+    }
+  }
+
+  async function addBomItem() {
+    if (!newBomMaterialId || newBomQty < 1) return;
+    const existing = bom ?? [];
+    if (existing.some((b) => b.materialId === newBomMaterialId)) {
+      toast.error("Bu malzeme zaten BOM'da var");
+      return;
+    }
+    await saveBom([...existing.map((b) => ({ materialId: b.materialId, requiredQty: b.requiredQty })), { materialId: Number(newBomMaterialId), requiredQty: newBomQty }]);
+    setNewBomMaterialId("");
+    setNewBomQty(1);
+  }
+
+  async function removeBomItem(materialId: number) {
+    const existing = bom ?? [];
+    await saveBom(existing.filter((b) => b.materialId !== materialId).map((b) => ({ materialId: b.materialId, requiredQty: b.requiredQty })));
+  }
+
   useEffect(() => {
-    if (activeTab === "malzeme" && order?.productId && bom === null) loadBom();
+    if (activeTab === "malzeme" && order?.productId) {
+      if (bom === null) loadBom();
+      if (bomMaterials.length === 0) loadMaterials();
+    }
   }, [activeTab, order?.productId]);
 
   async function checkStock() {
@@ -528,40 +582,87 @@ export default function ProductionDetailPage() {
               </div>
             ) : bom === null ? (
               <div className="animate-pulse h-20 rounded-xl bg-slate-100" />
-            ) : bom.length === 0 ? (
-              <div className="rounded-lg bg-slate-50 border border-slate-200 p-4 text-sm text-slate-500">
-                Bu ürün için henüz BOM tanımlanmamış. Malzeme stoku kontrol etmeden üretime başlayabilirsiniz.
-              </div>
             ) : (
-              <table className="w-full text-sm mt-3">
-                <thead>
-                  <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    <th className="pb-2">Malzeme</th>
-                    <th className="pb-2 text-center">Birim Gereksinim</th>
-                    <th className="pb-2 text-center">Toplam Gereken</th>
-                    <th className="pb-2 text-right">Mevcut Stok</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {bom.map((b) => {
-                    const totalNeeded = b.requiredQty * order.quantity;
-                    const inStock = b.inStock ?? 0;
-                    const ok = inStock >= totalNeeded;
-                    return (
-                      <tr key={b.id}>
-                        <td className="py-2.5 font-semibold text-slate-800">{b.materialName ?? `#${b.materialId}`}</td>
-                        <td className="py-2.5 text-center text-slate-600">{b.requiredQty} {b.unit}</td>
-                        <td className="py-2.5 text-center font-bold text-slate-900">{totalNeeded} {b.unit}</td>
-                        <td className="py-2.5 text-right">
-                          <span className={`font-bold ${ok ? "text-emerald-600" : "text-red-600"}`}>
-                            {inStock} {b.unit}
-                          </span>
-                        </td>
+              <>
+                {bom.length === 0 ? (
+                  <div className="rounded-lg bg-slate-50 border border-slate-200 p-4 text-sm text-slate-500">
+                    Bu ürün için henüz BOM tanımlanmamış. Aşağıdan malzeme ekleyebilirsiniz.
+                  </div>
+                ) : (
+                  <table className="w-full text-sm mt-3">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <th className="pb-2">Malzeme</th>
+                        <th className="pb-2 text-center">Birim Gerek.</th>
+                        <th className="pb-2 text-center">Toplam</th>
+                        <th className="pb-2 text-right">Stok</th>
+                        <th className="pb-2 w-8"></th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {bom.map((b) => {
+                        const totalNeeded = b.requiredQty * order.quantity;
+                        const inStock = b.inStock ?? 0;
+                        const ok = inStock >= totalNeeded;
+                        return (
+                          <tr key={b.id}>
+                            <td className="py-2.5 font-semibold text-slate-800">{b.materialName ?? `#${b.materialId}`}</td>
+                            <td className="py-2.5 text-center text-slate-600">{b.requiredQty} {b.unit}</td>
+                            <td className="py-2.5 text-center font-bold text-slate-900">{totalNeeded} {b.unit}</td>
+                            <td className="py-2.5 text-right">
+                              <span className={`font-bold ${ok ? "text-emerald-600" : "text-red-600"}`}>
+                                {inStock} {b.unit}
+                              </span>
+                            </td>
+                            <td className="py-2.5 text-right">
+                              <button
+                                onClick={() => removeBomItem(b.materialId)}
+                                disabled={bomSaving}
+                                className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-40"
+                                title="Kaldır"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+
+                {/* BOM Add form */}
+                <div className="mt-4 border-t border-slate-200 pt-4">
+                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Malzeme Ekle</p>
+                  <div className="flex flex-wrap gap-2">
+                    <select
+                      value={newBomMaterialId}
+                      onChange={(e) => setNewBomMaterialId(e.target.value ? Number(e.target.value) : "")}
+                      className="flex-1 min-w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none"
+                    >
+                      <option value="">Malzeme seçin...</option>
+                      {bomMaterials.map((m) => (
+                        <option key={m.id} value={m.id}>{m.name} ({m.unit})</option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      min={1}
+                      value={newBomQty}
+                      onChange={(e) => setNewBomQty(parseInt(e.target.value) || 1)}
+                      className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm text-center focus:border-purple-500 focus:outline-none"
+                      placeholder="Adet"
+                    />
+                    <button
+                      onClick={addBomItem}
+                      disabled={!newBomMaterialId || bomSaving}
+                      className="flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
+                    >
+                      <Plus className="h-4 w-4" /> Ekle
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
@@ -730,6 +831,83 @@ export default function ProductionDetailPage() {
                 </div>
               );
             })
+          )}
+        </div>
+      )}
+
+      {/* ── Tab: QR & Etiketler ──────────────────────────────────────────── */}
+      {activeTab === "etiket" && (
+        <div className="space-y-4">
+          {order.items.length === 0 ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-400">
+              Seri numaraları oluşturulmadan QR etiket görüntülenemez. Önce "Üretime Al" işlemini yapın.
+            </div>
+          ) : (
+            <>
+              {/* Print all button */}
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+                <div>
+                  <p className="font-bold text-slate-900">{order.items.length} adet QR etiket</p>
+                  <p className="text-sm text-slate-500">{order.productTitle} · {order.orderNo}</p>
+                </div>
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700"
+                >
+                  <Printer className="h-4 w-4" /> Tümünü Yazdır
+                </button>
+              </div>
+
+              {/* QR card grid */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 print:grid-cols-3">
+                {order.items.map((item, idx) => {
+                  if (!item.qrToken) return null;
+                  const qrData = encodeURIComponent(item.qrToken);
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrData}`;
+                  const qrDownloadUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${qrData}`;
+                  return (
+                    <div key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col items-center gap-3 print:border print:shadow-none print:break-inside-avoid">
+                      <p className="text-xs text-slate-400 font-semibold self-start">#{idx + 1}</p>
+                      <img
+                        src={qrUrl}
+                        alt={`QR ${item.serialNumber}`}
+                        className="w-32 h-32 rounded-lg border border-slate-100"
+                      />
+                      <div className="text-center">
+                        <p className="font-mono font-bold text-slate-900 text-sm">{item.serialNumber}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{order.productTitle}</p>
+                        {order.productCode && <p className="text-xs text-slate-400">{order.productCode}</p>}
+                      </div>
+                      <div className="flex gap-2 print:hidden">
+                        <button
+                          onClick={() => copyToClipboard(item.serialNumber!)}
+                          className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs text-slate-600 hover:border-blue-300 hover:text-blue-600"
+                        >
+                          <Copy className="h-3 w-3" /> Kopyala
+                        </button>
+                        <a
+                          href={qrDownloadUrl}
+                          download={`qr-${item.serialNumber}.png`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs text-slate-600 hover:border-emerald-300 hover:text-emerald-600"
+                        >
+                          <Printer className="h-3 w-3" /> PNG İndir
+                        </a>
+                        <a
+                          href={`/servis/qr/${item.qrToken}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs text-slate-600 hover:border-purple-300 hover:text-purple-600"
+                        >
+                          <ExternalLink className="h-3 w-3" /> QR Sayfa
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       )}

@@ -160,15 +160,26 @@ router.patch("/quote-forms/:id", requireAuth, async (req, res): Promise<void> =>
 
       const [formRow] = await db.select({ firmaAdi: quoteForms.firmaAdi }).from(quoteForms).where(eq(quoteForms.id, id));
 
+      // Consolidate same-product lines into one production order each
+      const grouped = new Map<string, { productId: number | null; title: string; modelCode: string | null; quantity: number }>();
       for (const item of items) {
         if ((item.quantity ?? 0) < 1) continue;
+        const key = item.productId ? `pid:${item.productId}` : `title:${item.title}:${item.modelCode ?? ""}`;
+        const existing = grouped.get(key);
+        if (existing) {
+          existing.quantity += item.quantity ?? 1;
+        } else {
+          grouped.set(key, { productId: item.productId ?? null, title: item.title, modelCode: item.modelCode ?? null, quantity: item.quantity ?? 1 });
+        }
+      }
+      for (const [, group] of grouped) {
         const orderNo = await generateProductionOrderNo();
         await db.insert(productionOrdersTable).values({
           orderNo,
-          productId: item.productId ?? undefined,
-          productTitle: item.title,
-          productCode: item.modelCode ?? undefined,
-          quantity: item.quantity ?? 1,
+          productId: group.productId ?? undefined,
+          productTitle: group.title,
+          productCode: group.modelCode ?? undefined,
+          quantity: group.quantity,
           quoteFormId: id,
           customerName: formRow?.firmaAdi ?? undefined,
           status: "bekliyor",

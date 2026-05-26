@@ -174,10 +174,34 @@ const OrderUpdateBody = z.object({
   notes: z.string().optional().nullable(),
 });
 
+const QUALITY_GATED_STATUSES = new Set([
+  "tamamlandi", "stokta", "sevkiyata_hazir", "sevk_edildi", "kurulum_bekliyor", "garanti_baslatildi",
+]);
+
 router.patch("/production/orders/:id", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
   const parsed = OrderUpdateBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+
+  if (parsed.data.status && QUALITY_GATED_STATUSES.has(parsed.data.status)) {
+    const items = await db
+      .select({ qualityChecklist: productionOrderItemsTable.qualityChecklist })
+      .from(productionOrderItemsTable)
+      .where(eq(productionOrderItemsTable.orderId, id));
+
+    if (items.length > 0) {
+      const allPassed = items.every((item) => {
+        const cl = item.qualityChecklist as Record<string, boolean> | null;
+        return cl && Object.values(cl).length > 0 && Object.values(cl).every(Boolean);
+      });
+      if (!allPassed) {
+        res.status(422).json({
+          error: "Tüm ürünlerin kalite kontrol listesi tamamlanmadan bu statüye geçilemez.",
+        });
+        return;
+      }
+    }
+  }
 
   const [updated] = await db
     .update(productionOrdersTable)
