@@ -302,12 +302,16 @@ export default function ServicePage() {
   const [queryMode, setQueryMode] = useState<QueryMode>("serial");
   const [inputValue, setInputValue] = useState(serialNo ?? "");
   const [submittedSerial, setSubmittedSerial] = useState<string | undefined>(serialNo);
-  const [submittedQr] = useState<string | undefined>(qrToken);
+  const [submittedQr, setSubmittedQr] = useState<string | undefined>(qrToken);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (serialNo) setSubmittedSerial(serialNo);
   }, [serialNo]);
+
+  useEffect(() => {
+    if (qrToken) setSubmittedQr(qrToken);
+  }, [qrToken]);
 
   function handleSearch() {
     const v = inputValue.trim();

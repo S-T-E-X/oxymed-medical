@@ -7,8 +7,9 @@ import { randomUUID } from "crypto";
 
 const router: IRouter = Router();
 
-function parseId(raw: string | undefined): number {
-  return parseInt(raw ?? "", 10);
+function parseId(raw: string | string[] | undefined): number {
+  const s = Array.isArray(raw) ? raw[0] : raw;
+  return parseInt(s ?? "", 10);
 }
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
