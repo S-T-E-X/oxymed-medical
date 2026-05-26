@@ -23,6 +23,10 @@ import WarrantyPage from "./admin/WarrantyPage";
 import WarrantyDeviceDetailPage from "./admin/WarrantyDeviceDetailPage";
 import ProductionPage from "./admin/ProductionPage";
 import ProductionDetailPage from "./admin/ProductionDetailPage";
+import ServisRaporlariPage from "./admin/ServisRaporlariPage";
+import ServisRaporuFormPage from "./admin/ServisRaporuFormPage";
+import ServisCihazPage from "./pages/ServisCihazPage";
+import ServisRaporDogrulamaPage from "./pages/ServisRaporDogrulamaPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
 import CorporatePage from "./pages/CorporatePage";
 import HomePage from "./pages/HomePage";
@@ -53,6 +57,8 @@ export default function App() {
           <Route path="/servis" element={<ServicePage />} />
           <Route path="/servis/:serialNo" element={<ServicePage />} />
           <Route path="/servis/qr/:qrToken" element={<DeviceQrPage />} />
+          <Route path="/servis/cihaz/:qrToken" element={<ServisCihazPage />} />
+          <Route path="/servis/rapor/:verificationToken" element={<ServisRaporDogrulamaPage />} />
           <Route path="/servis-raporu/:recordId" element={<ServiceReportPage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
           <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
@@ -90,6 +96,9 @@ export default function App() {
             <Route path="garanti/:id" element={<WarrantyDeviceDetailPage />} />
             <Route path="uretim" element={<ProductionPage />} />
             <Route path="uretim/:id" element={<ProductionDetailPage />} />
+            <Route path="servis-raporlari" element={<ServisRaporlariPage />} />
+            <Route path="servis-raporlari/yeni" element={<ServisRaporuFormPage />} />
+            <Route path="servis-raporlari/:id" element={<ServisRaporuFormPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

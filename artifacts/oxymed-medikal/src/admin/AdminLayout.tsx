@@ -22,6 +22,7 @@ import {
   Layers,
   ClipboardList,
   Gauge,
+  ClipboardCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
@@ -41,6 +42,7 @@ const navItems = [
 
 const warrantyNavItems = [
   { label: "Garanti Yönetimi", icon: ShieldCheck, to: "/admin/garanti" },
+  { label: "Servis Raporları", icon: ClipboardCheck, to: "/admin/servis-raporlari" },
 ];
 
 const stockNavItems = [

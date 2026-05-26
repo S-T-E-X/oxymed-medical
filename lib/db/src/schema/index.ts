@@ -21,3 +21,7 @@ export * from "./productionOrders";
 export * from "./productionOrderItems";
 export * from "./materialReservations";
 export * from "./serialSequences";
+export * from "./serviceReports";
+export * from "./serviceReportPhotos";
+export * from "./serviceReportSignatures";
+export * from "./serviceReportParts";

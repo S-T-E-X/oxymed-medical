@@ -15,6 +15,7 @@ import stockRouter from "./stock";
 import quoteFormsRouter from "./quote-forms";
 import warrantyRouter from "./warranty";
 import productionRouter from "./production";
+import serviceReportsRouter from "./service-reports";
 
 const router: IRouter = Router();
 
@@ -34,5 +35,6 @@ router.use("/stock", stockRouter);
 router.use(quoteFormsRouter);
 router.use(warrantyRouter);
 router.use(productionRouter);
+router.use(serviceReportsRouter);
 
 export default router;

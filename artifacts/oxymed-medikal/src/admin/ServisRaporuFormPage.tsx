@@ -1,0 +1,931 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import {
+  Camera, ChevronDown, ChevronUp, Loader2, Plus, Save, Trash2, X,
+  FileText, Eye, CheckSquare, Square, Search,
+} from "lucide-react";
+import ServiceReportTemplate, { type ServiceReportTemplateData } from "../components/ServiceReportTemplate";
+import { useImageUpload } from "./useImageUpload";
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// ─── Static data ──────────────────────────────────────────────────────────────
+
+const SERVICE_TYPES = [
+  { value: "periyodik_bakim", label: "Periyodik Bakım" },
+  { value: "ariza_mudahalesi", label: "Arıza Müdahalesi" },
+  { value: "yedek_parca", label: "Yedek Parça" },
+  { value: "genel_kontrol", label: "Genel Kontrol" },
+  { value: "devreye_alma", label: "Devreye Alma" },
+  { value: "garanti_servisi", label: "Garanti Servisi" },
+];
+
+const PRIORITIES = [
+  { value: "acil", label: "ACİL" },
+  { value: "yuksek", label: "Yüksek" },
+  { value: "normal", label: "Normal" },
+  { value: "dusuk", label: "Düşük" },
+];
+
+const ALARM_KEYS = [
+  { key: "dusuk_vakum", label: "Düşük Vakum Alarmı" },
+  { key: "yuksek_sicaklik", label: "Yüksek Sıcaklık Alarmı" },
+  { key: "termik_hata", label: "Termik Hatası" },
+  { key: "sensor_hata", label: "Sensör Hatası" },
+  { key: "bakim_suresi_doldu", label: "Bakım Süresi Doldu" },
+  { key: "acil_ariza", label: "Acil Arıza" },
+];
+
+const ALARM_STATUSES = [
+  { value: "yok", label: "Yok" },
+  { value: "var", label: "Var" },
+  { value: "kontrol_edildi", label: "Kontrol Edildi" },
+  { value: "mudahale_edildi", label: "Müdahale Edildi" },
+];
+
+const DEFAULT_OPERATIONS = [
+  "Yağ seviyesi kontrol edildi",
+  "Vakum filtresi kontrol edildi",
+  "Yağ filtreleri değiştirildi",
+  "Kaçak kontrolü yapıldı",
+  "Elektrik bağlantıları kontrol edildi",
+  "Vakum sensörü kalibrasyonu kontrol edildi",
+  "Alarm sistemi test edildi",
+  "HMI ekran kontrolü yapıldı",
+  "PLC hata kayıtları incelendi",
+  "Sistem genel performans testi tamamlandı",
+];
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Device {
+  id: number;
+  serialNumber: string;
+  productName: string;
+  model: string;
+  customerFirm: string;
+  installDate?: string | null;
+  warrantyEndDate?: string | null;
+  lastMaintenanceDate?: string | null;
+  nextMaintenanceDate?: string | null;
+  status: string;
+  imageUrl?: string | null;
+}
+
+interface Photo { url: string; caption: string; sortOrder: number; }
+interface Part { partName: string; partCode: string; quantity: string; condition: string; }
+interface Signature { role: string; signerName: string; imageDataUrl: string; }
+
+// ─── Signature Canvas ─────────────────────────────────────────────────────────
+
+function SignatureCanvas({ role, label, value, onChange }: {
+  role: string; label: string; value: Signature | null;
+  onChange: (sig: Signature | null) => void;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawing = useRef(false);
+  const [signerName, setSignerName] = useState(value?.signerName ?? "");
+
+  function getPos(e: React.MouseEvent | React.TouchEvent) {
+    const canvas = canvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = "touches" in e ? e.touches[0]!.clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0]!.clientY : e.clientY;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+  }
+
+  function startDraw(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    drawing.current = true;
+    const ctx = canvasRef.current!.getContext("2d")!;
+    const { x, y } = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+
+  function draw(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    if (!drawing.current) return;
+    const ctx = canvasRef.current!.getContext("2d")!;
+    const { x, y } = getPos(e);
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#061b39";
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+
+  function stopDraw() {
+    if (!drawing.current) return;
+    drawing.current = false;
+    const dataUrl = canvasRef.current!.toDataURL("image/png");
+    onChange({ role, signerName, imageDataUrl: dataUrl });
+  }
+
+  function clearCanvas() {
+    const canvas = canvasRef.current!;
+    canvas.getContext("2d")!.clearRect(0, 0, canvas.width, canvas.height);
+    onChange(null);
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">{label}</p>
+      <input
+        type="text"
+        placeholder="Ad Soyad"
+        value={signerName}
+        onChange={(e) => {
+          setSignerName(e.target.value);
+          if (value) onChange({ ...value, signerName: e.target.value });
+        }}
+        className="h-8 rounded border border-slate-200 px-2 text-sm"
+      />
+      <div className="relative border border-slate-300 rounded-lg bg-white overflow-hidden">
+        <canvas
+          ref={canvasRef}
+          width={300} height={100}
+          className="w-full touch-none cursor-crosshair"
+          onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
+          onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
+        />
+        <button
+          type="button"
+          onClick={clearCanvas}
+          className="absolute top-1 right-1 flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 hover:bg-slate-200"
+        >
+          <X className="h-3 w-3" /> Temizle
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Section wrapper ──────────────────────────────────────────────────────────
+
+function Section({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-slate-50"
+      >
+        <span className="font-bold text-slate-900">{title}</span>
+        {open ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+      </button>
+      {open && <div className="px-5 pb-5 pt-1 border-t border-slate-100">{children}</div>}
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+const inputCls = "h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const selectCls = `${inputCls} appearance-none`;
+
+// ─── Device search ────────────────────────────────────────────────────────────
+
+function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Device[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSearch() {
+    if (!query.trim()) return;
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`${BASE}/api/warranty/devices?search=${encodeURIComponent(query)}&limit=10`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json() as { items: Device[] };
+      setResults(data.items ?? []);
+    } catch {
+      toast.error("Cihaz araması başarısız");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Seri no, müşteri veya model ile ara..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="w-full pl-9 pr-3 h-9 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleSearch}
+          disabled={loading}
+          className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-50"
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+          Ara
+        </button>
+      </div>
+      {results.length > 0 && (
+        <div className="rounded-lg border border-slate-200 overflow-hidden">
+          {results.map((d) => (
+            <button
+              key={d.id}
+              type="button"
+              onClick={() => { onSelect(d); setResults([]); }}
+              className="flex items-center justify-between w-full px-4 py-3 text-left text-sm hover:bg-blue-50 border-b border-slate-100 last:border-0"
+            >
+              <div>
+                <p className="font-bold text-slate-900">{d.productName} · {d.model}</p>
+                <p className="text-slate-500 text-xs">{d.serialNumber} · {d.customerFirm}</p>
+              </div>
+              <span className="text-blue-600 text-xs font-bold">Seç →</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Form Page ───────────────────────────────────────────────────────────
+
+export default function ServisRaporuFormPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const isNew = !id || id === "yeni";
+  const { uploadFile, uploading: uploadingPhoto } = useImageUpload();
+
+  // Core fields
+  const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
+  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split("T")[0] ?? "");
+  const [serviceTime, setServiceTime] = useState("");
+  const [serviceType, setServiceType] = useState("periyodik_bakim");
+  const [priority, setPriority] = useState("normal");
+  const [status, setStatus] = useState("taslak");
+  const [serviceCode, setServiceCode] = useState("");
+  const [createdBy, setCreatedBy] = useState("");
+
+  // Hospital info
+  const [hospitalName, setHospitalName] = useState("");
+  const [department, setDepartment] = useState("");
+  const [location, setLocation] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
+  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Device overrides
+  const [deviceType, setDeviceType] = useState("");
+  const [deviceModel, setDeviceModel] = useState("");
+  const [plcSystem, setPlcSystem] = useState("");
+  const [hmiModel, setHmiModel] = useState("");
+  const [productionDate, setProductionDate] = useState("");
+  const [commissionDate, setCommissionDate] = useState("");
+  const [warrantyStatus, setWarrantyStatus] = useState("");
+
+  // Alarms
+  const [alarms, setAlarms] = useState<Record<string, string>>({});
+
+  // Work hours
+  const [pump1Hours, setPump1Hours] = useState("");
+  const [pump2Hours, setPump2Hours] = useState("");
+  const [pump3Hours, setPump3Hours] = useState("");
+  const [totalWorkHours, setTotalWorkHours] = useState("");
+  const [lastMaintenanceDate, setLastMaintenanceDate] = useState("");
+  const [nextMaintenanceDate, setNextMaintenanceDate] = useState("");
+  const [maintenancePeriod, setMaintenancePeriod] = useState("");
+
+  // Vacuum test
+  const [workingPressure, setWorkingPressure] = useState("");
+  const [minVacuum, setMinVacuum] = useState("");
+  const [testDuration, setTestDuration] = useState("");
+  const [testResult, setTestResult] = useState("");
+  const [testDescription, setTestDescription] = useState("");
+
+  // Operations
+  const [operations, setOperations] = useState<string[]>([]);
+  const [customOperations, setCustomOperations] = useState<string[]>([]);
+  const [newOperation, setNewOperation] = useState("");
+
+  // Notes
+  const [notes, setNotes] = useState("");
+
+  // Photos
+  const [photos, setPhotos] = useState<Photo[]>([]);
+
+  // Signatures
+  const [signatures, setSignatures] = useState<{ personel: Signature | null; sorumlu: Signature | null; yetkili: Signature | null }>({
+    personel: null, sorumlu: null, yetkili: null,
+  });
+
+  // Next maintenance
+  const [recommendedMaintenanceDate, setRecommendedMaintenanceDate] = useState("");
+  const [recommendedMaintenanceType, setRecommendedMaintenanceType] = useState("");
+  const [estimatedDuration, setEstimatedDuration] = useState("");
+  const [maintenanceNote, setMaintenanceNote] = useState("");
+
+  // UI state
+  const [saving, setSaving] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [reportNo, setReportNo] = useState<string | null>(null);
+
+  // Load existing report
+  useEffect(() => {
+    if (!isNew) loadReport();
+  }, [id]);
+
+  async function loadReport() {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`${BASE}/api/service-reports/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) { toast.error("Rapor bulunamadı"); navigate("/admin/servis-raporlari"); return; }
+      const r = await res.json() as Record<string, unknown> & {
+        reportNo: string; deviceId: number; serviceDate: string; serviceTime: string | null;
+        serviceType: string; priority: string; status: string; serviceCode: string | null;
+        createdBy: string | null; reportDataJson: Record<string, unknown>;
+        device: Device | null; photos: Photo[]; signatures: Signature[]; parts: Part[];
+      };
+      setReportNo(r.reportNo);
+      setServiceDate(r.serviceDate);
+      setServiceTime(r.serviceTime ?? "");
+      setServiceType(r.serviceType);
+      setPriority(r.priority);
+      setStatus(r.status);
+      setServiceCode(r.serviceCode ?? "");
+      setCreatedBy(r.createdBy ?? "");
+      if (r.device) setSelectedDevice(r.device);
+
+      const rd = r.reportDataJson ?? {};
+      const s = (k: string) => (rd[k] as string | undefined) ?? "";
+      setHospitalName(s("hospitalName")); setDepartment(s("department"));
+      setLocation(s("location")); setContactPerson(s("contactPerson"));
+      setContact(s("contact")); setEmail(s("email"));
+      setDeviceType(s("deviceType")); setDeviceModel(s("deviceModel"));
+      setPlcSystem(s("plcSystem")); setHmiModel(s("hmiModel"));
+      setProductionDate(s("productionDate")); setCommissionDate(s("commissionDate"));
+      setWarrantyStatus(s("warrantyStatus"));
+      setAlarms((rd["alarms"] as Record<string, string>) ?? {});
+      setPump1Hours(s("pump1Hours")); setPump2Hours(s("pump2Hours")); setPump3Hours(s("pump3Hours"));
+      setTotalWorkHours(s("totalWorkHours")); setLastMaintenanceDate(s("lastMaintenanceDate"));
+      setNextMaintenanceDate(s("nextMaintenanceDate")); setMaintenancePeriod(s("maintenancePeriod"));
+      setWorkingPressure(s("workingPressure")); setMinVacuum(s("minVacuum"));
+      setTestDuration(s("testDuration")); setTestResult(s("testResult")); setTestDescription(s("testDescription"));
+      setOperations((rd["operations"] as string[]) ?? []);
+      setCustomOperations((rd["customOperations"] as string[]) ?? []);
+      setNotes(s("notes"));
+      setRecommendedMaintenanceDate(s("recommendedMaintenanceDate"));
+      setRecommendedMaintenanceType(s("recommendedMaintenanceType"));
+      setEstimatedDuration(s("estimatedDuration")); setMaintenanceNote(s("maintenanceNote"));
+      setPhotos((r.photos ?? []).map((p) => ({ url: p.url, caption: p.caption ?? "", sortOrder: p.sortOrder ?? 0 })));
+      const sigMap: typeof signatures = { personel: null, sorumlu: null, yetkili: null };
+      for (const sig of r.signatures ?? []) {
+        const role = sig.role as keyof typeof sigMap;
+        if (role in sigMap) sigMap[role] = { role: sig.role, signerName: sig.signerName ?? "", imageDataUrl: sig.imageDataUrl };
+      }
+      setSignatures(sigMap);
+    } catch {
+      toast.error("Rapor yüklenemedi");
+    }
+  }
+
+  function buildReportData(): Record<string, unknown> {
+    return {
+      hospitalName, department, location, contactPerson, contact, email,
+      deviceType, deviceModel, plcSystem, hmiModel, productionDate, commissionDate, warrantyStatus,
+      alarms,
+      pump1Hours, pump2Hours, pump3Hours, totalWorkHours, lastMaintenanceDate, nextMaintenanceDate, maintenancePeriod,
+      workingPressure, minVacuum, testDuration, testResult, testDescription,
+      operations, customOperations, notes,
+      recommendedMaintenanceDate, recommendedMaintenanceType, estimatedDuration, maintenanceNote,
+    };
+  }
+
+  function buildPayload(extraStatus?: string) {
+    const sigs = Object.values(signatures).filter(Boolean) as Signature[];
+    return {
+      deviceId: selectedDevice?.id,
+      serviceDate, serviceTime: serviceTime || null, serviceType, priority,
+      status: extraStatus ?? status,
+      serviceCode: serviceCode || null,
+      createdBy: createdBy || null,
+      reportDataJson: buildReportData(),
+      photos: photos.map((p, i) => ({ ...p, sortOrder: i })),
+      signatures: sigs,
+      parts: [] as Part[],
+    };
+  }
+
+  async function handleSave(saveStatus?: string) {
+    if (!selectedDevice) { toast.error("Lütfen bir cihaz seçin"); return; }
+    setSaving(true);
+    try {
+      const token = localStorage.getItem("auth_token");
+      const payload = buildPayload(saveStatus);
+      let res: Response;
+      if (isNew) {
+        res = await fetch(`${BASE}/api/service-reports`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        res = await fetch(`${BASE}/api/service-reports/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+      }
+      if (!res.ok) throw new Error("Save failed");
+      const saved = await res.json() as { id: number; reportNo: string };
+      setReportNo(saved.reportNo);
+      toast.success(saveStatus === "tamamlandi" ? "Rapor tamamlandı ve kaydedildi" : "Rapor kaydedildi");
+      if (isNew) navigate(`/admin/servis-raporlari/${saved.id}`, { replace: true });
+    } catch {
+      toast.error("Kaydedilemedi");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleGeneratePdf() {
+    if (!selectedDevice) { toast.error("Lütfen önce raporu kaydedin"); return; }
+    setGeneratingPdf(true);
+    toast.info("PDF hazırlanıyor...");
+    try {
+      const { default: html2pdf } = await import("html2pdf.js");
+      const container = document.getElementById("srt-preview-container");
+      if (!container) { toast.error("Önizleme yüklenemedi"); return; }
+
+      const pdfBlob: Blob = await new Promise((resolve, reject) => {
+        html2pdf()
+          .set({
+            margin: 0,
+            filename: `${reportNo ?? "rapor"}.pdf`,
+            image: { type: "jpeg", quality: 0.95 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+          })
+          .from(container)
+          .outputPdf("blob")
+          .then(resolve)
+          .catch(reject);
+      });
+
+      const token = localStorage.getItem("auth_token");
+      const filename = `${reportNo ?? "rapor"}.pdf`;
+
+      // Request presigned upload URL
+      const urlRes = await fetch(`${BASE}/api/storage/request-upload-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: filename, size: pdfBlob.size, contentType: "application/pdf" }),
+      });
+      const { uploadURL, objectPath } = await urlRes.json() as { uploadURL: string; objectPath: string };
+
+      // Upload to GCS
+      await fetch(uploadURL, {
+        method: "PUT",
+        body: pdfBlob,
+        headers: { "Content-Type": "application/pdf" },
+      });
+
+      const pdfUrl = `${BASE}/api/storage/public-objects/${objectPath}`;
+
+      // Save URL
+      if (!isNew && id) {
+        await fetch(`${BASE}/api/service-reports/${id}/save-pdf-url`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ pdfUrl }),
+        });
+      }
+
+      toast.success("PDF oluşturuldu ve kaydedildi");
+
+      // Auto-download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(pdfBlob);
+      link.download = filename;
+      link.click();
+    } catch (err) {
+      console.error(err);
+      toast.error("PDF oluşturulamadı");
+    } finally {
+      setGeneratingPdf(false);
+    }
+  }
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (photos.length + files.length > 4) { toast.error("En fazla 4 fotoğraf yüklenebilir"); return; }
+    for (const file of files) {
+      try {
+        const { publicUrl } = await uploadFile(file);
+        setPhotos((p) => [...p, { url: publicUrl, caption: "", sortOrder: p.length }]);
+      } catch {
+        toast.error(`${file.name} yüklenemedi`);
+      }
+    }
+    e.target.value = "";
+  }
+
+  function toggleOperation(op: string) {
+    setOperations((prev) => prev.includes(op) ? prev.filter((o) => o !== op) : [...prev, op]);
+  }
+
+  function addCustomOperation() {
+    if (!newOperation.trim()) return;
+    setCustomOperations((p) => [...p, newOperation.trim()]);
+    setNewOperation("");
+  }
+
+  function buildTemplateData(): ServiceReportTemplateData {
+    return {
+      reportNo: reportNo ?? "OXM-SRV-XXXX-000000",
+      serviceDate, serviceTime: serviceTime || null,
+      serviceType, priority: priority || null, status,
+      serviceCode: serviceCode || null, createdBy: createdBy || null,
+      device: selectedDevice ? {
+        productName: selectedDevice.productName, model: selectedDevice.model,
+        serialNumber: selectedDevice.serialNumber, customerFirm: selectedDevice.customerFirm,
+        installDate: selectedDevice.installDate, warrantyEndDate: selectedDevice.warrantyEndDate,
+        lastMaintenanceDate: selectedDevice.lastMaintenanceDate, nextMaintenanceDate: selectedDevice.nextMaintenanceDate,
+      } : { productName: "—", model: "—", serialNumber: "—", customerFirm: "—" },
+      reportDataJson: buildReportData(),
+      photos: photos.map((p) => ({ url: p.url, caption: p.caption })),
+      signatures: Object.values(signatures).filter(Boolean) as Signature[],
+    };
+  }
+
+  return (
+    <div className="p-6 lg:p-8">
+      {/* Page header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900">
+            {isNew ? "Yeni Servis Raporu" : `Rapor: ${reportNo ?? "..."}`}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">Servis raporu bilgilerini doldurun</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setShowPreview((p) => !p)}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            <Eye className="h-4 w-4" /> Önizle
+          </button>
+          <button
+            type="button"
+            onClick={handleGeneratePdf}
+            disabled={generatingPdf || isNew}
+            title={isNew ? "Önce kaydedin" : ""}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+          >
+            {generatingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4 text-red-500" />}
+            PDF Oluştur
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSave()}
+            disabled={saving}
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Kaydet (Taslak)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSave("tamamlandi")}
+            disabled={saving}
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Servis Geçmişine Kaydet
+          </button>
+        </div>
+      </div>
+
+      {/* Preview modal */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 overflow-auto bg-black/60 py-8">
+          <div className="mx-auto max-w-[297mm]">
+            <div className="flex justify-end mb-3">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow hover:bg-slate-50"
+              >
+                <X className="h-4 w-4" /> Kapat
+              </button>
+            </div>
+            <div id="srt-preview-container">
+              <ServiceReportTemplate data={buildTemplateData()} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-4">
+        {/* 1. Device selection */}
+        <Section title="1. Cihaz Seçimi">
+          {selectedDevice ? (
+            <div className="flex items-start justify-between rounded-lg bg-blue-50 border border-blue-200 p-4">
+              <div>
+                <p className="font-bold text-slate-900">{selectedDevice.productName} · {selectedDevice.model}</p>
+                <p className="text-sm text-slate-500 mt-0.5">Seri No: {selectedDevice.serialNumber} · {selectedDevice.customerFirm}</p>
+                {selectedDevice.warrantyEndDate && <p className="text-xs text-slate-400 mt-0.5">Garanti Bitiş: {selectedDevice.warrantyEndDate}</p>}
+              </div>
+              <button type="button" onClick={() => setSelectedDevice(null)} className="text-slate-400 hover:text-red-500">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <DeviceSearch onSelect={(d) => {
+              setSelectedDevice(d);
+              setHospitalName(d.customerFirm);
+              setDeviceType(d.productName);
+              setDeviceModel(d.model);
+              setCommissionDate(d.installDate ?? "");
+              setLastMaintenanceDate(d.lastMaintenanceDate ?? "");
+              setNextMaintenanceDate(d.nextMaintenanceDate ?? "");
+            }} />
+          )}
+        </Section>
+
+        {/* 2. Service header */}
+        <Section title="2. Servis Üst Bilgileri">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <Field label="Servis Tarihi">
+              <input type="date" value={serviceDate} onChange={(e) => setServiceDate(e.target.value)} className={inputCls} />
+            </Field>
+            <Field label="Servis Saati">
+              <input type="time" value={serviceTime} onChange={(e) => setServiceTime(e.target.value)} className={inputCls} />
+            </Field>
+            <Field label="Servis Türü">
+              <select value={serviceType} onChange={(e) => setServiceType(e.target.value)} className={selectCls}>
+                {SERVICE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
+            </Field>
+            <Field label="Müdahale Önceliği">
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} className={selectCls}>
+                {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+              </select>
+            </Field>
+            <Field label="İşlem Durumu">
+              <select value={status} onChange={(e) => setStatus(e.target.value)} className={selectCls}>
+                <option value="taslak">Taslak</option>
+                <option value="tamamlandi">Tamamlandı</option>
+                <option value="iptal">İptal</option>
+              </select>
+            </Field>
+            <Field label="Servis Kodu">
+              <input type="text" value={serviceCode} onChange={(e) => setServiceCode(e.target.value)} placeholder="OXM-SRV-2024-01" className={inputCls} />
+            </Field>
+            <Field label="Servis Personeli">
+              <input type="text" value={createdBy} onChange={(e) => setCreatedBy(e.target.value)} placeholder="Ad Soyad" className={inputCls} />
+            </Field>
+          </div>
+        </Section>
+
+        {/* 3. Hospital info */}
+        <Section title="3. Hastane / Proje Bilgileri">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            <Field label="Hastane Adı"><input type="text" value={hospitalName} onChange={(e) => setHospitalName(e.target.value)} className={inputCls} /></Field>
+            <Field label="Bölüm"><input type="text" value={department} onChange={(e) => setDepartment(e.target.value)} className={inputCls} /></Field>
+            <Field label="Lokasyon"><input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className={inputCls} /></Field>
+            <Field label="Sorumlu Kişi"><input type="text" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} className={inputCls} /></Field>
+            <Field label="İletişim / Tel"><input type="text" value={contact} onChange={(e) => setContact(e.target.value)} className={inputCls} /></Field>
+            <Field label="E-posta"><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} /></Field>
+          </div>
+        </Section>
+
+        {/* 4. Device details */}
+        <Section title="4. Cihaz Bilgileri">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <Field label="Cihaz Türü"><input type="text" value={deviceType} onChange={(e) => setDeviceType(e.target.value)} className={inputCls} /></Field>
+            <Field label="Model"><input type="text" value={deviceModel} onChange={(e) => setDeviceModel(e.target.value)} className={inputCls} /></Field>
+            <Field label="PLC Sistemi"><input type="text" value={plcSystem} onChange={(e) => setPlcSystem(e.target.value)} className={inputCls} /></Field>
+            <Field label="HMI Modeli"><input type="text" value={hmiModel} onChange={(e) => setHmiModel(e.target.value)} className={inputCls} /></Field>
+            <Field label="Üretim Tarihi"><input type="text" value={productionDate} onChange={(e) => setProductionDate(e.target.value)} className={inputCls} placeholder="15.03.2024" /></Field>
+            <Field label="Devreye Alma"><input type="text" value={commissionDate} onChange={(e) => setCommissionDate(e.target.value)} className={inputCls} /></Field>
+            <Field label="Garanti Durumu"><input type="text" value={warrantyStatus} onChange={(e) => setWarrantyStatus(e.target.value)} className={inputCls} placeholder="Devam ediyor / Bitti" /></Field>
+          </div>
+        </Section>
+
+        {/* 5. Alarms */}
+        <Section title="5. Alarm & Arıza Bilgileri">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {ALARM_KEYS.map(({ key, label }) => (
+              <div key={key} className="flex items-center gap-3">
+                <label className="flex-1 text-sm font-medium text-slate-700">{label}</label>
+                <select
+                  value={alarms[key] ?? "yok"}
+                  onChange={(e) => setAlarms((p) => ({ ...p, [key]: e.target.value }))}
+                  className="h-8 w-40 rounded-lg border border-slate-200 bg-white px-2 text-sm"
+                >
+                  {ALARM_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* 6. Work hours */}
+        <Section title="6. Çalışma Saatleri" defaultOpen={false}>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <Field label="Pompa 1 (saat)"><input type="text" value={pump1Hours} onChange={(e) => setPump1Hours(e.target.value)} className={inputCls} placeholder="1250" /></Field>
+            <Field label="Pompa 2 (saat)"><input type="text" value={pump2Hours} onChange={(e) => setPump2Hours(e.target.value)} className={inputCls} /></Field>
+            <Field label="Pompa 3 (saat)"><input type="text" value={pump3Hours} onChange={(e) => setPump3Hours(e.target.value)} className={inputCls} /></Field>
+            <Field label="Toplam Çalışma"><input type="text" value={totalWorkHours} onChange={(e) => setTotalWorkHours(e.target.value)} className={inputCls} /></Field>
+            <Field label="Son Bakım Tarihi"><input type="text" value={lastMaintenanceDate} onChange={(e) => setLastMaintenanceDate(e.target.value)} className={inputCls} /></Field>
+            <Field label="Sonraki Bakım Tarihi"><input type="text" value={nextMaintenanceDate} onChange={(e) => setNextMaintenanceDate(e.target.value)} className={inputCls} /></Field>
+            <Field label="Bakım Periyodu"><input type="text" value={maintenancePeriod} onChange={(e) => setMaintenancePeriod(e.target.value)} className={inputCls} placeholder="6 ay / 500 saat" /></Field>
+          </div>
+        </Section>
+
+        {/* 7. Vacuum test */}
+        <Section title="7. Vakum Performans Testi" defaultOpen={false}>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            <Field label="Çalışma Basıncı"><input type="text" value={workingPressure} onChange={(e) => setWorkingPressure(e.target.value)} className={inputCls} placeholder="-600 mbar" /></Field>
+            <Field label="Minimum Vakum"><input type="text" value={minVacuum} onChange={(e) => setMinVacuum(e.target.value)} className={inputCls} /></Field>
+            <Field label="Test Süresi"><input type="text" value={testDuration} onChange={(e) => setTestDuration(e.target.value)} className={inputCls} placeholder="30 dk" /></Field>
+            <Field label="Test Sonucu">
+              <select value={testResult} onChange={(e) => setTestResult(e.target.value)} className={selectCls}>
+                <option value="">—</option>
+                <option value="Başarılı">Başarılı</option>
+                <option value="Başarısız">Başarısız</option>
+                <option value="Koşullu Başarılı">Koşullu Başarılı</option>
+              </select>
+            </Field>
+            <Field label="Açıklama">
+              <input type="text" value={testDescription} onChange={(e) => setTestDescription(e.target.value)} className={inputCls} />
+            </Field>
+          </div>
+        </Section>
+
+        {/* 8. Operations */}
+        <Section title="8. Yapılan İşlemler">
+          <div className="grid gap-2 md:grid-cols-2">
+            {[...DEFAULT_OPERATIONS, ...customOperations].map((op) => (
+              <button
+                key={op}
+                type="button"
+                onClick={() => toggleOperation(op)}
+                className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm font-medium transition ${
+                  operations.includes(op)
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                {operations.includes(op)
+                  ? <CheckSquare className="h-4 w-4 text-emerald-600 shrink-0" />
+                  : <Square className="h-4 w-4 text-slate-300 shrink-0" />}
+                {op}
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={newOperation}
+              onChange={(e) => setNewOperation(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addCustomOperation()}
+              placeholder="Yeni işlem ekle..."
+              className="flex-1 h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button type="button" onClick={addCustomOperation} className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700">
+              <Plus className="h-4 w-4" /> Ekle
+            </button>
+          </div>
+        </Section>
+
+        {/* 9. Notes */}
+        <Section title="9-10. Açıklama / Notlar" defaultOpen={false}>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={4}
+            placeholder="Servis notları, gözlemler, öneriler..."
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+          />
+        </Section>
+
+        {/* 11. Photos */}
+        <Section title="11. Servis Fotoğrafları">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {photos.map((photo, i) => (
+              <div key={i} className="relative rounded-lg overflow-hidden border border-slate-200">
+                <img src={photo.url} alt={`Fotoğraf ${i + 1}`} className="w-full h-32 object-cover" />
+                <div className="p-2">
+                  <input
+                    type="text"
+                    placeholder="Fotoğraf başlığı..."
+                    value={photo.caption}
+                    onChange={(e) => setPhotos((p) => p.map((ph, j) => j === i ? { ...ph, caption: e.target.value } : ph))}
+                    className="w-full text-xs rounded border border-slate-200 px-2 py-1 focus:outline-none"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))}
+                  className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+            {photos.length < 4 && (
+              <label className="flex flex-col items-center justify-center h-32 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 cursor-pointer hover:bg-slate-100">
+                {uploadingPhoto ? <Loader2 className="h-6 w-6 animate-spin text-slate-400" /> : <Camera className="h-6 w-6 text-slate-300" />}
+                <span className="mt-1 text-xs text-slate-400">Fotoğraf Ekle</span>
+                <input type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoUpload} />
+              </label>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 mt-2">Maksimum 4 fotoğraf · {photos.length}/4 yüklendi</p>
+        </Section>
+
+        {/* 12. Signatures */}
+        <Section title="12. İmza ve Onay">
+          <div className="grid gap-6 md:grid-cols-3">
+            {(["personel", "sorumlu", "yetkili"] as const).map((role) => (
+              <SignatureCanvas
+                key={role}
+                role={role}
+                label={role === "personel" ? "Servis Personeli" : role === "sorumlu" ? "Teknik Sorumlu" : "Hastane Yetkilisi"}
+                value={signatures[role]}
+                onChange={(sig) => setSignatures((p) => ({ ...p, [role]: sig }))}
+              />
+            ))}
+          </div>
+        </Section>
+
+        {/* 13. Next maintenance */}
+        <Section title="13. Sonraki Bakım Planlaması" defaultOpen={false}>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            <Field label="Önerilen Bakım Tarihi"><input type="text" value={recommendedMaintenanceDate} onChange={(e) => setRecommendedMaintenanceDate(e.target.value)} className={inputCls} /></Field>
+            <Field label="Bakım Türü">
+              <select value={recommendedMaintenanceType} onChange={(e) => setRecommendedMaintenanceType(e.target.value)} className={selectCls}>
+                <option value="">—</option>
+                {SERVICE_TYPES.map((t) => <option key={t.value} value={t.label}>{t.label}</option>)}
+              </select>
+            </Field>
+            <Field label="Tahmini Süre"><input type="text" value={estimatedDuration} onChange={(e) => setEstimatedDuration(e.target.value)} className={inputCls} placeholder="2 saat" /></Field>
+            <Field label="Not" >
+              <input type="text" value={maintenanceNote} onChange={(e) => setMaintenanceNote(e.target.value)} className={inputCls} />
+            </Field>
+          </div>
+        </Section>
+      </div>
+
+      {/* Bottom action bar */}
+      <div className="mt-6 flex flex-wrap justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <button
+          type="button"
+          onClick={() => setShowPreview(true)}
+          className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          <Eye className="h-4 w-4" /> Önizle
+        </button>
+        <button
+          type="button"
+          onClick={() => handleSave()}
+          disabled={saving}
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          Kaydet (Taslak)
+        </button>
+        <button
+          type="button"
+          onClick={() => handleSave("tamamlandi")}
+          disabled={saving}
+          className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          Servis Geçmişine Kaydet
+        </button>
+      </div>
+    </div>
+  );
+}
