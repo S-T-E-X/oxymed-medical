@@ -1,0 +1,233 @@
+Oxymed admin paneline servis raporu oluşturma ve PDF üretme sistemi ekle.
+
+Elimde mevcut servis raporu tasarımı var:
+- ServicePageTaslak.tsx
+- ServicePageTaslak.css
+
+Bu dosyaları PDF template olarak kullan. Admin panelde girilen tüm servis verileri bu tasarıma yerleşsin ve A4 landscape PDF olarak oluşturulsun.
+
+Amaç:
+Admin panelden bir cihaz seçilecek, servis raporu bilgileri girilecek, fotoğraflar ve imzalar eklenecek, sistem ServicePageTaslak tasarımını bu bilgilerle dolduracak ve PDF çıktısı oluşturacak. Oluşturulan PDF cihazın servis geçmişine kaydedilecek. Ürün üzerindeki QR kod okutulduğunda açılan /servis/cihaz/:publicToken sayfasında servis geçmişi görünecek ve PDF raporlar görüntülenip indirilebilecek.
+
+Teknoloji:
+- React + TypeScript
+- Tailwind veya mevcut CSS
+- Node.js / Express veya Next.js API
+- PostgreSQL
+- PDF oluşturma için Puppeteer veya Playwright
+- Dosya yükleme için local storage veya S3/R2 uyumlu object storage
+- QR kod sistemi mevcut cihaz public_token yapısıyla çalışsın
+
+Admin Panel Modülü:
+“Servis Raporu Oluştur” sayfası oluştur.
+
+Alanlar:
+
+1. Cihaz seçimi
+- seri no ile ara
+- müşteri/hastane adı ile ara
+- ürün modeli ile ara
+- cihaz seçilince cihaz bilgileri otomatik dolsun
+
+2. Servis üst bilgileri
+- servis tarihi
+- servis saati
+- servis türü
+- müdahale önceliği
+- işlem durumu
+- servis kodu
+- rapor no otomatik oluşsun
+
+Rapor no formatı:
+OXM-SRV-YYYY-000001
+
+3. Hastane / proje bilgileri
+- hastane adı
+- bölüm
+- lokasyon
+- iletişim
+- sorumlu kişi
+- e-posta
+
+4. Cihaz bilgileri
+- cihaz türü
+- model
+- seri numarası
+- PLC sistemi
+- HMI modeli
+- üretim tarihi
+- devreye alma tarihi
+- garanti durumu
+
+5. Alarm & arıza bilgileri
+Checkbox listesi:
+- Düşük Vakum Alarmı
+- Yüksek Sıcaklık Alarmı
+- Termik Hatası
+- Sensör Hatası
+- Bakım Süresi Doldu
+- Acil Arıza
+
+Her alarm için durum:
+- Yok
+- Var
+- Kontrol Edildi
+- Müdahale Edildi
+
+6. Çalışma saatleri
+- Pompa 1 çalışma saati
+- Pompa 2 çalışma saati
+- Pompa 3 çalışma saati
+- toplam çalışma süresi
+- son bakım tarihi
+- bir sonraki bakım tarihi
+- bakım periyodu
+
+7. Vakum performans testi
+- çalışma basıncı
+- minimum vakum
+- test süresi
+- test sonucu
+- açıklama
+
+8. Yapılan işlemler
+Checkbox listesi:
+- Yağ seviyesi kontrol edildi
+- Vakum filtresi kontrol edildi
+- Yağ filtreleri değiştirildi
+- Kaçak kontrolü yapıldı
+- Elektrik bağlantıları kontrol edildi
+- Vakum sensörü kalibrasyonu kontrol edildi
+- Alarm sistemi test edildi
+- HMI ekran kontrolü yapıldı
+- PLC hata kayıtları incelendi
+- Sistem genel performans testi tamamlandı
+
+Admin yeni işlem de ekleyebilsin.
+
+9. Değiştirilen parçalar
+Tablo:
+- parça adı
+- kod / model
+- adet
+- durum
+
+10. Açıklama / notlar
+Serbest metin alanı.
+
+11. Servis fotoğrafları
+Minimum 1, maksimum 4 fotoğraf yüklenebilsin.
+Her fotoğrafa başlık yazılabilsin.
+Fotoğraflar PDF içindeki “Servis Fotoğrafları” alanına yerleşsin.
+
+12. İmza ve onay
+Canvas imza alanı oluştur:
+- Servis personeli imzası
+- Teknik sorumlu imzası
+- Hastane yetkilisi imzası
+
+İmza PNG olarak kaydedilsin ve PDF’e yerleşsin.
+
+13. Sonraki bakım planlaması
+- önerilen bakım tarihi
+- önerilen bakım türü
+- tahmini süre
+- not
+
+PDF Oluşturma:
+ServicePageTaslak.tsx componentini data-driven hale getir.
+Hardcoded metinleri props/data üzerinden doldur.
+ServicePageTaslak.css dosyasını print uyumlu hale getir.
+PDF A4 landscape olacak.
+CSS:
+@page { size: A4 landscape; margin: 0; }
+print-color-adjust: exact kullanılacak.
+
+PDF üretim akışı:
+- Admin formu doldurur
+- Önizle butonuna basar
+- ServicePageTaslak datayla render edilir
+- PDF Oluştur butonuna basınca Puppeteer/Playwright ile PDF oluşturulur
+- PDF dosyası storage’a kaydedilir
+- pdf_url service_reports tablosuna yazılır
+- cihazın servis geçmişine bağlanır
+
+Database tabloları:
+- service_reports
+- service_report_photos
+- service_report_signatures
+- service_report_parts
+- service_report_actions
+
+service_reports alanları:
+- id
+- report_no
+- device_id
+- customer_id
+- service_date
+- service_time
+- service_type
+- priority
+- status
+- service_code
+- report_data_json
+- pdf_url
+- verification_token
+- created_by
+- created_at
+- updated_at
+
+Servis geçmişi:
+Cihaz public servis sayfası oluştur:
+Route:
+/servis/cihaz/:publicToken
+
+Bu sayfada:
+- ürün adı
+- model
+- seri no
+- garanti durumu
+- son bakım tarihi
+- sonraki bakım tarihi
+- servis geçmişi listesi
+görünsün.
+
+Servis geçmişinde her rapor için:
+- rapor no
+- tarih
+- servis türü
+- işlem durumu
+- PDF görüntüle
+- PDF indir
+butonları olsun.
+
+Rapor doğrulama sayfası:
+Route:
+/servis/rapor/:verificationToken
+
+Bu sayfada raporun doğrulanmış olduğu, rapor no, cihaz seri no, tarih ve PDF görüntüleme linki yer alsın.
+
+Güvenlik:
+- Public servis sayfasında gizli admin notları görünmesin.
+- Detaylı teknik notlar sadece admin/servis kullanıcısına açık olsun.
+- PDF raporlar public görüntülenebilecekse sadece verification token ile erişilsin.
+- Her işlem activity_logs tablosuna kaydedilsin.
+- Rapor kesinleştikten sonra silinmesin; revizyon mantığı olsun.
+
+Admin butonları:
+- Önizle
+- PDF Oluştur
+- PDF İndir
+- Müşteriye Mail Gönder
+- Servis Geçmişine Kaydet
+- Revize Oluştur
+- Raporu İptal Et
+
+İlk MVP’de şunları çalışır yap:
+- cihaz seçerek servis raporu oluşturma
+- form verilerini ServicePageTaslak içine yerleştirme
+- servis fotoğrafı yükleme
+- imza alma
+- PDF oluşturma
+- PDF’i servis geçmişine kaydetme
+- /servis/cihaz/:publicToken sayfasında PDF görüntüleme ve indirme
