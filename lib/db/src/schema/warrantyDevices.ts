@@ -3,6 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const WARRANTY_STATUSES = [
+  "taslak",
   "aktif_garanti",
   "yakin_bitis",
   "garanti_disi",
@@ -22,7 +23,7 @@ export const warrantyDevicesTable = pgTable("warranty_devices", {
   model: text("model").notNull(),
   serialNumber: text("serial_number").notNull().unique(),
   qrToken: text("qr_token").notNull().unique(),
-  customerFirm: text("customer_firm").notNull(),
+  customerFirm: text("customer_firm").notNull().default("Taslak"),
   customerContact: text("customer_contact"),
   customerPhone: text("customer_phone"),
   customerEmail: text("customer_email"),
@@ -33,9 +34,10 @@ export const warrantyDevicesTable = pgTable("warranty_devices", {
   maintenanceContractStatus: text("maintenance_contract_status"),
   lastMaintenanceDate: text("last_maintenance_date"),
   nextMaintenanceDate: text("next_maintenance_date"),
-  status: text("status").notNull().default("aktif_garanti"),
+  status: text("status").notNull().default("taslak"),
   notes: text("notes"),
   imageUrl: text("image_url"),
+  productionOrderItemId: integer("production_order_item_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

@@ -14,6 +14,7 @@ import catalogsRouter from "./catalogs";
 import stockRouter from "./stock";
 import quoteFormsRouter from "./quote-forms";
 import warrantyRouter from "./warranty";
+import productionRouter from "./production";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(catalogsRouter);
 router.use("/stock", stockRouter);
 router.use(quoteFormsRouter);
 router.use(warrantyRouter);
+router.use(productionRouter);
 
 export default router;

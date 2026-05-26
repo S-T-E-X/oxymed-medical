@@ -6,6 +6,7 @@ import {
   Box,
   Building2,
   Eye,
+  Factory,
   FileText,
   ImageIcon,
   LayoutDashboard,
@@ -45,6 +46,10 @@ const warrantyNavItems = [
 const stockNavItems = [
   { label: "Ürün Stok", icon: Layers, to: "/admin/stok/urunler" },
   { label: "Malzeme Stok", icon: ClipboardList, to: "/admin/stok/malzeme" },
+];
+
+const productionNavItems = [
+  { label: "Üretim Emirleri", icon: Factory, to: "/admin/uretim" },
 ];
 
 const quoteNavItems = [
@@ -119,6 +124,27 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
         })}
         <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Teklif Sistemi</p>
         {quoteNavItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
+                  isActive
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-400 hover:bg-white/6 hover:text-white"
+                }`
+              }
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              <span className="truncate">{item.label}</span>
+            </NavLink>
+          );
+        })}
+        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Üretim</p>
+        {productionNavItems.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink

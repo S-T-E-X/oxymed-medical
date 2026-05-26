@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db, quoteForms, quoteFormItems } from "@workspace/db";
+import { db, quoteForms, quoteFormItems, productionOrdersTable } from "@workspace/db";
 import { eq, desc, like, and } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
@@ -118,6 +118,28 @@ router.post("/quote-forms", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(form);
 });
 
+async function generateProductionOrderNo(): Promise<string> {
+  const now = new Date();
+  const year = now.getFullYear();
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const prefix = `OXM-URT-${year}-${day}${month}`;
+
+  const [last] = await db
+    .select({ orderNo: productionOrdersTable.orderNo })
+    .from(productionOrdersTable)
+    .where(like(productionOrdersTable.orderNo, `${prefix}%`))
+    .orderBy(desc(productionOrdersTable.orderNo))
+    .limit(1);
+
+  let seq = 1;
+  if (last) {
+    const lastSeq = parseInt(last.orderNo.slice(-2), 10);
+    if (!isNaN(lastSeq)) seq = lastSeq + 1;
+  }
+  return `${prefix}${String(seq).padStart(2, "0")}`;
+}
+
 // Update quote form
 router.patch("/quote-forms/:id", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
@@ -126,6 +148,36 @@ router.patch("/quote-forms/:id", requireAuth, async (req, res): Promise<void> =>
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+
+  // Detect approval transition → auto-create production orders
+  if (parsed.data.status === "approved") {
+    const [existing] = await db.select({ status: quoteForms.status }).from(quoteForms).where(eq(quoteForms.id, id));
+    if (existing && existing.status !== "approved") {
+      const items = await db
+        .select()
+        .from(quoteFormItems)
+        .where(eq(quoteFormItems.formId, id));
+
+      const [formRow] = await db.select({ firmaAdi: quoteForms.firmaAdi }).from(quoteForms).where(eq(quoteForms.id, id));
+
+      for (const item of items) {
+        if ((item.quantity ?? 0) < 1) continue;
+        const orderNo = await generateProductionOrderNo();
+        await db.insert(productionOrdersTable).values({
+          orderNo,
+          productId: item.productId ?? undefined,
+          productTitle: item.title,
+          productCode: item.modelCode ?? undefined,
+          quantity: item.quantity ?? 1,
+          quoteFormId: id,
+          customerName: formRow?.firmaAdi ?? undefined,
+          status: "bekliyor",
+          notes: `Otomatik oluşturuldu. Teklif No: ${id}`,
+        });
+      }
+    }
+  }
+
   const [form] = await db
     .update(quoteForms)
     .set({ ...parsed.data, updatedAt: new Date() })

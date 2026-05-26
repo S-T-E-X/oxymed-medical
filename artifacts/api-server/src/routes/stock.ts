@@ -80,9 +80,12 @@ router.get("/materials", requireAuth, async (_req, res) => {
 const MaterialBody = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
+  category: z.string().optional().nullable(),
+  productCode: z.string().optional().nullable(),
   supplier: z.string().optional(),
   price: z.string().optional(),
   quantity: z.number().int().min(0).default(0),
+  minStock: z.number().int().min(0).default(0),
   unit: z.string().default("adet"),
   notes: z.string().optional(),
 });
@@ -94,9 +97,12 @@ router.post("/materials", requireAuth, async (req, res) => {
   const [created] = await db.insert(materialStock).values({
     name: parsed.data.name,
     description: parsed.data.description ?? null,
+    category: parsed.data.category ?? null,
+    productCode: parsed.data.productCode ?? null,
     supplier: parsed.data.supplier ?? null,
     price: parsed.data.price ?? null,
     quantity: parsed.data.quantity,
+    minStock: parsed.data.minStock,
     unit: parsed.data.unit,
     notes: parsed.data.notes ?? null,
   }).returning();

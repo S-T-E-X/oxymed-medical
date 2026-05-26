@@ -7,14 +7,17 @@ interface Material {
   id: number;
   name: string;
   description: string | null;
+  category: string | null;
+  productCode: string | null;
   supplier: string | null;
   price: string | null;
   quantity: number;
+  minStock: number;
   unit: string;
   notes: string | null;
 }
 
-const EMPTY_FORM = { name: "", description: "", supplier: "", price: "", quantity: "0", unit: "adet", notes: "" };
+const EMPTY_FORM = { name: "", description: "", category: "", productCode: "", supplier: "", price: "", quantity: "0", minStock: "0", unit: "adet", notes: "" };
 
 export default function MaterialStockPage() {
   const { authFetch } = useAuth();
@@ -54,9 +57,12 @@ export default function MaterialStockPage() {
     setForm({
       name: item.name,
       description: item.description ?? "",
+      category: item.category ?? "",
+      productCode: item.productCode ?? "",
       supplier: item.supplier ?? "",
       price: item.price ?? "",
       quantity: String(item.quantity),
+      minStock: String(item.minStock),
       unit: item.unit,
       notes: item.notes ?? "",
     });
@@ -70,9 +76,12 @@ export default function MaterialStockPage() {
     const body = {
       name: form.name.trim(),
       description: form.description || undefined,
+      category: form.category.trim() || null,
+      productCode: form.productCode.trim() || null,
       supplier: form.supplier || undefined,
       price: form.price || undefined,
       quantity: parseInt(form.quantity, 10) || 0,
+      minStock: parseInt(form.minStock, 10) || 0,
       unit: form.unit || "adet",
       notes: form.notes || undefined,
     };
@@ -146,55 +155,70 @@ export default function MaterialStockPage() {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <th className="px-5 py-3">Malzeme Adı</th>
-                <th className="px-4 py-3">Tedarikçi</th>
-                <th className="px-4 py-3 w-28 text-right">Fiyat</th>
-                <th className="px-4 py-3 w-28 text-center">Stok</th>
+                <th className="px-4 py-3 hidden sm:table-cell">Kategori</th>
+                <th className="px-4 py-3 hidden md:table-cell">Tedarikçi</th>
+                <th className="px-4 py-3 w-28 text-right hidden sm:table-cell">Fiyat</th>
+                <th className="px-4 py-3 w-32 text-center">Stok / Min</th>
                 <th className="px-4 py-3 w-20" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {items.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50">
-                  <td className="px-5 py-3">
-                    <div>
-                      <p className="font-semibold text-slate-900">{item.name}</p>
-                      {item.description && <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{item.supplier ?? "—"}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-900">
-                    {item.price ? `${Number(item.price).toLocaleString("tr-TR")} ₺` : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${
-                      item.quantity === 0
-                        ? "bg-red-100 text-red-700"
-                        : item.quantity < 5
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-emerald-100 text-emerald-700"
-                    }`}>
-                      {item.quantity} {item.unit}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEdit(item)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-blue-300 hover:text-blue-600"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        disabled={deletingId === item.id}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-red-300 hover:text-red-600 disabled:opacity-50"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {items.map((item) => {
+                const isLow = item.quantity <= item.minStock;
+                return (
+                  <tr key={item.id} className={`hover:bg-slate-50 ${item.quantity === 0 ? "bg-red-50/30" : ""}`}>
+                    <td className="px-5 py-3">
+                      <div>
+                        <p className="font-semibold text-slate-900">{item.name}</p>
+                        {item.productCode && <p className="text-xs text-slate-400 font-mono">{item.productCode}</p>}
+                        {item.description && <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-slate-600 hidden sm:table-cell">
+                      {item.category ? (
+                        <span className="rounded-full bg-blue-50 border border-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">{item.category}</span>
+                      ) : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600 hidden md:table-cell">{item.supplier ?? "—"}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-slate-900 hidden sm:table-cell">
+                      {item.price ? `${Number(item.price).toLocaleString("tr-TR")} ₺` : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${
+                          item.quantity === 0
+                            ? "bg-red-100 text-red-700"
+                            : isLow
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}>
+                          {item.quantity} {item.unit}
+                        </span>
+                        {item.minStock > 0 && (
+                          <span className="text-[10px] text-slate-400">min: {item.minStock}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openEdit(item)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-blue-300 hover:text-blue-600"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          disabled={deletingId === item.id}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-red-300 hover:text-red-600 disabled:opacity-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           {items.length === 0 && (
@@ -227,6 +251,26 @@ export default function MaterialStockPage() {
                   required
                 />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">Kategori</label>
+                  <input
+                    value={form.category}
+                    onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
+                    placeholder="Örn: Elektronik"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">Malzeme Kodu</label>
+                  <input
+                    value={form.productCode}
+                    onChange={(e) => setForm((f) => ({ ...f, productCode: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-blue-500 focus:outline-none"
+                    placeholder="MLZ-001"
+                  />
+                </div>
+              </div>
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-slate-700">Açıklama</label>
                 <input
@@ -245,7 +289,7 @@ export default function MaterialStockPage() {
                   placeholder="Tedarikçi firma adı"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 <div className="col-span-1">
                   <label className="mb-1.5 block text-xs font-semibold text-slate-700">Fiyat (₺)</label>
                   <input
@@ -259,12 +303,22 @@ export default function MaterialStockPage() {
                   />
                 </div>
                 <div className="col-span-1">
-                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">Stok Miktarı</label>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">Stok</label>
                   <input
                     type="number"
                     min="0"
                     value={form.quantity}
                     onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div className="col-span-1">
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-700">Min. Stok</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.minStock}
+                    onChange={(e) => setForm((f) => ({ ...f, minStock: e.target.value }))}
                     className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
                   />
                 </div>
@@ -275,14 +329,9 @@ export default function MaterialStockPage() {
                     onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
                     className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none"
                   >
-                    <option value="adet">adet</option>
-                    <option value="kg">kg</option>
-                    <option value="lt">lt</option>
-                    <option value="m">m</option>
-                    <option value="m²">m²</option>
-                    <option value="kutu">kutu</option>
-                    <option value="paket">paket</option>
-                    <option value="rulo">rulo</option>
+                    {["adet", "kg", "lt", "m", "m²", "kutu", "paket", "rulo", "mt"].map((u) => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
                   </select>
                 </div>
               </div>
