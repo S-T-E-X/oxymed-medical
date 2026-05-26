@@ -26,6 +26,7 @@ import {
   Link2,
   Pencil,
   Plus,
+  Printer,
   Settings,
   ShieldAlert,
   ShieldCheck,
@@ -33,6 +34,106 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import QRCode from "react-qr-code";
+import jsPDF from "jspdf";
+
+// ─── QR label PDF helper ────────────────────────────────────────────────────
+
+async function svgToPng(svgEl: SVGElement, size = 256): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const serializer = new XMLSerializer();
+    const svgStr = serializer.serializeToString(svgEl);
+    const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+async function generateQrLabelPdf(params: {
+  qrUrl: string;
+  productName: string;
+  serialNumber: string;
+  model: string;
+  customerFirm?: string | null;
+  warrantyEndDate?: string | null;
+  qrSvgId: string;
+}) {
+  const svgEl = document.getElementById(params.qrSvgId) as SVGElement | null;
+  if (!svgEl) { toast.error("QR kodu oluşturulamadı"); return; }
+
+  let qrPng: string;
+  try {
+    qrPng = await svgToPng(svgEl, 300);
+  } catch {
+    toast.error("QR görseli oluşturulamadı");
+    return;
+  }
+
+  const W = 90, H = 60;
+  const doc = new jsPDF({ unit: "mm", format: [W, H], orientation: "landscape" });
+
+  doc.setFillColor(6, 27, 57);
+  doc.rect(0, 0, W, 14, "F");
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(9.5);
+  doc.setFont("helvetica", "bold");
+  doc.text("OXYMED MEDİKAL", 5, 9);
+
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "normal");
+  doc.text("Medikal Gaz Sistemleri", 5, 12.5);
+
+  const qrSize = 40;
+  const qrX = W - qrSize - 4;
+  const qrY = 16;
+  doc.addImage(qrPng, "PNG", qrX, qrY, qrSize, qrSize);
+
+  doc.setDrawColor(220, 230, 240);
+  doc.setLineWidth(0.3);
+  doc.line(qrX - 2, 16, qrX - 2, H - 3);
+
+  const textX = 5;
+  let y = 21;
+  const lineH = 5.5;
+
+  doc.setTextColor(7, 27, 56);
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "bold");
+  const name = params.productName.length > 26 ? params.productName.slice(0, 24) + "…" : params.productName;
+  doc.text(name, textX, y); y += lineH;
+
+  doc.setFontSize(7);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Model: ${params.model || "—"}`, textX, y); y += lineH;
+  doc.text(`Seri No: ${params.serialNumber}`, textX, y); y += lineH;
+  if (params.customerFirm) {
+    const firm = params.customerFirm.length > 28 ? params.customerFirm.slice(0, 26) + "…" : params.customerFirm;
+    doc.text(firm, textX, y); y += lineH;
+  }
+  if (params.warrantyEndDate) {
+    doc.text(`Garanti Bitiş: ${params.warrantyEndDate}`, textX, y); y += lineH;
+  }
+
+  doc.setFontSize(5.5);
+  doc.setTextColor(130, 145, 165);
+  doc.text("Garanti bilgileri için QR kodu okutunuz", textX, H - 3);
+
+  doc.save(`QR-Etiket-${params.serialNumber}.pdf`);
+}
 
 // ─── Status config ────────────────────────────────────────────────────────────
 
@@ -526,13 +627,54 @@ export default function WarrantyDeviceDetailPage() {
                   <p className="mt-1 text-sm text-slate-700">{device.notes}</p>
                 </div>
               )}
-              <div className="mt-5 rounded-lg border border-slate-100 bg-slate-50 p-3">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Müşteri QR Sayfası Linki</p>
-                <div className="flex items-center gap-2">
-                  <a href={qrUrl} target="_blank" rel="noopener noreferrer" className="flex-1 truncate font-mono text-xs text-blue-600 hover:underline">{qrUrl}</a>
-                  <button onClick={copyQrUrl} className="flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900">
-                    {copiedQr ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                  </button>
+              <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+                  {/* Inline QR code */}
+                  <div className="flex flex-col items-center gap-2 shrink-0">
+                    <div className="rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm">
+                      <QRCode
+                        id="admin-qr-code-svg"
+                        value={qrUrl}
+                        size={112}
+                        level="M"
+                        fgColor="#061b39"
+                        bgColor="#ffffff"
+                      />
+                    </div>
+                    <button
+                      className="flex items-center gap-1.5 rounded-lg bg-oxynavy-700 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-oxynavy-800 active:opacity-90"
+                      onClick={() =>
+                        generateQrLabelPdf({
+                          qrUrl,
+                          productName: device.productName,
+                          serialNumber: device.serialNumber,
+                          model: device.model ?? "",
+                          customerFirm: device.customerFirm,
+                          warrantyEndDate: device.warrantyEndDate,
+                          qrSvgId: "admin-qr-code-svg",
+                        })
+                      }
+                    >
+                      <Printer className="h-3.5 w-3.5" /> QR Etiket Yazdır
+                    </button>
+                  </div>
+
+                  {/* Link + info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Müşteri QR Sayfası Linki</p>
+                    <div className="flex items-center gap-2">
+                      <a href={qrUrl} target="_blank" rel="noopener noreferrer" className="flex-1 truncate font-mono text-xs text-blue-600 hover:underline">{qrUrl}</a>
+                      <button onClick={copyQrUrl} className="flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900" title="Kopyala">
+                        {copiedQr ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                    <p className="mt-3 text-xs text-slate-500">
+                      QR kodu cihaz etiketine yapıştırın. Müşteri kamerasıyla tarayınca garanti &amp; servis bilgilerini görebilir.
+                    </p>
+                    <p className="mt-1 text-[10px] text-slate-400">
+                      "QR Etiket Yazdır" → 90×60 mm label PDF indirir (yazıcıya gönderebilirsiniz).
+                    </p>
+                  </div>
                 </div>
               </div>
             </>

@@ -1,0 +1,286 @@
+/* ── QR Page — mobile-first ── */
+
+.qr-page {
+  min-height: 100dvh;
+  background: #f0f4f8;
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+}
+
+/* Header */
+.qr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #061b39, #082f5e);
+  box-shadow: 0 2px 8px rgba(2,20,35,.22);
+}
+
+.qr-header__label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Main scroll area */
+.qr-main {
+  flex: 1;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Status banner */
+.qr-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 14px;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: 0 2px 8px rgba(2,20,35,.06);
+}
+
+.qr-status-banner__icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.qr-status-banner__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7a8fa8;
+  margin: 0 0 4px;
+}
+
+.qr-status-banner__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  ring-width: 1px;
+  ring-style: solid;
+  margin: 0;
+}
+
+/* Device image */
+.qr-image-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 4px;
+}
+
+.qr-device-image {
+  width: 220px;
+  max-width: 80%;
+  filter: drop-shadow(0 10px 20px rgba(2,20,35,.13));
+  object-fit: contain;
+}
+
+/* Card */
+.qr-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 8px rgba(2,20,35,.06);
+  border: 1px solid #dde5f0;
+}
+
+.qr-card__title {
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #071b38;
+  margin: 0;
+}
+
+/* DL rows */
+.qr-dl {
+  margin: 12px 0 0;
+}
+
+.qr-dl__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 38px;
+  border-bottom: 1px solid #e8eef6;
+  padding: 4px 0;
+}
+
+.qr-dl__row:last-child {
+  border-bottom: 0;
+}
+
+.qr-dl__dt {
+  width: 120px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a7099;
+}
+
+.qr-dl__dd {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #071b38;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* Service records */
+.qr-record {
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #dde5f0;
+}
+
+.qr-record__type {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e4a82;
+  margin-bottom: 4px;
+}
+
+/* Form inputs */
+.qr-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a5e78;
+  margin-bottom: 5px;
+}
+
+.qr-input-wrap {
+  position: relative;
+}
+
+.qr-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #8a9bb5;
+  pointer-events: none;
+}
+
+.qr-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #071b38;
+  background: #f8fafc;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.qr-input:focus {
+  border-color: #1e4a82;
+  background: #ffffff;
+}
+
+.qr-input--icon {
+  padding-left: 36px;
+}
+
+textarea.qr-input {
+  resize: vertical;
+  min-height: 72px;
+}
+
+select.qr-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9bb5' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+}
+
+/* Contact strip */
+.qr-contact {
+  display: flex;
+  gap: 10px;
+}
+
+.qr-contact__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 10px;
+  background: #ffffff;
+  border: 1px solid #dde5f0;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e4a82;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2,20,35,.05);
+  transition: background 0.15s;
+}
+
+.qr-contact__btn:active {
+  background: #f0f4f8;
+}
+
+/* Not found */
+.qr-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+/* Footer */
+.qr-footer {
+  padding: 16px 20px 24px;
+  text-align: center;
+  font-size: 11px;
+  color: #8a9bb5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Tablet+: slightly wider */
+@media (min-width: 480px) {
+  .qr-main {
+    padding: 24px 20px 40px;
+    gap: 16px;
+  }
+
+  .qr-dl__dt {
+    width: 140px;
+  }
+
+  .qr-device-image {
+    width: 260px;
+  }
+}

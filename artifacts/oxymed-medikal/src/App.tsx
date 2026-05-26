@@ -30,6 +30,7 @@ import ProductsPage from "./pages/ProductsPage";
 import QuotePage from "./pages/QuotePage";
 import ReferencesPage from "./pages/ReferencesPage";
 import ServicePage from "./pages/ServicePage";
+import DeviceQrPage from "./pages/DeviceQrPage";
 import ServiceReportPage from "./pages/ServiceReportPage";
 import GasControlPanelPage from "./pages/GasControlPanelPage";
 import QuoteTemplatePage from "./pages/QuoteTemplatePage";
@@ -49,7 +50,7 @@ export default function App() {
           <Route path="/teklif-al" element={<QuotePage />} />
           <Route path="/servis" element={<ServicePage />} />
           <Route path="/servis/:serialNo" element={<ServicePage />} />
-          <Route path="/servis/qr/:qrToken" element={<ServicePage />} />
+          <Route path="/servis/qr/:qrToken" element={<DeviceQrPage />} />
           <Route path="/servis-raporu/:recordId" element={<ServiceReportPage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
           <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
