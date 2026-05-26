@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, warrantyDevicesTable, serviceRecordsTable, warrantyClaimsTable, maintenanceKitsTable } from "@workspace/db";
-import { eq, desc, ilike, or, and, sql } from "drizzle-orm";
+import { eq, desc, ilike, or, and, sql, inArray } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
@@ -260,7 +260,6 @@ router.get("/warranty/records/:recordId", async (req, res): Promise<void> => {
     workHours: record.workHours,
     reportNo: record.reportNo,
     photoUrls: record.photoUrls,
-    notes: record.notes,
     kits,
     deviceProductName: device.productName,
     deviceModel: device.model,
@@ -372,7 +371,7 @@ router.get("/warranty/devices/:id/service-records", requireAuth, async (req, res
     const allKits = await db
       .select()
       .from(maintenanceKitsTable)
-      .where(sql`${maintenanceKitsTable.serviceRecordId} = ANY(${sql.raw(`ARRAY[${recordIds.join(",")}]::int[]`)})`);
+      .where(inArray(maintenanceKitsTable.serviceRecordId, recordIds));
     for (const kit of allKits) {
       if (!kitsMap[kit.serviceRecordId]) kitsMap[kit.serviceRecordId] = [];
       kitsMap[kit.serviceRecordId]!.push(kit);

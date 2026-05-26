@@ -16,7 +16,6 @@ export interface ServiceReportResult {
   workHours?: string | null;
   reportNo?: string | null;
   photoUrls?: string[] | null;
-  notes?: string | null;
   kits?: MaintenanceKitItem[] | null;
   deviceProductName: string;
   deviceModel: string;

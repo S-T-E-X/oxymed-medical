@@ -223,7 +223,7 @@ function DynamicReport({ recordId }: { recordId: number }) {
           </Panel>
         </div>
 
-        {(actions.length > 0 || d.notes) && (
+        {(actions.length > 0 || d.description) && (
           <div className="sr-grid sr-mid-grid">
             {actions.length > 0 && (
               <Panel title="Yapılan İşlemler" icon={Wrench}>
@@ -235,12 +235,11 @@ function DynamicReport({ recordId }: { recordId: number }) {
               </Panel>
             )}
 
-            <Panel title="Açıklama / Notlar" icon={FileText}>
+            <Panel title="Açıklama" icon={FileText}>
               <div className="sr-notes">
                 <div>
                   {d.description && <p>{d.description}</p>}
-                  {d.notes && <p>{d.notes}</p>}
-                  {!d.description && !d.notes && <p>Bu servis kaydı için açıklama girilmemiştir.</p>}
+                  {!d.description && <p>Bu servis kaydı için açıklama girilmemiştir.</p>}
                 </div>
                 <aside>
                   {d.servicePersonnel && (

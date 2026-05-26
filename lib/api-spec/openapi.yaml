@@ -2490,9 +2490,6 @@ components:
           nullable: true
           items:
             type: string
-        notes:
-          type: string
-          nullable: true
         kits:
           type: array
           nullable: true

@@ -202,10 +202,11 @@ function DeviceNotFound() {
 function DeviceFound({ device }: { device: {
   id: number; productName: string; model: string; serialNumber: string;
   installDate?: string | null; warrantyEndDate?: string | null;
+  lastMaintenanceDate?: string | null; nextMaintenanceDate?: string | null;
   status: string; customerFirm?: string | null; imageUrl?: string | null;
   serviceRecords?: Array<{
     id: number; serviceDate: string; serviceType: string;
-    description?: string | null; servicePersonnel?: string | null; reportNo?: string | null;
+    servicePersonnel?: string | null;
   }> | null;
 }}) {
   const isActive = STATUS_ACTIVE.has(device.status);
@@ -213,10 +214,12 @@ function DeviceFound({ device }: { device: {
     ["Cihaz Türü",        device.productName],
     ["Model",             device.model],
     ["Seri Numarası",     device.serialNumber],
-    ...(device.installDate       ? [["Kurulum Tarihi",   device.installDate      ]] : []),
-    ...(device.customerFirm      ? [["Müşteri / Kurum",  device.customerFirm     ]] : []),
+    ...(device.installDate          ? [["Kurulum Tarihi",   device.installDate         ]] : []),
+    ...(device.customerFirm         ? [["Müşteri / Kurum",  device.customerFirm        ]] : []),
     ["Garanti Durumu",    STATUS_LABELS[device.status] ?? device.status],
-    ...(device.warrantyEndDate   ? [["Garanti Bitiş",    device.warrantyEndDate  ]] : []),
+    ...(device.warrantyEndDate      ? [["Garanti Bitiş",    device.warrantyEndDate     ]] : []),
+    ...(device.lastMaintenanceDate  ? [["Son Bakım",        device.lastMaintenanceDate ]] : []),
+    ...(device.nextMaintenanceDate  ? [["Sonraki Bakım",    device.nextMaintenanceDate ]] : []),
   ] as [string, string][];
 
   const records = device.serviceRecords ?? [];

@@ -1229,7 +1229,6 @@ export const GetServiceReportResponse = zod.object({
   "workHours": zod.string().nullish(),
   "reportNo": zod.string().nullish(),
   "photoUrls": zod.array(zod.string()).nullish(),
-  "notes": zod.string().nullish(),
   "kits": zod.array(zod.object({
   "id": zod.number(),
   "serviceRecordId": zod.number(),
