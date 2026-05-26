@@ -1,0 +1,82 @@
+Oxymed admin paneline kapsamlı üretim yönetimi modülü ekle.
+
+Amaç:
+Teklif onaylandığında veya admin manuel olarak seçtiğinde üretilecek ürünler üretim sayfasına düşsün. Sistem hazır ürün stoğunu kontrol etsin. Hazır stok yoksa ürünün malzeme reçetesine göre gerekli malzemelerin stokta olup olmadığını kontrol etsin. Üretime alınan her ürün için otomatik seri numarası, QR kod, cihaz kaydı ve garanti taslağı oluştursun.
+
+Teknoloji:
+- React + TypeScript frontend
+- Tailwind CSS
+- Node.js / Express veya Next.js API backend
+- PostgreSQL database
+- QR üretimi için qrcode paketi
+- PDF/etiket üretimi için Puppeteer veya Playwright
+
+Modüller:
+
+1. Üretim Yönetimi Sayfası
+Üretim kayıtları şu durumlarla yönetilsin:
+- Bekliyor
+- Stok Kontrolünde
+- Stoktan Karşılanabilir
+- Malzeme Kontrolünde
+- Malzeme Eksik
+- Üretime Hazır
+- Üretimde
+- Kalite Kontrolde
+- Tamamlandı
+- Stokta
+- Sevkiyata Hazır
+- Sevk Edildi
+- Kurulum Bekliyor
+- Garanti Başlatıldı
+- İptal
+
+2. Tekliften Üretime Otomatik Aktarım
+Bir teklif “Onaylandı” olarak işaretlendiğinde teklif kalemlerindeki üretilecek ürünler otomatik olarak üretim sayfasında “Bekliyor” durumunda oluşsun.
+Teklifte aynı üründen 3 adet varsa 3 adetlik üretim emri oluşsun ve üretime alındığında her adet için ayrı seri numarası oluşturulsun.
+
+3. Manuel Üretim Emri
+Admin istediği ürünü ve adedi seçerek manuel üretim emri oluşturabilsin.
+
+4. Hazır Ürün Stok Kontrolü
+Sistem önce finished goods / hazır ürün stoklarını kontrol etsin.
+Eğer ürün stokta varsa:
+- “Stoktan Karşılanabilir” durumu gösterilsin.
+- Admin “Stoktan Ayır” butonuna basabilsin.
+- Stoktan ayrılan ürün müşteriye/teklife bağlansın.
+
+5. Malzeme Reçetesi / BOM
+Her ürünün sadece adminin görebileceği üretim bilgileri alanında malzeme reçetesi tanımlanabilsin.
+Admin ürün detayında:
+- malzeme seçsin
+- gerekli adet girsin
+- kaydetsin
+
+Örnek:
+OXY-DVS-1000 için:
+- Vakum Pompası: 3 adet
+- 500 L Tank: 1 adet
+- M8 Vida: 24 adet
+- Hava Filtresi: 1 adet
+
+6. Malzeme Listesi / Stok
+Malzeme listesi sayfası olsun.
+Her malzeme için:
+- malzeme adı
+- kategori
+- stok adedi
+- minimum stok
+- birim
+- tedarikçi
+- maliyet
+- ürün kodu
+- notlar
+tutulsun.
+
+7. Üretim İçin Malzeme Kontrolü
+Üretim emrinde sistem ürünün reçetesine göre gerekli malzemeleri kontrol etsin.
+Her malzeme için:
+- gerekli adet
+- stoktaki adet
+- eksik adet
+gösterilsin.

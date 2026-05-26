@@ -1,0 +1,233 @@
+Oxymed admin paneline kapsamlı üretim yönetimi modülü ekle.
+
+Amaç:
+Teklif onaylandığında veya admin manuel olarak seçtiğinde üretilecek ürünler üretim sayfasına düşsün. Sistem hazır ürün stoğunu kontrol etsin. Hazır stok yoksa ürünün malzeme reçetesine göre gerekli malzemelerin stokta olup olmadığını kontrol etsin. Üretime alınan her ürün için otomatik seri numarası, QR kod, cihaz kaydı ve garanti taslağı oluştursun.
+
+Teknoloji:
+- React + TypeScript frontend
+- Tailwind CSS
+- Node.js / Express veya Next.js API backend
+- PostgreSQL database
+- QR üretimi için qrcode paketi
+- PDF/etiket üretimi için Puppeteer veya Playwright
+
+Modüller:
+
+1. Üretim Yönetimi Sayfası
+Üretim kayıtları şu durumlarla yönetilsin:
+- Bekliyor
+- Stok Kontrolünde
+- Stoktan Karşılanabilir
+- Malzeme Kontrolünde
+- Malzeme Eksik
+- Üretime Hazır
+- Üretimde
+- Kalite Kontrolde
+- Tamamlandı
+- Stokta
+- Sevkiyata Hazır
+- Sevk Edildi
+- Kurulum Bekliyor
+- Garanti Başlatıldı
+- İptal
+
+2. Tekliften Üretime Otomatik Aktarım
+Bir teklif “Onaylandı” olarak işaretlendiğinde teklif kalemlerindeki üretilecek ürünler otomatik olarak üretim sayfasında “Bekliyor” durumunda oluşsun.
+Teklifte aynı üründen 3 adet varsa 3 adetlik üretim emri oluşsun ve üretime alındığında her adet için ayrı seri numarası oluşturulsun.
+
+3. Manuel Üretim Emri
+Admin istediği ürünü ve adedi seçerek manuel üretim emri oluşturabilsin.
+
+4. Hazır Ürün Stok Kontrolü
+Sistem önce finished goods / hazır ürün stoklarını kontrol etsin.
+Eğer ürün stokta varsa:
+- “Stoktan Karşılanabilir” durumu gösterilsin.
+- Admin “Stoktan Ayır” butonuna basabilsin.
+- Stoktan ayrılan ürün müşteriye/teklife bağlansın.
+
+5. Malzeme Reçetesi / BOM
+Her ürünün sadece adminin görebileceği üretim bilgileri alanında malzeme reçetesi tanımlanabilsin.
+Admin ürün detayında:
+- malzeme seçsin
+- gerekli adet girsin
+- kaydetsin
+
+Örnek:
+OXY-DVS-1000 için:
+- Vakum Pompası: 3 adet
+- 500 L Tank: 1 adet
+- M8 Vida: 24 adet
+- Hava Filtresi: 1 adet
+
+6. Malzeme Listesi / Stok
+Malzeme listesi sayfası olsun.
+Her malzeme için:
+- malzeme adı
+- kategori
+- stok adedi
+- minimum stok
+- birim
+- tedarikçi
+- maliyet
+- ürün kodu
+- notlar
+tutulsun.
+
+7. Üretim İçin Malzeme Kontrolü
+Üretim emrinde sistem ürünün reçetesine göre gerekli malzemeleri kontrol etsin.
+Her malzeme için:
+- gerekli adet
+- stoktaki adet
+- eksik adet
+gösterilsin.
+
+Eğer tüm malzemeler yeterliyse:
+“Üretime Hazır” durumu verilsin.
+
+Eğer eksik varsa:
+“Malzeme Eksik” durumu verilsin ve eksik malzeme listesi gösterilsin.
+
+8. Malzeme Rezervasyonu
+Admin “Üretime Al” dediğinde gerekli malzemeler rezerve edilsin.
+Üretim tamamlandığında rezerve edilen malzemeler stoktan düşülsün.
+Üretim iptal edilirse rezervasyon iptal edilsin.
+
+9. Seri Numarası Üretimi
+Üretime alınan her ürün için otomatik seri numarası üret.
+Format:
+ÜRÜN KODU + YIL SON 2 RAKAM + GÜN + AY + GÜNLÜK SIRA
+
+Örnek ürün kodu:
+OXY-DVS-1000
+
+Tarih:
+27.05.2026
+
+İlk seri no:
+OXY-DVS-100026270501
+
+İkinci seri no:
+OXY-DVS-100026270502
+
+Üçüncü:
+OXY-DVS-100026270503
+
+Son iki rakam günlük sıra numarası olsun. Aynı ürün kodu ve aynı tarih için tekrar eden seri no oluşmasın. Seri numarası database’de unique olsun.
+
+10. Cihaz Kaydı
+Seri no oluştuğunda devices tablosunda cihaz kaydı oluşsun.
+Cihazda:
+- ürün adı
+- ürün kodu
+- seri numarası
+- üretim emri id
+- teklif id
+- müşteri id varsa
+- üretim tarihi
+- QR public token
+- garanti durumu
+tutulsun.
+
+11. QR Kod Oluşturma
+Her cihaz için otomatik QR kod oluştur.
+QR linki:
+https://www.oxymedmedical.com/servis/cihaz/{{public_token}}
+
+Admin üretim sayfasında:
+- QR görüntüle
+- QR PNG indir
+- Etiket PDF indir
+- Seri no etiketi yazdır
+butonlarını görebilsin.
+
+QR okutulunca cihaz servis sorgulama sayfasına gitsin.
+Cihaz henüz garanti başlatılmadıysa public sayfada:
+“Garanti henüz başlatılmadı” yazsın.
+
+12. Garanti Taslağı Oluşturma
+Üretime alınan her cihaz için garanti kaydı otomatik oluşturulsun.
+İlk durum:
+“Garanti Başlatılmadı / Taslak”
+
+Admin sonradan elle şu bilgileri girebilsin:
+- müşteri
+- kurulum tarihi
+- teslim tarihi
+- garanti başlangıç tarihi
+- garanti bitiş tarihi
+- garanti tipi
+- bakım sözleşmesi
+- kurulum raporu
+- notlar
+
+Admin “Garantiyi Başlat” butonuna basınca garanti aktif olsun.
+
+13. Kalite Kontrol
+Üretim tamamlanmadan önce kalite kontrol checklisti olsun:
+- Elektrik bağlantıları kontrol edildi
+- Vakum testi yapıldı
+- Kaçak testi yapıldı
+- Pano testi yapıldı
+- HMI kontrol edildi
+- Filtreler takıldı
+- Seri no etiketi yapıştırıldı
+- QR okutma test edildi
+- Ürün fotoğrafı yüklendi
+- Final kontrol onaylandı
+
+Bu checklist tamamlanmadan ürün “Tamamlandı” durumuna geçmesin.
+
+14. Üretim Detay Sayfası
+Her üretim emrinde sekmeler olsun:
+- Genel Bilgiler
+- Stok Kontrolü
+- Malzeme Reçetesi
+- Üretilen Seri Numaraları
+- QR / Etiketler
+- Garanti Taslakları
+- Üretim Notları
+- Kalite Kontrol
+
+15. Database Tabloları
+Şu tabloları oluştur:
+- products
+- product_private_data
+- materials
+- product_bom_items
+- production_orders
+- production_order_items
+- material_reservations
+- stock_movements
+- devices
+- warranties
+- quality_checklists
+- quality_checklist_items
+- qr_codes
+- serial_sequences
+
+16. Dashboard
+Üretim dashboard’da şunlar görünsün:
+- Bekleyen üretimler
+- Malzeme eksiği olan üretimler
+- Üretime hazır işler
+- Üretimdeki işler
+- Kalite kontroldeki işler
+- Bugün oluşturulan seri numaraları
+- Yaklaşan düşük stok uyarıları
+
+17. Güvenlik
+- Bu modülü sadece admin ve üretim yetkili kullanıcıları görsün.
+- Ürün maliyeti ve malzeme reçetesi müşteri tarafında görünmesin.
+- Tüm stok ve üretim hareketleri loglansın.
+- Seri numarası silinmesin; iptal edilirse iptal durumu ile saklansın.
+
+İlk MVP’de şunları çalışır yap:
+- ürün malzeme reçetesi tanımlama
+- malzeme stok listesi
+- teklif onaylanınca üretim emri oluşturma
+- stok/malzeme kontrolü
+- üretime alma
+- seri no oluşturma
+- QR kod oluşturma
+- garanti taslağı oluşturma
+- kalite kontrol checklisti
