@@ -34,6 +34,8 @@ tags:
     description: Warranty and service management
   - name: production
     description: Production order management and BOM
+  - name: service-reports
+    description: Service report management
 
 paths:
   /healthz:
@@ -1616,6 +1618,186 @@ paths:
                 items: {$ref: "#/components/schemas/BomItem"}
 
 
+  # SERVICE REPORTS
+  /service-reports:
+    get:
+      operationId: listServiceReports
+      tags: [service-reports]
+      summary: List service reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: deviceId
+          schema: { type: integer }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 100 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        "200":
+          description: Paginated service report list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ServiceReportListItem"
+    post:
+      operationId: createServiceReport
+      tags: [service-reports]
+      summary: Create service report
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceReportInput"
+      responses:
+        "201":
+          description: Created report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReportFull"
+
+  /service-reports/{id}:
+    get:
+      operationId: getServiceReport
+      tags: [service-reports]
+      summary: Get service report by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Service report with relations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReportFull"
+        "404":
+          description: Not found
+    patch:
+      operationId: patchServiceReport
+      tags: [service-reports]
+      summary: Update service report
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceReportInput"
+      responses:
+        "200":
+          description: Updated report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReportFull"
+    delete:
+      operationId: deleteServiceReport
+      tags: [service-reports]
+      summary: Delete service report
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  /service-reports/{id}/generate-pdf:
+    post:
+      operationId: generateServiceReportPdf
+      tags: [service-reports]
+      summary: Generate PDF server-side using headless Chrome
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: PDF URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReportPdfResult"
+        "500":
+          description: PDF generation failed
+
+  /service-reports/public/device/{qrToken}:
+    get:
+      operationId: getPublicDeviceHistory
+      tags: [service-reports]
+      summary: Get device service history by QR token (public)
+      parameters:
+        - in: path
+          name: qrToken
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Device info with completed reports
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceServiceHistory"
+        "404":
+          description: Device not found
+
+  /service-reports/public/verify/{verificationToken}:
+    get:
+      operationId: verifyServiceReport
+      tags: [service-reports]
+      summary: Verify service report by verification token (public)
+      parameters:
+        - in: path
+          name: verificationToken
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Verified report info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReportVerification"
+        "404":
+          description: Report not found
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3058,3 +3240,178 @@ components:
       properties:
         materialId: {type: integer}
         requiredQty: {type: integer, minimum: 1}
+
+
+    ServiceReportListItem:
+      type: object
+      required: [id, reportNo, deviceId, serviceDate, serviceType, priority, status]
+      properties:
+        id: { type: integer }
+        reportNo: { type: string }
+        deviceId: { type: integer }
+        serviceDate: { type: string }
+        serviceTime: { type: string, nullable: true }
+        serviceType: { type: string }
+        priority: { type: string }
+        status: { type: string }
+        serviceCode: { type: string, nullable: true }
+        pdfUrl: { type: string, nullable: true }
+        verificationToken: { type: string }
+        createdBy: { type: string, nullable: true }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        deviceSerialNumber: { type: string, nullable: true }
+        deviceProductName: { type: string, nullable: true }
+        deviceModel: { type: string, nullable: true }
+        deviceCustomerFirm: { type: string, nullable: true }
+
+    ServiceReportPhoto:
+      type: object
+      required: [url]
+      properties:
+        url: { type: string }
+        caption: { type: string, nullable: true }
+        sortOrder: { type: integer, nullable: true }
+
+    ServiceReportSignature:
+      type: object
+      required: [role, imageDataUrl]
+      properties:
+        role: { type: string }
+        signerName: { type: string, nullable: true }
+        imageDataUrl: { type: string }
+
+    ServiceReportPart:
+      type: object
+      required: [partName]
+      properties:
+        partName: { type: string }
+        partCode: { type: string, nullable: true }
+        quantity: { type: string, nullable: true }
+        condition: { type: string, nullable: true }
+
+    ServiceReportInput:
+      type: object
+      required: [deviceId, serviceDate, serviceType]
+      properties:
+        deviceId: { type: integer }
+        serviceDate: { type: string }
+        serviceTime: { type: string, nullable: true }
+        serviceType: { type: string }
+        priority: { type: string }
+        status: { type: string }
+        serviceCode: { type: string, nullable: true }
+        createdBy: { type: string, nullable: true }
+        reportDataJson:
+          type: object
+          additionalProperties: true
+        pdfUrl: { type: string, nullable: true }
+        photos:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceReportPhoto"
+        signatures:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceReportSignature"
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceReportPart"
+
+    ServiceReportFull:
+      type: object
+      required: [id, reportNo, deviceId, serviceDate, serviceType, priority, status, verificationToken]
+      properties:
+        id: { type: integer }
+        reportNo: { type: string }
+        deviceId: { type: integer }
+        serviceDate: { type: string }
+        serviceTime: { type: string, nullable: true }
+        serviceType: { type: string }
+        priority: { type: string }
+        status: { type: string }
+        serviceCode: { type: string, nullable: true }
+        reportDataJson:
+          type: object
+          additionalProperties: true
+        pdfUrl: { type: string, nullable: true }
+        verificationToken: { type: string }
+        createdBy: { type: string, nullable: true }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        device:
+          type: object
+          nullable: true
+        photos:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceReportPhoto"
+        signatures:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceReportSignature"
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceReportPart"
+
+    ServiceReportPdfResult:
+      type: object
+      required: [pdfUrl]
+      properties:
+        pdfUrl: { type: string, nullable: true }
+
+    DeviceServiceHistory:
+      type: object
+      required: [device, reports]
+      properties:
+        device:
+          type: object
+          required: [id, productName, model, serialNumber, customerFirm]
+          properties:
+            id: { type: integer }
+            productName: { type: string }
+            model: { type: string }
+            serialNumber: { type: string }
+            customerFirm: { type: string }
+            status: { type: string, nullable: true }
+            warrantyEndDate: { type: string, nullable: true }
+            lastMaintenanceDate: { type: string, nullable: true }
+            nextMaintenanceDate: { type: string, nullable: true }
+            installDate: { type: string, nullable: true }
+            imageUrl: { type: string, nullable: true }
+        reports:
+          type: array
+          items:
+            type: object
+            required: [id, reportNo, serviceDate, serviceType, status]
+            properties:
+              id: { type: integer }
+              reportNo: { type: string }
+              serviceDate: { type: string }
+              serviceType: { type: string }
+              priority: { type: string, nullable: true }
+              status: { type: string }
+              pdfUrl: { type: string, nullable: true }
+              verificationToken: { type: string }
+              createdBy: { type: string, nullable: true }
+
+    ServiceReportVerification:
+      type: object
+      required: [reportNo, serviceDate, serviceType, status, verificationToken]
+      properties:
+        reportNo: { type: string }
+        serviceDate: { type: string }
+        serviceType: { type: string }
+        status: { type: string }
+        pdfUrl: { type: string, nullable: true }
+        verificationToken: { type: string }
+        device:
+          type: object
+          nullable: true
+          properties:
+            serialNumber: { type: string }
+            productName: { type: string }
+            model: { type: string }
+            customerFirm: { type: string }

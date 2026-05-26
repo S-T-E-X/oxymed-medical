@@ -136,32 +136,48 @@ function DynamicReport({ recordId }: { recordId: number }) {
   if (isLoading) return <ReportSkeleton />;
   if (error || !data) return <ReportNotFound />;
 
-  const d = data;
+  // Map ServiceReportFull to display-friendly locals
+  const rd = (data.reportDataJson ?? {}) as Record<string, unknown>;
+  const device = (data.device ?? {}) as Record<string, unknown>;
+
+  const deviceProductName  = (device["productName"]  as string) ?? "";
+  const deviceModel        = (device["model"]         as string) ?? "";
+  const deviceSerialNumber = (device["serialNumber"]  as string) ?? "";
+  const deviceCustomerFirm = (device["customerFirm"]  as string) ?? "";
+  const deviceInstallDate  = (device["installDate"]   as string | undefined) ?? null;
+  const deviceWarrantyEnd  = (device["warrantyEndDate"] as string | undefined) ?? null;
+  const deviceStatus       = (device["status"]        as string) ?? "";
+  const deviceImageUrl     = null; // not in schema; kept for layout compat
+
+  const workHours     = (rd["totalWorkHours"] as string | undefined) ?? null;
+  const description   = (rd["notes"]          as string | undefined) ?? null;
+  const servicePersonnel = data.signatures?.find((s) => (s as unknown as Record<string, unknown>)["role"] === "personel") as unknown as Record<string, unknown> | undefined;
+  const personnelName = (servicePersonnel?.["signerName"] as string | undefined) ?? null;
+  const photoUrls     = (data.photos ?? []).map((p) => (p as unknown as Record<string, unknown>)["url"] as string).filter(Boolean);
+  const parts         = (data.parts ?? []).length > 0 ? data.parts : null;
 
   const serviceSummary = [
-    { icon: CalendarDays, label: "Servis Tarihi",       value: d.serviceDate },
-    { icon: ClipboardCheck, label: "Servis Türü",       value: SERVICE_TYPE_LABELS[d.serviceType] ?? d.serviceType, success: false },
-    { icon: CheckCircle2, label: "İşlem Durumu",        value: "Tamamlandı", success: true },
-    ...(d.workHours ? [{ icon: Clock3, label: "Çalışma Saati", value: d.workHours, success: false }] : []),
+    { icon: CalendarDays,   label: "Servis Tarihi", value: data.serviceDate },
+    { icon: ClipboardCheck, label: "Servis Türü",   value: SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType, success: false },
+    { icon: CheckCircle2,   label: "İşlem Durumu",  value: "Tamamlandı", success: true },
+    ...(workHours ? [{ icon: Clock3, label: "Çalışma Saati", value: workHours, success: false }] : []),
   ];
 
   const hospitalInfoRows: [string, string][] = [
-    ["Firma / Kurum", d.deviceCustomerFirm],
+    ["Firma / Kurum", deviceCustomerFirm],
   ];
 
   const deviceInfoRows: [string, string][] = [
-    ["Cihaz Türü",         d.deviceProductName],
-    ["Model",              d.deviceModel],
-    ["Seri Numarası",      d.deviceSerialNumber],
-    ...(d.deviceInstallDate    ? [["Kurulum Tarihi",  d.deviceInstallDate   ] as [string,string]] : []),
-    ["Garanti Durumu",     STATUS_LABELS[d.deviceStatus] ?? d.deviceStatus],
-    ...(d.deviceWarrantyEndDate ? [["Garanti Bitiş", d.deviceWarrantyEndDate] as [string,string]] : []),
+    ["Cihaz Türü",    deviceProductName],
+    ["Model",         deviceModel],
+    ["Seri Numarası", deviceSerialNumber],
+    ...(deviceInstallDate ? [["Kurulum Tarihi", deviceInstallDate] as [string, string]] : []),
+    ["Garanti Durumu", STATUS_LABELS[deviceStatus] ?? deviceStatus],
+    ...(deviceWarrantyEnd ? [["Garanti Bitiş", deviceWarrantyEnd] as [string, string]] : []),
   ];
 
-  const parts = d.kits && d.kits.length > 0 ? d.kits : null;
-
-  const actions = d.description
-    ? d.description.split(/\.\s+|\n/).map((s) => s.trim()).filter(Boolean)
+  const actions = description
+    ? description.split(/\.\s+|\n/).map((s) => s.trim()).filter(Boolean)
     : [];
 
   return (
@@ -173,13 +189,13 @@ function DynamicReport({ recordId }: { recordId: number }) {
           </div>
           <div className="sr-heading">
             <h1>SERVİS &amp; BAKIM RAPORU</h1>
-            <p>{d.deviceProductName.toUpperCase()}</p>
+            <p>{deviceProductName.toUpperCase()}</p>
           </div>
           <div className="sr-report-no">
             <div>RAPOR NO</div>
-            <strong>{d.reportNo ?? `SRV-${d.id}`}</strong>
+            <strong>{data.reportNo ?? `SRV-${data.id}`}</strong>
             <div className="sr-barcode" />
-            <span>{d.serviceDate}</span>
+            <span>{data.serviceDate}</span>
           </div>
         </header>
 
@@ -198,7 +214,7 @@ function DynamicReport({ recordId }: { recordId: number }) {
           })}
           <div className="sr-service-code">
             <small>Servis Kodu</small>
-            <strong>{String(d.id).padStart(3, "0")}</strong>
+            <strong>{String(data.id).padStart(3, "0")}</strong>
           </div>
         </section>
 
@@ -213,17 +229,17 @@ function DynamicReport({ recordId }: { recordId: number }) {
           <Panel title="Cihaz Bilgileri" icon={Settings}>
             <div className="sr-device">
               <DetailRows rows={deviceInfoRows} />
-              {d.deviceImageUrl && (
-                <img src={d.deviceImageUrl} alt="Cihaz görseli" />
+              {deviceImageUrl && (
+                <img src={deviceImageUrl} alt="Cihaz görseli" />
               )}
-              {!d.deviceImageUrl && (
+              {!deviceImageUrl && (
                 <img src="/assets/images/product-medical-gas.png" alt="Medikal vakum santrali" />
               )}
             </div>
           </Panel>
         </div>
 
-        {(actions.length > 0 || d.description) && (
+        {(actions.length > 0 || description) && (
           <div className="sr-grid sr-mid-grid">
             {actions.length > 0 && (
               <Panel title="Yapılan İşlemler" icon={Wrench}>
@@ -238,14 +254,14 @@ function DynamicReport({ recordId }: { recordId: number }) {
             <Panel title="Açıklama" icon={FileText}>
               <div className="sr-notes">
                 <div>
-                  {d.description && <p>{d.description}</p>}
-                  {!d.description && <p>Bu servis kaydı için açıklama girilmemiştir.</p>}
+                  {description && <p>{description}</p>}
+                  {!description && <p>Bu servis kaydı için açıklama girilmemiştir.</p>}
                 </div>
                 <aside>
-                  {d.servicePersonnel && (
+                  {personnelName && (
                     <>
                       <strong>Servis Personeli</strong>
-                      <b>{d.servicePersonnel}</b>
+                      <b>{personnelName}</b>
                       <SignatureMark color="#475569" />
                     </>
                   )}
@@ -272,22 +288,25 @@ function DynamicReport({ recordId }: { recordId: number }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {parts.map((kit) => (
-                    <tr key={kit.id}>
-                      <td>{kit.kitName}</td>
-                      <td>{kit.kitCode ?? "—"}</td>
-                      <td>{kit.quantity ?? "—"}</td>
-                      <td>{kit.unit ?? "—"}</td>
-                    </tr>
-                  ))}
+                  {parts.map((kit, idx) => {
+                    const k = kit as unknown as Record<string, unknown>;
+                    return (
+                      <tr key={idx}>
+                        <td>{k["partName"] as string}</td>
+                        <td>{(k["partCode"] as string) ?? "—"}</td>
+                        <td>{(k["quantity"] as string) ?? "—"}</td>
+                        <td>{(k["condition"] as string) ?? "—"}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </Panel>
 
-            {d.photoUrls && d.photoUrls.length > 0 && (
+            {photoUrls.length > 0 && (
               <Panel title="Servis Fotoğrafları" icon={Camera}>
                 <div className="sr-photo-grid">
-                  {d.photoUrls.map((url, i) => (
+                  {photoUrls.map((url, i) => (
                     <figure key={i}>
                       <img src={url} alt={`Servis fotoğrafı ${i + 1}`} />
                     </figure>
@@ -301,10 +320,10 @@ function DynamicReport({ recordId }: { recordId: number }) {
         <div className="sr-grid sr-bottom-grid">
           <Panel title="İmza &amp; Onay" icon={ClipboardCheck}>
             <div className="sr-signatures">
-              {d.servicePersonnel && (
+              {personnelName && (
                 <div>
                   <small>Servis Personeli</small>
-                  <strong>{d.servicePersonnel}</strong>
+                  <strong>{personnelName}</strong>
                   <SignatureMark color="#475569" />
                 </div>
               )}

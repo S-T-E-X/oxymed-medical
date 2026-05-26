@@ -1214,37 +1214,47 @@ export const GetWarrantyDeviceByQrResponse = zod.object({
 
 
 /**
- * @summary Get full service record report by ID (public)
+ * @summary Get service report by ID
  */
 export const GetServiceReportParams = zod.object({
-  "recordId": zod.coerce.number()
+  "id": zod.coerce.number()
 })
 
 export const GetServiceReportResponse = zod.object({
   "id": zod.number(),
+  "reportNo": zod.string(),
+  "deviceId": zod.number(),
   "serviceDate": zod.string(),
+  "serviceTime": zod.string().nullish(),
   "serviceType": zod.string(),
-  "servicePersonnel": zod.string().nullish(),
-  "description": zod.string().nullish(),
-  "workHours": zod.string().nullish(),
-  "reportNo": zod.string().nullish(),
-  "photoUrls": zod.array(zod.string()).nullish(),
-  "kits": zod.array(zod.object({
-  "id": zod.number(),
-  "serviceRecordId": zod.number(),
-  "kitName": zod.string(),
-  "kitCode": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "serviceCode": zod.string().nullish(),
+  "reportDataJson": zod.record(zod.string(), zod.unknown()).optional(),
+  "pdfUrl": zod.string().nullish(),
+  "verificationToken": zod.string(),
+  "createdBy": zod.string().nullish(),
+  "createdAt": zod.string().optional(),
+  "updatedAt": zod.string().optional(),
+  "device": zod.object({
+
+}).passthrough().nullish(),
+  "photos": zod.array(zod.object({
+  "url": zod.string(),
+  "caption": zod.string().nullish(),
+  "sortOrder": zod.number().nullish()
+})).optional(),
+  "signatures": zod.array(zod.object({
+  "role": zod.string(),
+  "signerName": zod.string().nullish(),
+  "imageDataUrl": zod.string()
+})).optional(),
+  "parts": zod.array(zod.object({
+  "partName": zod.string(),
+  "partCode": zod.string().nullish(),
   "quantity": zod.string().nullish(),
-  "unit": zod.string().nullish()
-})).nullish(),
-  "deviceProductName": zod.string(),
-  "deviceModel": zod.string(),
-  "deviceSerialNumber": zod.string(),
-  "deviceCustomerFirm": zod.string(),
-  "deviceStatus": zod.string(),
-  "deviceWarrantyEndDate": zod.string().nullish(),
-  "deviceInstallDate": zod.string().nullish(),
-  "deviceImageUrl": zod.string().nullish()
+  "condition": zod.string().nullish()
+})).optional()
 })
 
 
@@ -1826,5 +1836,228 @@ export const ReplaceProductBomResponseItem = zod.object({
   "productCode": zod.string().nullish()
 })
 export const ReplaceProductBomResponse = zod.array(ReplaceProductBomResponseItem)
+
+
+/**
+ * @summary List service reports
+ */
+export const listServiceReportsQueryLimitDefault = 100;
+export const listServiceReportsQueryOffsetDefault = 0;
+
+export const ListServiceReportsQueryParams = zod.object({
+  "deviceId": zod.coerce.number().optional(),
+  "status": zod.coerce.string().optional(),
+  "search": zod.coerce.string().optional(),
+  "limit": zod.coerce.number().default(listServiceReportsQueryLimitDefault),
+  "offset": zod.coerce.number().default(listServiceReportsQueryOffsetDefault)
+})
+
+export const ListServiceReportsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "reportNo": zod.string(),
+  "deviceId": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceTime": zod.string().nullish(),
+  "serviceType": zod.string(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "serviceCode": zod.string().nullish(),
+  "pdfUrl": zod.string().nullish(),
+  "verificationToken": zod.string().optional(),
+  "createdBy": zod.string().nullish(),
+  "createdAt": zod.string().optional(),
+  "updatedAt": zod.string().optional(),
+  "deviceSerialNumber": zod.string().nullish(),
+  "deviceProductName": zod.string().nullish(),
+  "deviceModel": zod.string().nullish(),
+  "deviceCustomerFirm": zod.string().nullish()
+}))
+})
+
+
+/**
+ * @summary Create service report
+ */
+export const CreateServiceReportBody = zod.object({
+  "deviceId": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceTime": zod.string().nullish(),
+  "serviceType": zod.string(),
+  "priority": zod.string().optional(),
+  "status": zod.string().optional(),
+  "serviceCode": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "reportDataJson": zod.record(zod.string(), zod.unknown()).optional(),
+  "pdfUrl": zod.string().nullish(),
+  "photos": zod.array(zod.object({
+  "url": zod.string(),
+  "caption": zod.string().nullish(),
+  "sortOrder": zod.number().nullish()
+})).optional(),
+  "signatures": zod.array(zod.object({
+  "role": zod.string(),
+  "signerName": zod.string().nullish(),
+  "imageDataUrl": zod.string()
+})).optional(),
+  "parts": zod.array(zod.object({
+  "partName": zod.string(),
+  "partCode": zod.string().nullish(),
+  "quantity": zod.string().nullish(),
+  "condition": zod.string().nullish()
+})).optional()
+})
+
+
+/**
+ * @summary Update service report
+ */
+export const PatchServiceReportParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const PatchServiceReportBody = zod.object({
+  "deviceId": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceTime": zod.string().nullish(),
+  "serviceType": zod.string(),
+  "priority": zod.string().optional(),
+  "status": zod.string().optional(),
+  "serviceCode": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "reportDataJson": zod.record(zod.string(), zod.unknown()).optional(),
+  "pdfUrl": zod.string().nullish(),
+  "photos": zod.array(zod.object({
+  "url": zod.string(),
+  "caption": zod.string().nullish(),
+  "sortOrder": zod.number().nullish()
+})).optional(),
+  "signatures": zod.array(zod.object({
+  "role": zod.string(),
+  "signerName": zod.string().nullish(),
+  "imageDataUrl": zod.string()
+})).optional(),
+  "parts": zod.array(zod.object({
+  "partName": zod.string(),
+  "partCode": zod.string().nullish(),
+  "quantity": zod.string().nullish(),
+  "condition": zod.string().nullish()
+})).optional()
+})
+
+export const PatchServiceReportResponse = zod.object({
+  "id": zod.number(),
+  "reportNo": zod.string(),
+  "deviceId": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceTime": zod.string().nullish(),
+  "serviceType": zod.string(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "serviceCode": zod.string().nullish(),
+  "reportDataJson": zod.record(zod.string(), zod.unknown()).optional(),
+  "pdfUrl": zod.string().nullish(),
+  "verificationToken": zod.string(),
+  "createdBy": zod.string().nullish(),
+  "createdAt": zod.string().optional(),
+  "updatedAt": zod.string().optional(),
+  "device": zod.object({
+
+}).passthrough().nullish(),
+  "photos": zod.array(zod.object({
+  "url": zod.string(),
+  "caption": zod.string().nullish(),
+  "sortOrder": zod.number().nullish()
+})).optional(),
+  "signatures": zod.array(zod.object({
+  "role": zod.string(),
+  "signerName": zod.string().nullish(),
+  "imageDataUrl": zod.string()
+})).optional(),
+  "parts": zod.array(zod.object({
+  "partName": zod.string(),
+  "partCode": zod.string().nullish(),
+  "quantity": zod.string().nullish(),
+  "condition": zod.string().nullish()
+})).optional()
+})
+
+
+/**
+ * @summary Delete service report
+ */
+export const DeleteServiceReportParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Generate PDF server-side using headless Chrome
+ */
+export const GenerateServiceReportPdfParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GenerateServiceReportPdfResponse = zod.object({
+  "pdfUrl": zod.string().nullable()
+})
+
+
+/**
+ * @summary Get device service history by QR token (public)
+ */
+export const GetPublicDeviceHistoryParams = zod.object({
+  "qrToken": zod.coerce.string()
+})
+
+export const GetPublicDeviceHistoryResponse = zod.object({
+  "device": zod.object({
+  "id": zod.number(),
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "customerFirm": zod.string(),
+  "status": zod.string().nullish(),
+  "warrantyEndDate": zod.string().nullish(),
+  "lastMaintenanceDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish(),
+  "installDate": zod.string().nullish(),
+  "imageUrl": zod.string().nullish()
+}),
+  "reports": zod.array(zod.object({
+  "id": zod.number(),
+  "reportNo": zod.string(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "priority": zod.string().nullish(),
+  "status": zod.string(),
+  "pdfUrl": zod.string().nullish(),
+  "verificationToken": zod.string().optional(),
+  "createdBy": zod.string().nullish()
+}))
+})
+
+
+/**
+ * @summary Verify service report by verification token (public)
+ */
+export const VerifyServiceReportParams = zod.object({
+  "verificationToken": zod.coerce.string()
+})
+
+export const VerifyServiceReportResponse = zod.object({
+  "reportNo": zod.string(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "status": zod.string(),
+  "pdfUrl": zod.string().nullish(),
+  "verificationToken": zod.string(),
+  "device": zod.object({
+  "serialNumber": zod.string().optional(),
+  "productName": zod.string().optional(),
+  "model": zod.string().optional(),
+  "customerFirm": zod.string().optional()
+}).nullish()
+})
 
 

@@ -6,11 +6,14 @@ import {
   serviceReportPhotosTable,
   serviceReportSignaturesTable,
   serviceReportPartsTable,
+  serialSequencesTable,
 } from "@workspace/db";
-import { eq, desc, and, sql, ilike, or } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
+import { objectStorageClient as _objectStorageClient, ObjectStorageService } from "../lib/objectStorage";
+import { buildReportHtml } from "../lib/serviceReportHtml";
 
 const router: IRouter = Router();
 
@@ -19,16 +22,19 @@ function parseId(raw: string | string[] | undefined): number {
   return parseInt(s ?? "", 10);
 }
 
-// ─── Report number generation ─────────────────────────────────────────────────
+// ─── Report number generation (atomic, race-safe via sequence table) ──────────
 
 async function generateReportNo(): Promise<string> {
-  const year = new Date().getFullYear();
+  const year = String(new Date().getFullYear());
   const [row] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(serviceReportsTable)
-    .where(sql`extract(year from created_at) = ${year}`);
-  const seq = (Number(row?.count ?? 0) + 1).toString().padStart(6, "0");
-  return `OXM-SRV-${year}-${seq}`;
+    .insert(serialSequencesTable)
+    .values({ productCode: "SRV", dateKey: year, lastSeq: 1 })
+    .onConflictDoUpdate({
+      target: [serialSequencesTable.productCode, serialSequencesTable.dateKey],
+      set: { lastSeq: sql`${serialSequencesTable.lastSeq} + 1` },
+    })
+    .returning({ lastSeq: serialSequencesTable.lastSeq });
+  return `OXM-SRV-${year}-${String(row!.lastSeq).padStart(6, "0")}`;
 }
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -257,6 +263,108 @@ router.post("/service-reports/:id/save-pdf-url", requireAuth, async (req, res): 
     return;
   }
   res.json({ pdfUrl: updated.pdfUrl });
+});
+
+// ─── Server-side PDF generation (puppeteer-core + chromium-min) ───────────────
+
+router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]);
+  if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
+
+  const full = await loadFullReport(id);
+  if (!full) { res.status(404).json({ error: "Rapor bulunamadı" }); return; }
+
+  const html = buildReportHtml({
+    reportNo: full.reportNo,
+    serviceDate: full.serviceDate,
+    serviceTime: full.serviceTime,
+    serviceType: full.serviceType,
+    priority: full.priority,
+    status: full.status,
+    serviceCode: full.serviceCode,
+    createdBy: full.createdBy,
+    device: full.device
+      ? {
+          productName: full.device.productName,
+          model: full.device.model,
+          serialNumber: full.device.serialNumber,
+          customerFirm: full.device.customerFirm,
+          installDate: full.device.installDate,
+          warrantyEndDate: full.device.warrantyEndDate,
+          lastMaintenanceDate: full.device.lastMaintenanceDate,
+          nextMaintenanceDate: full.device.nextMaintenanceDate,
+        }
+      : { productName: "", model: "", serialNumber: "", customerFirm: "" },
+    reportDataJson: (full.reportDataJson ?? {}) as Record<string, unknown>,
+    photos: full.photos.map((p) => ({ url: (p as Record<string, unknown>)["url"] as string, caption: (p as Record<string, unknown>)["caption"] as string | null })),
+    signatures: full.signatures.map((s) => ({
+      role: (s as Record<string, unknown>)["role"] as string,
+      signerName: (s as Record<string, unknown>)["signerName"] as string | null,
+      imageDataUrl: (s as Record<string, unknown>)["imageDataUrl"] as string,
+    })),
+    parts: full.parts.map((p) => ({
+      partName: (p as Record<string, unknown>)["partName"] as string,
+      partCode: (p as Record<string, unknown>)["partCode"] as string | null,
+      quantity: ((p as Record<string, unknown>)["quantity"] as string) ?? "1",
+      condition: (p as Record<string, unknown>)["condition"] as string | null,
+    })),
+  });
+
+  let browser: import("puppeteer-core").Browser | undefined;
+  try {
+    const chromium = await import("@sparticuz/chromium-min");
+    const puppeteer = await import("puppeteer-core");
+
+    const executablePath = await chromium.default.executablePath();
+
+    browser = await puppeteer.default.launch({
+      args: chromium.default.args,
+      defaultViewport: { width: 1123, height: 794 },
+      executablePath,
+      headless: true,
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30_000 });
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      landscape: true,
+      printBackground: true,
+      margin: { top: "0", right: "0", bottom: "0", left: "0" },
+    });
+
+    await browser.close();
+    browser = undefined;
+
+    // Upload via presigned URL
+    const storageService = new ObjectStorageService();
+    const uploadURL = await storageService.getObjectEntityUploadURL();
+    const objectPath = storageService.normalizeObjectEntityPath(uploadURL);
+
+    const uploadRes = await fetch(uploadURL, {
+      method: "PUT",
+      body: pdfBuffer,
+      headers: { "Content-Type": "application/pdf" },
+    });
+    if (!uploadRes.ok) {
+      throw new Error(`GCS upload failed: ${uploadRes.status}`);
+    }
+
+    // Store pdfUrl in DB
+    const pdfUrl = objectPath;
+    await db
+      .update(serviceReportsTable)
+      .set({ pdfUrl, updatedAt: new Date() })
+      .where(eq(serviceReportsTable.id, id));
+
+    req.log.info({ reportId: id, pdfUrl }, "PDF generated and uploaded");
+    res.json({ pdfUrl });
+  } catch (err) {
+    if (browser) { try { await browser.close(); } catch { /* ignore */ } }
+    req.log.error({ err }, "PDF generation failed");
+    res.status(500).json({ error: "PDF oluşturulamadı", detail: err instanceof Error ? err.message : String(err) });
+  }
 });
 
 // ─── Routes: Public ───────────────────────────────────────────────────────────

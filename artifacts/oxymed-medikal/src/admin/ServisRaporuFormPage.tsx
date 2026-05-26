@@ -335,6 +335,10 @@ export default function ServisRaporuFormPage() {
     personel: null, sorumlu: null, yetkili: null,
   });
 
+  // Parts
+  const [parts, setParts] = useState<Part[]>([]);
+  const [newPart, setNewPart] = useState<Part>({ partName: "", partCode: "", quantity: "1", condition: "" });
+
   // Next maintenance
   const [recommendedMaintenanceDate, setRecommendedMaintenanceDate] = useState("");
   const [recommendedMaintenanceType, setRecommendedMaintenanceType] = useState("");
@@ -403,6 +407,12 @@ export default function ServisRaporuFormPage() {
         if (role in sigMap) sigMap[role] = { role: sig.role, signerName: sig.signerName ?? "", imageDataUrl: sig.imageDataUrl };
       }
       setSignatures(sigMap);
+      setParts((r.parts ?? []).map((p) => ({
+        partName: p.partName ?? "",
+        partCode: p.partCode ?? "",
+        quantity: p.quantity ?? "1",
+        condition: p.condition ?? "",
+      })));
     } catch {
       toast.error("Rapor yüklenemedi");
     }
@@ -431,7 +441,7 @@ export default function ServisRaporuFormPage() {
       reportDataJson: buildReportData(),
       photos: photos.map((p, i) => ({ ...p, sortOrder: i })),
       signatures: sigs,
-      parts: [] as Part[],
+      parts,
     };
   }
 
@@ -819,8 +829,139 @@ export default function ServisRaporuFormPage() {
           </div>
         </Section>
 
-        {/* 9. Notes */}
-        <Section title="9-10. Açıklama / Notlar" defaultOpen={false}>
+        {/* 9. Parts */}
+        <Section title="9. Değiştirilen / Kullanılan Parçalar" defaultOpen={false}>
+          {parts.length > 0 && (
+            <div className="mb-4 overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 text-xs font-bold text-slate-600 uppercase tracking-wide">
+                    <th className="px-3 py-2 text-left border border-slate-200">Parça Adı</th>
+                    <th className="px-3 py-2 text-left border border-slate-200">Parça Kodu</th>
+                    <th className="px-3 py-2 text-left border border-slate-200">Adet</th>
+                    <th className="px-3 py-2 text-left border border-slate-200">Durum</th>
+                    <th className="px-3 py-2 border border-slate-200 w-10"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {parts.map((part, i) => (
+                    <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="px-3 py-2 border border-slate-200">
+                        <input
+                          type="text"
+                          value={part.partName}
+                          onChange={(e) => setParts((p) => p.map((r, j) => j === i ? { ...r, partName: e.target.value } : r))}
+                          className="w-full h-8 rounded border border-slate-200 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        />
+                      </td>
+                      <td className="px-3 py-2 border border-slate-200">
+                        <input
+                          type="text"
+                          value={part.partCode}
+                          onChange={(e) => setParts((p) => p.map((r, j) => j === i ? { ...r, partCode: e.target.value } : r))}
+                          className="w-full h-8 rounded border border-slate-200 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          placeholder="OXM-…"
+                        />
+                      </td>
+                      <td className="px-3 py-2 border border-slate-200 w-24">
+                        <input
+                          type="text"
+                          value={part.quantity}
+                          onChange={(e) => setParts((p) => p.map((r, j) => j === i ? { ...r, quantity: e.target.value } : r))}
+                          className="w-full h-8 rounded border border-slate-200 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          placeholder="1"
+                        />
+                      </td>
+                      <td className="px-3 py-2 border border-slate-200">
+                        <select
+                          value={part.condition}
+                          onChange={(e) => setParts((p) => p.map((r, j) => j === i ? { ...r, condition: e.target.value } : r))}
+                          className="w-full h-8 rounded border border-slate-200 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        >
+                          <option value="">—</option>
+                          <option value="Yeni">Yeni</option>
+                          <option value="Yeniden Kullanılan">Yeniden Kullanılan</option>
+                          <option value="Revize">Revize</option>
+                        </select>
+                      </td>
+                      <td className="px-3 py-2 border border-slate-200 text-center">
+                        <button
+                          type="button"
+                          onClick={() => setParts((p) => p.filter((_, j) => j !== i))}
+                          className="flex items-center justify-center h-7 w-7 rounded bg-red-50 text-red-500 hover:bg-red-100"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {parts.length === 0 && (
+            <p className="text-sm text-slate-400 italic mb-3">Henüz parça eklenmedi.</p>
+          )}
+          <div className="flex flex-wrap gap-2 items-end border-t border-slate-100 pt-3">
+            <div className="flex flex-col gap-1 flex-1 min-w-32">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Parça Adı *</label>
+              <input
+                type="text"
+                value={newPart.partName}
+                onChange={(e) => setNewPart((p) => ({ ...p, partName: e.target.value }))}
+                placeholder="Yağ filtresi..."
+                className="h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-32">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Kod</label>
+              <input
+                type="text"
+                value={newPart.partCode}
+                onChange={(e) => setNewPart((p) => ({ ...p, partCode: e.target.value }))}
+                placeholder="OXM-001"
+                className="h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-20">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Adet</label>
+              <input
+                type="text"
+                value={newPart.quantity}
+                onChange={(e) => setNewPart((p) => ({ ...p, quantity: e.target.value }))}
+                placeholder="1"
+                className="h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-40">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Durum</label>
+              <select
+                value={newPart.condition}
+                onChange={(e) => setNewPart((p) => ({ ...p, condition: e.target.value }))}
+                className="h-9 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <option value="">—</option>
+                <option value="Yeni">Yeni</option>
+                <option value="Yeniden Kullanılan">Yeniden Kullanılan</option>
+                <option value="Revize">Revize</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (!newPart.partName.trim()) { toast.error("Parça adı zorunludur"); return; }
+                setParts((p) => [...p, { ...newPart }]);
+                setNewPart({ partName: "", partCode: "", quantity: "1", condition: "" });
+              }}
+              className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 h-9 text-sm font-semibold text-white hover:bg-slate-700 shrink-0"
+            >
+              <Plus className="h-4 w-4" /> Ekle
+            </button>
+          </div>
+        </Section>
+
+        {/* 10. Notes */}
+        <Section title="10. Açıklama / Notlar" defaultOpen={false}>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

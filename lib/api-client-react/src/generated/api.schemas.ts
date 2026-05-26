@@ -812,6 +812,142 @@ export interface BomItemInput {
   requiredQty: number;
 }
 
+export interface ServiceReportListItem {
+  id: number;
+  reportNo: string;
+  deviceId: number;
+  serviceDate: string;
+  serviceTime?: string | null;
+  serviceType: string;
+  priority: string;
+  status: string;
+  serviceCode?: string | null;
+  pdfUrl?: string | null;
+  verificationToken?: string;
+  createdBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  deviceSerialNumber?: string | null;
+  deviceProductName?: string | null;
+  deviceModel?: string | null;
+  deviceCustomerFirm?: string | null;
+}
+
+export interface ServiceReportPhoto {
+  url: string;
+  caption?: string | null;
+  sortOrder?: number | null;
+}
+
+export interface ServiceReportSignature {
+  role: string;
+  signerName?: string | null;
+  imageDataUrl: string;
+}
+
+export interface ServiceReportPart {
+  partName: string;
+  partCode?: string | null;
+  quantity?: string | null;
+  condition?: string | null;
+}
+
+export type ServiceReportInputReportDataJson = { [key: string]: unknown };
+
+export interface ServiceReportInput {
+  deviceId: number;
+  serviceDate: string;
+  serviceTime?: string | null;
+  serviceType: string;
+  priority?: string;
+  status?: string;
+  serviceCode?: string | null;
+  createdBy?: string | null;
+  reportDataJson?: ServiceReportInputReportDataJson;
+  pdfUrl?: string | null;
+  photos?: ServiceReportPhoto[];
+  signatures?: ServiceReportSignature[];
+  parts?: ServiceReportPart[];
+}
+
+export type ServiceReportFullReportDataJson = { [key: string]: unknown };
+
+export type ServiceReportFullDevice = { [key: string]: unknown } | null;
+
+export interface ServiceReportFull {
+  id: number;
+  reportNo: string;
+  deviceId: number;
+  serviceDate: string;
+  serviceTime?: string | null;
+  serviceType: string;
+  priority: string;
+  status: string;
+  serviceCode?: string | null;
+  reportDataJson?: ServiceReportFullReportDataJson;
+  pdfUrl?: string | null;
+  verificationToken: string;
+  createdBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  device?: ServiceReportFullDevice;
+  photos?: ServiceReportPhoto[];
+  signatures?: ServiceReportSignature[];
+  parts?: ServiceReportPart[];
+}
+
+export interface ServiceReportPdfResult {
+  pdfUrl: string | null;
+}
+
+export type DeviceServiceHistoryDevice = {
+  id: number;
+  productName: string;
+  model: string;
+  serialNumber: string;
+  customerFirm: string;
+  status?: string | null;
+  warrantyEndDate?: string | null;
+  lastMaintenanceDate?: string | null;
+  nextMaintenanceDate?: string | null;
+  installDate?: string | null;
+  imageUrl?: string | null;
+};
+
+export type DeviceServiceHistoryReportsItem = {
+  id: number;
+  reportNo: string;
+  serviceDate: string;
+  serviceType: string;
+  priority?: string | null;
+  status: string;
+  pdfUrl?: string | null;
+  verificationToken?: string;
+  createdBy?: string | null;
+};
+
+export interface DeviceServiceHistory {
+  device: DeviceServiceHistoryDevice;
+  reports: DeviceServiceHistoryReportsItem[];
+}
+
+export type ServiceReportVerificationDevice = {
+  serialNumber?: string;
+  productName?: string;
+  model?: string;
+  customerFirm?: string;
+} | null;
+
+export interface ServiceReportVerification {
+  reportNo: string;
+  serviceDate: string;
+  serviceType: string;
+  status: string;
+  pdfUrl?: string | null;
+  verificationToken: string;
+  device?: ServiceReportVerificationDevice;
+}
+
 export type ListSlidersParams = {
 activeOnly?: boolean;
 };
@@ -871,5 +1007,17 @@ offset?: number;
 export type StartProductionOrder200 = {
   order?: ProductionOrder;
   items?: ProductionOrderItem[];
+};
+
+export type ListServiceReportsParams = {
+deviceId?: number;
+status?: string;
+search?: string;
+limit?: number;
+offset?: number;
+};
+
+export type ListServiceReports200 = {
+  items: ServiceReportListItem[];
 };
 

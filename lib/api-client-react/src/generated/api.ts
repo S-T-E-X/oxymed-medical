@@ -31,6 +31,7 @@ import type {
   CorporateSection,
   CorporateSectionInput,
   DashboardStats,
+  DeviceServiceHistory,
   ErrorResponse,
   HealthStatus,
   ListCatalogsParams,
@@ -40,6 +41,8 @@ import type {
   ListProductsParams,
   ListQuotesParams,
   ListReferencesParams,
+  ListServiceReports200,
+  ListServiceReportsParams,
   ListSlidersParams,
   ListWarrantyDevicesParams,
   MediaFile,
@@ -77,7 +80,10 @@ import type {
   ServiceRecordInput,
   ServiceRecordItem,
   ServiceRecordListResult,
-  ServiceReportResult,
+  ServiceReportFull,
+  ServiceReportInput,
+  ServiceReportPdfResult,
+  ServiceReportVerification,
   Setting,
   SettingInput,
   SettingsMap,
@@ -3778,20 +3784,20 @@ export function useGetWarrantyDeviceByQr<TData = Awaited<ReturnType<typeof getWa
 
 
 
-export const getGetServiceReportUrl = (recordId: number,) => {
+export const getGetServiceReportUrl = (id: number,) => {
 
 
 
 
-  return `/api/warranty/records/${recordId}`
+  return `/api/service-reports/${id}`
 }
 
 /**
- * @summary Get full service record report by ID (public)
+ * @summary Get service report by ID
  */
-export const getServiceReport = async (recordId: number, options?: RequestInit): Promise<ServiceReportResult> => {
+export const getServiceReport = async (id: number, options?: RequestInit): Promise<ServiceReportFull> => {
 
-  return customFetch<ServiceReportResult>(getGetServiceReportUrl(recordId),
+  return customFetch<ServiceReportFull>(getGetServiceReportUrl(id),
   {
     ...options,
     method: 'GET'
@@ -3804,45 +3810,45 @@ export const getServiceReport = async (recordId: number, options?: RequestInit):
 
 
 
-export const getGetServiceReportQueryKey = (recordId: number,) => {
+export const getGetServiceReportQueryKey = (id: number,) => {
     return [
-    `/api/warranty/records/${recordId}`
+    `/api/service-reports/${id}`
     ] as const;
     }
 
 
-export const getGetServiceReportQueryOptions = <TData = Awaited<ReturnType<typeof getServiceReport>>, TError = ErrorType<ErrorResponse>>(recordId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetServiceReportQueryOptions = <TData = Awaited<ReturnType<typeof getServiceReport>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetServiceReportQueryKey(recordId);
+  const queryKey =  queryOptions?.queryKey ?? getGetServiceReportQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceReport>>> = ({ signal }) => getServiceReport(recordId, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceReport>>> = ({ signal }) => getServiceReport(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: !!(recordId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type GetServiceReportQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceReport>>>
-export type GetServiceReportQueryError = ErrorType<ErrorResponse>
+export type GetServiceReportQueryError = ErrorType<void>
 
 
 /**
- * @summary Get full service record report by ID (public)
+ * @summary Get service report by ID
  */
 
-export function useGetServiceReport<TData = Awaited<ReturnType<typeof getServiceReport>>, TError = ErrorType<ErrorResponse>>(
- recordId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export function useGetServiceReport<TData = Awaited<ReturnType<typeof getServiceReport>>, TError = ErrorType<void>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetServiceReportQueryOptions(recordId,options)
+  const queryOptions = getGetServiceReportQueryOptions(id,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -5489,4 +5495,525 @@ export const useReplaceProductBom = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getReplaceProductBomMutationOptions(options));
     }
+
+export const getListServiceReportsUrl = (params?: ListServiceReportsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/service-reports?${stringifiedParams}` : `/api/service-reports`
+}
+
+/**
+ * @summary List service reports
+ */
+export const listServiceReports = async (params?: ListServiceReportsParams, options?: RequestInit): Promise<ListServiceReports200> => {
+
+  return customFetch<ListServiceReports200>(getListServiceReportsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListServiceReportsQueryKey = (params?: ListServiceReportsParams,) => {
+    return [
+    `/api/service-reports`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListServiceReportsQueryOptions = <TData = Awaited<ReturnType<typeof listServiceReports>>, TError = ErrorType<unknown>>(params?: ListServiceReportsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listServiceReports>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListServiceReportsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServiceReports>>> = ({ signal }) => listServiceReports(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServiceReports>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListServiceReportsQueryResult = NonNullable<Awaited<ReturnType<typeof listServiceReports>>>
+export type ListServiceReportsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List service reports
+ */
+
+export function useListServiceReports<TData = Awaited<ReturnType<typeof listServiceReports>>, TError = ErrorType<unknown>>(
+ params?: ListServiceReportsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listServiceReports>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListServiceReportsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateServiceReportUrl = () => {
+
+
+
+
+  return `/api/service-reports`
+}
+
+/**
+ * @summary Create service report
+ */
+export const createServiceReport = async (serviceReportInput: ServiceReportInput, options?: RequestInit): Promise<ServiceReportFull> => {
+
+  return customFetch<ServiceReportFull>(getCreateServiceReportUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceReportInput,)
+  }
+);}
+
+
+
+
+export const getCreateServiceReportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceReport>>, TError,{data: BodyType<ServiceReportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createServiceReport>>, TError,{data: BodyType<ServiceReportInput>}, TContext> => {
+
+const mutationKey = ['createServiceReport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createServiceReport>>, {data: BodyType<ServiceReportInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createServiceReport(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateServiceReportMutationResult = NonNullable<Awaited<ReturnType<typeof createServiceReport>>>
+    export type CreateServiceReportMutationBody = BodyType<ServiceReportInput>
+    export type CreateServiceReportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create service report
+ */
+export const useCreateServiceReport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceReport>>, TError,{data: BodyType<ServiceReportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createServiceReport>>,
+        TError,
+        {data: BodyType<ServiceReportInput>},
+        TContext
+      > => {
+      return useMutation(getCreateServiceReportMutationOptions(options));
+    }
+
+export const getPatchServiceReportUrl = (id: number,) => {
+
+
+
+
+  return `/api/service-reports/${id}`
+}
+
+/**
+ * @summary Update service report
+ */
+export const patchServiceReport = async (id: number,
+    serviceReportInput: ServiceReportInput, options?: RequestInit): Promise<ServiceReportFull> => {
+
+  return customFetch<ServiceReportFull>(getPatchServiceReportUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceReportInput,)
+  }
+);}
+
+
+
+
+export const getPatchServiceReportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchServiceReport>>, TError,{id: number;data: BodyType<ServiceReportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchServiceReport>>, TError,{id: number;data: BodyType<ServiceReportInput>}, TContext> => {
+
+const mutationKey = ['patchServiceReport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchServiceReport>>, {id: number;data: BodyType<ServiceReportInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  patchServiceReport(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchServiceReportMutationResult = NonNullable<Awaited<ReturnType<typeof patchServiceReport>>>
+    export type PatchServiceReportMutationBody = BodyType<ServiceReportInput>
+    export type PatchServiceReportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update service report
+ */
+export const usePatchServiceReport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchServiceReport>>, TError,{id: number;data: BodyType<ServiceReportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof patchServiceReport>>,
+        TError,
+        {id: number;data: BodyType<ServiceReportInput>},
+        TContext
+      > => {
+      return useMutation(getPatchServiceReportMutationOptions(options));
+    }
+
+export const getDeleteServiceReportUrl = (id: number,) => {
+
+
+
+
+  return `/api/service-reports/${id}`
+}
+
+/**
+ * @summary Delete service report
+ */
+export const deleteServiceReport = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteServiceReportUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteServiceReportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteServiceReport>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteServiceReport>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteServiceReport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteServiceReport>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteServiceReport(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteServiceReportMutationResult = NonNullable<Awaited<ReturnType<typeof deleteServiceReport>>>
+
+    export type DeleteServiceReportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete service report
+ */
+export const useDeleteServiceReport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteServiceReport>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteServiceReport>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteServiceReportMutationOptions(options));
+    }
+
+export const getGenerateServiceReportPdfUrl = (id: number,) => {
+
+
+
+
+  return `/api/service-reports/${id}/generate-pdf`
+}
+
+/**
+ * @summary Generate PDF server-side using headless Chrome
+ */
+export const generateServiceReportPdf = async (id: number, options?: RequestInit): Promise<ServiceReportPdfResult> => {
+
+  return customFetch<ServiceReportPdfResult>(getGenerateServiceReportPdfUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getGenerateServiceReportPdfMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateServiceReportPdf>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateServiceReportPdf>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['generateServiceReportPdf'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateServiceReportPdf>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  generateServiceReportPdf(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateServiceReportPdfMutationResult = NonNullable<Awaited<ReturnType<typeof generateServiceReportPdf>>>
+
+    export type GenerateServiceReportPdfMutationError = ErrorType<void>
+
+    /**
+ * @summary Generate PDF server-side using headless Chrome
+ */
+export const useGenerateServiceReportPdf = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateServiceReportPdf>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateServiceReportPdf>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getGenerateServiceReportPdfMutationOptions(options));
+    }
+
+export const getGetPublicDeviceHistoryUrl = (qrToken: string,) => {
+
+
+
+
+  return `/api/service-reports/public/device/${qrToken}`
+}
+
+/**
+ * @summary Get device service history by QR token (public)
+ */
+export const getPublicDeviceHistory = async (qrToken: string, options?: RequestInit): Promise<DeviceServiceHistory> => {
+
+  return customFetch<DeviceServiceHistory>(getGetPublicDeviceHistoryUrl(qrToken),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicDeviceHistoryQueryKey = (qrToken: string,) => {
+    return [
+    `/api/service-reports/public/device/${qrToken}`
+    ] as const;
+    }
+
+
+export const getGetPublicDeviceHistoryQueryOptions = <TData = Awaited<ReturnType<typeof getPublicDeviceHistory>>, TError = ErrorType<void>>(qrToken: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicDeviceHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicDeviceHistoryQueryKey(qrToken);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicDeviceHistory>>> = ({ signal }) => getPublicDeviceHistory(qrToken, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(qrToken), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicDeviceHistory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicDeviceHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicDeviceHistory>>>
+export type GetPublicDeviceHistoryQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get device service history by QR token (public)
+ */
+
+export function useGetPublicDeviceHistory<TData = Awaited<ReturnType<typeof getPublicDeviceHistory>>, TError = ErrorType<void>>(
+ qrToken: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicDeviceHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicDeviceHistoryQueryOptions(qrToken,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getVerifyServiceReportUrl = (verificationToken: string,) => {
+
+
+
+
+  return `/api/service-reports/public/verify/${verificationToken}`
+}
+
+/**
+ * @summary Verify service report by verification token (public)
+ */
+export const verifyServiceReport = async (verificationToken: string, options?: RequestInit): Promise<ServiceReportVerification> => {
+
+  return customFetch<ServiceReportVerification>(getVerifyServiceReportUrl(verificationToken),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getVerifyServiceReportQueryKey = (verificationToken: string,) => {
+    return [
+    `/api/service-reports/public/verify/${verificationToken}`
+    ] as const;
+    }
+
+
+export const getVerifyServiceReportQueryOptions = <TData = Awaited<ReturnType<typeof verifyServiceReport>>, TError = ErrorType<void>>(verificationToken: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof verifyServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVerifyServiceReportQueryKey(verificationToken);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof verifyServiceReport>>> = ({ signal }) => verifyServiceReport(verificationToken, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(verificationToken), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof verifyServiceReport>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type VerifyServiceReportQueryResult = NonNullable<Awaited<ReturnType<typeof verifyServiceReport>>>
+export type VerifyServiceReportQueryError = ErrorType<void>
+
+
+/**
+ * @summary Verify service report by verification token (public)
+ */
+
+export function useVerifyServiceReport<TData = Awaited<ReturnType<typeof verifyServiceReport>>, TError = ErrorType<void>>(
+ verificationToken: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof verifyServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getVerifyServiceReportQueryOptions(verificationToken,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
