@@ -309,11 +309,17 @@ export default function ServicePage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (serialNo) setSubmittedSerial(serialNo);
+    if (serialNo) {
+      setSubmittedSerial(serialNo);
+      setSubmittedQr(undefined);
+    }
   }, [serialNo]);
 
   useEffect(() => {
-    if (qrToken) setSubmittedQr(qrToken);
+    if (qrToken) {
+      setSubmittedQr(qrToken);
+      setSubmittedSerial(undefined);
+    }
   }, [qrToken]);
 
   function handleSearch() {
@@ -358,7 +364,7 @@ export default function ServicePage() {
                 <button
                   type="button"
                   className={queryMode === "serial" ? "active" : ""}
-                  onClick={() => { setQueryMode("serial"); setInputValue(""); setSubmittedSerial(undefined); }}
+                  onClick={() => { setQueryMode("serial"); setInputValue(""); setSubmittedSerial(undefined); setSubmittedQr(undefined); }}
                 >
                   <Search size={17} />
                   Seri Numarası ile Sorgula
@@ -366,7 +372,7 @@ export default function ServicePage() {
                 <button
                   type="button"
                   className={queryMode === "service_code" ? "active" : ""}
-                  onClick={() => { setQueryMode("service_code"); setInputValue(""); }}
+                  onClick={() => { setQueryMode("service_code"); setInputValue(""); setSubmittedQr(undefined); setSubmittedSerial(undefined); }}
                 >
                   <QrCode size={17} />
                   Servis Kodu ile Sorgula

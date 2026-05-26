@@ -5,6 +5,7 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ServiceRecordInputKitsItem } from './serviceRecordInputKitsItem';
 
 export interface ServiceRecordInput {
   serviceDate: string;
@@ -15,4 +16,5 @@ export interface ServiceRecordInput {
   notes?: string;
   photoUrls?: string[];
   reportNo?: string;
+  kits?: ServiceRecordInputKitsItem[] | null;
 }

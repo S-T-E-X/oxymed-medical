@@ -2537,6 +2537,21 @@ components:
             type: string
         reportNo:
           type: string
+        kits:
+          type: array
+          nullable: true
+          items:
+            type: object
+            required: [kitName]
+            properties:
+              kitName:
+                type: string
+              kitCode:
+                type: string
+              quantity:
+                type: string
+              unit:
+                type: string
 
     ServiceRecordListResult:
       type: object

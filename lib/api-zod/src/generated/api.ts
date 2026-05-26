@@ -1387,7 +1387,13 @@ export const CreateServiceRecordBody = zod.object({
   "workHours": zod.string().optional(),
   "notes": zod.string().optional(),
   "photoUrls": zod.array(zod.string()).optional(),
-  "reportNo": zod.string().optional()
+  "reportNo": zod.string().optional(),
+  "kits": zod.array(zod.object({
+  "kitName": zod.string(),
+  "kitCode": zod.string().optional(),
+  "quantity": zod.string().optional(),
+  "unit": zod.string().optional()
+})).nullish()
 })
 
 
@@ -1407,7 +1413,13 @@ export const UpdateServiceRecordBody = zod.object({
   "workHours": zod.string().optional(),
   "notes": zod.string().optional(),
   "photoUrls": zod.array(zod.string()).optional(),
-  "reportNo": zod.string().optional()
+  "reportNo": zod.string().optional(),
+  "kits": zod.array(zod.object({
+  "kitName": zod.string(),
+  "kitCode": zod.string().optional(),
+  "quantity": zod.string().optional(),
+  "unit": zod.string().optional()
+})).nullish()
 })
 
 export const UpdateServiceRecordResponse = zod.object({

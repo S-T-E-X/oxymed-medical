@@ -58,6 +58,7 @@ export * from './referenceItem';
 export * from './referenceListResponse';
 export * from './referenceUpdate';
 export * from './serviceRecordInput';
+export * from './serviceRecordInputKitsItem';
 export * from './serviceRecordItem';
 export * from './serviceRecordListResult';
 export * from './serviceRecordPublic';

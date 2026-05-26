@@ -619,6 +619,13 @@ export interface ServiceReportResult {
   deviceImageUrl?: string | null;
 }
 
+export type ServiceRecordInputKitsItem = {
+  kitName: string;
+  kitCode?: string;
+  quantity?: string;
+  unit?: string;
+};
+
 export interface ServiceRecordInput {
   serviceDate: string;
   serviceType: string;
@@ -628,6 +635,7 @@ export interface ServiceRecordInput {
   notes?: string;
   photoUrls?: string[];
   reportNo?: string;
+  kits?: ServiceRecordInputKitsItem[] | null;
 }
 
 export interface ServiceRecordListResult {
