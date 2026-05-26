@@ -511,8 +511,6 @@ export interface ServiceRecordPublic {
   serviceDate: string;
   serviceType: string;
   servicePersonnel?: string | null;
-  description?: string | null;
-  reportNo?: string | null;
 }
 
 export interface WarrantyDevicePublic {
@@ -599,6 +597,27 @@ export interface ServiceRecordItem {
   reportNo?: string | null;
   createdAt: string;
   kits?: MaintenanceKitItem[];
+}
+
+export interface ServiceReportResult {
+  id: number;
+  serviceDate: string;
+  serviceType: string;
+  servicePersonnel?: string | null;
+  description?: string | null;
+  workHours?: string | null;
+  reportNo?: string | null;
+  photoUrls?: string[] | null;
+  notes?: string | null;
+  kits?: MaintenanceKitItem[] | null;
+  deviceProductName: string;
+  deviceModel: string;
+  deviceSerialNumber: string;
+  deviceCustomerFirm: string;
+  deviceStatus: string;
+  deviceWarrantyEndDate?: string | null;
+  deviceInstallDate?: string | null;
+  deviceImageUrl?: string | null;
 }
 
 export interface ServiceRecordInput {

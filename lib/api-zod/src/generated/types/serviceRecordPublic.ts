@@ -11,6 +11,4 @@ export interface ServiceRecordPublic {
   serviceDate: string;
   serviceType: string;
   servicePersonnel?: string | null;
-  description?: string | null;
-  reportNo?: string | null;
 }

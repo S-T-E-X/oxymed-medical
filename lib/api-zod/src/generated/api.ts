@@ -1179,9 +1179,7 @@ export const GetWarrantyDeviceBySerialResponse = zod.object({
   "id": zod.number(),
   "serviceDate": zod.string(),
   "serviceType": zod.string(),
-  "servicePersonnel": zod.string().nullish(),
-  "description": zod.string().nullish(),
-  "reportNo": zod.string().nullish()
+  "servicePersonnel": zod.string().nullish()
 })).optional()
 })
 
@@ -1210,10 +1208,44 @@ export const GetWarrantyDeviceByQrResponse = zod.object({
   "id": zod.number(),
   "serviceDate": zod.string(),
   "serviceType": zod.string(),
+  "servicePersonnel": zod.string().nullish()
+})).optional()
+})
+
+
+/**
+ * @summary Get full service record report by ID (public)
+ */
+export const GetServiceReportParams = zod.object({
+  "recordId": zod.coerce.number()
+})
+
+export const GetServiceReportResponse = zod.object({
+  "id": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
   "servicePersonnel": zod.string().nullish(),
   "description": zod.string().nullish(),
-  "reportNo": zod.string().nullish()
-})).optional()
+  "workHours": zod.string().nullish(),
+  "reportNo": zod.string().nullish(),
+  "photoUrls": zod.array(zod.string()).nullish(),
+  "notes": zod.string().nullish(),
+  "kits": zod.array(zod.object({
+  "id": zod.number(),
+  "serviceRecordId": zod.number(),
+  "kitName": zod.string(),
+  "kitCode": zod.string().nullish(),
+  "quantity": zod.string().nullish(),
+  "unit": zod.string().nullish()
+})).nullish(),
+  "deviceProductName": zod.string(),
+  "deviceModel": zod.string(),
+  "deviceSerialNumber": zod.string(),
+  "deviceCustomerFirm": zod.string(),
+  "deviceStatus": zod.string(),
+  "deviceWarrantyEndDate": zod.string().nullish(),
+  "deviceInstallDate": zod.string().nullish(),
+  "deviceImageUrl": zod.string().nullish()
 })
 
 

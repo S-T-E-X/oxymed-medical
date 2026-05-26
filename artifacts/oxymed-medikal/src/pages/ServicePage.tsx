@@ -268,14 +268,11 @@ function DeviceFound({ device }: { device: {
                     <tr key={r.id}>
                       <td>{r.serviceDate}</td>
                       <td>{r.serviceType}</td>
-                      <td>{r.description ?? "—"}</td>
                       <td>{r.servicePersonnel ?? "—"}</td>
                       <td>
-                        {r.reportNo ? (
-                          <Link to="/servis-raporu" className="service-pdf-link">
-                            PDF <FileText size={15} />
-                          </Link>
-                        ) : "—"}
+                        <Link to={`/servis-raporu/${r.id}`} className="service-pdf-link">
+                          PDF <FileText size={15} />
+                        </Link>
                       </td>
                     </tr>
                   ))}

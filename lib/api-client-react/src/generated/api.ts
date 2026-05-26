@@ -66,6 +66,7 @@ import type {
   ServiceRecordInput,
   ServiceRecordItem,
   ServiceRecordListResult,
+  ServiceReportResult,
   Setting,
   SettingInput,
   SettingsMap,
@@ -3753,6 +3754,83 @@ export function useGetWarrantyDeviceByQr<TData = Awaited<ReturnType<typeof getWa
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetWarrantyDeviceByQrQueryOptions(qrToken,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetServiceReportUrl = (recordId: number,) => {
+
+
+
+
+  return `/api/warranty/records/${recordId}`
+}
+
+/**
+ * @summary Get full service record report by ID (public)
+ */
+export const getServiceReport = async (recordId: number, options?: RequestInit): Promise<ServiceReportResult> => {
+
+  return customFetch<ServiceReportResult>(getGetServiceReportUrl(recordId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetServiceReportQueryKey = (recordId: number,) => {
+    return [
+    `/api/warranty/records/${recordId}`
+    ] as const;
+    }
+
+
+export const getGetServiceReportQueryOptions = <TData = Awaited<ReturnType<typeof getServiceReport>>, TError = ErrorType<ErrorResponse>>(recordId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetServiceReportQueryKey(recordId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceReport>>> = ({ signal }) => getServiceReport(recordId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(recordId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetServiceReportQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceReport>>>
+export type GetServiceReportQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get full service record report by ID (public)
+ */
+
+export function useGetServiceReport<TData = Awaited<ReturnType<typeof getServiceReport>>, TError = ErrorType<ErrorResponse>>(
+ recordId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getServiceReport>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetServiceReportQueryOptions(recordId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

@@ -174,8 +174,6 @@ router.get("/warranty/devices/by-serial/:serialNo", async (req, res): Promise<vo
       serviceDate: r.serviceDate,
       serviceType: r.serviceType,
       servicePersonnel: r.servicePersonnel,
-      description: r.description,
-      reportNo: r.reportNo,
     })),
   });
 });
@@ -202,9 +200,53 @@ router.get("/warranty/devices/by-qr/:qrToken", async (req, res): Promise<void> =
       serviceDate: r.serviceDate,
       serviceType: r.serviceType,
       servicePersonnel: r.servicePersonnel,
-      description: r.description,
-      reportNo: r.reportNo,
     })),
+  });
+});
+
+// ─── Public: Get service record report by recordId ────────────────────────────
+
+router.get("/warranty/records/:recordId", async (req, res): Promise<void> => {
+  const recordId = parseId(req.params["recordId"]);
+  const [record] = await db
+    .select()
+    .from(serviceRecordsTable)
+    .where(eq(serviceRecordsTable.id, recordId));
+  if (!record) {
+    res.status(404).json({ error: "Servis kaydı bulunamadı" });
+    return;
+  }
+  const [device] = await db
+    .select()
+    .from(warrantyDevicesTable)
+    .where(eq(warrantyDevicesTable.id, record.deviceId));
+  if (!device) {
+    res.status(404).json({ error: "Cihaz bulunamadı" });
+    return;
+  }
+  const kits = await db
+    .select()
+    .from(maintenanceKitsTable)
+    .where(eq(maintenanceKitsTable.recordId, recordId));
+  res.json({
+    id: record.id,
+    serviceDate: record.serviceDate,
+    serviceType: record.serviceType,
+    servicePersonnel: record.servicePersonnel,
+    description: record.description,
+    workHours: record.workHours,
+    reportNo: record.reportNo,
+    photoUrls: record.photoUrls,
+    notes: record.notes,
+    kits,
+    deviceProductName: device.productName,
+    deviceModel: device.model,
+    deviceSerialNumber: device.serialNumber,
+    deviceCustomerFirm: device.customerFirm,
+    deviceStatus: device.status,
+    deviceWarrantyEndDate: device.warrantyEndDate,
+    deviceInstallDate: device.installDate,
+    deviceImageUrl: device.imageUrl,
   });
 });
 

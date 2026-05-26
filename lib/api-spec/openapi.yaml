@@ -1113,6 +1113,31 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /warranty/records/{recordId}:
+    get:
+      operationId: getServiceReport
+      tags: [warranty]
+      summary: Get full service record report by ID (public)
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Service report with device info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceReportResult"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /warranty/devices/{id}:
     get:
       operationId: getWarrantyDevice
@@ -2437,10 +2462,59 @@ components:
         servicePersonnel:
           type: string
           nullable: true
+
+    ServiceReportResult:
+      type: object
+      required: [id, serviceDate, serviceType, deviceProductName, deviceModel, deviceSerialNumber, deviceCustomerFirm, deviceStatus]
+      properties:
+        id:
+          type: integer
+        serviceDate:
+          type: string
+        serviceType:
+          type: string
+        servicePersonnel:
+          type: string
+          nullable: true
         description:
           type: string
           nullable: true
+        workHours:
+          type: string
+          nullable: true
         reportNo:
+          type: string
+          nullable: true
+        photoUrls:
+          type: array
+          nullable: true
+          items:
+            type: string
+        notes:
+          type: string
+          nullable: true
+        kits:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/MaintenanceKitItem"
+        deviceProductName:
+          type: string
+        deviceModel:
+          type: string
+        deviceSerialNumber:
+          type: string
+        deviceCustomerFirm:
+          type: string
+        deviceStatus:
+          type: string
+        deviceWarrantyEndDate:
+          type: string
+          nullable: true
+        deviceInstallDate:
+          type: string
+          nullable: true
+        deviceImageUrl:
           type: string
           nullable: true
 

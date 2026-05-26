@@ -50,6 +50,7 @@ export default function App() {
           <Route path="/servis" element={<ServicePage />} />
           <Route path="/servis/:serialNo" element={<ServicePage />} />
           <Route path="/servis/qr/:qrToken" element={<ServicePage />} />
+          <Route path="/servis-raporu/:recordId" element={<ServiceReportPage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
           <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />

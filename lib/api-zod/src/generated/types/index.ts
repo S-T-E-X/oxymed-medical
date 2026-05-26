@@ -61,6 +61,7 @@ export * from './serviceRecordInput';
 export * from './serviceRecordItem';
 export * from './serviceRecordListResult';
 export * from './serviceRecordPublic';
+export * from './serviceReportResult';
 export * from './setting';
 export * from './settingInput';
 export * from './settingsMap';
