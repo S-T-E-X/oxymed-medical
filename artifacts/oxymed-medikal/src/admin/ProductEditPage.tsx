@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -10,8 +10,9 @@ import {
   type Product,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { ArrowLeft, ImageIcon, Lock, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, Box, ImageIcon, Lock, Plus, Save, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+import { useAuth } from "./AuthContext";
 
 type SpecRow = { label: string; value: string };
 type FeatureRow = { title: string; text: string };
@@ -106,7 +107,7 @@ function productToForm(p: Product): ProductEditForm {
   };
 }
 
-type Tab = "temel" | "sayfa" | "gizli" | "teklif";
+type Tab = "temel" | "sayfa" | "gizli" | "teklif" | "bom";
 
 function StringList({ label, items, onChange }: { label: string; items: string[]; onChange: (v: string[]) => void }) {
   return (
@@ -208,6 +209,9 @@ function DetailCardList({ items, onChange, uploadFile, uploading }: { items: Det
   );
 }
 
+interface BomMaterial { id: number; name: string; unit: string; quantity: number | null; }
+interface BomEntry { id: number; materialId: number; requiredQty: number; materialName: string | null; unit: string | null; inStock: number | null; }
+
 export default function ProductEditPage() {
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
@@ -215,6 +219,52 @@ export default function ProductEditPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { uploadFile, uploading } = useImageUpload();
+  const { authFetch } = useAuth();
+
+  // BOM state
+  const [bom, setBom] = useState<BomEntry[] | null>(null);
+  const [bomMaterials, setBomMaterials] = useState<BomMaterial[]>([]);
+  const [newBomMaterialId, setNewBomMaterialId] = useState<number | "">("");
+  const [newBomQty, setNewBomQty] = useState(1);
+  const [bomSaving, setBomSaving] = useState(false);
+
+  const loadBom = useCallback(async () => {
+    if (!productId) return;
+    const res = await authFetch(`/api/production/bom/${productId}`);
+    if (res.ok) setBom(await res.json());
+  }, [authFetch, productId]);
+
+  const loadBomMaterials = useCallback(async () => {
+    const res = await authFetch("/api/stock/materials");
+    if (res.ok) { const d = await res.json(); setBomMaterials(d.items ?? d); }
+  }, [authFetch]);
+
+  async function saveBom(items: { materialId: number; requiredQty: number }[]) {
+    if (!productId) return;
+    setBomSaving(true);
+    try {
+      const res = await authFetch(`/api/production/bom/${productId}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(items),
+      });
+      if (!res.ok) throw new Error();
+      setBom(await res.json());
+      toast.success("BOM güncellendi");
+    } catch { toast.error("BOM kaydedilemedi"); }
+    finally { setBomSaving(false); }
+  }
+
+  async function addBomItem() {
+    if (!newBomMaterialId || newBomQty < 1) return;
+    const existing = bom ?? [];
+    if (existing.some((b) => b.materialId === newBomMaterialId)) { toast.error("Bu malzeme zaten BOM'da var"); return; }
+    await saveBom([...existing.map((b) => ({ materialId: b.materialId, requiredQty: b.requiredQty })), { materialId: Number(newBomMaterialId), requiredQty: newBomQty }]);
+    setNewBomMaterialId(""); setNewBomQty(1);
+  }
+
+  async function removeBomItem(materialId: number) {
+    const existing = bom ?? [];
+    await saveBom(existing.filter((b) => b.materialId !== materialId).map((b) => ({ materialId: b.materialId, requiredQty: b.requiredQty })));
+  }
 
   const [form, setForm] = useState<ProductEditForm>(EMPTY_FORM);
   const [tab, setTab] = useState<Tab>("temel");
@@ -312,11 +362,19 @@ export default function ProductEditPage() {
     );
   }
 
+  useEffect(() => {
+    if (tab === "bom" && !isNew) {
+      if (bom === null) loadBom();
+      if (bomMaterials.length === 0) loadBomMaterials();
+    }
+  }, [tab, isNew, bom, bomMaterials.length, loadBom, loadBomMaterials]);
+
   const tabs: { key: Tab; label: string; icon?: React.ReactNode }[] = [
     { key: "temel", label: "Temel Bilgiler" },
     { key: "sayfa", label: "Sayfa İçeriği" },
     { key: "gizli", label: "Gizli Bilgiler", icon: <Lock className="h-3.5 w-3.5" /> },
     { key: "teklif", label: "Teklif Formu" },
+    ...(!isNew ? [{ key: "bom" as Tab, label: "Malzeme (BOM)", icon: <Box className="h-3.5 w-3.5" /> }] : []),
   ];
 
   return (
@@ -466,6 +524,78 @@ export default function ProductEditPage() {
               </div>
             </div>
             <StringList label="Malzeme Listesi" items={form.materials} onChange={(v) => set("materials", v)} />
+          </div>
+        )}
+
+        {tab === "bom" && !isNew && (
+          <div className="space-y-4">
+            <div className="rounded-lg border border-purple-100 bg-purple-50 p-4">
+              <p className="text-sm font-semibold text-purple-800">Malzeme Listesi (BOM)</p>
+              <p className="mt-0.5 text-xs text-purple-600">Bu ürünün üretiminde kullanılan malzemeler. Üretim emirlerinde stok kontrolü için kullanılır.</p>
+            </div>
+
+            {bom === null ? (
+              <div className="animate-pulse h-20 rounded-lg bg-slate-100" />
+            ) : bom.length === 0 ? (
+              <p className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">Henüz malzeme eklenmemiş.</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="pb-2">Malzeme</th>
+                    <th className="pb-2 text-center">Birim Gereksinim</th>
+                    <th className="pb-2 text-right">Mevcut Stok</th>
+                    <th className="pb-2 w-8"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {bom.map((b) => (
+                    <tr key={b.id}>
+                      <td className="py-2.5 font-semibold text-slate-800">{b.materialName ?? `#${b.materialId}`}</td>
+                      <td className="py-2.5 text-center text-slate-700">{b.requiredQty} {b.unit}</td>
+                      <td className="py-2.5 text-right">
+                        <span className={`font-bold ${(b.inStock ?? 0) >= b.requiredQty ? "text-emerald-600" : "text-red-600"}`}>
+                          {b.inStock ?? 0} {b.unit}
+                        </span>
+                      </td>
+                      <td className="py-2.5 text-right">
+                        <button onClick={() => removeBomItem(b.materialId)} disabled={bomSaving} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-40">
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            <div className="border-t border-slate-200 pt-4">
+              <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Malzeme Ekle</p>
+              <div className="flex flex-wrap gap-2">
+                <select
+                  value={newBomMaterialId}
+                  onChange={(e) => setNewBomMaterialId(e.target.value ? Number(e.target.value) : "")}
+                  className="flex-1 min-w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none"
+                >
+                  <option value="">Malzeme seçin...</option>
+                  {bomMaterials.map((m) => (
+                    <option key={m.id} value={m.id}>{m.name} ({m.unit})</option>
+                  ))}
+                </select>
+                <input
+                  type="number" min={1} value={newBomQty}
+                  onChange={(e) => setNewBomQty(parseInt(e.target.value) || 1)}
+                  className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm text-center focus:border-purple-500 focus:outline-none"
+                  placeholder="Adet"
+                />
+                <button
+                  onClick={addBomItem} disabled={!newBomMaterialId || bomSaving}
+                  className="flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
+                >
+                  <Plus className="h-4 w-4" /> Ekle
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

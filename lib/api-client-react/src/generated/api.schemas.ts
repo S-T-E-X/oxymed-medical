@@ -709,6 +709,109 @@ export interface DashboardStats {
   sliders: number;
 }
 
+export type ProductionOrderItemQualityChecklist = {[key: string]: boolean} | null;
+
+export interface ProductionOrderItem {
+  id: number;
+  orderId: number;
+  serialNumber?: string | null;
+  qrToken?: string | null;
+  warrantyDeviceId?: number | null;
+  status: string;
+  qualityChecklist?: ProductionOrderItemQualityChecklist;
+  productionDate?: string | null;
+  notes?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ProductionOrder {
+  id: number;
+  orderNo: string;
+  productId?: number | null;
+  productTitle: string;
+  productCode?: string | null;
+  quantity: number;
+  status: string;
+  quoteFormId?: number | null;
+  customerName?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  itemCount?: number;
+}
+
+export type ProductionOrderDetailReservationsItem = {
+  id?: number;
+  materialId?: number;
+  reservedQty?: number;
+  materialName?: string | null;
+  unit?: string | null;
+};
+
+export type ProductionOrderDetail = ProductionOrder & {
+  items: ProductionOrderItem[];
+  reservations: ProductionOrderDetailReservationsItem[];
+};
+
+export type ProductionDashboardCounts = {[key: string]: number};
+
+export type ProductionDashboardLowMaterialsItem = {
+  id?: number;
+  name?: string;
+  quantity?: number | null;
+  minStock?: number | null;
+  unit?: string | null;
+};
+
+export interface ProductionDashboard {
+  total: number;
+  counts: ProductionDashboardCounts;
+  lowMaterials: ProductionDashboardLowMaterialsItem[];
+}
+
+export interface ProductionOrderListResult {
+  items: ProductionOrder[];
+}
+
+export interface BomItem {
+  id: number;
+  materialId: number;
+  requiredQty: number;
+  materialName?: string | null;
+  unit?: string | null;
+  inStock?: number | null;
+  productCode?: string | null;
+}
+
+export interface ProductionOrderInput {
+  productId?: number | null;
+  productTitle: string;
+  productCode?: string | null;
+  /** @minimum 1 */
+  quantity: number;
+  quoteFormId?: number | null;
+  customerName?: string | null;
+  notes?: string | null;
+}
+
+export interface ProductionOrderPatch {
+  status?: string;
+  notes?: string | null;
+}
+
+export type QualityChecklistInputChecklist = {[key: string]: boolean};
+
+export interface QualityChecklistInput {
+  checklist: QualityChecklistInputChecklist;
+}
+
+export interface BomItemInput {
+  materialId: number;
+  /** @minimum 1 */
+  requiredQty: number;
+}
+
 export type ListSlidersParams = {
 activeOnly?: boolean;
 };
@@ -757,5 +860,16 @@ status?: string;
 search?: string;
 limit?: number;
 offset?: number;
+};
+
+export type ListProductionOrdersParams = {
+status?: string;
+limit?: number;
+offset?: number;
+};
+
+export type StartProductionOrder200 = {
+  order?: ProductionOrder;
+  items?: ProductionOrderItem[];
 };
 

@@ -428,6 +428,11 @@ router.post("/production/orders/:id/assign-from-stock", requireAuth, async (req,
     const serialNumber = await nextSerial(productCode);
     const qrToken = randomUUID();
 
+    // Stoktan karşılanan ürünler zaten kalite kontrolden geçmiş; checklist otomatik tamamlanır
+    const fullChecklist: Record<string, boolean> = Object.fromEntries(
+      Object.keys(DEFAULT_QUALITY_CHECKLIST).map((k) => [k, true]),
+    );
+
     const [item] = await db
       .insert(productionOrderItemsTable)
       .values({
@@ -435,7 +440,7 @@ router.post("/production/orders/:id/assign-from-stock", requireAuth, async (req,
         serialNumber,
         qrToken,
         status: "tamamlandi",
-        qualityChecklist: { ...DEFAULT_QUALITY_CHECKLIST },
+        qualityChecklist: fullChecklist,
         productionDate: dateStr,
         notes: "Stoktan karşılandı",
       })

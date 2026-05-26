@@ -349,6 +349,42 @@ export default function ProductionDetailPage() {
     navigator.clipboard.writeText(text).then(() => toast.success("Kopyalandı"));
   }
 
+  async function downloadLabelPdf() {
+    if (!order || order.items.length === 0) return;
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: [60, 80] });
+    toast.info("PDF hazırlanıyor...");
+    for (let i = 0; i < order.items.length; i++) {
+      const item = order.items[i];
+      if (!item.qrToken) continue;
+      if (i > 0) doc.addPage();
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(item.qrToken)}`;
+      try {
+        const resp = await fetch(qrUrl);
+        const blob = await resp.blob();
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+        doc.addImage(dataUrl, "PNG", 10, 8, 40, 40);
+      } catch { /* skip QR image on error */ }
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.text(item.serialNumber ?? "", 30, 55, { align: "center" });
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.text(order.productTitle, 30, 61, { align: "center" });
+      if (order.productCode) doc.text(order.productCode, 30, 67, { align: "center" });
+      doc.setFontSize(6);
+      doc.setTextColor(120);
+      doc.text(`${order.orderNo} · #${i + 1}`, 30, 73, { align: "center" });
+      doc.setTextColor(0);
+    }
+    doc.save(`${order.orderNo}-etiketler.pdf`);
+    toast.success("PDF indirildi");
+  }
+
   if (isLoading) {
     return (
       <div className="p-8">
@@ -844,18 +880,26 @@ export default function ProductionDetailPage() {
             </div>
           ) : (
             <>
-              {/* Print all button */}
-              <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+              {/* Print / PDF actions */}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
                 <div>
                   <p className="font-bold text-slate-900">{order.items.length} adet QR etiket</p>
                   <p className="text-sm text-slate-500">{order.productTitle} · {order.orderNo}</p>
                 </div>
-                <button
-                  onClick={() => window.print()}
-                  className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700"
-                >
-                  <Printer className="h-4 w-4" /> Tümünü Yazdır
-                </button>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={downloadLabelPdf}
+                    className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                  >
+                    <Printer className="h-4 w-4" /> PDF İndir (jsPDF)
+                  </button>
+                  <button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700"
+                  >
+                    <Printer className="h-4 w-4" /> Tarayıcıdan Yazdır
+                  </button>
+                </div>
               </div>
 
               {/* QR card grid */}

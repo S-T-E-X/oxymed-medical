@@ -32,6 +32,8 @@ tags:
     description: Product catalogs
   - name: warranty
     description: Warranty and service management
+  - name: production
+    description: Production order management and BOM
 
 paths:
   /healthz:
@@ -1410,6 +1412,210 @@ paths:
               schema:
                 $ref: "#/components/schemas/DashboardStats"
 
+  # PRODUCTION
+  /production/dashboard:
+    get:
+      operationId: getProductionDashboard
+      tags: [production]
+      summary: Get production dashboard stats
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProductionDashboard"}
+
+  /production/orders:
+    get:
+      operationId: listProductionOrders
+      tags: [production]
+      summary: List production orders
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: query
+          name: status
+          schema: {type: string}
+        - in: query
+          name: limit
+          schema: {type: integer, default: 100}
+        - in: query
+          name: offset
+          schema: {type: integer, default: 0}
+      responses:
+        "200":
+          description: List of production orders
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProductionOrderListResult"}
+    post:
+      operationId: addNewProductionOrder
+      tags: [production]
+      summary: Create production order manually
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProductionOrderInput"}
+      responses:
+        "201":
+          description: Created production order
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProductionOrder"}
+
+  /production/orders/{id}:
+    get:
+      operationId: getProductionOrder
+      tags: [production]
+      summary: Get production order with items
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: integer}
+      responses:
+        "200":
+          description: Production order detail
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProductionOrderDetail"}
+    patch:
+      operationId: patchProductionOrder
+      tags: [production]
+      summary: Update production order status
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProductionOrderPatch"}
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProductionOrder"}
+        "422":
+          description: Quality gate violation
+    delete:
+      operationId: deleteProductionOrder
+      tags: [production]
+      summary: Delete production order
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: integer}
+      responses:
+        "204":
+          description: Deleted
+
+  /production/orders/{id}/start:
+    post:
+      operationId: startProductionOrder
+      tags: [production]
+      summary: Start production - generate serial numbers and warranty drafts
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: integer}
+      responses:
+        "200":
+          description: Started production with items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order: {$ref: "#/components/schemas/ProductionOrder"}
+                  items:
+                    type: array
+                    items: {$ref: "#/components/schemas/ProductionOrderItem"}
+
+  /production/orders/{id}/items/{itemId}/quality:
+    patch:
+      operationId: patchItemQualityChecklist
+      tags: [production]
+      summary: Update quality checklist for a production item
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: integer}
+        - in: path
+          name: itemId
+          required: true
+          schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/QualityChecklistInput"}
+      responses:
+        "200":
+          description: Updated item
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ProductionOrderItem"}
+
+  /production/bom/{productId}:
+    get:
+      operationId: getProductBom
+      tags: [production]
+      summary: Get product BOM
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema: {type: integer}
+      responses:
+        "200":
+          description: BOM items
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: "#/components/schemas/BomItem"}
+    put:
+      operationId: replaceProductBom
+      tags: [production]
+      summary: Replace all BOM items for a product
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: {$ref: "#/components/schemas/BomItemInput"}
+      responses:
+        "200":
+          description: Updated BOM items
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: "#/components/schemas/BomItem"}
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2727,3 +2933,128 @@ components:
           type: integer
         sliders:
           type: integer
+
+    # PRODUCTION
+    ProductionOrderItem:
+      type: object
+      required: [id, orderId, status]
+      properties:
+        id: { type: integer }
+        orderId: { type: integer }
+        serialNumber: { type: string, nullable: true }
+        qrToken: { type: string, nullable: true }
+        warrantyDeviceId: { type: integer, nullable: true }
+        status: { type: string }
+        qualityChecklist: { type: object, additionalProperties: { type: boolean }, nullable: true }
+        productionDate: { type: string, nullable: true }
+        notes: { type: string, nullable: true }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+
+    ProductionOrder:
+      type: object
+      required: [id, orderNo, productTitle, quantity, status, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        orderNo: { type: string }
+        productId: { type: integer, nullable: true }
+        productTitle: { type: string }
+        productCode: { type: string, nullable: true }
+        quantity: { type: integer }
+        status: { type: string }
+        quoteFormId: { type: integer, nullable: true }
+        customerName: { type: string, nullable: true }
+        notes: { type: string, nullable: true }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+        itemCount: { type: integer }
+
+    ProductionOrderDetail:
+      allOf:
+        - $ref: "#/components/schemas/ProductionOrder"
+        - type: object
+          required: [items, reservations]
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/ProductionOrderItem" }
+            reservations:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: integer }
+                  materialId: { type: integer }
+                  reservedQty: { type: number }
+                  materialName: { type: string, nullable: true }
+                  unit: { type: string, nullable: true }
+
+    ProductionDashboard:
+      type: object
+      required: [total, lowMaterials, counts]
+      properties:
+        total: { type: integer }
+        counts: { type: object, additionalProperties: { type: integer } }
+        lowMaterials:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              name: { type: string }
+              quantity: { type: number, nullable: true }
+              minStock: { type: number, nullable: true }
+              unit: { type: string, nullable: true }
+
+    ProductionOrderListResult:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ProductionOrder" }
+
+    BomItem:
+      type: object
+      required: [id, materialId, requiredQty]
+      properties:
+        id: { type: integer }
+        materialId: { type: integer }
+        requiredQty: { type: integer }
+        materialName: { type: string, nullable: true }
+        unit: { type: string, nullable: true }
+        inStock: { type: number, nullable: true }
+        productCode: { type: string, nullable: true }
+
+    ProductionOrderInput:
+      type: object
+      required: [productTitle, quantity]
+      properties:
+        productId: {type: integer, nullable: true}
+        productTitle: {type: string}
+        productCode: {type: string, nullable: true}
+        quantity: {type: integer, minimum: 1}
+        quoteFormId: {type: integer, nullable: true}
+        customerName: {type: string, nullable: true}
+        notes: {type: string, nullable: true}
+
+    ProductionOrderPatch:
+      type: object
+      properties:
+        status: {type: string}
+        notes: {type: string, nullable: true}
+
+    QualityChecklistInput:
+      type: object
+      required: [checklist]
+      properties:
+        checklist:
+          type: object
+          additionalProperties: {type: boolean}
+
+    BomItemInput:
+      type: object
+      required: [materialId, requiredQty]
+      properties:
+        materialId: {type: integer}
+        requiredQty: {type: integer, minimum: 1}

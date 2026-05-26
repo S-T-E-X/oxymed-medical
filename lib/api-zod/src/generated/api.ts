@@ -1569,3 +1569,262 @@ export const GetDashboardStatsResponse = zod.object({
 })
 
 
+/**
+ * @summary Get production dashboard stats
+ */
+export const GetProductionDashboardResponse = zod.object({
+  "total": zod.number(),
+  "counts": zod.record(zod.string(), zod.number()),
+  "lowMaterials": zod.array(zod.object({
+  "id": zod.number().optional(),
+  "name": zod.string().optional(),
+  "quantity": zod.number().nullish(),
+  "minStock": zod.number().nullish(),
+  "unit": zod.string().nullish()
+}))
+})
+
+
+/**
+ * @summary List production orders
+ */
+export const listProductionOrdersQueryLimitDefault = 100;
+export const listProductionOrdersQueryOffsetDefault = 0;
+
+export const ListProductionOrdersQueryParams = zod.object({
+  "status": zod.coerce.string().optional(),
+  "limit": zod.coerce.number().default(listProductionOrdersQueryLimitDefault),
+  "offset": zod.coerce.number().default(listProductionOrdersQueryOffsetDefault)
+})
+
+export const ListProductionOrdersResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "orderNo": zod.string(),
+  "productId": zod.number().nullish(),
+  "productTitle": zod.string(),
+  "productCode": zod.string().nullish(),
+  "quantity": zod.number(),
+  "status": zod.string(),
+  "quoteFormId": zod.number().nullish(),
+  "customerName": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "itemCount": zod.number().optional()
+}))
+})
+
+
+/**
+ * @summary Create production order manually
+ */
+
+
+
+export const AddNewProductionOrderBody = zod.object({
+  "productId": zod.number().nullish(),
+  "productTitle": zod.string(),
+  "productCode": zod.string().nullish(),
+  "quantity": zod.number().min(1),
+  "quoteFormId": zod.number().nullish(),
+  "customerName": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get production order with items
+ */
+export const GetProductionOrderParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetProductionOrderResponse = zod.object({
+  "id": zod.number(),
+  "orderNo": zod.string(),
+  "productId": zod.number().nullish(),
+  "productTitle": zod.string(),
+  "productCode": zod.string().nullish(),
+  "quantity": zod.number(),
+  "status": zod.string(),
+  "quoteFormId": zod.number().nullish(),
+  "customerName": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "itemCount": zod.number().optional()
+}).and(zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "orderId": zod.number(),
+  "serialNumber": zod.string().nullish(),
+  "qrToken": zod.string().nullish(),
+  "warrantyDeviceId": zod.number().nullish(),
+  "status": zod.string(),
+  "qualityChecklist": zod.record(zod.string(), zod.boolean()).nullish(),
+  "productionDate": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string().optional(),
+  "updatedAt": zod.string().optional()
+})),
+  "reservations": zod.array(zod.object({
+  "id": zod.number().optional(),
+  "materialId": zod.number().optional(),
+  "reservedQty": zod.number().optional(),
+  "materialName": zod.string().nullish(),
+  "unit": zod.string().nullish()
+}))
+}))
+
+
+/**
+ * @summary Update production order status
+ */
+export const PatchProductionOrderParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const PatchProductionOrderBody = zod.object({
+  "status": zod.string().optional(),
+  "notes": zod.string().nullish()
+})
+
+export const PatchProductionOrderResponse = zod.object({
+  "id": zod.number(),
+  "orderNo": zod.string(),
+  "productId": zod.number().nullish(),
+  "productTitle": zod.string(),
+  "productCode": zod.string().nullish(),
+  "quantity": zod.number(),
+  "status": zod.string(),
+  "quoteFormId": zod.number().nullish(),
+  "customerName": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "itemCount": zod.number().optional()
+})
+
+
+/**
+ * @summary Delete production order
+ */
+export const DeleteProductionOrderParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Start production - generate serial numbers and warranty drafts
+ */
+export const StartProductionOrderParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const StartProductionOrderResponse = zod.object({
+  "order": zod.object({
+  "id": zod.number(),
+  "orderNo": zod.string(),
+  "productId": zod.number().nullish(),
+  "productTitle": zod.string(),
+  "productCode": zod.string().nullish(),
+  "quantity": zod.number(),
+  "status": zod.string(),
+  "quoteFormId": zod.number().nullish(),
+  "customerName": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "itemCount": zod.number().optional()
+}).optional(),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "orderId": zod.number(),
+  "serialNumber": zod.string().nullish(),
+  "qrToken": zod.string().nullish(),
+  "warrantyDeviceId": zod.number().nullish(),
+  "status": zod.string(),
+  "qualityChecklist": zod.record(zod.string(), zod.boolean()).nullish(),
+  "productionDate": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string().optional(),
+  "updatedAt": zod.string().optional()
+})).optional()
+})
+
+
+/**
+ * @summary Update quality checklist for a production item
+ */
+export const PatchItemQualityChecklistParams = zod.object({
+  "id": zod.coerce.number(),
+  "itemId": zod.coerce.number()
+})
+
+export const PatchItemQualityChecklistBody = zod.object({
+  "checklist": zod.record(zod.string(), zod.boolean())
+})
+
+export const PatchItemQualityChecklistResponse = zod.object({
+  "id": zod.number(),
+  "orderId": zod.number(),
+  "serialNumber": zod.string().nullish(),
+  "qrToken": zod.string().nullish(),
+  "warrantyDeviceId": zod.number().nullish(),
+  "status": zod.string(),
+  "qualityChecklist": zod.record(zod.string(), zod.boolean()).nullish(),
+  "productionDate": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string().optional(),
+  "updatedAt": zod.string().optional()
+})
+
+
+/**
+ * @summary Get product BOM
+ */
+export const GetProductBomParams = zod.object({
+  "productId": zod.coerce.number()
+})
+
+export const GetProductBomResponseItem = zod.object({
+  "id": zod.number(),
+  "materialId": zod.number(),
+  "requiredQty": zod.number(),
+  "materialName": zod.string().nullish(),
+  "unit": zod.string().nullish(),
+  "inStock": zod.number().nullish(),
+  "productCode": zod.string().nullish()
+})
+export const GetProductBomResponse = zod.array(GetProductBomResponseItem)
+
+
+/**
+ * @summary Replace all BOM items for a product
+ */
+export const ReplaceProductBomParams = zod.object({
+  "productId": zod.coerce.number()
+})
+
+
+
+
+export const ReplaceProductBomBodyItem = zod.object({
+  "materialId": zod.number(),
+  "requiredQty": zod.number().min(1)
+})
+export const ReplaceProductBomBody = zod.array(ReplaceProductBomBodyItem)
+
+export const ReplaceProductBomResponseItem = zod.object({
+  "id": zod.number(),
+  "materialId": zod.number(),
+  "requiredQty": zod.number(),
+  "materialName": zod.string().nullish(),
+  "unit": zod.string().nullish(),
+  "inStock": zod.number().nullish(),
+  "productCode": zod.string().nullish()
+})
+export const ReplaceProductBomResponse = zod.array(ReplaceProductBomResponseItem)
+
+
