@@ -351,8 +351,8 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
       throw new Error(`GCS upload failed: ${uploadRes.status}`);
     }
 
-    // Store pdfUrl in DB
-    const pdfUrl = objectPath;
+    // Store pdfUrl as a browser-accessible public URL
+    const pdfUrl = `/api/storage/public-objects/${objectPath}`;
     await db
       .update(serviceReportsTable)
       .set({ pdfUrl, updatedAt: new Date() })

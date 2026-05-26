@@ -478,68 +478,34 @@ export default function ServisRaporuFormPage() {
   }
 
   async function handleGeneratePdf() {
-    if (!selectedDevice) { toast.error("Lütfen önce raporu kaydedin"); return; }
+    if (isNew || !id) { toast.error("Lütfen önce raporu kaydedin"); return; }
     setGeneratingPdf(true);
-    toast.info("PDF hazırlanıyor...");
+    toast.info("Sunucuda PDF oluşturuluyor...");
     try {
-      const { default: html2pdf } = await import("html2pdf.js");
-      const container = document.getElementById("srt-preview-container");
-      if (!container) { toast.error("Önizleme yüklenemedi"); return; }
-
-      const pdfBlob: Blob = await new Promise((resolve, reject) => {
-        html2pdf()
-          .set({
-            margin: 0,
-            filename: `${reportNo ?? "rapor"}.pdf`,
-            image: { type: "jpeg", quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
-          })
-          .from(container)
-          .outputPdf("blob")
-          .then(resolve)
-          .catch(reject);
-      });
-
       const token = localStorage.getItem("auth_token");
-      const filename = `${reportNo ?? "rapor"}.pdf`;
 
-      // Request presigned upload URL
-      const urlRes = await fetch(`${BASE}/api/storage/request-upload-url`, {
+      // Call server-side Puppeteer PDF endpoint
+      const res = await fetch(`${BASE}/api/service-reports/${id}/generate-pdf`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ name: filename, size: pdfBlob.size, contentType: "application/pdf" }),
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const { uploadURL, objectPath } = await urlRes.json() as { uploadURL: string; objectPath: string };
-
-      // Upload to GCS
-      await fetch(uploadURL, {
-        method: "PUT",
-        body: pdfBlob,
-        headers: { "Content-Type": "application/pdf" },
-      });
-
-      const pdfUrl = `${BASE}/api/storage/public-objects/${objectPath}`;
-
-      // Save URL
-      if (!isNew && id) {
-        await fetch(`${BASE}/api/service-reports/${id}/save-pdf-url`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ pdfUrl }),
-        });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? `HTTP ${res.status}`);
       }
+      const { pdfUrl } = await res.json() as { pdfUrl: string };
 
       toast.success("PDF oluşturuldu ve kaydedildi");
 
-      // Auto-download
+      // Auto-download via a temporary anchor
+      const filename = `${reportNo ?? "rapor"}.pdf`;
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(pdfBlob);
+      link.href = pdfUrl.startsWith("/") ? `${BASE}${pdfUrl}` : pdfUrl;
       link.download = filename;
       link.click();
     } catch (err) {
       console.error(err);
-      toast.error("PDF oluşturulamadı");
+      toast.error(`PDF oluşturulamadı: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setGeneratingPdf(false);
     }
