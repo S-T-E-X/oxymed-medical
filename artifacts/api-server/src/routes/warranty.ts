@@ -168,7 +168,18 @@ router.get("/warranty/devices/by-serial/:serialNo", async (req, res): Promise<vo
     .where(eq(serviceRecordsTable.deviceId, device.id))
     .orderBy(desc(serviceRecordsTable.serviceDate));
   res.json({
-    ...device,
+    id: device.id,
+    productName: device.productName,
+    model: device.model,
+    serialNumber: device.serialNumber,
+    qrToken: device.qrToken,
+    customerFirm: device.customerFirm,
+    status: device.status,
+    warrantyEndDate: device.warrantyEndDate,
+    lastMaintenanceDate: device.lastMaintenanceDate,
+    nextMaintenanceDate: device.nextMaintenanceDate,
+    installDate: device.installDate,
+    imageUrl: device.imageUrl,
     serviceRecords: records.map((r) => ({
       id: r.id,
       serviceDate: r.serviceDate,
@@ -194,7 +205,18 @@ router.get("/warranty/devices/by-qr/:qrToken", async (req, res): Promise<void> =
     .where(eq(serviceRecordsTable.deviceId, device.id))
     .orderBy(desc(serviceRecordsTable.serviceDate));
   res.json({
-    ...device,
+    id: device.id,
+    productName: device.productName,
+    model: device.model,
+    serialNumber: device.serialNumber,
+    qrToken: device.qrToken,
+    customerFirm: device.customerFirm,
+    status: device.status,
+    warrantyEndDate: device.warrantyEndDate,
+    lastMaintenanceDate: device.lastMaintenanceDate,
+    nextMaintenanceDate: device.nextMaintenanceDate,
+    installDate: device.installDate,
+    imageUrl: device.imageUrl,
     serviceRecords: records.map((r) => ({
       id: r.id,
       serviceDate: r.serviceDate,
@@ -227,7 +249,7 @@ router.get("/warranty/records/:recordId", async (req, res): Promise<void> => {
   const kits = await db
     .select()
     .from(maintenanceKitsTable)
-    .where(eq(maintenanceKitsTable.recordId, recordId));
+    .where(eq(maintenanceKitsTable.serviceRecordId, recordId));
   res.json({
     id: record.id,
     serviceDate: record.serviceDate,

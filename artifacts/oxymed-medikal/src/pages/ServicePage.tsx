@@ -258,7 +258,6 @@ function DeviceFound({ device }: { device: {
                   <tr>
                     <th>Tarih</th>
                     <th>İşlem Türü</th>
-                    <th>Açıklama</th>
                     <th>Servis Personeli</th>
                     <th>Rapor</th>
                   </tr>
