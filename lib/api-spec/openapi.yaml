@@ -30,6 +30,8 @@ tags:
     description: Media library and file uploads
   - name: catalogs
     description: Product catalogs
+  - name: warranty
+    description: Warranty and service management
 
 paths:
   /healthz:
@@ -1009,6 +1011,364 @@ paths:
         "204":
           description: Deleted
 
+  # WARRANTY MANAGEMENT
+  /warranty/devices:
+    get:
+      operationId: listWarrantyDevices
+      tags: [warranty]
+      summary: List warranty devices (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of warranty devices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyDeviceListResult"
+    post:
+      operationId: createWarrantyDevice
+      tags: [warranty]
+      summary: Create warranty device (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarrantyDeviceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyDevice"
+
+  /warranty/devices/by-serial/{serialNo}:
+    get:
+      operationId: getWarrantyDeviceBySerial
+      tags: [warranty]
+      summary: Get device by serial number (public)
+      parameters:
+        - name: serialNo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device public info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyDevicePublic"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /warranty/devices/by-qr/{qrToken}:
+    get:
+      operationId: getWarrantyDeviceByQr
+      tags: [warranty]
+      summary: Get device by QR token (public)
+      parameters:
+        - name: qrToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device public info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyDevicePublic"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /warranty/devices/{id}:
+    get:
+      operationId: getWarrantyDevice
+      tags: [warranty]
+      summary: Get warranty device by id (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Device
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyDevice"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateWarrantyDevice
+      tags: [warranty]
+      summary: Update warranty device (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarrantyDeviceUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyDevice"
+    delete:
+      operationId: deleteWarrantyDevice
+      tags: [warranty]
+      summary: Delete warranty device (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /warranty/devices/{id}/service-records:
+    get:
+      operationId: listServiceRecords
+      tags: [warranty]
+      summary: List service records for device (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Service records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRecordListResult"
+    post:
+      operationId: createServiceRecord
+      tags: [warranty]
+      summary: Create service record (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceRecordInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRecordItem"
+
+  /warranty/devices/{id}/service-records/{recordId}:
+    patch:
+      operationId: updateServiceRecord
+      tags: [warranty]
+      summary: Update service record (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceRecordInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRecordItem"
+    delete:
+      operationId: deleteServiceRecord
+      tags: [warranty]
+      summary: Delete service record (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /warranty/devices/{id}/claims:
+    get:
+      operationId: listWarrantyClaims
+      tags: [warranty]
+      summary: List warranty claims for device (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Claims
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyClaimListResult"
+    post:
+      operationId: createWarrantyClaim
+      tags: [warranty]
+      summary: Create warranty claim (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarrantyClaimInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyClaimItem"
+
+  /warranty/devices/{id}/claims/{claimId}:
+    patch:
+      operationId: updateWarrantyClaim
+      tags: [warranty]
+      summary: Update warranty claim decision (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WarrantyClaimDecision"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyClaimItem"
+
+  /warranty/alerts:
+    get:
+      operationId: listWarrantyAlerts
+      tags: [warranty]
+      summary: List computed warranty alerts (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Alerts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WarrantyAlertListResult"
+
   # DASHBOARD STATS
   /dashboard/stats:
     get:
@@ -1837,6 +2197,432 @@ components:
           type: string
         objectPath:
           type: string
+
+    # WARRANTY
+    WarrantyDevice:
+      type: object
+      required: [id, productName, model, serialNumber, qrToken, customerFirm, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        productName:
+          type: string
+        model:
+          type: string
+        serialNumber:
+          type: string
+        qrToken:
+          type: string
+        customerFirm:
+          type: string
+        customerContact:
+          type: string
+          nullable: true
+        customerPhone:
+          type: string
+          nullable: true
+        customerEmail:
+          type: string
+          nullable: true
+        installDate:
+          type: string
+          nullable: true
+        warrantyStartDate:
+          type: string
+          nullable: true
+        warrantyEndDate:
+          type: string
+          nullable: true
+        warrantyType:
+          type: string
+          nullable: true
+        maintenanceContractStatus:
+          type: string
+          nullable: true
+        lastMaintenanceDate:
+          type: string
+          nullable: true
+        nextMaintenanceDate:
+          type: string
+          nullable: true
+        status:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    WarrantyDevicePublic:
+      type: object
+      required: [id, productName, model, serialNumber, status]
+      properties:
+        id:
+          type: integer
+        productName:
+          type: string
+        model:
+          type: string
+        serialNumber:
+          type: string
+        qrToken:
+          type: string
+        customerFirm:
+          type: string
+        status:
+          type: string
+        warrantyEndDate:
+          type: string
+          nullable: true
+        lastMaintenanceDate:
+          type: string
+          nullable: true
+        nextMaintenanceDate:
+          type: string
+          nullable: true
+        installDate:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        serviceRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceRecordPublic"
+
+    WarrantyDeviceInput:
+      type: object
+      required: [productName, model, serialNumber, customerFirm]
+      properties:
+        productName:
+          type: string
+        model:
+          type: string
+        serialNumber:
+          type: string
+        qrToken:
+          type: string
+        customerFirm:
+          type: string
+        customerContact:
+          type: string
+        customerPhone:
+          type: string
+        customerEmail:
+          type: string
+        installDate:
+          type: string
+        warrantyStartDate:
+          type: string
+        warrantyEndDate:
+          type: string
+        warrantyType:
+          type: string
+        maintenanceContractStatus:
+          type: string
+        lastMaintenanceDate:
+          type: string
+        nextMaintenanceDate:
+          type: string
+        status:
+          type: string
+        notes:
+          type: string
+        imageUrl:
+          type: string
+
+    WarrantyDeviceUpdate:
+      type: object
+      properties:
+        productName:
+          type: string
+        model:
+          type: string
+        serialNumber:
+          type: string
+        customerFirm:
+          type: string
+        customerContact:
+          type: string
+        customerPhone:
+          type: string
+        customerEmail:
+          type: string
+        installDate:
+          type: string
+        warrantyStartDate:
+          type: string
+        warrantyEndDate:
+          type: string
+        warrantyType:
+          type: string
+        maintenanceContractStatus:
+          type: string
+        lastMaintenanceDate:
+          type: string
+        nextMaintenanceDate:
+          type: string
+        status:
+          type: string
+        notes:
+          type: string
+        imageUrl:
+          type: string
+
+    WarrantyDeviceListResult:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/WarrantyDevice"
+        total:
+          type: integer
+
+    ServiceRecordItem:
+      type: object
+      required: [id, deviceId, serviceDate, serviceType, createdAt]
+      properties:
+        id:
+          type: integer
+        deviceId:
+          type: integer
+        serviceDate:
+          type: string
+        serviceType:
+          type: string
+        servicePersonnel:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        workHours:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        photoUrls:
+          type: array
+          items:
+            type: string
+        reportNo:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        kits:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceKitItem"
+
+    ServiceRecordPublic:
+      type: object
+      required: [id, serviceDate, serviceType]
+      properties:
+        id:
+          type: integer
+        serviceDate:
+          type: string
+        serviceType:
+          type: string
+        servicePersonnel:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        reportNo:
+          type: string
+          nullable: true
+
+    ServiceRecordInput:
+      type: object
+      required: [serviceDate, serviceType]
+      properties:
+        serviceDate:
+          type: string
+        serviceType:
+          type: string
+        servicePersonnel:
+          type: string
+        description:
+          type: string
+        workHours:
+          type: string
+        notes:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        reportNo:
+          type: string
+
+    ServiceRecordListResult:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceRecordItem"
+
+    MaintenanceKitItem:
+      type: object
+      required: [id, serviceRecordId, kitName]
+      properties:
+        id:
+          type: integer
+        serviceRecordId:
+          type: integer
+        kitName:
+          type: string
+        kitCode:
+          type: string
+          nullable: true
+        quantity:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+
+    WarrantyClaimItem:
+      type: object
+      required: [id, deviceId, faultType, faultDescription, decisionStatus, createdAt]
+      properties:
+        id:
+          type: integer
+        deviceId:
+          type: integer
+        faultType:
+          type: string
+        faultDescription:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        workHours:
+          type: string
+          nullable: true
+        personnelNote:
+          type: string
+          nullable: true
+        decisionStatus:
+          type: string
+        outOfWarrantyReason:
+          type: string
+          nullable: true
+        adminApproval:
+          type: boolean
+          nullable: true
+        adminNote:
+          type: string
+          nullable: true
+        claimantName:
+          type: string
+          nullable: true
+        claimantPhone:
+          type: string
+          nullable: true
+        claimantEmail:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    WarrantyClaimInput:
+      type: object
+      required: [faultType, faultDescription]
+      properties:
+        faultType:
+          type: string
+        faultDescription:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        workHours:
+          type: string
+        claimantName:
+          type: string
+        claimantPhone:
+          type: string
+        claimantEmail:
+          type: string
+
+    WarrantyClaimDecision:
+      type: object
+      properties:
+        decisionStatus:
+          type: string
+        outOfWarrantyReason:
+          type: string
+        adminApproval:
+          type: boolean
+        adminNote:
+          type: string
+        personnelNote:
+          type: string
+        workHours:
+          type: string
+
+    WarrantyClaimListResult:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/WarrantyClaimItem"
+
+    WarrantyAlertItem:
+      type: object
+      required: [type, deviceId, serialNumber, productName, customerFirm, message]
+      properties:
+        type:
+          type: string
+        deviceId:
+          type: integer
+        serialNumber:
+          type: string
+        productName:
+          type: string
+        customerFirm:
+          type: string
+        message:
+          type: string
+        daysRemaining:
+          type: integer
+          nullable: true
+        warrantyEndDate:
+          type: string
+          nullable: true
+        nextMaintenanceDate:
+          type: string
+          nullable: true
+
+    WarrantyAlertListResult:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/WarrantyAlertItem"
 
     # DASHBOARD
     DashboardStats:

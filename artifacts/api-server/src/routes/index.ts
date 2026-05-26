@@ -13,6 +13,7 @@ import mediaRouter from "./media";
 import catalogsRouter from "./catalogs";
 import stockRouter from "./stock";
 import quoteFormsRouter from "./quote-forms";
+import warrantyRouter from "./warranty";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(mediaRouter);
 router.use(catalogsRouter);
 router.use("/stock", stockRouter);
 router.use(quoteFormsRouter);
+router.use(warrantyRouter);
 
 export default router;

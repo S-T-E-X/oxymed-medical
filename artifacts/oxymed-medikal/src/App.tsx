@@ -19,6 +19,8 @@ import MaterialStockPage from "./admin/MaterialStockPage";
 import QuoteFormsPage from "./admin/QuoteFormsPage";
 import QuoteFormEditPage from "./admin/QuoteFormEditPage";
 import GasControlPanelAdminPage from "./admin/GasControlPanelAdminPage";
+import WarrantyPage from "./admin/WarrantyPage";
+import WarrantyDeviceDetailPage from "./admin/WarrantyDeviceDetailPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
 import CorporatePage from "./pages/CorporatePage";
 import HomePage from "./pages/HomePage";
@@ -46,6 +48,8 @@ export default function App() {
           <Route path="/haberler/:slug" element={<NewsDetailPage />} />
           <Route path="/teklif-al" element={<QuotePage />} />
           <Route path="/servis" element={<ServicePage />} />
+          <Route path="/servis/:serialNo" element={<ServicePage />} />
+          <Route path="/servis/qr/:qrToken" element={<ServicePage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
           <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
@@ -78,6 +82,8 @@ export default function App() {
             <Route path="teklif-formlari" element={<QuoteFormsPage />} />
             <Route path="teklif-formlari/:id" element={<QuoteFormEditPage />} />
             <Route path="kat-kontrol-panosu" element={<GasControlPanelAdminPage />} />
+            <Route path="garanti" element={<WarrantyPage />} />
+            <Route path="garanti/:id" element={<WarrantyDeviceDetailPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

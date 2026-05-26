@@ -38,6 +38,7 @@ import type {
   ListQuotesParams,
   ListReferencesParams,
   ListSlidersParams,
+  ListWarrantyDevicesParams,
   MediaFile,
   MediaListResponse,
   MediaUploadInput,
@@ -62,12 +63,25 @@ import type {
   ReferenceItem,
   ReferenceListResponse,
   ReferenceUpdate,
+  ServiceRecordInput,
+  ServiceRecordItem,
+  ServiceRecordListResult,
   Setting,
   SettingInput,
   SettingsMap,
   Slider,
   SliderInput,
-  SliderUpdate
+  SliderUpdate,
+  WarrantyAlertListResult,
+  WarrantyClaimDecision,
+  WarrantyClaimInput,
+  WarrantyClaimItem,
+  WarrantyClaimListResult,
+  WarrantyDevice,
+  WarrantyDeviceInput,
+  WarrantyDeviceListResult,
+  WarrantyDevicePublic,
+  WarrantyDeviceUpdate
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -3441,6 +3455,1129 @@ export const useDeleteMediaFile = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getDeleteMediaFileMutationOptions(options));
     }
+
+export const getListWarrantyDevicesUrl = (params?: ListWarrantyDevicesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/warranty/devices?${stringifiedParams}` : `/api/warranty/devices`
+}
+
+/**
+ * @summary List warranty devices (admin)
+ */
+export const listWarrantyDevices = async (params?: ListWarrantyDevicesParams, options?: RequestInit): Promise<WarrantyDeviceListResult> => {
+
+  return customFetch<WarrantyDeviceListResult>(getListWarrantyDevicesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListWarrantyDevicesQueryKey = (params?: ListWarrantyDevicesParams,) => {
+    return [
+    `/api/warranty/devices`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListWarrantyDevicesQueryOptions = <TData = Awaited<ReturnType<typeof listWarrantyDevices>>, TError = ErrorType<unknown>>(params?: ListWarrantyDevicesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listWarrantyDevices>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListWarrantyDevicesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listWarrantyDevices>>> = ({ signal }) => listWarrantyDevices(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listWarrantyDevices>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListWarrantyDevicesQueryResult = NonNullable<Awaited<ReturnType<typeof listWarrantyDevices>>>
+export type ListWarrantyDevicesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List warranty devices (admin)
+ */
+
+export function useListWarrantyDevices<TData = Awaited<ReturnType<typeof listWarrantyDevices>>, TError = ErrorType<unknown>>(
+ params?: ListWarrantyDevicesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listWarrantyDevices>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListWarrantyDevicesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateWarrantyDeviceUrl = () => {
+
+
+
+
+  return `/api/warranty/devices`
+}
+
+/**
+ * @summary Create warranty device (admin)
+ */
+export const createWarrantyDevice = async (warrantyDeviceInput: WarrantyDeviceInput, options?: RequestInit): Promise<WarrantyDevice> => {
+
+  return customFetch<WarrantyDevice>(getCreateWarrantyDeviceUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      warrantyDeviceInput,)
+  }
+);}
+
+
+
+
+export const getCreateWarrantyDeviceMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWarrantyDevice>>, TError,{data: BodyType<WarrantyDeviceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWarrantyDevice>>, TError,{data: BodyType<WarrantyDeviceInput>}, TContext> => {
+
+const mutationKey = ['createWarrantyDevice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWarrantyDevice>>, {data: BodyType<WarrantyDeviceInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createWarrantyDevice(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWarrantyDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof createWarrantyDevice>>>
+    export type CreateWarrantyDeviceMutationBody = BodyType<WarrantyDeviceInput>
+    export type CreateWarrantyDeviceMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create warranty device (admin)
+ */
+export const useCreateWarrantyDevice = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWarrantyDevice>>, TError,{data: BodyType<WarrantyDeviceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWarrantyDevice>>,
+        TError,
+        {data: BodyType<WarrantyDeviceInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWarrantyDeviceMutationOptions(options));
+    }
+
+export const getGetWarrantyDeviceBySerialUrl = (serialNo: string,) => {
+
+
+
+
+  return `/api/warranty/devices/by-serial/${serialNo}`
+}
+
+/**
+ * @summary Get device by serial number (public)
+ */
+export const getWarrantyDeviceBySerial = async (serialNo: string, options?: RequestInit): Promise<WarrantyDevicePublic> => {
+
+  return customFetch<WarrantyDevicePublic>(getGetWarrantyDeviceBySerialUrl(serialNo),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetWarrantyDeviceBySerialQueryKey = (serialNo: string,) => {
+    return [
+    `/api/warranty/devices/by-serial/${serialNo}`
+    ] as const;
+    }
+
+
+export const getGetWarrantyDeviceBySerialQueryOptions = <TData = Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>, TError = ErrorType<ErrorResponse>>(serialNo: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetWarrantyDeviceBySerialQueryKey(serialNo);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>> = ({ signal }) => getWarrantyDeviceBySerial(serialNo, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(serialNo), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetWarrantyDeviceBySerialQueryResult = NonNullable<Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>>
+export type GetWarrantyDeviceBySerialQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get device by serial number (public)
+ */
+
+export function useGetWarrantyDeviceBySerial<TData = Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>, TError = ErrorType<ErrorResponse>>(
+ serialNo: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDeviceBySerial>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetWarrantyDeviceBySerialQueryOptions(serialNo,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetWarrantyDeviceByQrUrl = (qrToken: string,) => {
+
+
+
+
+  return `/api/warranty/devices/by-qr/${qrToken}`
+}
+
+/**
+ * @summary Get device by QR token (public)
+ */
+export const getWarrantyDeviceByQr = async (qrToken: string, options?: RequestInit): Promise<WarrantyDevicePublic> => {
+
+  return customFetch<WarrantyDevicePublic>(getGetWarrantyDeviceByQrUrl(qrToken),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetWarrantyDeviceByQrQueryKey = (qrToken: string,) => {
+    return [
+    `/api/warranty/devices/by-qr/${qrToken}`
+    ] as const;
+    }
+
+
+export const getGetWarrantyDeviceByQrQueryOptions = <TData = Awaited<ReturnType<typeof getWarrantyDeviceByQr>>, TError = ErrorType<ErrorResponse>>(qrToken: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDeviceByQr>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetWarrantyDeviceByQrQueryKey(qrToken);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWarrantyDeviceByQr>>> = ({ signal }) => getWarrantyDeviceByQr(qrToken, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(qrToken), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDeviceByQr>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetWarrantyDeviceByQrQueryResult = NonNullable<Awaited<ReturnType<typeof getWarrantyDeviceByQr>>>
+export type GetWarrantyDeviceByQrQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get device by QR token (public)
+ */
+
+export function useGetWarrantyDeviceByQr<TData = Awaited<ReturnType<typeof getWarrantyDeviceByQr>>, TError = ErrorType<ErrorResponse>>(
+ qrToken: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDeviceByQr>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetWarrantyDeviceByQrQueryOptions(qrToken,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetWarrantyDeviceUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}`
+}
+
+/**
+ * @summary Get warranty device by id (admin)
+ */
+export const getWarrantyDevice = async (id: number, options?: RequestInit): Promise<WarrantyDevice> => {
+
+  return customFetch<WarrantyDevice>(getGetWarrantyDeviceUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetWarrantyDeviceQueryKey = (id: number,) => {
+    return [
+    `/api/warranty/devices/${id}`
+    ] as const;
+    }
+
+
+export const getGetWarrantyDeviceQueryOptions = <TData = Awaited<ReturnType<typeof getWarrantyDevice>>, TError = ErrorType<ErrorResponse>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDevice>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetWarrantyDeviceQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWarrantyDevice>>> = ({ signal }) => getWarrantyDevice(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDevice>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetWarrantyDeviceQueryResult = NonNullable<Awaited<ReturnType<typeof getWarrantyDevice>>>
+export type GetWarrantyDeviceQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get warranty device by id (admin)
+ */
+
+export function useGetWarrantyDevice<TData = Awaited<ReturnType<typeof getWarrantyDevice>>, TError = ErrorType<ErrorResponse>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWarrantyDevice>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetWarrantyDeviceQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateWarrantyDeviceUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}`
+}
+
+/**
+ * @summary Update warranty device (admin)
+ */
+export const updateWarrantyDevice = async (id: number,
+    warrantyDeviceUpdate: WarrantyDeviceUpdate, options?: RequestInit): Promise<WarrantyDevice> => {
+
+  return customFetch<WarrantyDevice>(getUpdateWarrantyDeviceUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      warrantyDeviceUpdate,)
+  }
+);}
+
+
+
+
+export const getUpdateWarrantyDeviceMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWarrantyDevice>>, TError,{id: number;data: BodyType<WarrantyDeviceUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWarrantyDevice>>, TError,{id: number;data: BodyType<WarrantyDeviceUpdate>}, TContext> => {
+
+const mutationKey = ['updateWarrantyDevice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWarrantyDevice>>, {id: number;data: BodyType<WarrantyDeviceUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateWarrantyDevice(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWarrantyDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof updateWarrantyDevice>>>
+    export type UpdateWarrantyDeviceMutationBody = BodyType<WarrantyDeviceUpdate>
+    export type UpdateWarrantyDeviceMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update warranty device (admin)
+ */
+export const useUpdateWarrantyDevice = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWarrantyDevice>>, TError,{id: number;data: BodyType<WarrantyDeviceUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWarrantyDevice>>,
+        TError,
+        {id: number;data: BodyType<WarrantyDeviceUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateWarrantyDeviceMutationOptions(options));
+    }
+
+export const getDeleteWarrantyDeviceUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}`
+}
+
+/**
+ * @summary Delete warranty device (admin)
+ */
+export const deleteWarrantyDevice = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteWarrantyDeviceUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteWarrantyDeviceMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWarrantyDevice>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteWarrantyDevice>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteWarrantyDevice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWarrantyDevice>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteWarrantyDevice(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteWarrantyDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWarrantyDevice>>>
+
+    export type DeleteWarrantyDeviceMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete warranty device (admin)
+ */
+export const useDeleteWarrantyDevice = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWarrantyDevice>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteWarrantyDevice>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteWarrantyDeviceMutationOptions(options));
+    }
+
+export const getListServiceRecordsUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/service-records`
+}
+
+/**
+ * @summary List service records for device (admin)
+ */
+export const listServiceRecords = async (id: number, options?: RequestInit): Promise<ServiceRecordListResult> => {
+
+  return customFetch<ServiceRecordListResult>(getListServiceRecordsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListServiceRecordsQueryKey = (id: number,) => {
+    return [
+    `/api/warranty/devices/${id}/service-records`
+    ] as const;
+    }
+
+
+export const getListServiceRecordsQueryOptions = <TData = Awaited<ReturnType<typeof listServiceRecords>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listServiceRecords>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListServiceRecordsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServiceRecords>>> = ({ signal }) => listServiceRecords(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServiceRecords>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListServiceRecordsQueryResult = NonNullable<Awaited<ReturnType<typeof listServiceRecords>>>
+export type ListServiceRecordsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List service records for device (admin)
+ */
+
+export function useListServiceRecords<TData = Awaited<ReturnType<typeof listServiceRecords>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listServiceRecords>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListServiceRecordsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateServiceRecordUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/service-records`
+}
+
+/**
+ * @summary Create service record (admin)
+ */
+export const createServiceRecord = async (id: number,
+    serviceRecordInput: ServiceRecordInput, options?: RequestInit): Promise<ServiceRecordItem> => {
+
+  return customFetch<ServiceRecordItem>(getCreateServiceRecordUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRecordInput,)
+  }
+);}
+
+
+
+
+export const getCreateServiceRecordMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceRecord>>, TError,{id: number;data: BodyType<ServiceRecordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createServiceRecord>>, TError,{id: number;data: BodyType<ServiceRecordInput>}, TContext> => {
+
+const mutationKey = ['createServiceRecord'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createServiceRecord>>, {id: number;data: BodyType<ServiceRecordInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  createServiceRecord(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateServiceRecordMutationResult = NonNullable<Awaited<ReturnType<typeof createServiceRecord>>>
+    export type CreateServiceRecordMutationBody = BodyType<ServiceRecordInput>
+    export type CreateServiceRecordMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create service record (admin)
+ */
+export const useCreateServiceRecord = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceRecord>>, TError,{id: number;data: BodyType<ServiceRecordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createServiceRecord>>,
+        TError,
+        {id: number;data: BodyType<ServiceRecordInput>},
+        TContext
+      > => {
+      return useMutation(getCreateServiceRecordMutationOptions(options));
+    }
+
+export const getUpdateServiceRecordUrl = (id: number,
+    recordId: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/service-records/${recordId}`
+}
+
+/**
+ * @summary Update service record (admin)
+ */
+export const updateServiceRecord = async (id: number,
+    recordId: number,
+    serviceRecordInput: ServiceRecordInput, options?: RequestInit): Promise<ServiceRecordItem> => {
+
+  return customFetch<ServiceRecordItem>(getUpdateServiceRecordUrl(id,recordId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRecordInput,)
+  }
+);}
+
+
+
+
+export const getUpdateServiceRecordMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceRecord>>, TError,{id: number;recordId: number;data: BodyType<ServiceRecordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateServiceRecord>>, TError,{id: number;recordId: number;data: BodyType<ServiceRecordInput>}, TContext> => {
+
+const mutationKey = ['updateServiceRecord'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateServiceRecord>>, {id: number;recordId: number;data: BodyType<ServiceRecordInput>}> = (props) => {
+          const {id,recordId,data} = props ?? {};
+
+          return  updateServiceRecord(id,recordId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateServiceRecordMutationResult = NonNullable<Awaited<ReturnType<typeof updateServiceRecord>>>
+    export type UpdateServiceRecordMutationBody = BodyType<ServiceRecordInput>
+    export type UpdateServiceRecordMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update service record (admin)
+ */
+export const useUpdateServiceRecord = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceRecord>>, TError,{id: number;recordId: number;data: BodyType<ServiceRecordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateServiceRecord>>,
+        TError,
+        {id: number;recordId: number;data: BodyType<ServiceRecordInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateServiceRecordMutationOptions(options));
+    }
+
+export const getDeleteServiceRecordUrl = (id: number,
+    recordId: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/service-records/${recordId}`
+}
+
+/**
+ * @summary Delete service record (admin)
+ */
+export const deleteServiceRecord = async (id: number,
+    recordId: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteServiceRecordUrl(id,recordId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteServiceRecordMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteServiceRecord>>, TError,{id: number;recordId: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteServiceRecord>>, TError,{id: number;recordId: number}, TContext> => {
+
+const mutationKey = ['deleteServiceRecord'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteServiceRecord>>, {id: number;recordId: number}> = (props) => {
+          const {id,recordId} = props ?? {};
+
+          return  deleteServiceRecord(id,recordId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteServiceRecordMutationResult = NonNullable<Awaited<ReturnType<typeof deleteServiceRecord>>>
+
+    export type DeleteServiceRecordMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete service record (admin)
+ */
+export const useDeleteServiceRecord = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteServiceRecord>>, TError,{id: number;recordId: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteServiceRecord>>,
+        TError,
+        {id: number;recordId: number},
+        TContext
+      > => {
+      return useMutation(getDeleteServiceRecordMutationOptions(options));
+    }
+
+export const getListWarrantyClaimsUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/claims`
+}
+
+/**
+ * @summary List warranty claims for device (admin)
+ */
+export const listWarrantyClaims = async (id: number, options?: RequestInit): Promise<WarrantyClaimListResult> => {
+
+  return customFetch<WarrantyClaimListResult>(getListWarrantyClaimsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListWarrantyClaimsQueryKey = (id: number,) => {
+    return [
+    `/api/warranty/devices/${id}/claims`
+    ] as const;
+    }
+
+
+export const getListWarrantyClaimsQueryOptions = <TData = Awaited<ReturnType<typeof listWarrantyClaims>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listWarrantyClaims>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListWarrantyClaimsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listWarrantyClaims>>> = ({ signal }) => listWarrantyClaims(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listWarrantyClaims>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListWarrantyClaimsQueryResult = NonNullable<Awaited<ReturnType<typeof listWarrantyClaims>>>
+export type ListWarrantyClaimsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List warranty claims for device (admin)
+ */
+
+export function useListWarrantyClaims<TData = Awaited<ReturnType<typeof listWarrantyClaims>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listWarrantyClaims>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListWarrantyClaimsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateWarrantyClaimUrl = (id: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/claims`
+}
+
+/**
+ * @summary Create warranty claim (public)
+ */
+export const createWarrantyClaim = async (id: number,
+    warrantyClaimInput: WarrantyClaimInput, options?: RequestInit): Promise<WarrantyClaimItem> => {
+
+  return customFetch<WarrantyClaimItem>(getCreateWarrantyClaimUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      warrantyClaimInput,)
+  }
+);}
+
+
+
+
+export const getCreateWarrantyClaimMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWarrantyClaim>>, TError,{id: number;data: BodyType<WarrantyClaimInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWarrantyClaim>>, TError,{id: number;data: BodyType<WarrantyClaimInput>}, TContext> => {
+
+const mutationKey = ['createWarrantyClaim'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWarrantyClaim>>, {id: number;data: BodyType<WarrantyClaimInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  createWarrantyClaim(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWarrantyClaimMutationResult = NonNullable<Awaited<ReturnType<typeof createWarrantyClaim>>>
+    export type CreateWarrantyClaimMutationBody = BodyType<WarrantyClaimInput>
+    export type CreateWarrantyClaimMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create warranty claim (public)
+ */
+export const useCreateWarrantyClaim = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWarrantyClaim>>, TError,{id: number;data: BodyType<WarrantyClaimInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWarrantyClaim>>,
+        TError,
+        {id: number;data: BodyType<WarrantyClaimInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWarrantyClaimMutationOptions(options));
+    }
+
+export const getUpdateWarrantyClaimUrl = (id: number,
+    claimId: number,) => {
+
+
+
+
+  return `/api/warranty/devices/${id}/claims/${claimId}`
+}
+
+/**
+ * @summary Update warranty claim decision (admin)
+ */
+export const updateWarrantyClaim = async (id: number,
+    claimId: number,
+    warrantyClaimDecision: WarrantyClaimDecision, options?: RequestInit): Promise<WarrantyClaimItem> => {
+
+  return customFetch<WarrantyClaimItem>(getUpdateWarrantyClaimUrl(id,claimId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      warrantyClaimDecision,)
+  }
+);}
+
+
+
+
+export const getUpdateWarrantyClaimMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWarrantyClaim>>, TError,{id: number;claimId: number;data: BodyType<WarrantyClaimDecision>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWarrantyClaim>>, TError,{id: number;claimId: number;data: BodyType<WarrantyClaimDecision>}, TContext> => {
+
+const mutationKey = ['updateWarrantyClaim'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWarrantyClaim>>, {id: number;claimId: number;data: BodyType<WarrantyClaimDecision>}> = (props) => {
+          const {id,claimId,data} = props ?? {};
+
+          return  updateWarrantyClaim(id,claimId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWarrantyClaimMutationResult = NonNullable<Awaited<ReturnType<typeof updateWarrantyClaim>>>
+    export type UpdateWarrantyClaimMutationBody = BodyType<WarrantyClaimDecision>
+    export type UpdateWarrantyClaimMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update warranty claim decision (admin)
+ */
+export const useUpdateWarrantyClaim = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWarrantyClaim>>, TError,{id: number;claimId: number;data: BodyType<WarrantyClaimDecision>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWarrantyClaim>>,
+        TError,
+        {id: number;claimId: number;data: BodyType<WarrantyClaimDecision>},
+        TContext
+      > => {
+      return useMutation(getUpdateWarrantyClaimMutationOptions(options));
+    }
+
+export const getListWarrantyAlertsUrl = () => {
+
+
+
+
+  return `/api/warranty/alerts`
+}
+
+/**
+ * @summary List computed warranty alerts (admin)
+ */
+export const listWarrantyAlerts = async ( options?: RequestInit): Promise<WarrantyAlertListResult> => {
+
+  return customFetch<WarrantyAlertListResult>(getListWarrantyAlertsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListWarrantyAlertsQueryKey = () => {
+    return [
+    `/api/warranty/alerts`
+    ] as const;
+    }
+
+
+export const getListWarrantyAlertsQueryOptions = <TData = Awaited<ReturnType<typeof listWarrantyAlerts>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listWarrantyAlerts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListWarrantyAlertsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listWarrantyAlerts>>> = ({ signal }) => listWarrantyAlerts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listWarrantyAlerts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListWarrantyAlertsQueryResult = NonNullable<Awaited<ReturnType<typeof listWarrantyAlerts>>>
+export type ListWarrantyAlertsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List computed warranty alerts (admin)
+ */
+
+export function useListWarrantyAlerts<TData = Awaited<ReturnType<typeof listWarrantyAlerts>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listWarrantyAlerts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListWarrantyAlertsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
 export const getGetDashboardStatsUrl = () => {
 

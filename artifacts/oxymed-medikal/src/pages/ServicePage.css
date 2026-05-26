@@ -649,3 +649,37 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   }
 }
+
+/* ── Dynamic result UI ── */
+.service-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 56px 24px;
+  text-align: center;
+  color: #5a7099;
+}
+.service-not-found svg { color: #e05252; opacity: .7; }
+.service-not-found h3 { font-size: 1.15rem; font-weight: 700; margin: 0; }
+.service-not-found p  { font-size: .92rem; max-width: 420px; margin: 0; }
+
+.service-request-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  color: #1b6e3f;
+}
+.service-success-icon { color: #22c55e; }
+.service-request-success h3 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+.service-request-success p  { font-size: .9rem; margin: 0; opacity: .8; }
+
+.service-history-empty {
+  padding: 24px;
+  text-align: center;
+  color: #8fa2b8;
+  font-size: .9rem;
+}

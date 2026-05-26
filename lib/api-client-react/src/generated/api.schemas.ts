@@ -482,6 +482,198 @@ export interface PresignedUrlResponse {
   objectPath: string;
 }
 
+export interface WarrantyDevice {
+  id: number;
+  productName: string;
+  model: string;
+  serialNumber: string;
+  qrToken: string;
+  customerFirm: string;
+  customerContact?: string | null;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
+  installDate?: string | null;
+  warrantyStartDate?: string | null;
+  warrantyEndDate?: string | null;
+  warrantyType?: string | null;
+  maintenanceContractStatus?: string | null;
+  lastMaintenanceDate?: string | null;
+  nextMaintenanceDate?: string | null;
+  status: string;
+  notes?: string | null;
+  imageUrl?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ServiceRecordPublic {
+  id: number;
+  serviceDate: string;
+  serviceType: string;
+  servicePersonnel?: string | null;
+  description?: string | null;
+  reportNo?: string | null;
+}
+
+export interface WarrantyDevicePublic {
+  id: number;
+  productName: string;
+  model: string;
+  serialNumber: string;
+  qrToken?: string;
+  customerFirm?: string;
+  status: string;
+  warrantyEndDate?: string | null;
+  lastMaintenanceDate?: string | null;
+  nextMaintenanceDate?: string | null;
+  installDate?: string | null;
+  imageUrl?: string | null;
+  serviceRecords?: ServiceRecordPublic[];
+}
+
+export interface WarrantyDeviceInput {
+  productName: string;
+  model: string;
+  serialNumber: string;
+  qrToken?: string;
+  customerFirm: string;
+  customerContact?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  installDate?: string;
+  warrantyStartDate?: string;
+  warrantyEndDate?: string;
+  warrantyType?: string;
+  maintenanceContractStatus?: string;
+  lastMaintenanceDate?: string;
+  nextMaintenanceDate?: string;
+  status?: string;
+  notes?: string;
+  imageUrl?: string;
+}
+
+export interface WarrantyDeviceUpdate {
+  productName?: string;
+  model?: string;
+  serialNumber?: string;
+  customerFirm?: string;
+  customerContact?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  installDate?: string;
+  warrantyStartDate?: string;
+  warrantyEndDate?: string;
+  warrantyType?: string;
+  maintenanceContractStatus?: string;
+  lastMaintenanceDate?: string;
+  nextMaintenanceDate?: string;
+  status?: string;
+  notes?: string;
+  imageUrl?: string;
+}
+
+export interface WarrantyDeviceListResult {
+  items: WarrantyDevice[];
+  total: number;
+}
+
+export interface MaintenanceKitItem {
+  id: number;
+  serviceRecordId: number;
+  kitName: string;
+  kitCode?: string | null;
+  quantity?: string | null;
+  unit?: string | null;
+}
+
+export interface ServiceRecordItem {
+  id: number;
+  deviceId: number;
+  serviceDate: string;
+  serviceType: string;
+  servicePersonnel?: string | null;
+  description?: string | null;
+  workHours?: string | null;
+  notes?: string | null;
+  photoUrls?: string[];
+  reportNo?: string | null;
+  createdAt: string;
+  kits?: MaintenanceKitItem[];
+}
+
+export interface ServiceRecordInput {
+  serviceDate: string;
+  serviceType: string;
+  servicePersonnel?: string;
+  description?: string;
+  workHours?: string;
+  notes?: string;
+  photoUrls?: string[];
+  reportNo?: string;
+}
+
+export interface ServiceRecordListResult {
+  items: ServiceRecordItem[];
+}
+
+export interface WarrantyClaimItem {
+  id: number;
+  deviceId: number;
+  faultType: string;
+  faultDescription: string;
+  photoUrls?: string[];
+  workHours?: string | null;
+  personnelNote?: string | null;
+  decisionStatus: string;
+  outOfWarrantyReason?: string | null;
+  adminApproval?: boolean | null;
+  adminNote?: string | null;
+  claimantName?: string | null;
+  claimantPhone?: string | null;
+  claimantEmail?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface WarrantyClaimInput {
+  faultType: string;
+  faultDescription: string;
+  photoUrls?: string[];
+  workHours?: string;
+  claimantName?: string;
+  claimantPhone?: string;
+  claimantEmail?: string;
+}
+
+export interface WarrantyClaimDecision {
+  decisionStatus?: string;
+  outOfWarrantyReason?: string;
+  adminApproval?: boolean;
+  adminNote?: string;
+  personnelNote?: string;
+  workHours?: string;
+}
+
+export interface WarrantyClaimListResult {
+  items: WarrantyClaimItem[];
+}
+
+export interface WarrantyAlertItem {
+  type: string;
+  deviceId: number;
+  serialNumber: string;
+  productName: string;
+  customerFirm: string;
+  message: string;
+  daysRemaining?: number | null;
+  warrantyEndDate?: string | null;
+  nextMaintenanceDate?: string | null;
+}
+
+export interface WarrantyAlertListResult {
+  items: WarrantyAlertItem[];
+}
+
 export interface DashboardStats {
   products: number;
   news: number;
@@ -532,5 +724,12 @@ limit?: number;
 export type ListMediaFilesParams = {
 page?: number;
 limit?: number;
+};
+
+export type ListWarrantyDevicesParams = {
+status?: string;
+search?: string;
+limit?: number;
+offset?: number;
 };
 

@@ -1093,6 +1093,427 @@ export const DeleteMediaFileParams = zod.object({
 
 
 /**
+ * @summary List warranty devices (admin)
+ */
+export const ListWarrantyDevicesQueryParams = zod.object({
+  "status": zod.coerce.string().optional(),
+  "search": zod.coerce.string().optional(),
+  "limit": zod.coerce.number().optional(),
+  "offset": zod.coerce.number().optional()
+})
+
+export const ListWarrantyDevicesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "qrToken": zod.string(),
+  "customerFirm": zod.string(),
+  "customerContact": zod.string().nullish(),
+  "customerPhone": zod.string().nullish(),
+  "customerEmail": zod.string().nullish(),
+  "installDate": zod.string().nullish(),
+  "warrantyStartDate": zod.string().nullish(),
+  "warrantyEndDate": zod.string().nullish(),
+  "warrantyType": zod.string().nullish(),
+  "maintenanceContractStatus": zod.string().nullish(),
+  "lastMaintenanceDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish(),
+  "status": zod.string(),
+  "notes": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Create warranty device (admin)
+ */
+export const CreateWarrantyDeviceBody = zod.object({
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "qrToken": zod.string().optional(),
+  "customerFirm": zod.string(),
+  "customerContact": zod.string().optional(),
+  "customerPhone": zod.string().optional(),
+  "customerEmail": zod.string().optional(),
+  "installDate": zod.string().optional(),
+  "warrantyStartDate": zod.string().optional(),
+  "warrantyEndDate": zod.string().optional(),
+  "warrantyType": zod.string().optional(),
+  "maintenanceContractStatus": zod.string().optional(),
+  "lastMaintenanceDate": zod.string().optional(),
+  "nextMaintenanceDate": zod.string().optional(),
+  "status": zod.string().optional(),
+  "notes": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})
+
+
+/**
+ * @summary Get device by serial number (public)
+ */
+export const GetWarrantyDeviceBySerialParams = zod.object({
+  "serialNo": zod.coerce.string()
+})
+
+export const GetWarrantyDeviceBySerialResponse = zod.object({
+  "id": zod.number(),
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "qrToken": zod.string().optional(),
+  "customerFirm": zod.string().optional(),
+  "status": zod.string(),
+  "warrantyEndDate": zod.string().nullish(),
+  "lastMaintenanceDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish(),
+  "installDate": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "serviceRecords": zod.array(zod.object({
+  "id": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "servicePersonnel": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "reportNo": zod.string().nullish()
+})).optional()
+})
+
+
+/**
+ * @summary Get device by QR token (public)
+ */
+export const GetWarrantyDeviceByQrParams = zod.object({
+  "qrToken": zod.coerce.string()
+})
+
+export const GetWarrantyDeviceByQrResponse = zod.object({
+  "id": zod.number(),
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "qrToken": zod.string().optional(),
+  "customerFirm": zod.string().optional(),
+  "status": zod.string(),
+  "warrantyEndDate": zod.string().nullish(),
+  "lastMaintenanceDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish(),
+  "installDate": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "serviceRecords": zod.array(zod.object({
+  "id": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "servicePersonnel": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "reportNo": zod.string().nullish()
+})).optional()
+})
+
+
+/**
+ * @summary Get warranty device by id (admin)
+ */
+export const GetWarrantyDeviceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetWarrantyDeviceResponse = zod.object({
+  "id": zod.number(),
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "qrToken": zod.string(),
+  "customerFirm": zod.string(),
+  "customerContact": zod.string().nullish(),
+  "customerPhone": zod.string().nullish(),
+  "customerEmail": zod.string().nullish(),
+  "installDate": zod.string().nullish(),
+  "warrantyStartDate": zod.string().nullish(),
+  "warrantyEndDate": zod.string().nullish(),
+  "warrantyType": zod.string().nullish(),
+  "maintenanceContractStatus": zod.string().nullish(),
+  "lastMaintenanceDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish(),
+  "status": zod.string(),
+  "notes": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Update warranty device (admin)
+ */
+export const UpdateWarrantyDeviceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateWarrantyDeviceBody = zod.object({
+  "productName": zod.string().optional(),
+  "model": zod.string().optional(),
+  "serialNumber": zod.string().optional(),
+  "customerFirm": zod.string().optional(),
+  "customerContact": zod.string().optional(),
+  "customerPhone": zod.string().optional(),
+  "customerEmail": zod.string().optional(),
+  "installDate": zod.string().optional(),
+  "warrantyStartDate": zod.string().optional(),
+  "warrantyEndDate": zod.string().optional(),
+  "warrantyType": zod.string().optional(),
+  "maintenanceContractStatus": zod.string().optional(),
+  "lastMaintenanceDate": zod.string().optional(),
+  "nextMaintenanceDate": zod.string().optional(),
+  "status": zod.string().optional(),
+  "notes": zod.string().optional(),
+  "imageUrl": zod.string().optional()
+})
+
+export const UpdateWarrantyDeviceResponse = zod.object({
+  "id": zod.number(),
+  "productName": zod.string(),
+  "model": zod.string(),
+  "serialNumber": zod.string(),
+  "qrToken": zod.string(),
+  "customerFirm": zod.string(),
+  "customerContact": zod.string().nullish(),
+  "customerPhone": zod.string().nullish(),
+  "customerEmail": zod.string().nullish(),
+  "installDate": zod.string().nullish(),
+  "warrantyStartDate": zod.string().nullish(),
+  "warrantyEndDate": zod.string().nullish(),
+  "warrantyType": zod.string().nullish(),
+  "maintenanceContractStatus": zod.string().nullish(),
+  "lastMaintenanceDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish(),
+  "status": zod.string(),
+  "notes": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Delete warranty device (admin)
+ */
+export const DeleteWarrantyDeviceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List service records for device (admin)
+ */
+export const ListServiceRecordsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListServiceRecordsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "deviceId": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "servicePersonnel": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "workHours": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "reportNo": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "kits": zod.array(zod.object({
+  "id": zod.number(),
+  "serviceRecordId": zod.number(),
+  "kitName": zod.string(),
+  "kitCode": zod.string().nullish(),
+  "quantity": zod.string().nullish(),
+  "unit": zod.string().nullish()
+})).optional()
+}))
+})
+
+
+/**
+ * @summary Create service record (admin)
+ */
+export const CreateServiceRecordParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CreateServiceRecordBody = zod.object({
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "servicePersonnel": zod.string().optional(),
+  "description": zod.string().optional(),
+  "workHours": zod.string().optional(),
+  "notes": zod.string().optional(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "reportNo": zod.string().optional()
+})
+
+
+/**
+ * @summary Update service record (admin)
+ */
+export const UpdateServiceRecordParams = zod.object({
+  "id": zod.coerce.number(),
+  "recordId": zod.coerce.number()
+})
+
+export const UpdateServiceRecordBody = zod.object({
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "servicePersonnel": zod.string().optional(),
+  "description": zod.string().optional(),
+  "workHours": zod.string().optional(),
+  "notes": zod.string().optional(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "reportNo": zod.string().optional()
+})
+
+export const UpdateServiceRecordResponse = zod.object({
+  "id": zod.number(),
+  "deviceId": zod.number(),
+  "serviceDate": zod.string(),
+  "serviceType": zod.string(),
+  "servicePersonnel": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "workHours": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "reportNo": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "kits": zod.array(zod.object({
+  "id": zod.number(),
+  "serviceRecordId": zod.number(),
+  "kitName": zod.string(),
+  "kitCode": zod.string().nullish(),
+  "quantity": zod.string().nullish(),
+  "unit": zod.string().nullish()
+})).optional()
+})
+
+
+/**
+ * @summary Delete service record (admin)
+ */
+export const DeleteServiceRecordParams = zod.object({
+  "id": zod.coerce.number(),
+  "recordId": zod.coerce.number()
+})
+
+
+/**
+ * @summary List warranty claims for device (admin)
+ */
+export const ListWarrantyClaimsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListWarrantyClaimsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "deviceId": zod.number(),
+  "faultType": zod.string(),
+  "faultDescription": zod.string(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "workHours": zod.string().nullish(),
+  "personnelNote": zod.string().nullish(),
+  "decisionStatus": zod.string(),
+  "outOfWarrantyReason": zod.string().nullish(),
+  "adminApproval": zod.boolean().nullish(),
+  "adminNote": zod.string().nullish(),
+  "claimantName": zod.string().nullish(),
+  "claimantPhone": zod.string().nullish(),
+  "claimantEmail": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string().optional()
+}))
+})
+
+
+/**
+ * @summary Create warranty claim (public)
+ */
+export const CreateWarrantyClaimParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CreateWarrantyClaimBody = zod.object({
+  "faultType": zod.string(),
+  "faultDescription": zod.string(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "workHours": zod.string().optional(),
+  "claimantName": zod.string().optional(),
+  "claimantPhone": zod.string().optional(),
+  "claimantEmail": zod.string().optional()
+})
+
+
+/**
+ * @summary Update warranty claim decision (admin)
+ */
+export const UpdateWarrantyClaimParams = zod.object({
+  "id": zod.coerce.number(),
+  "claimId": zod.coerce.number()
+})
+
+export const UpdateWarrantyClaimBody = zod.object({
+  "decisionStatus": zod.string().optional(),
+  "outOfWarrantyReason": zod.string().optional(),
+  "adminApproval": zod.boolean().optional(),
+  "adminNote": zod.string().optional(),
+  "personnelNote": zod.string().optional(),
+  "workHours": zod.string().optional()
+})
+
+export const UpdateWarrantyClaimResponse = zod.object({
+  "id": zod.number(),
+  "deviceId": zod.number(),
+  "faultType": zod.string(),
+  "faultDescription": zod.string(),
+  "photoUrls": zod.array(zod.string()).optional(),
+  "workHours": zod.string().nullish(),
+  "personnelNote": zod.string().nullish(),
+  "decisionStatus": zod.string(),
+  "outOfWarrantyReason": zod.string().nullish(),
+  "adminApproval": zod.boolean().nullish(),
+  "adminNote": zod.string().nullish(),
+  "claimantName": zod.string().nullish(),
+  "claimantPhone": zod.string().nullish(),
+  "claimantEmail": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string().optional()
+})
+
+
+/**
+ * @summary List computed warranty alerts (admin)
+ */
+export const ListWarrantyAlertsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "type": zod.string(),
+  "deviceId": zod.number(),
+  "serialNumber": zod.string(),
+  "productName": zod.string(),
+  "customerFirm": zod.string(),
+  "message": zod.string(),
+  "daysRemaining": zod.number().nullish(),
+  "warrantyEndDate": zod.string().nullish(),
+  "nextMaintenanceDate": zod.string().nullish()
+}))
+})
+
+
+/**
  * @summary Get dashboard statistics (admin only)
  */
 export const GetDashboardStatsResponse = zod.object({
