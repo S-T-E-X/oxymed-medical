@@ -33,9 +33,12 @@ import type {
   DashboardStats,
   DeviceServiceHistory,
   DispatchServiceReportEmail200,
+  EmailLogListResponse,
+  EmailSentResult,
   ErrorResponse,
   HealthStatus,
   ListCatalogsParams,
+  ListEmailLogsParams,
   ListMediaFilesParams,
   ListNewsParams,
   ListProductionOrdersParams,
@@ -71,6 +74,7 @@ import type {
   ProductionOrderListResult,
   ProductionOrderPatch,
   QualityChecklistInput,
+  QuoteFormEmailInput,
   QuoteInput,
   QuoteItem,
   QuoteListResponse,
@@ -6157,6 +6161,162 @@ export function useVerifyServiceReport<TData = Awaited<ReturnType<typeof verifyS
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getVerifyServiceReportQueryOptions(verificationToken,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSendQuoteFormEmailUrl = (id: number,) => {
+
+
+
+
+  return `/api/quote-forms/${id}/send-email`
+}
+
+/**
+ * @summary Send quote form via email
+ */
+export const sendQuoteFormEmail = async (id: number,
+    quoteFormEmailInput: QuoteFormEmailInput, options?: RequestInit): Promise<EmailSentResult> => {
+
+  return customFetch<EmailSentResult>(getSendQuoteFormEmailUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      quoteFormEmailInput,)
+  }
+);}
+
+
+
+
+export const getSendQuoteFormEmailMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendQuoteFormEmail>>, TError,{id: number;data: BodyType<QuoteFormEmailInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendQuoteFormEmail>>, TError,{id: number;data: BodyType<QuoteFormEmailInput>}, TContext> => {
+
+const mutationKey = ['sendQuoteFormEmail'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendQuoteFormEmail>>, {id: number;data: BodyType<QuoteFormEmailInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  sendQuoteFormEmail(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendQuoteFormEmailMutationResult = NonNullable<Awaited<ReturnType<typeof sendQuoteFormEmail>>>
+    export type SendQuoteFormEmailMutationBody = BodyType<QuoteFormEmailInput>
+    export type SendQuoteFormEmailMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Send quote form via email
+ */
+export const useSendQuoteFormEmail = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendQuoteFormEmail>>, TError,{id: number;data: BodyType<QuoteFormEmailInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendQuoteFormEmail>>,
+        TError,
+        {id: number;data: BodyType<QuoteFormEmailInput>},
+        TContext
+      > => {
+      return useMutation(getSendQuoteFormEmailMutationOptions(options));
+    }
+
+export const getListEmailLogsUrl = (params?: ListEmailLogsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/email-logs?${stringifiedParams}` : `/api/email-logs`
+}
+
+/**
+ * @summary List email send logs
+ */
+export const listEmailLogs = async (params?: ListEmailLogsParams, options?: RequestInit): Promise<EmailLogListResponse> => {
+
+  return customFetch<EmailLogListResponse>(getListEmailLogsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListEmailLogsQueryKey = (params?: ListEmailLogsParams,) => {
+    return [
+    `/api/email-logs`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListEmailLogsQueryOptions = <TData = Awaited<ReturnType<typeof listEmailLogs>>, TError = ErrorType<unknown>>(params?: ListEmailLogsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listEmailLogs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListEmailLogsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listEmailLogs>>> = ({ signal }) => listEmailLogs(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listEmailLogs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListEmailLogsQueryResult = NonNullable<Awaited<ReturnType<typeof listEmailLogs>>>
+export type ListEmailLogsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List email send logs
+ */
+
+export function useListEmailLogs<TData = Awaited<ReturnType<typeof listEmailLogs>>, TError = ErrorType<unknown>>(
+ params?: ListEmailLogsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listEmailLogs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListEmailLogsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

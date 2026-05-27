@@ -16,6 +16,7 @@ import quoteFormsRouter from "./quote-forms";
 import warrantyRouter from "./warranty";
 import productionRouter from "./production";
 import serviceReportsRouter from "./service-reports";
+import emailLogsRouter from "./email-logs";
 
 const router: IRouter = Router();
 
@@ -36,5 +37,6 @@ router.use(quoteFormsRouter);
 router.use(warrantyRouter);
 router.use(productionRouter);
 router.use(serviceReportsRouter);
+router.use(emailLogsRouter);
 
 export default router;

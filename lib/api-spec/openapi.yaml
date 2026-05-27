@@ -36,6 +36,8 @@ tags:
     description: Production order management and BOM
   - name: service-reports
     description: Service report management
+  - name: email-logs
+    description: Email send history logs
 
 paths:
   /healthz:
@@ -1862,6 +1864,73 @@ paths:
           description: Report not found
 
 
+  /quote-forms/{id}/send-email:
+    post:
+      operationId: sendQuoteFormEmail
+      tags: [email-logs]
+      summary: Send quote form via email
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteFormEmailInput"
+      responses:
+        "200":
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailSentResult"
+        "404":
+          description: Quote form not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Email send failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /email-logs:
+    get:
+      operationId: listEmailLogs
+      tags: [email-logs]
+      summary: List email send logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: emailType
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Email log list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailLogListResponse"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3499,3 +3568,42 @@ components:
             productName: { type: string }
             model: { type: string }
             customerFirm: { type: string }
+
+    QuoteFormEmailInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    EmailSentResult:
+      type: object
+      required: [success, email]
+      properties:
+        success: { type: boolean }
+        email: { type: string }
+
+    EmailLogEntry:
+      type: object
+      required: [id, emailType, recipientEmail, status, sentAt]
+      properties:
+        id: { type: integer }
+        emailType: { type: string }
+        recipientEmail: { type: string }
+        subject: { type: string, nullable: true }
+        relatedId: { type: integer, nullable: true }
+        relatedRef: { type: string, nullable: true }
+        status: { type: string }
+        errorMessage: { type: string, nullable: true }
+        sentBy: { type: string, nullable: true }
+        sentAt: { type: string }
+
+    EmailLogListResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailLogEntry"

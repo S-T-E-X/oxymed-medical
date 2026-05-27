@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
-import { db, quoteForms, quoteFormItems, productionOrdersTable } from "@workspace/db";
-import { eq, desc, like, and } from "drizzle-orm";
+import { db, quoteForms, quoteFormItems, productionOrdersTable, emailLogsTable } from "@workspace/db";
+import { eq, desc, like } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
+import { sendQuoteFormEmail } from "../lib/mailer";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
@@ -271,6 +272,82 @@ router.delete("/quote-forms/:id/items/:itemId", requireAuth, async (req, res): P
     return;
   }
   res.sendStatus(204);
+});
+
+// Send quote form via email
+router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+  const bodyParsed = z.object({
+    email: z.string().email("Geçerli bir e-posta adresi girin"),
+  }).safeParse(req.body);
+  if (!bodyParsed.success) {
+    res.status(400).json({ error: bodyParsed.error.issues[0]?.message ?? "Geçersiz istek" });
+    return;
+  }
+  const { email } = bodyParsed.data;
+
+  const [form] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
+  if (!form) { res.status(404).json({ error: "Teklif formu bulunamadı" }); return; }
+
+  const items = await db
+    .select()
+    .from(quoteFormItems)
+    .where(eq(quoteFormItems.formId, id))
+    .orderBy(quoteFormItems.sortOrder);
+
+  const sentBy = (req as typeof req & { adminPayload?: { email?: string } }).adminPayload?.email ?? null;
+
+  try {
+    await sendQuoteFormEmail({
+      to: email,
+      quoteNo: form.quoteNo,
+      firmaAdi: form.firmaAdi ?? null,
+      paraBirimi: form.paraBirimi,
+      hazirlayan: form.hazirlayan ?? null,
+      hazirlayanTelefon: form.hazirlayanTelefon ?? null,
+      hazirlayanEmail: form.hazirlayanEmail ?? null,
+      notlar: form.notlar ?? null,
+      teslimatSuresi: form.teslimatSuresi ?? null,
+      odemeSekli: form.odemeSekli ?? null,
+      iskonto: form.iskonto ?? "0",
+      iskontoTipi: form.iskontoTipi ?? "yuzde",
+      kdv: form.kdv ?? "0",
+      items: items.map((item) => ({
+        title: item.title,
+        modelCode: item.modelCode ?? null,
+        quantity: item.quantity ?? 1,
+        unit: item.unit ?? "ADET",
+        unitPrice: item.unitPrice ?? null,
+      })),
+    });
+
+    await db.insert(emailLogsTable).values({
+      emailType: "quote_form",
+      recipientEmail: email,
+      subject: `Teklif - ${form.quoteNo}`,
+      relatedId: id,
+      relatedRef: form.quoteNo,
+      status: "success",
+      sentBy,
+    });
+
+    req.log.info({ formId: id, email }, "Quote form email sent");
+    res.json({ success: true, email });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    await db.insert(emailLogsTable).values({
+      emailType: "quote_form",
+      recipientEmail: email,
+      subject: `Teklif - ${form.quoteNo}`,
+      relatedId: id,
+      relatedRef: form.quoteNo,
+      status: "failed",
+      errorMessage: msg,
+      sentBy,
+    }).catch(() => { /* best-effort */ });
+    req.log.error({ err }, "Quote form email send failed");
+    res.status(500).json({ error: "E-posta gönderilemedi", detail: msg });
+  }
 });
 
 // Replace all items for a form (bulk set)

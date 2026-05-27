@@ -11,6 +11,7 @@ import {
   ImageIcon,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Newspaper,
   Package,
@@ -57,6 +58,7 @@ const productionNavItems = [
 const quoteNavItems = [
   { label: "Teklif Formları", icon: FileText, to: "/admin/teklif-formlari" },
   { label: "Teklif Talepleri", icon: UserRound, to: "/admin/teklifler" },
+  { label: "E-posta Logları", icon: Mail, to: "/admin/eposta-loglari" },
 ];
 
 function Sidebar({ onClose }: { onClose?: () => void }) {

@@ -962,6 +962,32 @@ export interface ServiceReportVerification {
   device?: ServiceReportVerificationDevice;
 }
 
+export interface QuoteFormEmailInput {
+  email: string;
+}
+
+export interface EmailSentResult {
+  success: boolean;
+  email: string;
+}
+
+export interface EmailLogEntry {
+  id: number;
+  emailType: string;
+  recipientEmail: string;
+  subject?: string | null;
+  relatedId?: number | null;
+  relatedRef?: string | null;
+  status: string;
+  errorMessage?: string | null;
+  sentBy?: string | null;
+  sentAt: string;
+}
+
+export interface EmailLogListResponse {
+  items: EmailLogEntry[];
+}
+
 export type ListSlidersParams = {
 activeOnly?: boolean;
 };
@@ -1042,5 +1068,11 @@ export type DispatchServiceReportEmail200 = {
 
 export type ListServiceReportEmailLogs200 = {
   items: ServiceReportEmailLog[];
+};
+
+export type ListEmailLogsParams = {
+emailType?: string;
+limit?: number;
+offset?: number;
 };
 

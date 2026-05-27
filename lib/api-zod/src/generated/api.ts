@@ -2098,3 +2098,45 @@ export const VerifyServiceReportResponse = zod.object({
 })
 
 
+/**
+ * @summary Send quote form via email
+ */
+export const SendQuoteFormEmailParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const SendQuoteFormEmailBody = zod.object({
+  "email": zod.string().email()
+})
+
+export const SendQuoteFormEmailResponse = zod.object({
+  "success": zod.boolean(),
+  "email": zod.string()
+})
+
+
+/**
+ * @summary List email send logs
+ */
+export const ListEmailLogsQueryParams = zod.object({
+  "emailType": zod.coerce.string().optional(),
+  "limit": zod.coerce.number().optional(),
+  "offset": zod.coerce.number().optional()
+})
+
+export const ListEmailLogsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "emailType": zod.string(),
+  "recipientEmail": zod.string(),
+  "subject": zod.string().nullish(),
+  "relatedId": zod.number().nullish(),
+  "relatedRef": zod.string().nullish(),
+  "status": zod.string(),
+  "errorMessage": zod.string().nullish(),
+  "sentBy": zod.string().nullish(),
+  "sentAt": zod.string()
+}))
+})
+
+
