@@ -107,7 +107,7 @@
 
 .sr-summary {
   display: grid;
-  grid-template-columns: 18% 26% 19% 19% 18%;
+  grid-template-columns: 16% 30% 18% 18% 18%;
   width: 100%;
   height: 14.4mm;
   margin-top: 2.4mm;
@@ -243,7 +243,7 @@
 }
 
 .sr-top-grid .sr-panel {
-  height: 50mm;
+  height: 44mm;
 }
 
 .sr-three-grid .sr-panel {
@@ -259,7 +259,7 @@
 }
 
 .sr-bottom-grid .sr-panel {
-  height: 34.5mm;
+  height: 41mm;
 }
 
 .sr-detail-rows {
@@ -891,12 +891,12 @@
 }
 
 .sr-maint-row strong {
-  font-size: 2.4mm;
+  font-size: 2.2mm;
   font-weight: 900;
   color: #0f172a;
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sr-maint-row:first-child strong {
