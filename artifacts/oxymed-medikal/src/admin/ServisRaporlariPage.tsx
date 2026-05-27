@@ -48,7 +48,7 @@ function useServiceReports(search: string, status: string) {
   async function load() {
     setLoading(true);
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
       const params = new URLSearchParams({ limit: "200" });
       if (status) params.set("status", status);
       const res = await fetch(`${BASE}/api/service-reports?${params}`, {
@@ -92,7 +92,7 @@ export default function ServisRaporlariPage() {
     if (!confirm("Bu raporu silmek istediğinize emin misiniz?")) return;
     setDeletingId(id);
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
       await fetch(`${BASE}/api/service-reports/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },

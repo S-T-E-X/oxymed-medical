@@ -619,13 +619,16 @@ export default function ServisRaporuFormPage() {
     setPreviewLoading(true);
     try {
       const token = localStorage.getItem("admin_token");
-      const payload = buildTemplateData();
+      const payload = { ...buildTemplateData(), baseHref: window.location.origin };
       const res = await fetch(`${BASE}/api/service-reports/preview-html`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({})) as { error?: string; detail?: string };
+        throw new Error(errBody.detail ?? errBody.error ?? `HTTP ${res.status}`);
+      }
       const html = await res.text();
       setPreviewHtml(html);
     } catch (err) {

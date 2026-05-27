@@ -152,7 +152,7 @@ export interface ServiceReportPdfData {
   parts?: Array<{ partName: string; partCode?: string | null; quantity: string; condition?: string | null }>;
 }
 
-export function buildReportHtml(data: ServiceReportPdfData): string {
+export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref?: string }): string {
   const rd = (data.reportDataJson ?? {}) as Record<string, unknown>;
   const alarms = ((rd["alarms"] ?? {}) as Record<string, string>);
   const operations = ((rd["operations"] ?? []) as string[]);
@@ -406,7 +406,7 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   }
   @page { size: A4 portrait; margin: 0; }
 </style>
-<base href="http://localhost:80/">
+<base href="${options?.baseHref ?? "http://localhost:80/"}">
 </head>
 <body>
 <div style="

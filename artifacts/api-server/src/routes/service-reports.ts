@@ -292,10 +292,11 @@ router.post("/service-reports/preview-html", requireAuth, async (req, res): Prom
     serviceCode: z.string().optional().nullable(),
     createdBy: z.string().optional().nullable(),
     device: deviceSchema,
-    reportDataJson: z.record(z.string(), z.unknown()).optional(),
+    reportDataJson: z.any().optional(),
     photos: z.array(z.object({ url: z.string(), caption: z.string().optional().nullable() })).optional(),
     signatures: z.array(z.object({ role: z.string(), signerName: z.string().optional().nullable(), imageDataUrl: z.string() })).optional(),
     parts: z.array(z.object({ partName: z.string(), partCode: z.string().optional().nullable(), quantity: z.string(), condition: z.string().optional().nullable() })).optional(),
+    baseHref: z.string().optional(),
   });
 
   const parsed = bodySchema.safeParse(req.body);
@@ -304,7 +305,8 @@ router.post("/service-reports/preview-html", requireAuth, async (req, res): Prom
     return;
   }
 
-  const html = buildReportHtml(parsed.data as ServiceReportPdfData);
+  const { baseHref, ...reportData } = parsed.data as { baseHref?: string } & ServiceReportPdfData;
+  const html = buildReportHtml(reportData, { baseHref });
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.send(html);
 });
