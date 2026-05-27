@@ -217,7 +217,7 @@ function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
   async function handleSearch(q?: string) {
     setLoading(true);
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
       const search = q !== undefined ? q : query;
       const url = search.trim()
         ? `${BASE}/api/warranty/devices?search=${encodeURIComponent(search)}&limit=20`
@@ -392,7 +392,7 @@ export default function ServisRaporuFormPage() {
 
   async function loadReport() {
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -483,7 +483,7 @@ export default function ServisRaporuFormPage() {
     if (!selectedDevice) { toast.error("Lütfen bir cihaz seçin"); return; }
     setSaving(true);
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
       const payload = buildPayload(saveStatus);
       let res: Response;
       if (isNew) {
@@ -518,7 +518,7 @@ export default function ServisRaporuFormPage() {
     setSendingEmail(true);
     toast.info("Rapor PDF olarak oluşturulup gönderiliyor...");
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${id}/send-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -542,7 +542,7 @@ export default function ServisRaporuFormPage() {
     setGeneratingPdf(true);
     toast.info("Sunucuda PDF oluşturuluyor...");
     try {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("admin_token");
 
       // Call server-side Puppeteer PDF endpoint
       const res = await fetch(`${BASE}/api/service-reports/${id}/generate-pdf`, {
