@@ -283,28 +283,51 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
         {/* ── SUMMARY BAR ── */}
         <section className="sr-summary">
           <div className="sr-summary-item">
-            <CalendarDays size={13} />
-            <span>{data.serviceDate}{data.serviceTime ? ` · ${data.serviceTime}` : ""}</span>
+            <CalendarDays size={17} />
+            <div>
+              <small>Servis Tarihi</small>
+              <strong>{data.serviceDate}</strong>
+            </div>
           </div>
+          {data.serviceTime && (
+            <div className="sr-summary-item">
+              <Clock3 size={17} />
+              <div>
+                <small>Servis Saati</small>
+                <strong>{data.serviceTime}</strong>
+              </div>
+            </div>
+          )}
           <div className="sr-summary-item">
-            <ClipboardCheck size={13} />
-            <span>{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</span>
+            <ClipboardCheck size={17} />
+            <div>
+              <small>Servis Türü</small>
+              <strong>{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</strong>
+            </div>
           </div>
           {priorityLabel && (
             <div className="sr-summary-item">
-              <i className="ok-dot" />
-              <span>{priorityLabel}</span>
+              <Gauge size={17} />
+              <div>
+                <small>Müdahale Önceliği</small>
+                <strong>
+                  <i className="ok-dot" />
+                  {priorityLabel}
+                </strong>
+              </div>
             </div>
           )}
           <div className="sr-summary-item">
             <CheckCircle2 size={17} className={isDone ? "sr-green" : ""} />
-            <span>{statusLabel}</span>
-          </div>
-          {data.serviceCode && (
-            <div className="sr-service-code">
-              {data.serviceCode}
+            <div>
+              <small>İşlem Durumu</small>
+              <strong>{statusLabel}</strong>
             </div>
-          )}
+          </div>
+          <div className="sr-service-code">
+            <small>Servis Kodu</small>
+            <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
+          </div>
         </section>
 
         {/* ── TOP GRID: Hospital + Device ── */}
@@ -636,6 +659,12 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
             )}
           </Panel>
         </div>
+
+        <img
+          src="/assets/brand/oxymed-service-footer.webp"
+          alt="Oxymed Medikal iletişim bilgileri"
+          className="sr-footer-image"
+        />
 
       </article>
     </main>

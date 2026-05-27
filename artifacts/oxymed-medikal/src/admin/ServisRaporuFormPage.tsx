@@ -372,15 +372,7 @@ export default function ServisRaporuFormPage() {
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [emailTarget, setEmailTarget] = useState("");
 
-  // Auto-generate service code for new reports
-  useEffect(() => {
-    if (isNew) {
-      const now = new Date();
-      const ymd = now.toISOString().slice(0, 10).replace(/-/g, "");
-      const rand = Math.floor(1000 + Math.random() * 9000);
-      setServiceCode(`OXM-SRV-${ymd}-${rand}`);
-    }
-  }, [isNew]);
+  // Service code is assigned server-side after first save (reportNo format: OXM-SRV-YYYY-NNNNNN)
 
   // Auto-calculate total work hours from individual pump values
   useEffect(() => {
@@ -605,7 +597,7 @@ export default function ServisRaporuFormPage() {
 
   function buildTemplateData(): ServiceReportTemplateData {
     return {
-      reportNo: reportNo ?? "OXM-SRV-XXXX-000000",
+      reportNo: reportNo ?? `OXM-SRV-${new Date().getFullYear()}-XXXXXX`,
       serviceDate, serviceTime: serviceTime || null,
       serviceType, priority: priority || null, status,
       serviceCode: serviceCode || null, createdBy: createdBy || null,
