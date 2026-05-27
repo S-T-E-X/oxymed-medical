@@ -17,6 +17,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 import { useGetServiceReport } from "@workspace/api-client-react";
+import ServiceReportBarcode from "../components/ServiceReportBarcode";
 import "./ServiceReportPage.css";
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -338,7 +339,7 @@ function DynamicReport({ recordId }: { recordId: number }) {
           <div className="sr-report-no">
             <div>RAPOR NO</div>
             <strong>{data.reportNo ?? `SRV-${data.id}`}</strong>
-            <div className="sr-barcode" />
+            <ServiceReportBarcode value={data.reportNo ?? `SRV-${data.id ?? ""}`} />
             <span>
               {data.serviceDate}
               {data.serviceTime ? `\u00a0\u00a0-\u00a0\u00a0${data.serviceTime}` : ""}
@@ -352,18 +353,14 @@ function DynamicReport({ recordId }: { recordId: number }) {
             <CalendarDays size={17} />
             <div>
               <small>Servis Tarihi</small>
-              <strong>{data.serviceDate}</strong>
+              <strong>
+                {data.serviceDate}
+                {data.serviceTime && (
+                  <span style={{ fontSize: "2.5mm", fontWeight: 700 }}>{"\u00a0"}{data.serviceTime}</span>
+                )}
+              </strong>
             </div>
           </div>
-          {data.serviceTime && (
-            <div className="sr-summary-item">
-              <Clock3 size={17} />
-              <div>
-                <small>Servis Saati</small>
-                <strong>{data.serviceTime}</strong>
-              </div>
-            </div>
-          )}
           <div className="sr-summary-item">
             <ClipboardCheck size={17} />
             <div>
@@ -371,18 +368,15 @@ function DynamicReport({ recordId }: { recordId: number }) {
               <strong>{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</strong>
             </div>
           </div>
-          {priorityLabel && (
-            <div className="sr-summary-item">
-              <Gauge size={17} />
-              <div>
-                <small>Müdahale Önceliği</small>
-                <strong>
-                  <i className="ok-dot" />
-                  {priorityLabel}
-                </strong>
-              </div>
+          <div className="sr-summary-item">
+            <Gauge size={17} />
+            <div>
+              <small>Müdahale Önceliği</small>
+              <strong>
+                {priorityLabel ? <><i className="ok-dot" />{priorityLabel}</> : "—"}
+              </strong>
             </div>
-          )}
+          </div>
           <div className="sr-summary-item">
             <CheckCircle2 size={17} className={isDone ? "sr-green" : ""} />
             <div>
@@ -401,7 +395,6 @@ function DynamicReport({ recordId }: { recordId: number }) {
           <Panel title="Hastane / Proje Bilgileri" icon={Building2}>
             <div className="sr-hospital-layout">
               <DetailRows rows={hospitalInfoRows.length > 0 ? hospitalInfoRows : [["Firma / Kurum", deviceCustomerFirm]]} />
-              <Hospital className="sr-watermark" size={92} />
             </div>
           </Panel>
 

@@ -1,8 +1,9 @@
 import "../pages/ServiceReportPage.css";
 import {
   Bell, Building2, CalendarDays, Camera, Check, CheckCircle2,
-  ClipboardCheck, Clock3, FileText, Gauge, Hospital, Settings, Wrench,
+  ClipboardCheck, Clock3, FileText, Gauge, Settings, Wrench,
 } from "lucide-react";
+import ServiceReportBarcode from "./ServiceReportBarcode";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -272,7 +273,7 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
           <div className="sr-report-no">
             <div>RAPOR NO</div>
             <strong>{data.reportNo ?? `SRV-${data.id ?? "XXXX"}`}</strong>
-            <div className="sr-barcode" />
+            <ServiceReportBarcode value={data.reportNo ?? `SRV-${data.id ?? "XXXX"}`} />
             <span>
               {data.serviceDate}
               {data.serviceTime ? `\u00a0\u00a0-\u00a0\u00a0${data.serviceTime}` : ""}
@@ -286,18 +287,14 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
             <CalendarDays size={17} />
             <div>
               <small>Servis Tarihi</small>
-              <strong>{data.serviceDate}</strong>
+              <strong>
+                {data.serviceDate}
+                {data.serviceTime && (
+                  <span style={{ fontSize: "2.5mm", fontWeight: 700 }}>{"\u00a0"}{data.serviceTime}</span>
+                )}
+              </strong>
             </div>
           </div>
-          {data.serviceTime && (
-            <div className="sr-summary-item">
-              <Clock3 size={17} />
-              <div>
-                <small>Servis Saati</small>
-                <strong>{data.serviceTime}</strong>
-              </div>
-            </div>
-          )}
           <div className="sr-summary-item">
             <ClipboardCheck size={17} />
             <div>
@@ -305,18 +302,15 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
               <strong>{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</strong>
             </div>
           </div>
-          {priorityLabel && (
-            <div className="sr-summary-item">
-              <Gauge size={17} />
-              <div>
-                <small>Müdahale Önceliği</small>
-                <strong>
-                  <i className="ok-dot" />
-                  {priorityLabel}
-                </strong>
-              </div>
+          <div className="sr-summary-item">
+            <Gauge size={17} />
+            <div>
+              <small>Müdahale Önceliği</small>
+              <strong>
+                {priorityLabel ? <><i className="ok-dot" />{priorityLabel}</> : "—"}
+              </strong>
             </div>
-          )}
+          </div>
           <div className="sr-summary-item">
             <CheckCircle2 size={17} className={isDone ? "sr-green" : ""} />
             <div>
@@ -335,7 +329,6 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
           <Panel title="Hastane / Proje Bilgileri" icon={Building2}>
             <div className="sr-hospital-layout">
               <DetailRows rows={hospitalInfoRows} />
-              <Hospital className="sr-watermark" size={92} />
             </div>
           </Panel>
 

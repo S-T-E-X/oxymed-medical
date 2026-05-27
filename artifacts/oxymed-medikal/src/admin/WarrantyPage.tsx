@@ -62,6 +62,8 @@ function statusCls(v: string) {
 
 const EMPTY_FORM = {
   productName: "", model: "", serialNumber: "", customerFirm: "",
+  deviceType: "", plcSystem: "", hmiModel: "", productionDate: "",
+  customerDepartment: "", customerLocation: "",
   customerContact: "", customerPhone: "", customerEmail: "",
   installDate: "", warrantyStartDate: "", warrantyEndDate: "",
   warrantyType: "", maintenanceContractStatus: "", lastMaintenanceDate: "",
@@ -95,11 +97,17 @@ function DeviceFormModal({
             <Field label="Ürün Adı *"><input className="input" value={form.productName} onChange={set("productName")} placeholder="Medikal Vakum Santrali" /></Field>
             <Field label="Model *"><input className="input" value={form.model} onChange={set("model")} placeholder="OXY-VAC PRO 3x250" /></Field>
             <Field label="Seri Numarası *"><input className="input" value={form.serialNumber} onChange={set("serialNumber")} placeholder="OXM-VAC-250-0148" /></Field>
+            <Field label="Cihaz Türü"><input className="input" value={form.deviceType} onChange={set("deviceType")} placeholder="Gaz Merkezi Paneli" /></Field>
+            <Field label="PLC Sistemi"><input className="input" value={form.plcSystem} onChange={set("plcSystem")} placeholder="Siemens S7-1200" /></Field>
+            <Field label="HMI Modeli"><input className="input" value={form.hmiModel} onChange={set("hmiModel")} placeholder="KTP700 Basic" /></Field>
+            <Field label="Üretim Tarihi"><input className="input" value={form.productionDate} onChange={set("productionDate")} placeholder="15.03.2024" /></Field>
+            <Field label="Devreye Alma"><input className="input" type="date" value={form.installDate} onChange={set("installDate")} /></Field>
             <Field label="Müşteri Firma *"><input className="input" value={form.customerFirm} onChange={set("customerFirm")} placeholder="Ankara Şehir Hastanesi" /></Field>
-            <Field label="İletişim Kişisi"><input className="input" value={form.customerContact} onChange={set("customerContact")} placeholder="Ad Soyad" /></Field>
-            <Field label="Telefon"><input className="input" value={form.customerPhone} onChange={set("customerPhone")} placeholder="0312 000 00 00" /></Field>
+            <Field label="Bölüm"><input className="input" value={form.customerDepartment} onChange={set("customerDepartment")} placeholder="Sterilizasyon" /></Field>
+            <Field label="Lokasyon"><input className="input" value={form.customerLocation} onChange={set("customerLocation")} placeholder="Kat 3 / Teknik Oda" /></Field>
+            <Field label="Sorumlu Kişi"><input className="input" value={form.customerContact} onChange={set("customerContact")} placeholder="Ad Soyad" /></Field>
+            <Field label="İletişim / Tel"><input className="input" value={form.customerPhone} onChange={set("customerPhone")} placeholder="0312 000 00 00" /></Field>
             <Field label="E-posta"><input className="input" value={form.customerEmail} onChange={set("customerEmail")} placeholder="sorumlu@hastane.gov.tr" /></Field>
-            <Field label="Kurulum Tarihi"><input className="input" type="date" value={form.installDate} onChange={set("installDate")} /></Field>
             <Field label="Garanti Başlangıç"><input className="input" type="date" value={form.warrantyStartDate} onChange={set("warrantyStartDate")} /></Field>
             <Field label="Garanti Bitiş"><input className="input" type="date" value={form.warrantyEndDate} onChange={set("warrantyEndDate")} /></Field>
             <Field label="Garanti Tipi"><input className="input" value={form.warrantyType} onChange={set("warrantyType")} placeholder="Standart 2 Yıl" /></Field>

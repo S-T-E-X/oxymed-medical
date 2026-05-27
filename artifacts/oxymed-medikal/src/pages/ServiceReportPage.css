@@ -99,15 +99,15 @@
 }
 
 .sr-barcode {
-  width: 27.5mm;
+  display: block;
+  width: 100%;
   height: 5.4mm;
   margin: 0.8mm auto 0;
-  background: repeating-linear-gradient(90deg, #111827 0 0.35mm, transparent 0.35mm 0.7mm, #111827 0.7mm 1.25mm, transparent 1.25mm 1.85mm);
 }
 
 .sr-summary {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.28fr 1.25fr 1.2fr 1fr;
+  grid-template-columns: repeat(5, 1fr);
   height: 14.4mm;
   margin-top: 2.4mm;
   overflow: hidden;

@@ -64,7 +64,13 @@ interface Device {
   serialNumber: string;
   productName: string;
   model: string;
+  deviceType?: string | null;
+  plcSystem?: string | null;
+  hmiModel?: string | null;
+  productionDate?: string | null;
   customerFirm: string;
+  customerDepartment?: string | null;
+  customerLocation?: string | null;
   customerContact?: string | null;
   customerPhone?: string | null;
   customerEmail?: string | null;
@@ -809,16 +815,37 @@ export default function ServisRaporuFormPage() {
             </div>
           ) : (
             <DeviceSearch onSelect={(d) => {
+              void (async (d) => {
               setSelectedDevice(d);
               setHospitalName(d.customerFirm);
-              if (d.customerContact) setContactPerson(d.customerContact);
-              if (d.customerPhone)   setContact(d.customerPhone);
-              if (d.customerEmail)   setEmail(d.customerEmail);
-              setDeviceType(d.productName);
+              if (d.customerDepartment) setDepartment(d.customerDepartment);
+              if (d.customerLocation)   setLocation(d.customerLocation);
+              if (d.customerContact)    setContactPerson(d.customerContact);
+              if (d.customerPhone)      setContact(d.customerPhone);
+              if (d.customerEmail)      setEmail(d.customerEmail);
+              setDeviceType(d.deviceType || d.productName);
               setDeviceModel(d.model);
+              setPlcSystem(d.plcSystem ?? "");
+              setHmiModel(d.hmiModel ?? "");
+              setProductionDate(d.productionDate ?? "");
               setCommissionDate(d.installDate ?? "");
-              setLastMaintenanceDate(d.lastMaintenanceDate ?? "");
-              setNextMaintenanceDate(d.nextMaintenanceDate ?? "");
+              // Son bakım: o cihazın son servis raporunun tarihi
+              try {
+                const token = localStorage.getItem("admin_token");
+                const res = await fetch(`${BASE}/api/service-reports?deviceId=${d.id}&limit=1`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                  const rData = await res.json() as { items: Array<{ data?: Record<string, unknown> }> };
+                  const lastDate = rData.items?.[0]?.data?.serviceDate as string | undefined;
+                  setLastMaintenanceDate(lastDate ?? d.lastMaintenanceDate ?? "");
+                } else {
+                  setLastMaintenanceDate(d.lastMaintenanceDate ?? "");
+                }
+              } catch {
+                setLastMaintenanceDate(d.lastMaintenanceDate ?? "");
+              }
+            })(d);
             }} />
           )}
         </Section>
@@ -848,9 +875,6 @@ export default function ServisRaporuFormPage() {
                 <option value="tamamlandi">Tamamlandı</option>
                 <option value="iptal">İptal</option>
               </select>
-            </Field>
-            <Field label="Servis Kodu">
-              <input type="text" value={serviceCode} onChange={(e) => setServiceCode(e.target.value)} placeholder="OXM-SRV-2024-01" className={inputCls} />
             </Field>
             <Field label="Servis Personeli">
               <input type="text" value={createdBy} onChange={(e) => setCreatedBy(e.target.value)} placeholder="Ad Soyad" className={inputCls} />
@@ -911,8 +935,7 @@ export default function ServisRaporuFormPage() {
             <Field label="Toplam Çalışma">
               <input type="text" value={totalWorkHours} readOnly className={`${inputCls} bg-slate-50 text-slate-500 cursor-default`} placeholder="Otomatik hesaplanır" />
             </Field>
-            <Field label="Son Bakım Tarihi"><input type="text" value={lastMaintenanceDate} onChange={(e) => setLastMaintenanceDate(e.target.value)} className={inputCls} /></Field>
-            <Field label="Sonraki Bakım Tarihi"><input type="text" value={nextMaintenanceDate} onChange={(e) => setNextMaintenanceDate(e.target.value)} className={inputCls} /></Field>
+            <Field label="Son Bakım Tarihi"><input type="text" value={lastMaintenanceDate} onChange={(e) => setLastMaintenanceDate(e.target.value)} className={`${inputCls} bg-slate-50`} placeholder="Cihaz seçince otomatik dolar" /></Field>
             <Field label="Bakım Periyodu"><input type="text" value={maintenancePeriod} onChange={(e) => setMaintenancePeriod(e.target.value)} className={inputCls} placeholder="6 ay / 500 saat" /></Field>
           </div>
         </Section>
