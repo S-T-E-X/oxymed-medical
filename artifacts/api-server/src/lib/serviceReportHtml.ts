@@ -126,6 +126,13 @@ function panel(title: string, content: string): string {
   </div>`;
 }
 
+function panelSm(title: string, content: string): string {
+  return `<div style="border:0.25mm solid #9eabba;border-radius:1.5mm;overflow:hidden;background:#fff">
+    ${panelTitle(title)}
+    <div style="padding:1.5mm 2.5mm">${content}</div>
+  </div>`;
+}
+
 export interface ServiceReportPdfData {
   reportNo: string;
   serviceDate: string;
@@ -260,11 +267,11 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
   // ── Work hours rows ───────────────────────────────────────────────────────
   const hoursRows: string[] = [];
   const td = (a: string, b: string) =>
-    `<tr><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(a)}</td><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(b)}</td></tr>`;
+    `<tr><td style="font-size:2.3mm;border:0.2mm solid #d0d8e3;padding:0.7mm 1.4mm">${esc(a)}</td><td style="font-size:2.3mm;border:0.2mm solid #d0d8e3;padding:0.7mm 1.4mm">${esc(b)}</td></tr>`;
   if (pump1Hours) hoursRows.push(td("Pompa 1", pump1Hours));
   if (pump2Hours) hoursRows.push(td("Pompa 2", pump2Hours));
   if (pump3Hours) hoursRows.push(td("Pompa 3", pump3Hours));
-  if (totalWorkHours) hoursRows.push(`<tr style="font-weight:900"><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Toplam Çalışma</td><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(totalWorkHours)}</td></tr>`);
+  if (totalWorkHours) hoursRows.push(`<tr style="font-weight:900"><td style="font-size:2.3mm;border:0.2mm solid #d0d8e3;padding:0.7mm 1.4mm">Toplam Çalışma</td><td style="font-size:2.3mm;border:0.2mm solid #d0d8e3;padding:0.7mm 1.4mm">${esc(totalWorkHours)}</td></tr>`);
   if (lastMaintDate) hoursRows.push(td("Son Bakım", lastMaintDate));
   if (nextMaintDate) hoursRows.push(td("Sonraki Bakım", nextMaintDate));
   if (maintenancePeriod) hoursRows.push(td("Bakım Periyodu", maintenancePeriod));
@@ -313,14 +320,14 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
 
   const vacuumHtml = `<div style="display:flex;flex-direction:column;align-items:center;gap:3mm">${gaugeMarkup}${vacuumTableHtml}</div>`;
 
-  // ── Operations list ───────────────────────────────────────────────────────
-  const operationsHtml = allOperations.map((op) => {
-    const checked = operations.includes(op);
-    const dot = checked
-      ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#18a354;color:#fff;font-size:2.2mm;font-weight:900;flex-shrink:0;margin-right:1.3mm">✓</span>`
-      : `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#cbd5e1;color:#fff;font-size:2.2mm;flex-shrink:0;margin-right:1.3mm">○</span>`;
-    return `<div style="display:flex;align-items:center;font-size:2.3mm;padding:0.9mm 0;border-bottom:0.2mm solid #f1f5f9;color:${checked ? "#071b38" : "#94a3b8"};font-weight:${checked ? 600 : 400}">${dot}${esc(op)}</div>`;
-  }).join("");
+  // ── Operations list (checked only) ───────────────────────────────────────
+  const checkedOperations = allOperations.filter((op) => operations.includes(op));
+  const dot = `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#18a354;color:#fff;font-size:2.2mm;font-weight:900;flex-shrink:0;margin-right:1.3mm">✓</span>`;
+  const operationsHtml = checkedOperations.length > 0
+    ? checkedOperations.map((op) =>
+        `<div style="display:flex;align-items:center;font-size:2.3mm;padding:0.9mm 0;border-bottom:0.2mm solid #f1f5f9;color:#071b38;font-weight:600">${dot}${esc(op)}</div>`
+      ).join("")
+    : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Yapılan işlem girilmemiş.</p>`;
 
   // ── Parts table ───────────────────────────────────────────────────────────
   const partsHtml = parts.length === 0
@@ -488,31 +495,33 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
 
   <!-- THREE GRID: Alarms + Hours + Vacuum -->
   <div style="display:grid;grid-template-columns:31% 35.3% 1fr;gap:2.3mm;margin-top:2.3mm">
-    ${panel("Alarm &amp; Arıza Bilgileri",
+    ${panelSm("Alarm & Arıza Bilgileri",
       `<table style="width:100%;border-collapse:collapse">
         <thead><tr style="background:#f7f9fc">
-          <th style="font-size:2.3mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.3mm 2mm;text-align:left">Alarm / Arıza Türü</th>
-          <th style="font-size:2.3mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.3mm 2mm;text-align:left">Durum</th>
+          <th style="font-size:2.1mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:0.9mm 1.5mm;text-align:left">Alarm / Arıza Türü</th>
+          <th style="font-size:2.1mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:0.9mm 1.5mm;text-align:left">Durum</th>
         </tr></thead>
         <tbody>${alarmRowsHtml}</tbody>
       </table>`
     )}
-    ${panel("Çalışma Saatleri",
+    ${panelSm("Çalışma Saatleri",
       hoursRows.length > 0
         ? `<table style="width:100%;border-collapse:collapse"><tbody>${hoursRows.join("")}</tbody></table>`
         : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Çalışma saati girilmemiş.</p>`
     )}
-    ${panel("Vakum Performans Testi", vacuumHtml)}
+    ${panelSm("Vakum Performans Testi", vacuumHtml)}
   </div>
 
   <!-- MID GRID: Operations + Notes -->
-  <div style="display:grid;grid-template-columns:53% 1fr;gap:2.3mm;margin-top:2.3mm">
+  <div style="display:grid;grid-template-columns:53% 1fr;gap:2.3mm;margin-top:2.3mm;align-items:start">
     ${panel("Yapılan İşlemler",
-      `<div style="display:grid;grid-template-columns:1fr 1.1fr;column-gap:4mm">${operationsHtml}</div>`
+      checkedOperations.length > 0
+        ? `<div style="display:grid;grid-template-columns:1fr 1.1fr;column-gap:4mm">${operationsHtml}</div>`
+        : operationsHtml
     )}
     ${panel("Açıklama / Notlar",
       notes
-        ? `<div style="font-size:2.6mm;line-height:1.5;color:#344563">${notes.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</div>`
+        ? `<div style="font-size:2.6mm;line-height:1.5;color:#344563">${notes.split("\n").map((l) => `<p style="margin:0 0 1mm">${esc(l)}</p>`).join("")}</div>`
         : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Not girilmemiş.</p>`
     )}
   </div>
@@ -525,7 +534,7 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
 
   <!-- BOTTOM GRID: Signatures + Next Maintenance -->
   <div style="display:grid;grid-template-columns:53% 1fr;gap:2.3mm;margin-top:2.3mm">
-    ${panel("İmza &amp; Onay",
+    ${panel("İmza & Onay",
       `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2mm">${sigBoxes}</div>`
     )}
     ${panel("Sonraki Bakım Planlaması", nextMaintHtml)}
