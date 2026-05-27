@@ -4,6 +4,7 @@ import {
   ClipboardCheck, Clock3, FileText, Gauge, Settings, Wrench,
 } from "lucide-react";
 import ServiceReportBarcode from "./ServiceReportBarcode";
+import ServiceReportQRCode from "./ServiceReportQRCode";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -161,16 +162,6 @@ function SignatureMark({ color = "#0f2c54" }: { color?: string }) {
   );
 }
 
-function QrPattern() {
-  return (
-    <div className="sr-qr" aria-label="QR kod alanı">
-      {Array.from({ length: 49 }, (_, index) => (
-        <span key={index} className={(index * 7 + index + Math.floor(index / 2)) % 3 === 0 ? "on" : ""} />
-      ))}
-    </div>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ServiceReportTemplate({ data }: { data: ServiceReportTemplateData }) {
@@ -225,13 +216,13 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
   const sigPersonel   = signatures.find((s) => s.role === "personel");
   const sigSorumlu    = signatures.find((s) => s.role === "sorumlu");
   const sigYetkili    = signatures.find((s) => s.role === "yetkili");
-  const personnelName = sigPersonel?.signerName ?? null;
 
   const statusLabel   = STATUS_LABELS[data.status ?? ""] ?? data.status ?? "";
   const isDone        = data.status === "tamamlandi";
   const priorityLabel = PRIORITY_LABELS[data.priority ?? ""] ?? data.priority ?? "";
 
   const calData = buildCalendar(recommendedMaintDate || nextMaintDate);
+  const qrValue = data.reportNo ?? `SRV-${data.id ?? ""}`;
   const needleRot = gaugeRotation(workingPressure || minVacuum);
 
   const hospitalInfoRows: [string, string][] = [
@@ -318,9 +309,12 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
               <strong>{statusLabel}</strong>
             </div>
           </div>
-          <div className="sr-service-code">
-            <small>Servis Kodu</small>
-            <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
+          <div className="sr-summary-item sr-summary-code">
+            <FileText size={17} />
+            <div>
+              <small>Servis Kodu</small>
+              <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
+            </div>
           </div>
         </section>
 
@@ -505,18 +499,9 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
                   ? notes.split(/\n/).map((line, i) => <p key={i}>{line}</p>)
                   : <p>Bu servis kaydı için not girilmemiştir.</p>}
               </div>
-              <aside>
-                {personnelName && (
-                  <>
-                    <strong>Servis Personeli</strong>
-                    <b>{personnelName}</b>
-                    <SignatureMark color="#475569" />
-                  </>
-                )}
-                <div className="sr-qr-row">
-                  <QrPattern />
-                  <span>Raporu Doğrulamak İçin QR Kodu Okutunuz.</span>
-                </div>
+              <aside className="sr-qr-aside">
+                <ServiceReportQRCode value={qrValue} size={24} />
+                <span>Raporu Doğrulamak İçin QR Kodu Okutunuz</span>
               </aside>
             </div>
           </Panel>
@@ -538,10 +523,10 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
                 <tbody>
                   {parts.map((p, idx) => (
                     <tr key={idx}>
-                      <td>{p.partName}</td>
-                      <td>{p.partCode ?? "—"}</td>
-                      <td>{p.quantity ?? "—"}</td>
-                      <td>{p.condition ?? "—"}</td>
+                      <td>{p.partName || "—"}</td>
+                      <td>{p.partCode || "—"}</td>
+                      <td>{p.quantity || "—"}</td>
+                      <td>{p.condition || "—"}</td>
                     </tr>
                   ))}
                 </tbody>

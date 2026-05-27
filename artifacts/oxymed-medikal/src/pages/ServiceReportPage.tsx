@@ -18,6 +18,7 @@ import type { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 import { useGetServiceReport } from "@workspace/api-client-react";
 import ServiceReportBarcode from "../components/ServiceReportBarcode";
+import ServiceReportQRCode from "../components/ServiceReportQRCode";
 import "./ServiceReportPage.css";
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
@@ -184,12 +185,20 @@ function SignatureMark({ color }: { color: string }) {
   );
 }
 
-function QrPattern() {
+function CalendarMini({ data: cal }: { data: NonNullable<ReturnType<typeof buildCalendar>> }) {
   return (
-    <div className="sr-qr" aria-label="QR kod alanı">
-      {Array.from({ length: 49 }).map((_, index) => (
-        <span key={index} className={(index * 7 + index + Math.floor(index / 2)) % 3 === 0 ? "on" : ""} />
-      ))}
+    <div className="sr-calendar">
+      <strong>{cal.monthLabel}</strong>
+      <div className="sr-calendar-days">
+        {cal.cells.map((cell, index) => (
+          <span
+            key={`${cell.label}-${index}`}
+            className={cell.isHeader ? "sr-cal-head" : cell.active ? "active" : ""}
+          >
+            {cell.label}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -291,7 +300,6 @@ function DynamicReport({ recordId }: { recordId: number }) {
   const sigPersonel = signatures.find((s) => s.role === "personel");
   const sigSorumlu  = signatures.find((s) => s.role === "sorumlu");
   const sigYetkili  = signatures.find((s) => s.role === "yetkili");
-  const personnelName = sigPersonel?.signerName ?? null;
 
   const statusLabel   = STATUS_LABELS[data.status ?? ""] ?? data.status ?? "";
   const isDone        = data.status === "tamamlandi";
@@ -299,6 +307,10 @@ function DynamicReport({ recordId }: { recordId: number }) {
 
   const calData = buildCalendar(recommendedMaintDate || nextMaintDate);
   const needleRot = gaugeRotation(workingPressure || minVacuum);
+  const reportNoStr = data.reportNo ?? `SRV-${data.id ?? ""}`;
+  const qrValue = (data.verificationToken
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/servis-rapor-dogrulama/${data.verificationToken}`
+    : reportNoStr);
 
   const hospitalInfoRows: [string, string][] = [
     ["Hastane Adı",   hospitalName],
@@ -384,9 +396,12 @@ function DynamicReport({ recordId }: { recordId: number }) {
               <strong>{statusLabel}</strong>
             </div>
           </div>
-          <div className="sr-service-code">
-            <small>Servis Kodu</small>
-            <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
+          <div className="sr-summary-item sr-summary-code">
+            <FileText size={17} />
+            <div>
+              <small>Servis Kodu</small>
+              <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
+            </div>
           </div>
         </section>
 
@@ -578,18 +593,9 @@ function DynamicReport({ recordId }: { recordId: number }) {
                   ? notes.split(/\n/).map((line, i) => <p key={i}>{line}</p>)
                   : <p>Bu servis kaydı için not girilmemiştir.</p>}
               </div>
-              <aside>
-                {personnelName && (
-                  <>
-                    <strong>Servis Personeli</strong>
-                    <b>{personnelName}</b>
-                    <SignatureMark color="#475569" />
-                  </>
-                )}
-                <div className="sr-qr-row">
-                  <QrPattern />
-                  <span>Raporu Doğrulamak İçin QR Kodu Okutunuz.</span>
-                </div>
+              <aside className="sr-qr-aside">
+                <ServiceReportQRCode value={qrValue} size={24} />
+                <span>Raporu Doğrulamak İçin QR Kodu Okutunuz</span>
               </aside>
             </div>
           </Panel>
@@ -611,10 +617,10 @@ function DynamicReport({ recordId }: { recordId: number }) {
                 <tbody>
                   {parts.map((p, idx) => (
                     <tr key={idx}>
-                      <td>{p.partName}</td>
-                      <td>{p.partCode ?? "—"}</td>
-                      <td>{p.quantity ?? "—"}</td>
-                      <td>{p.condition ?? "—"}</td>
+                      <td>{p.partName || "—"}</td>
+                      <td>{p.partCode || "—"}</td>
+                      <td>{p.quantity || "—"}</td>
+                      <td>{p.condition || "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -672,41 +678,36 @@ function DynamicReport({ recordId }: { recordId: number }) {
 
           <Panel title="Sonraki Bakım Planlaması" icon={CalendarDays}>
             <div className="sr-plan">
-              <table className="sr-plan-table">
-                <tbody>
-                  {(recommendedMaintDate || nextMaintDate) && (
-                    <tr><td>Önerilen Bakım Tarihi</td><td>{recommendedMaintDate || nextMaintDate}</td></tr>
-                  )}
-                  {recommendedMaintType && (
-                    <tr><td>Önerilen Bakım Türü</td><td>{recommendedMaintType}</td></tr>
-                  )}
-                  {estimatedDuration && (
-                    <tr><td>Tahmini Süre</td><td>{estimatedDuration}</td></tr>
-                  )}
-                  {maintenanceNote && (
-                    <tr><td>Not</td><td>{maintenanceNote}</td></tr>
-                  )}
-                  {!hasNextMaint && !nextMaintDate && (
-                    <tr><td colSpan={2} style={{ color: "#94a3b8", fontStyle: "italic" }}>Planlama girilmemiş.</td></tr>
-                  )}
-                </tbody>
-              </table>
-              {calData && (
-                <div className="sr-calendar">
-                  <strong>{calData.monthLabel}</strong>
-                  <div className="sr-calendar-days">
-                    {calData.cells.map((cell, index) => (
-                      <span
-                        key={`${cell.label}-${index}`}
-                        className={cell.active ? "active" : ""}
-                        style={cell.isHeader ? { fontWeight: 800, color: "#08265f" } : {}}
-                      >
-                        {cell.label}
-                      </span>
-                    ))}
+              <div className="sr-plan-info">
+                {(recommendedMaintDate || nextMaintDate) && (
+                  <div className="sr-plan-row sr-plan-highlight">
+                    <span className="sr-plan-label">Önerilen Tarih</span>
+                    <span className="sr-plan-value">{recommendedMaintDate || nextMaintDate}</span>
                   </div>
-                </div>
-              )}
+                )}
+                {recommendedMaintType && (
+                  <div className="sr-plan-row">
+                    <span className="sr-plan-label">Bakım Türü</span>
+                    <span className="sr-plan-value">{recommendedMaintType}</span>
+                  </div>
+                )}
+                {estimatedDuration && (
+                  <div className="sr-plan-row">
+                    <span className="sr-plan-label">Tahmini Süre</span>
+                    <span className="sr-plan-value">{estimatedDuration}</span>
+                  </div>
+                )}
+                {maintenanceNote && (
+                  <div className="sr-plan-row">
+                    <span className="sr-plan-label">Not</span>
+                    <span className="sr-plan-value">{maintenanceNote}</span>
+                  </div>
+                )}
+                {!hasNextMaint && !nextMaintDate && (
+                  <p className="sr-plan-empty">Planlama girilmemiş.</p>
+                )}
+              </div>
+              {calData && <CalendarMini data={calData} />}
             </div>
           </Panel>
         </div>
