@@ -65,6 +65,9 @@ interface Device {
   productName: string;
   model: string;
   customerFirm: string;
+  customerContact?: string | null;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
   installDate?: string | null;
   warrantyEndDate?: string | null;
   lastMaintenanceDate?: string | null;
@@ -72,6 +75,15 @@ interface Device {
   status: string;
   imageUrl?: string | null;
 }
+
+const MAINTENANCE_INTERVALS = [
+  { label: "2 Hafta", days: 14 },
+  { label: "1 Ay",    days: 30 },
+  { label: "3 Ay",    days: 90 },
+  { label: "6 Ay",    days: 180 },
+  { label: "8 Ay",    days: 240 },
+  { label: "1 Yıl",   days: 365 },
+];
 
 interface Photo { url: string; caption: string; sortOrder: number; }
 interface Part { partName: string; partCode: string; quantity: string; condition: string; }
@@ -202,14 +214,15 @@ function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
   const [results, setResults] = useState<Device[]>([]);
   const [loading, setLoading] = useState(false);
 
-  async function handleSearch() {
-    if (!query.trim()) return;
+  async function handleSearch(q?: string) {
     setLoading(true);
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch(`${BASE}/api/warranty/devices?search=${encodeURIComponent(query)}&limit=10`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const search = q !== undefined ? q : query;
+      const url = search.trim()
+        ? `${BASE}/api/warranty/devices?search=${encodeURIComponent(search)}&limit=20`
+        : `${BASE}/api/warranty/devices?limit=20`;
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json() as { items: Device[] };
       setResults(data.items ?? []);
     } catch {
@@ -218,6 +231,9 @@ function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
       setLoading(false);
     }
   }
+
+  useEffect(() => { void handleSearch(""); }, []);
+
 
   return (
     <div className="space-y-3">
@@ -235,7 +251,7 @@ function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
         </div>
         <button
           type="button"
-          onClick={handleSearch}
+          onClick={() => handleSearch()}
           disabled={loading}
           className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-50"
         >
@@ -307,6 +323,7 @@ export default function ServisRaporuFormPage() {
   const [pump1Hours, setPump1Hours] = useState("");
   const [pump2Hours, setPump2Hours] = useState("");
   const [pump3Hours, setPump3Hours] = useState("");
+  const [pump4Hours, setPump4Hours] = useState("");
   const [totalWorkHours, setTotalWorkHours] = useState("");
   const [lastMaintenanceDate, setLastMaintenanceDate] = useState("");
   const [nextMaintenanceDate, setNextMaintenanceDate] = useState("");
@@ -344,12 +361,34 @@ export default function ServisRaporuFormPage() {
   const [recommendedMaintenanceType, setRecommendedMaintenanceType] = useState("");
   const [estimatedDuration, setEstimatedDuration] = useState("");
   const [maintenanceNote, setMaintenanceNote] = useState("");
+  const [maintenanceInterval, setMaintenanceInterval] = useState("");
 
   // UI state
   const [saving, setSaving] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [reportNo, setReportNo] = useState<string | null>(null);
+
+  // Auto-generate service code for new reports
+  useEffect(() => {
+    if (isNew) {
+      const now = new Date();
+      const ymd = now.toISOString().slice(0, 10).replace(/-/g, "");
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      setServiceCode(`OXM-SRV-${ymd}-${rand}`);
+    }
+  }, [isNew]);
+
+  // Auto-calculate total work hours from individual pump values
+  useEffect(() => {
+    const vals = [pump1Hours, pump2Hours, pump3Hours, pump4Hours]
+      .map(v => parseFloat(v.replace(",", ".")))
+      .filter(v => !isNaN(v) && v > 0);
+    if (vals.length > 0) {
+      const sum = vals.reduce((a, b) => a + b, 0);
+      setTotalWorkHours(Number.isInteger(sum) ? String(sum) : sum.toFixed(1));
+    }
+  }, [pump1Hours, pump2Hours, pump3Hours, pump4Hours]);
 
   // Load existing report
   useEffect(() => {
@@ -389,7 +428,7 @@ export default function ServisRaporuFormPage() {
       setProductionDate(s("productionDate")); setCommissionDate(s("commissionDate"));
       setWarrantyStatus(s("warrantyStatus"));
       setAlarms((rd["alarms"] as Record<string, string>) ?? {});
-      setPump1Hours(s("pump1Hours")); setPump2Hours(s("pump2Hours")); setPump3Hours(s("pump3Hours"));
+      setPump1Hours(s("pump1Hours")); setPump2Hours(s("pump2Hours")); setPump3Hours(s("pump3Hours")); setPump4Hours(s("pump4Hours"));
       setTotalWorkHours(s("totalWorkHours")); setLastMaintenanceDate(s("lastMaintenanceDate"));
       setNextMaintenanceDate(s("nextMaintenanceDate")); setMaintenancePeriod(s("maintenancePeriod"));
       setWorkingPressure(s("workingPressure")); setMinVacuum(s("minVacuum"));
@@ -423,7 +462,7 @@ export default function ServisRaporuFormPage() {
       hospitalName, department, location, contactPerson, contact, email,
       deviceType, deviceModel, plcSystem, hmiModel, productionDate, commissionDate, warrantyStatus,
       alarms,
-      pump1Hours, pump2Hours, pump3Hours, totalWorkHours, lastMaintenanceDate, nextMaintenanceDate, maintenancePeriod,
+      pump1Hours, pump2Hours, pump3Hours, pump4Hours, totalWorkHours, lastMaintenanceDate, nextMaintenanceDate, maintenancePeriod,
       workingPressure, minVacuum, testDuration, testResult, testDescription,
       operations, customOperations, notes,
       recommendedMaintenanceDate, recommendedMaintenanceType, estimatedDuration, maintenanceNote,
@@ -639,6 +678,9 @@ export default function ServisRaporuFormPage() {
             <DeviceSearch onSelect={(d) => {
               setSelectedDevice(d);
               setHospitalName(d.customerFirm);
+              if (d.customerContact) setContactPerson(d.customerContact);
+              if (d.customerPhone)   setContact(d.customerPhone);
+              if (d.customerEmail)   setEmail(d.customerEmail);
               setDeviceType(d.productName);
               setDeviceModel(d.model);
               setCommissionDate(d.installDate ?? "");
@@ -732,7 +774,10 @@ export default function ServisRaporuFormPage() {
             <Field label="Pompa 1 (saat)"><input type="text" value={pump1Hours} onChange={(e) => setPump1Hours(e.target.value)} className={inputCls} placeholder="1250" /></Field>
             <Field label="Pompa 2 (saat)"><input type="text" value={pump2Hours} onChange={(e) => setPump2Hours(e.target.value)} className={inputCls} /></Field>
             <Field label="Pompa 3 (saat)"><input type="text" value={pump3Hours} onChange={(e) => setPump3Hours(e.target.value)} className={inputCls} /></Field>
-            <Field label="Toplam Çalışma"><input type="text" value={totalWorkHours} onChange={(e) => setTotalWorkHours(e.target.value)} className={inputCls} /></Field>
+            <Field label="Pompa 4 (saat)"><input type="text" value={pump4Hours} onChange={(e) => setPump4Hours(e.target.value)} className={inputCls} /></Field>
+            <Field label="Toplam Çalışma">
+              <input type="text" value={totalWorkHours} readOnly className={`${inputCls} bg-slate-50 text-slate-500 cursor-default`} placeholder="Otomatik hesaplanır" />
+            </Field>
             <Field label="Son Bakım Tarihi"><input type="text" value={lastMaintenanceDate} onChange={(e) => setLastMaintenanceDate(e.target.value)} className={inputCls} /></Field>
             <Field label="Sonraki Bakım Tarihi"><input type="text" value={nextMaintenanceDate} onChange={(e) => setNextMaintenanceDate(e.target.value)} className={inputCls} /></Field>
             <Field label="Bakım Periyodu"><input type="text" value={maintenancePeriod} onChange={(e) => setMaintenancePeriod(e.target.value)} className={inputCls} placeholder="6 ay / 500 saat" /></Field>
@@ -990,7 +1035,30 @@ export default function ServisRaporuFormPage() {
         {/* 13. Next maintenance */}
         <Section title="13. Sonraki Bakım Planlaması" defaultOpen={false}>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            <Field label="Önerilen Bakım Tarihi"><input type="text" value={recommendedMaintenanceDate} onChange={(e) => setRecommendedMaintenanceDate(e.target.value)} className={inputCls} /></Field>
+            <Field label="Süre Seçimi">
+              <select
+                value={maintenanceInterval}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setMaintenanceInterval(val);
+                  if (val) {
+                    const days = MAINTENANCE_INTERVALS.find(i => i.label === val)?.days ?? 0;
+                    const base = serviceDate ? new Date(serviceDate + "T00:00:00") : new Date();
+                    const result = new Date(base.getTime() + days * 24 * 60 * 60 * 1000);
+                    const d = String(result.getDate()).padStart(2, "0");
+                    const m = String(result.getMonth() + 1).padStart(2, "0");
+                    setRecommendedMaintenanceDate(`${d}.${m}.${result.getFullYear()}`);
+                  }
+                }}
+                className={selectCls}
+              >
+                <option value="">— Süre Seçin —</option>
+                {MAINTENANCE_INTERVALS.map((i) => <option key={i.label} value={i.label}>{i.label}</option>)}
+              </select>
+            </Field>
+            <Field label="Önerilen Bakım Tarihi">
+              <input type="text" value={recommendedMaintenanceDate} onChange={(e) => setRecommendedMaintenanceDate(e.target.value)} className={inputCls} placeholder="01.06.2025" />
+            </Field>
             <Field label="Bakım Türü">
               <select value={recommendedMaintenanceType} onChange={(e) => setRecommendedMaintenanceType(e.target.value)} className={selectCls}>
                 <option value="">—</option>
@@ -998,7 +1066,7 @@ export default function ServisRaporuFormPage() {
               </select>
             </Field>
             <Field label="Tahmini Süre"><input type="text" value={estimatedDuration} onChange={(e) => setEstimatedDuration(e.target.value)} className={inputCls} placeholder="2 saat" /></Field>
-            <Field label="Not" >
+            <Field label="Not">
               <input type="text" value={maintenanceNote} onChange={(e) => setMaintenanceNote(e.target.value)} className={inputCls} />
             </Field>
           </div>

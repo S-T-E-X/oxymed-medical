@@ -1,6 +1,13 @@
-import "./ServiceReportTemplate.css";
+import "../pages/ServiceReportPage.css";
+import {
+  Bell, Building2, CalendarDays, Camera, Check, CheckCircle2,
+  ClipboardCheck, Clock3, FileText, Gauge, Hospital, Settings, Wrench,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 export interface ServiceReportTemplateData {
+  id?: number;
   reportNo: string;
   serviceDate: string;
   serviceTime?: string | null;
@@ -18,12 +25,15 @@ export interface ServiceReportTemplateData {
     warrantyEndDate?: string | null;
     lastMaintenanceDate?: string | null;
     nextMaintenanceDate?: string | null;
+    imageUrl?: string | null;
   };
   reportDataJson?: Record<string, unknown>;
   photos?: Array<{ url: string; caption?: string | null }>;
   signatures?: Array<{ role: string; signerName?: string | null; imageDataUrl: string }>;
   parts?: Array<{ partName: string; partCode?: string | null; quantity: string; condition?: string | null }>;
 }
+
+// ─── Static maps ──────────────────────────────────────────────────────────────
 
 const SERVICE_TYPE_LABELS: Record<string, string> = {
   periyodik_bakim: "Periyodik Bakım",
@@ -34,6 +44,12 @@ const SERVICE_TYPE_LABELS: Record<string, string> = {
   garanti_servisi: "Garanti Servisi",
 };
 
+const STATUS_LABELS: Record<string, string> = {
+  taslak: "Taslak",
+  tamamlandi: "Tamamlandı",
+  iptal: "İptal",
+};
+
 const PRIORITY_LABELS: Record<string, string> = {
   acil: "ACİL",
   yuksek: "Yüksek",
@@ -41,140 +57,281 @@ const PRIORITY_LABELS: Record<string, string> = {
   dusuk: "Düşük",
 };
 
-const SIGNATURE_ROLE_LABELS: Record<string, string> = {
-  personel: "Servis Personeli",
-  sorumlu: "Teknik Sorumlu",
-  yetkili: "Hastane Yetkilisi",
-};
-
-const ALARM_LABELS: Record<string, string> = {
-  dusuk_vakum: "Düşük Vakum Alarmı",
-  yuksek_sicaklik: "Yüksek Sıcaklık Alarmı",
-  termik_hata: "Termik Hatası",
-  sensor_hata: "Sensör Hatası",
-  bakim_suresi_doldu: "Bakım Süresi Doldu",
-  acil_ariza: "Acil Arıza",
-};
-
-const ALARM_STATUS_LABELS: Record<string, string> = {
-  yok: "Yok",
-  var: "Var",
-  kontrol_edildi: "Kontrol Edildi",
-  mudahale_edildi: "Müdahale Edildi",
-};
-
-const DEFAULT_OPERATIONS = [
-  "Yağ seviyesi kontrol edildi",
-  "Vakum filtresi kontrol edildi",
-  "Yağ filtreleri değiştirildi",
-  "Kaçak kontrolü yapıldı",
-  "Elektrik bağlantıları kontrol edildi",
-  "Vakum sensörü kalibrasyonu kontrol edildi",
-  "Alarm sistemi test edildi",
-  "HMI ekran kontrolü yapıldı",
-  "PLC hata kayıtları incelendi",
-  "Sistem genel performans testi tamamlandı",
+const ALARM_KEYS = [
+  { key: "dusuk_vakum",        label: "Düşük Vakum Alarmı" },
+  { key: "yuksek_sicaklik",    label: "Yüksek Sıcaklık Alarmı" },
+  { key: "termik_hata",        label: "Termik Hatası" },
+  { key: "sensor_hata",        label: "Sensör Hatası" },
+  { key: "bakim_suresi_doldu", label: "Bakım Süresi Doldu" },
+  { key: "acil_ariza",         label: "Acil Arıza" },
 ];
+
+const TURKISH_MONTHS = [
+  "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+  "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık",
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function parseDateStr(dateStr: string): { day: number; month: number; year: number } | null {
+  if (!dateStr) return null;
+  if (dateStr.includes(".")) {
+    const [d, m, y] = dateStr.split(".");
+    const day = parseInt(d ?? "", 10);
+    const month = parseInt(m ?? "", 10) - 1;
+    const year = parseInt(y ?? "", 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return { day, month, year };
+  }
+  if (dateStr.includes("-")) {
+    const [y, m, d] = dateStr.split("-");
+    const day = parseInt(d ?? "", 10);
+    const month = parseInt(m ?? "", 10) - 1;
+    const year = parseInt(y ?? "", 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return { day, month, year };
+  }
+  return null;
+}
+
+function buildCalendar(dateStr: string) {
+  const parsed = parseDateStr(dateStr);
+  if (!parsed) return null;
+  const { day, month, year } = parsed;
+  const headers = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"].map((h) => ({
+    label: h, isTarget: false, isBlank: false,
+  }));
+  const firstDow = new Date(year, month, 1).getDay();
+  const blanks = (firstDow === 0 ? 6 : firstDow - 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const blankCells = Array.from({ length: blanks }, (_, i) => ({
+    label: "", isTarget: false, isBlank: true, key: `b${i}`,
+  }));
+  const dayCells = Array.from({ length: daysInMonth }, (_, i) => ({
+    label: String(i + 1), isTarget: i + 1 === day, isBlank: false, key: `d${i}`,
+  }));
+  return {
+    monthLabel: `${TURKISH_MONTHS[month] ?? ""} ${year}`,
+    cells: [...headers, ...blankCells, ...dayCells],
+  };
+}
+
+function gaugeRotation(valueStr: string): number {
+  if (!valueStr) return -90;
+  const num = parseFloat(valueStr.replace(/[^0-9.\-]/g, ""));
+  if (isNaN(num)) return -90;
+  const clamped = Math.max(-100, Math.min(0, num));
+  return -90 + ((clamped + 100) / 100) * 180;
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function Panel({ title, icon: Icon, children, className = "" }: {
+  title: string; icon: LucideIcon; children: ReactNode; className?: string;
+}) {
+  return (
+    <section className={`sr-panel ${className}`}>
+      <div className="sr-panel-title">
+        <Icon size={10} className="sr-panel-icon" />
+        {title}
+      </div>
+      <div className="sr-panel-body">{children}</div>
+    </section>
+  );
+}
+
+function DetailRows({ rows }: { rows: [string, string][] }) {
+  return (
+    <div className="sr-detail-rows">
+      {rows.map(([label, value]) => (
+        <div className="sr-detail-row" key={label}>
+          <span>{label}</span>
+          <strong>{value}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SignatureMark({ color = "#0f2c54" }: { color?: string }) {
+  return (
+    <svg viewBox="0 0 130 46" className="sr-signature-mark" aria-hidden="true">
+      <path d="M5 38 Q20 8 40 28 Q55 44 65 22 Q75 2 90 28 Q102 44 125 10"
+        fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function QrPattern() {
+  return (
+    <div className="sr-qr" aria-label="QR kod alanı">
+      {Array.from({ length: 49 }, (_, index) => (
+        <span key={index} className={(index * 7 + index + Math.floor(index / 2)) % 3 === 0 ? "on" : ""} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ServiceReportTemplate({ data }: { data: ServiceReportTemplateData }) {
   const rd = (data.reportDataJson ?? {}) as Record<string, unknown>;
-  const alarms = (rd["alarms"] ?? {}) as Record<string, string>;
-  const operations = (rd["operations"] ?? []) as string[];
-  const customOperations = (rd["customOperations"] ?? []) as string[];
-  const allOperations = [...DEFAULT_OPERATIONS, ...customOperations];
+  const device = data.device;
+
+  const str = (key: string) => ((rd[key] as string | undefined) ?? "");
+
+  const hospitalName   = str("hospitalName") || device.customerFirm;
+  const department     = str("department");
+  const location       = str("location");
+  const contactPerson  = str("contactPerson");
+  const contact        = str("contact");
+  const email          = str("email");
+
+  const deviceType     = str("deviceType") || device.productName;
+  const deviceModel    = str("deviceModel") || device.model;
+  const plcSystem      = str("plcSystem");
+  const hmiModel       = str("hmiModel");
+  const productionDate = str("productionDate");
+  const commissionDate = str("commissionDate") || (device.installDate ?? "");
+  const warrantyStatus = str("warrantyStatus") || (device.warrantyEndDate ? `Bitiş: ${device.warrantyEndDate}` : "—");
+
+  const alarms         = ((rd["alarms"] ?? {}) as Record<string, string>);
+  const pump1Hours     = str("pump1Hours");
+  const pump2Hours     = str("pump2Hours");
+  const pump3Hours     = str("pump3Hours");
+  const pump4Hours     = str("pump4Hours");
+  const totalWorkHours = str("totalWorkHours");
+  const lastMaintDate  = str("lastMaintenanceDate") || (device.lastMaintenanceDate ?? "");
+  const nextMaintDate  = str("nextMaintenanceDate") || (device.nextMaintenanceDate ?? "");
+  const maintenancePeriod = str("maintenancePeriod");
+
+  const workingPressure = str("workingPressure") || str("vacuumTestPressure");
+  const minVacuum       = str("minVacuum") || str("vacuumMinPressure");
+  const testDuration    = str("testDuration") || str("vacuumTestDuration");
+  const testResult      = str("testResult") || str("vacuumTestResult");
+  const testDescription = str("testDescription");
+
+  const operations    = ((rd["operations"] ?? []) as string[]);
+  const notes         = str("notes");
+
+  const recommendedMaintDate = str("recommendedMaintenanceDate");
+  const recommendedMaintType = str("recommendedMaintenanceType") || str("nextMaintenanceType");
+  const estimatedDuration    = str("estimatedDuration") || str("nextMaintenanceDuration");
+  const maintenanceNote      = str("maintenanceNote") || str("nextMaintenanceNote");
+
+  const photos     = data.photos ?? [];
+  const signatures = data.signatures ?? [];
+  const parts      = data.parts ?? [];
+
+  const sigPersonel   = signatures.find((s) => s.role === "personel");
+  const sigSorumlu    = signatures.find((s) => s.role === "sorumlu");
+  const sigYetkili    = signatures.find((s) => s.role === "yetkili");
+  const personnelName = sigPersonel?.signerName ?? null;
+
+  const statusLabel   = STATUS_LABELS[data.status ?? ""] ?? data.status ?? "";
+  const isDone        = data.status === "tamamlandi";
+  const priorityLabel = PRIORITY_LABELS[data.priority ?? ""] ?? data.priority ?? "";
+
+  const calData = buildCalendar(recommendedMaintDate || nextMaintDate);
+  const needleRot = gaugeRotation(workingPressure || minVacuum);
+
+  const hospitalInfoRows: [string, string][] = [
+    ["Hastane Adı",  hospitalName],
+    ["Bölüm",        department],
+    ["Lokasyon",     location],
+    ["Sorumlu Kişi", contactPerson],
+    ["İletişim",     contact],
+    ["E-posta",      email],
+  ].filter(([, v]) => v) as [string, string][];
+
+  const deviceInfoRows: [string, string][] = [
+    ["Cihaz Türü",          deviceType],
+    ["Model",               deviceModel],
+    ["Seri Numarası",       device.serialNumber],
+    ["PLC Sistemi",         plcSystem],
+    ["HMI Modeli",          hmiModel],
+    ["Üretim Tarihi",       productionDate],
+    ["Devreye Alma Tarihi", commissionDate],
+    ["Garanti Durumu",      warrantyStatus],
+  ].filter(([, v]) => v) as [string, string][];
+
+  const hasVacuumData = !!(workingPressure || minVacuum || testResult);
+  const hasNextMaint  = !!(recommendedMaintDate || recommendedMaintType);
 
   return (
-    <div className="srt-page">
-      {/* ── HEADER ── */}
-      <header className="srt-header">
-        <div className="srt-header__logo-block">
-          <img src="/assets/oxymedlogobeyaz.webp" alt="Oxymed Medikal" className="srt-logo" />
-          <div>
-            <p className="srt-company-name">OXYMED MEDİKAL GAZ SİSTEMLERİ</p>
-            <p className="srt-company-sub">Teknik Servis Birimi</p>
+    <main className="sr-preview">
+      <article className="sr-page">
+
+        {/* ── HEADER ── */}
+        <header className="sr-header">
+          <div className="sr-logo-block">
+            <img src="/assets/brand/oxymed-service-logo.webp" alt="Oxymed Medikal Gaz Sistemleri" />
           </div>
-        </div>
-        <div className="srt-header__meta">
-          <div className="srt-meta-row">
-            <span className="srt-meta-label">Rapor No</span>
-            <span className="srt-meta-value srt-report-no">{data.reportNo}</span>
+          <div className="sr-heading">
+            <h1>SERVİS &amp; BAKIM RAPORU</h1>
+            <p>{deviceType.toUpperCase() || device.productName.toUpperCase()}</p>
           </div>
-          <div className="srt-meta-row">
-            <span className="srt-meta-label">Tarih</span>
-            <span className="srt-meta-value">{data.serviceDate}{data.serviceTime ? ` · ${data.serviceTime}` : ""}</span>
+          <div className="sr-report-no">
+            <div>RAPOR NO</div>
+            <strong>{data.reportNo ?? `SRV-${data.id ?? "XXXX"}`}</strong>
+            <div className="sr-barcode" />
+            <span>
+              {data.serviceDate}
+              {data.serviceTime ? `\u00a0\u00a0-\u00a0\u00a0${data.serviceTime}` : ""}
+            </span>
           </div>
-          <div className="srt-meta-row">
-            <span className="srt-meta-label">Servis Türü</span>
-            <span className="srt-meta-value">{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</span>
+        </header>
+
+        {/* ── SUMMARY BAR ── */}
+        <section className="sr-summary">
+          <div className="sr-summary-item">
+            <CalendarDays size={13} />
+            <span>{data.serviceDate}{data.serviceTime ? ` · ${data.serviceTime}` : ""}</span>
           </div>
-          {data.priority && (
-            <div className="srt-meta-row">
-              <span className="srt-meta-label">Öncelik</span>
-              <span className={`srt-priority srt-priority--${data.priority}`}>{PRIORITY_LABELS[data.priority] ?? data.priority}</span>
+          <div className="sr-summary-item">
+            <ClipboardCheck size={13} />
+            <span>{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</span>
+          </div>
+          {priorityLabel && (
+            <div className="sr-summary-item">
+              <i className="ok-dot" />
+              <span>{priorityLabel}</span>
             </div>
           )}
+          <div className="sr-summary-item">
+            <CheckCircle2 size={17} className={isDone ? "sr-green" : ""} />
+            <span>{statusLabel}</span>
+          </div>
           {data.serviceCode && (
-            <div className="srt-meta-row">
-              <span className="srt-meta-label">Servis Kodu</span>
-              <span className="srt-meta-value">{data.serviceCode}</span>
+            <div className="sr-service-code">
+              {data.serviceCode}
             </div>
           )}
-        </div>
-      </header>
+        </section>
 
-      <div className="srt-body">
-        {/* ── ROW 1: Hospital + Device ── */}
-        <div className="srt-row">
-          <section className="srt-section srt-section--half">
-            <h3 className="srt-section-title">Hastane / Proje Bilgileri</h3>
-            <table className="srt-info-table">
-              <tbody>
-                {[
-                  ["Hastane Adı", (rd["hospitalName"] as string) ?? data.device.customerFirm],
-                  ["Bölüm", rd["department"] as string],
-                  ["Lokasyon", rd["location"] as string],
-                  ["Sorumlu Kişi", rd["contactPerson"] as string],
-                  ["İletişim", rd["contact"] as string],
-                  ["E-posta", rd["email"] as string],
-                ].map(([label, value]) => value ? (
-                  <tr key={label}>
-                    <th>{label}</th>
-                    <td>{value}</td>
-                  </tr>
-                ) : null)}
-              </tbody>
-            </table>
-          </section>
+        {/* ── TOP GRID: Hospital + Device ── */}
+        <div className="sr-grid sr-top-grid">
+          <Panel title="Hastane / Proje Bilgileri" icon={Building2}>
+            <div className="sr-hospital-layout">
+              <DetailRows rows={hospitalInfoRows} />
+              <Hospital className="sr-watermark" size={92} />
+            </div>
+          </Panel>
 
-          <section className="srt-section srt-section--half">
-            <h3 className="srt-section-title">Cihaz Bilgileri</h3>
-            <table className="srt-info-table">
-              <tbody>
-                {[
-                  ["Cihaz Türü", (rd["deviceType"] as string) ?? data.device.productName],
-                  ["Model", (rd["deviceModel"] as string) ?? data.device.model],
-                  ["Seri Numarası", data.device.serialNumber],
-                  ["PLC Sistemi", rd["plcSystem"] as string],
-                  ["HMI Modeli", rd["hmiModel"] as string],
-                  ["Üretim Tarihi", rd["productionDate"] as string],
-                  ["Devreye Alma", rd["commissionDate"] as string ?? data.device.installDate],
-                  ["Garanti Durumu", rd["warrantyStatus"] as string ?? (data.device.warrantyEndDate ? `Bitiş: ${data.device.warrantyEndDate}` : "—")],
-                ].map(([label, value]) => value ? (
-                  <tr key={label}>
-                    <th>{label}</th>
-                    <td>{value}</td>
-                  </tr>
-                ) : null)}
-              </tbody>
-            </table>
-          </section>
+          <Panel title="Cihaz Bilgileri" icon={Settings}>
+            <div className="sr-device">
+              <DetailRows rows={deviceInfoRows} />
+              {device.imageUrl && (
+                <figure className="sr-device-img">
+                  <img src={device.imageUrl} alt={deviceType} />
+                </figure>
+              )}
+            </div>
+          </Panel>
         </div>
 
-        {/* ── ROW 2: Alarms + Work Hours ── */}
-        <div className="srt-row">
-          <section className="srt-section srt-section--half">
-            <h3 className="srt-section-title">Alarm &amp; Arıza Bilgileri</h3>
-            <table className="srt-alarm-table">
+        {/* ── THREE GRID: Alarms + Hours + Vacuum ── */}
+        <div className="sr-grid sr-three-grid">
+          <Panel title="Alarm &amp; Arıza Bilgileri" icon={Bell}>
+            <table className="sr-table">
               <thead>
                 <tr>
                   <th>Alarm / Arıza</th>
@@ -182,81 +339,178 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(ALARM_LABELS).map(([key, label]) => (
-                  <tr key={key}>
-                    <td>{label}</td>
-                    <td>
-                      <span className={`srt-alarm-status srt-alarm-status--${alarms[key] ?? "yok"}`}>
-                        {ALARM_STATUS_LABELS[alarms[key] ?? "yok"] ?? alarms[key] ?? "Yok"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {ALARM_KEYS.map(({ key, label }) => {
+                  const val = alarms[key] ?? "yok";
+                  const isDanger = val === "var" || val === "acil";
+                  const isOk     = val === "yok";
+                  return (
+                    <tr key={key}>
+                      <td>{label}</td>
+                      <td className={isDanger ? "sr-danger-text" : isOk ? "sr-ok-text" : ""}>
+                        <span className={isDanger ? "sr-alert-dot" : "sr-check-dot"}>
+                          {isDanger ? "!" : <Check size={9} />}
+                        </span>
+                        {val === "yok" ? "Normal" : val === "var" ? "Alarm" : val === "kontrol_edildi" ? "Kontrol Edildi" : val === "mudahale_edildi" ? "Müdahale Edildi" : val}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
-          </section>
+          </Panel>
 
-          <section className="srt-section srt-section--half">
-            <h3 className="srt-section-title">Çalışma Saatleri &amp; Vakum Testi</h3>
-            <table className="srt-info-table">
+          <Panel title="Çalışma Saatleri" icon={Clock3}>
+            <table className="sr-table sr-hours-table">
+              <thead>
+                <tr>
+                  <th>Ekipman</th>
+                  <th>Çalışma Süresi</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
               <tbody>
-                {[
-                  ["Pompa 1 Çalışma", rd["pump1Hours"] as string],
-                  ["Pompa 2 Çalışma", rd["pump2Hours"] as string],
-                  ["Pompa 3 Çalışma", rd["pump3Hours"] as string],
-                  ["Toplam Çalışma", rd["totalWorkHours"] as string],
-                  ["Son Bakım", rd["lastMaintenanceDate"] as string ?? data.device.lastMaintenanceDate],
-                  ["Sonraki Bakım", rd["nextMaintenanceDate"] as string ?? data.device.nextMaintenanceDate],
-                  ["Bakım Periyodu", rd["maintenancePeriod"] as string],
-                ].map(([label, value]) => value ? (
-                  <tr key={label}>
-                    <th>{label}</th>
-                    <td>{value}</td>
+                {pump1Hours && (
+                  <tr>
+                    <td>Pompa 1</td>
+                    <td>{pump1Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
                   </tr>
-                ) : null)}
+                )}
+                {pump2Hours && (
+                  <tr>
+                    <td>Pompa 2</td>
+                    <td>{pump2Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
+                {pump3Hours && (
+                  <tr>
+                    <td>Pompa 3</td>
+                    <td>{pump3Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
+                {pump4Hours && (
+                  <tr>
+                    <td>Pompa 4</td>
+                    <td>{pump4Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
+                {totalWorkHours && (
+                  <tr className="sr-total-row">
+                    <td>Toplam Çalışma Süresi</td>
+                    <td colSpan={2}>{totalWorkHours}</td>
+                  </tr>
+                )}
+                {lastMaintDate && (
+                  <tr>
+                    <td>Son Bakım Tarihi</td>
+                    <td colSpan={2}>{lastMaintDate}</td>
+                  </tr>
+                )}
+                {nextMaintDate && (
+                  <tr>
+                    <td>Bir Sonraki Bakım Tarihi</td>
+                    <td colSpan={2}>{nextMaintDate}</td>
+                  </tr>
+                )}
+                {maintenancePeriod && (
+                  <tr>
+                    <td>Bakım Periyodu</td>
+                    <td colSpan={2}>{maintenancePeriod}</td>
+                  </tr>
+                )}
+                {!pump1Hours && !pump2Hours && !pump3Hours && !pump4Hours && !totalWorkHours && (
+                  <tr>
+                    <td colSpan={3} style={{ color: "#94a3b8", fontStyle: "italic" }}>Çalışma saati girilmemiş</td>
+                  </tr>
+                )}
               </tbody>
             </table>
-            {(rd["workingPressure"] || rd["minVacuum"] || rd["testResult"]) ? (
-              <>
-                <h4 className="srt-subsection-title">Vakum Performans Testi</h4>
-                <table className="srt-info-table">
+          </Panel>
+
+          <Panel title="Vakum Performans Testi" icon={Gauge}>
+            {hasVacuumData ? (
+              <div className="sr-gauge-block">
+                <div className="sr-gauge">
+                  <div className="sr-gauge-arc" />
+                  <div className="sr-gauge-needle" style={{ transform: `rotate(${needleRot}deg)` }} />
+                  <strong>{workingPressure ? workingPressure.replace(/[^0-9.,\-]/g, "") : "—"}</strong>
+                  <span>kPa</span>
+                  <small className="sr-gauge-min">-100</small>
+                  <small className="sr-gauge-max">0</small>
+                </div>
+                <table className="sr-table sr-test-table">
                   <tbody>
-                    {[
-                      ["Çalışma Basıncı", rd["workingPressure"] as string],
-                      ["Min Vakum", rd["minVacuum"] as string],
-                      ["Test Süresi", rd["testDuration"] as string],
-                      ["Test Sonucu", rd["testResult"] as string],
-                      ["Açıklama", rd["testDescription"] as string],
-                    ].map(([label, value]) => value ? (
-                      <tr key={label}><th>{label}</th><td>{value}</td></tr>
-                    ) : null)}
+                    {workingPressure && <tr><th>Çalışma Basıncı</th><td>{workingPressure}</td></tr>}
+                    {minVacuum       && <tr><th>Min Vakum</th><td>{minVacuum}</td></tr>}
+                    {testDuration    && <tr><th>Test Süresi</th><td>{testDuration}</td></tr>}
+                    {testResult && (
+                      <tr>
+                        <th>Test Sonucu</th>
+                        <td className={testResult === "Başarılı" ? "sr-ok-text" : testResult === "Başarısız" ? "sr-danger-text" : ""}>
+                          {testResult}
+                        </td>
+                      </tr>
+                    )}
+                    {testDescription && <tr><th>Açıklama</th><td>{testDescription}</td></tr>}
                   </tbody>
                 </table>
-              </>
-            ) : null}
-          </section>
+              </div>
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "2mm 1mm" }}>
+                Vakum testi girilmemiş.
+              </p>
+            )}
+          </Panel>
         </div>
 
-        {/* ── ROW 3: Operations + Parts ── */}
-        <div className="srt-row">
-          <section className="srt-section srt-section--half">
-            <h3 className="srt-section-title">Yapılan İşlemler</h3>
-            <ul className="srt-checklist">
-              {allOperations.map((op) => (
-                <li key={op} className={operations.includes(op) ? "srt-checklist__item--checked" : "srt-checklist__item--unchecked"}>
-                  <span className="srt-checkbox">{operations.includes(op) ? "✓" : "○"}</span>
-                  {op}
-                </li>
-              ))}
-            </ul>
-          </section>
+        {/* ── MID GRID: Operations + Notes ── */}
+        <div className="sr-grid sr-mid-grid">
+          <Panel title="Yapılan İşlemler" icon={Wrench}>
+            <div className="sr-action-list">
+              {operations.length > 0
+                ? operations.map((action) => (
+                    <p key={action} style={{ color: "#071b38", fontWeight: 700 }}>
+                      <span className="sr-check-dot"><Check size={9} /></span>
+                      {action}
+                    </p>
+                  ))
+                : <p style={{ color: "#94a3b8", fontStyle: "italic", fontSize: "2.3mm" }}>İşlem girilmemiş.</p>
+              }
+            </div>
+          </Panel>
 
-          <section className="srt-section srt-section--half">
-            <h3 className="srt-section-title">Değiştirilen Parçalar</h3>
-            {(data.parts ?? []).length === 0 ? (
-              <p className="srt-empty-note">Parça değişimi yapılmadı.</p>
-            ) : (
-              <table className="srt-parts-table">
+          <Panel title="Açıklama / Notlar" icon={FileText}>
+            <div className="sr-notes">
+              <div>
+                {notes
+                  ? notes.split(/\n/).map((line, i) => <p key={i}>{line}</p>)
+                  : <p>Bu servis kaydı için not girilmemiştir.</p>}
+              </div>
+              <aside>
+                {personnelName && (
+                  <>
+                    <strong>Servis Personeli</strong>
+                    <b>{personnelName}</b>
+                    <SignatureMark color="#475569" />
+                  </>
+                )}
+                <div className="sr-qr-row">
+                  <QrPattern />
+                  <span>Raporu Doğrulamak İçin QR Kodu Okutunuz.</span>
+                </div>
+              </aside>
+            </div>
+          </Panel>
+        </div>
+
+        {/* ── LOWER GRID: Parts + Photos ── */}
+        <div className="sr-grid sr-lower-grid">
+          <Panel title="Değiştirilen Parçalar" icon={Settings}>
+            {parts.length > 0 ? (
+              <table className="sr-table sr-parts-table">
                 <thead>
                   <tr>
                     <th>Parça Adı</th>
@@ -266,89 +520,124 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
                   </tr>
                 </thead>
                 <tbody>
-                  {(data.parts ?? []).map((p, i) => (
-                    <tr key={i}>
+                  {parts.map((p, idx) => (
+                    <tr key={idx}>
                       <td>{p.partName}</td>
                       <td>{p.partCode ?? "—"}</td>
-                      <td>{p.quantity}</td>
+                      <td>{p.quantity ?? "—"}</td>
                       <td>{p.condition ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "2mm 1mm" }}>
+                Parça değişimi yapılmadı.
+              </p>
             )}
+          </Panel>
 
-            {rd["notes"] ? (
-              <>
-                <h4 className="srt-subsection-title">Açıklama / Notlar</h4>
-                <p className="srt-notes-text">{String(rd["notes"])}</p>
-              </>
-            ) : null}
-
-            {(rd["recommendedMaintenanceDate"] || rd["recommendedMaintenanceType"]) ? (
-              <>
-                <h4 className="srt-subsection-title">Sonraki Bakım Planlaması</h4>
-                <table className="srt-info-table">
-                  <tbody>
-                    {[
-                      ["Önerilen Tarih", rd["recommendedMaintenanceDate"] as string],
-                      ["Bakım Türü", rd["recommendedMaintenanceType"] as string],
-                      ["Tahmini Süre", rd["estimatedDuration"] as string],
-                      ["Not", rd["maintenanceNote"] as string],
-                    ].map(([label, value]) => value ? (
-                      <tr key={label}><th>{label}</th><td>{value}</td></tr>
-                    ) : null)}
-                  </tbody>
-                </table>
-              </>
-            ) : null}
-          </section>
+          <Panel title="Servis Fotoğrafları" icon={Camera}>
+            {photos.length > 0 ? (
+              <div className="sr-photo-grid">
+                {photos.slice(0, 4).map((ph, i) => (
+                  <figure key={i}>
+                    <img src={ph.url} alt={ph.caption ?? `Fotoğraf ${i + 1}`} />
+                    {ph.caption && <figcaption>{ph.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "2mm 1mm" }}>
+                Fotoğraf eklenmemiş.
+              </p>
+            )}
+          </Panel>
         </div>
 
-        {/* ── Photos ── */}
-        {(data.photos ?? []).length > 0 && (
-          <section className="srt-section">
-            <h3 className="srt-section-title">Servis Fotoğrafları</h3>
-            <div className="srt-photos">
-              {(data.photos ?? []).slice(0, 4).map((photo, i) => (
-                <div key={i} className="srt-photo">
-                  <img src={photo.url} alt={photo.caption ?? `Fotoğraf ${i + 1}`} />
-                  {photo.caption && <p className="srt-photo__caption">{photo.caption}</p>}
+        {/* ── BOTTOM GRID: Signatures + Next Maintenance ── */}
+        <div className="sr-grid sr-bottom-grid">
+          <Panel title="İmza &amp; Onay" icon={CheckCircle2}>
+            <div className="sr-sig-row">
+              {([
+                { sig: sigPersonel, label: "Servis Personeli" },
+                { sig: sigSorumlu,  label: "Teknik Sorumlu" },
+                { sig: sigYetkili,  label: "Hastane Yetkilisi" },
+              ] as { sig: typeof sigPersonel; label: string }[]).map(({ sig, label }) => (
+                <div key={label} className="sr-sig-box">
+                  <div className="sr-sig-image">
+                    {sig?.imageDataUrl
+                      ? <img src={sig.imageDataUrl} alt={`${label} imzası`} />
+                      : <SignatureMark />
+                    }
+                  </div>
+                  <p className="sr-sig-name">{sig?.signerName ?? "—"}</p>
+                  <p className="sr-sig-role">{label}</p>
                 </div>
               ))}
             </div>
-          </section>
-        )}
+          </Panel>
 
-        {/* ── Signatures ── */}
-        <section className="srt-section srt-signatures">
-          <h3 className="srt-section-title">İmza &amp; Onay</h3>
-          <div className="srt-sig-row">
-            {(["personel", "sorumlu", "yetkili"] as const).map((role) => {
-              const sig = (data.signatures ?? []).find((s) => s.role === role);
-              return (
-                <div key={role} className="srt-sig-box">
-                  <div className="srt-sig-image">
-                    {sig ? (
-                      <img src={sig.imageDataUrl} alt={`${SIGNATURE_ROLE_LABELS[role]} imzası`} />
-                    ) : (
-                      <div className="srt-sig-placeholder" />
-                    )}
+          <Panel title="Sonraki Bakım Planlaması" icon={CalendarDays}>
+            {hasNextMaint ? (
+              <div className="sr-next-maint">
+                {calData && (
+                  <div className="sr-calendar">
+                    <div className="sr-cal-month">{calData.monthLabel}</div>
+                    <div className="sr-cal-grid">
+                      {calData.cells.map((cell, i) => (
+                        <span
+                          key={i}
+                          className={
+                            cell.isBlank
+                              ? "sr-cal-blank"
+                              : cell.isTarget
+                              ? "sr-cal-target"
+                              : ""
+                          }
+                        >
+                          {cell.label}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <p className="srt-sig-name">{sig?.signerName ?? "—"}</p>
-                  <p className="srt-sig-role">{SIGNATURE_ROLE_LABELS[role]}</p>
+                )}
+                <div className="sr-maint-details">
+                  {recommendedMaintDate && (
+                    <div className="sr-maint-row">
+                      <span>Önerilen Tarih</span>
+                      <strong>{recommendedMaintDate}</strong>
+                    </div>
+                  )}
+                  {recommendedMaintType && (
+                    <div className="sr-maint-row">
+                      <span>Bakım Türü</span>
+                      <strong>{recommendedMaintType}</strong>
+                    </div>
+                  )}
+                  {estimatedDuration && (
+                    <div className="sr-maint-row">
+                      <span>Tahmini Süre</span>
+                      <strong>{estimatedDuration}</strong>
+                    </div>
+                  )}
+                  {maintenanceNote && (
+                    <div className="sr-maint-row">
+                      <span>Not</span>
+                      <strong>{maintenanceNote}</strong>
+                    </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </section>
-      </div>
+              </div>
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "2mm 1mm" }}>
+                Bakım planı girilmemiş.
+              </p>
+            )}
+          </Panel>
+        </div>
 
-      {/* ── FOOTER ── */}
-      <footer className="srt-footer">
-        <p>Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>
-        <p>Doğrulama Kodu: {data.reportNo}</p>
-      </footer>
-    </div>
+      </article>
+    </main>
   );
 }

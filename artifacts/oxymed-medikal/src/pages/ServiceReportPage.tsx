@@ -262,6 +262,7 @@ function DynamicReport({ recordId }: { recordId: number }) {
   const pump1Hours      = str("pump1Hours");
   const pump2Hours      = str("pump2Hours");
   const pump3Hours      = str("pump3Hours");
+  const pump4Hours      = str("pump4Hours");
   const totalWorkHours  = str("totalWorkHours");
   const lastMaintDate   = str("lastMaintenanceDate") || deviceLastMaint;
   const nextMaintDate   = str("nextMaintenanceDate") || deviceNextMaint;
@@ -483,6 +484,13 @@ function DynamicReport({ recordId }: { recordId: number }) {
                     <td><span className="sr-check-dot"><Check size={9} /></span></td>
                   </tr>
                 )}
+                {pump4Hours && (
+                  <tr>
+                    <td>Pompa 4</td>
+                    <td>{pump4Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
                 {totalWorkHours && (
                   <tr className="sr-total-row">
                     <td>Toplam Çalışma Süresi</td>
@@ -507,7 +515,7 @@ function DynamicReport({ recordId }: { recordId: number }) {
                     <td colSpan={2}>{maintenancePeriod}</td>
                   </tr>
                 )}
-                {!pump1Hours && !pump2Hours && !pump3Hours && !totalWorkHours && (
+                {!pump1Hours && !pump2Hours && !pump3Hours && !pump4Hours && !totalWorkHours && (
                   <tr>
                     <td colSpan={3} style={{ color: "#94a3b8", fontStyle: "italic" }}>Çalışma saati girilmemiş</td>
                   </tr>
@@ -558,17 +566,15 @@ function DynamicReport({ recordId }: { recordId: number }) {
         <div className="sr-grid sr-mid-grid">
           <Panel title="Yapılan İşlemler" icon={Wrench}>
             <div className="sr-action-list">
-              {allOperations.map((action) => {
-                const checked = operations.includes(action);
-                return (
-                  <p key={action} style={{ color: checked ? "#071b38" : "#94a3b8", fontWeight: checked ? 700 : 400 }}>
-                    <span className={checked ? "sr-check-dot" : "sr-alert-dot"} style={checked ? {} : { background: "#cbd5e1" }}>
-                      {checked ? <Check size={9} /> : <span style={{ fontSize: "2mm" }}>○</span>}
-                    </span>
-                    {action}
-                  </p>
-                );
-              })}
+              {operations.length > 0
+                ? operations.map((action) => (
+                    <p key={action} style={{ color: "#071b38", fontWeight: 700 }}>
+                      <span className="sr-check-dot"><Check size={9} /></span>
+                      {action}
+                    </p>
+                  ))
+                : <p style={{ color: "#94a3b8", fontStyle: "italic", fontSize: "2.3mm" }}>İşlem girilmemiş.</p>
+              }
             </div>
           </Panel>
 
