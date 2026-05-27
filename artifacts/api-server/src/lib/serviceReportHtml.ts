@@ -279,9 +279,39 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
   if (minVacuum) vacuumRows.push(td("Minimum Vakum", minVacuum));
   if (testDuration) vacuumRows.push(td("Test Süresi", testDuration));
 
-  const vacuumHtml = vacuumRows.length > 0
+  // ── Vacuum gauge (semicircular indicator) ────────────────────────────────
+  const pressNum = (s: string): number | null => { const m = s.match(/-?\d+(\.\d+)?/); return m ? +m[0] : null; };
+  const gRaw = workingPressure ? pressNum(workingPressure) : null;
+  // Normalise to kPa -100..0: if positive, assume mbar (÷10 and negate)
+  const gKpa = gRaw !== null ? Math.max(-100, Math.min(0, gRaw > 0 ? -(gRaw / 10) : gRaw)) : null;
+  // Needle: -90deg = -100 kPa (green/left), +90deg = 0 kPa (red/right)
+  const gAngle = gKpa !== null
+    ? Math.round((gKpa + 100) / 100 * 180 - 90)
+    : (testResult === "Başarılı" ? -45 : testResult === "Başarısız" ? 55 : -15);
+  const gNum  = gRaw !== null ? String(gRaw) : "—";
+  const gUnit = workingPressure?.toLowerCase().includes("mbar") ? "mbar" : "kPa";
+
+  const gaugeMarkup = `
+<div style="position:relative;width:41mm;height:27.2mm;margin:0 auto">
+  <div style="position:absolute;inset:0;border-radius:49mm 49mm 0 0;
+    background:conic-gradient(from 270deg at 50% 100%,#12a154 0deg,#9fc51c 37deg,#ffd300 77deg,#ff9714 118deg,#e51e2b 180deg,transparent 180deg);
+    clip-path:inset(0 0 35% 0)"></div>
+  <div style="position:absolute;left:6mm;right:6mm;bottom:-2mm;height:22mm;border-radius:42mm 42mm 0 0;background:#fff"></div>
+  <div style="position:absolute;left:20.5mm;bottom:10.6mm;width:1.2mm;height:18.2mm;border-radius:1mm;
+    background:linear-gradient(#08265f,#6b7280);transform:rotate(${gAngle}deg);transform-origin:50% 100%;z-index:2"></div>
+  <strong style="position:absolute;left:0;right:0;bottom:6.2mm;color:#0f172a;font-size:8.2mm;font-weight:900;
+    line-height:1;text-align:center;z-index:3;text-shadow:0 0 2.5mm #fff,0 0 1.2mm #fff">${esc(gNum)}</strong>
+  <span style="position:absolute;left:0;right:0;bottom:2.4mm;font-size:3.2mm;font-weight:800;
+    text-align:center;z-index:3;color:#344563">${gUnit}</span>
+  <small style="position:absolute;bottom:2.6mm;left:0;font-size:2.55mm;font-weight:700;color:#64748b">-100</small>
+  <small style="position:absolute;bottom:2.6mm;right:0;font-size:2.55mm;font-weight:700;color:#64748b">0</small>
+</div>`;
+
+  const vacuumTableHtml = vacuumRows.length > 0
     ? `<table style="width:100%;border-collapse:collapse"><tbody>${vacuumRows.join("")}</tbody></table>`
     : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Vakum testi verisi girilmemiş.</p>`;
+
+  const vacuumHtml = `<div style="display:flex;flex-direction:column;align-items:center;gap:3mm">${gaugeMarkup}${vacuumTableHtml}</div>`;
 
   // ── Operations list ───────────────────────────────────────────────────────
   const operationsHtml = allOperations.map((op) => {
@@ -315,10 +345,10 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
   // ── Photos ────────────────────────────────────────────────────────────────
   const photosHtml = photos.length === 0
     ? `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Fotoğraf eklenmemiş.</p>`
-    : `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2mm">${photos.slice(0, 4).map((ph) =>
+    : `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2mm">${photos.slice(0, 4).map((ph) =>
         `<div>
-          <img src="${esc(ph.url)}" alt="${esc(ph.caption ?? "")}" style="width:100%;height:18mm;object-fit:cover;border-radius:1mm;border:0.2mm solid #e2e8f0"/>
-          ${ph.caption ? `<p style="font-size:2mm;color:#64748b;text-align:center;margin:1mm 0 0">${esc(ph.caption)}</p>` : ""}
+          <img src="${esc(ph.url)}" alt="${esc(ph.caption ?? "")}" style="width:100%;height:22mm;object-fit:cover;object-position:center;border-radius:1mm;border:0.2mm solid #e2e8f0"/>
+          ${ph.caption ? `<p style="font-size:1.8mm;color:#64748b;text-align:center;margin:0.8mm 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ph.caption)}</p>` : ""}
         </div>`
       ).join("")}</div>`;
 
