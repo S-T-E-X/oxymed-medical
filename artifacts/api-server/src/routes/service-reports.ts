@@ -114,6 +114,7 @@ router.get("/service-reports", requireAuth, async (req, res): Promise<void> => {
       deviceProductName: warrantyDevicesTable.productName,
       deviceModel: warrantyDevicesTable.model,
       deviceCustomerFirm: warrantyDevicesTable.customerFirm,
+      deviceCustomerEmail: warrantyDevicesTable.customerEmail,
     })
     .from(serviceReportsTable)
     .leftJoin(warrantyDevicesTable, eq(serviceReportsTable.deviceId, warrantyDevicesTable.id))
@@ -139,6 +140,7 @@ router.get("/service-reports", requireAuth, async (req, res): Promise<void> => {
       deviceProductName: r.deviceProductName,
       deviceModel: r.deviceModel,
       deviceCustomerFirm: r.deviceCustomerFirm,
+      deviceCustomerEmail: r.deviceCustomerEmail,
     })),
   });
 });

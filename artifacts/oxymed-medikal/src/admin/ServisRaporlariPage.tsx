@@ -38,6 +38,7 @@ interface Report {
   deviceProductName: string | null;
   deviceModel: string | null;
   deviceCustomerFirm: string | null;
+  deviceCustomerEmail: string | null;
 }
 
 function useServiceReports(search: string, status: string) {
@@ -79,6 +80,7 @@ export default function ServisRaporlariPage() {
   // Email dialog state
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [emailTarget, setEmailTarget] = useState("");
+  const [emailDefaultAddress, setEmailDefaultAddress] = useState<string>("");
   const [emailReportId, setEmailReportId] = useState<number | null>(null);
   const [emailReportNo, setEmailReportNo] = useState<string>("");
   const [emailReportDate, setEmailReportDate] = useState<string>("");
@@ -151,7 +153,9 @@ export default function ServisRaporlariPage() {
     setEmailReportId(report.id);
     setEmailReportNo(report.reportNo);
     setEmailReportDate(report.serviceDate);
-    setEmailTarget("");
+    const defaultEmail = report.deviceCustomerEmail ?? "";
+    setEmailDefaultAddress(defaultEmail);
+    setEmailTarget(defaultEmail);
     setShowEmailDialog(true);
   }
 
@@ -349,9 +353,20 @@ export default function ServisRaporlariPage() {
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">
-                  Alıcı E-posta Adresi
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide">
+                    Alıcı E-posta Adresi
+                  </label>
+                  {emailDefaultAddress && emailTarget.trim() !== emailDefaultAddress && (
+                    <button
+                      type="button"
+                      onClick={() => setEmailTarget(emailDefaultAddress)}
+                      className="text-xs text-blue-600 hover:underline font-medium"
+                    >
+                      Müşteri adresine dön ↩
+                    </button>
+                  )}
+                </div>
                 <input
                   type="email"
                   value={emailTarget}
