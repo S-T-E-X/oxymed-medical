@@ -545,7 +545,7 @@ export function buildReportHtml(data: ServiceReportPdfData, options?: { baseHref
     <img src="assets/brand/oxymed-service-footer.webp" alt="" style="width:100%;height:auto;display:block"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
     <div style="display:none;justify-content:space-between;align-items:center">
-      <p style="font-size:2mm;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>
+      <p style="font-size:2mm;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymedmedical.com</p>
       <p style="font-size:2mm;color:#64748b">Doğrulama Kodu: ${esc(data.reportNo)}</p>
     </div>
   </div>

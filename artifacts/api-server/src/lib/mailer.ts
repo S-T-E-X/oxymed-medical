@@ -65,7 +65,7 @@ export async function sendServiceReportEmail(opts: SendReportEmailOptions): Prom
   <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
   <p style="font-size:12px;color:#94a3b8;margin:0">
     Bu e-posta Oxymed Medikal Gaz Sistemleri tarafından otomatik olarak gönderilmiştir.<br>
-    İzmir · www.oxymed.com.tr
+    Ankara · www.oxymedmedical.com
   </p>
 </body>
 </html>`,
