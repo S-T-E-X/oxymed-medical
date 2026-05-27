@@ -107,23 +107,27 @@
 
 .sr-summary {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  width: 100%;
   height: 14.4mm;
   margin-top: 2.4mm;
   overflow: hidden;
   border: 0.25mm solid #a8b3c5;
   border-radius: 1.5mm;
   background: rgba(255, 255, 255, 0.92);
+  box-sizing: border-box;
 }
 
 .sr-summary-item {
   display: flex;
   align-items: center;
   gap: 1.6mm;
+  width: 100%;
   min-width: 0;
   padding: 0 2.2mm;
   border-right: 0.25mm solid #b7c0cf;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .sr-summary > .sr-summary-item:last-child {
