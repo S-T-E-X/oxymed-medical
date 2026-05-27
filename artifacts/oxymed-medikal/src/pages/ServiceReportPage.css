@@ -107,7 +107,7 @@
 
 .sr-summary {
   display: grid;
-  grid-template-columns: 20% 20% 20% 20% 20%;
+  grid-template-columns: 18% 26% 19% 19% 18%;
   width: 100%;
   height: 14.4mm;
   margin-top: 2.4mm;
@@ -865,7 +865,7 @@
 .sr-maint-row {
   display: grid;
   grid-template-columns: 22mm 1fr;
-  align-items: center;
+  align-items: start;
   gap: 1.5mm;
   padding: 1mm 1.4mm;
   border: 0.2mm solid #e2e7ef;
@@ -894,9 +894,9 @@
   font-size: 2.4mm;
   font-weight: 900;
   color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.25;
 }
 
 .sr-maint-row:first-child strong {
