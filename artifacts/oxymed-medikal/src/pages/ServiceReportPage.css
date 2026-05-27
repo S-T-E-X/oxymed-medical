@@ -106,8 +106,7 @@
 }
 
 .sr-summary {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
   height: 14.4mm;
   margin-top: 2.4mm;
   overflow: hidden;
@@ -117,13 +116,17 @@
 }
 
 .sr-summary-item {
+  flex: 1 1 0;
+  width: 20%;
+  min-width: 0;
+  max-width: 20%;
   display: flex;
   align-items: center;
   gap: 1.6mm;
-  min-width: 0;
   padding: 0 2.2mm;
   border-right: 0.25mm solid #b7c0cf;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .sr-summary > .sr-summary-item:last-child {
