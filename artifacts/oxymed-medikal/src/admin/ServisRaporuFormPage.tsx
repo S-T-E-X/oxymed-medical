@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Camera, ChevronDown, ChevronUp, Loader2, Plus, Save, Trash2, X,
-  FileText, Eye, CheckSquare, Square, Search,
+  FileText, Eye, CheckSquare, Square, Search, Mail,
 } from "lucide-react";
 import ServiceReportTemplate, { type ServiceReportTemplateData } from "../components/ServiceReportTemplate";
 import { useImageUpload } from "./useImageUpload";
@@ -368,6 +368,9 @@ export default function ServisRaporuFormPage() {
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [reportNo, setReportNo] = useState<string | null>(null);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [emailTarget, setEmailTarget] = useState("");
 
   // Auto-generate service code for new reports
   useEffect(() => {
@@ -516,6 +519,32 @@ export default function ServisRaporuFormPage() {
     }
   }
 
+  async function handleSendEmail() {
+    if (isNew || !id) { toast.error("Lütfen önce raporu kaydedin"); return; }
+    const target = emailTarget.trim() || email.trim();
+    if (!target) { toast.error("Lütfen bir e-posta adresi girin"); return; }
+    setSendingEmail(true);
+    toast.info("Rapor PDF olarak oluşturulup gönderiliyor...");
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`${BASE}/api/service-reports/${id}/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ email: target }),
+      });
+      const body = await res.json().catch(() => ({})) as { error?: string; detail?: string; success?: boolean };
+      if (!res.ok) {
+        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
+      }
+      toast.success(`Rapor ${target} adresine gönderildi`);
+      setShowEmailDialog(false);
+    } catch (err) {
+      toast.error(`Gönderilemedi: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setSendingEmail(false);
+    }
+  }
+
   async function handleGeneratePdf() {
     if (isNew || !id) { toast.error("Lütfen önce raporu kaydedin"); return; }
     setGeneratingPdf(true);
@@ -622,6 +651,16 @@ export default function ServisRaporuFormPage() {
           </button>
           <button
             type="button"
+            onClick={() => { setEmailTarget(email); setShowEmailDialog(true); }}
+            disabled={isNew}
+            title={isNew ? "Önce kaydedin" : ""}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+          >
+            <Mail className="h-4 w-4 text-blue-500" />
+            E-posta ile Gönder
+          </button>
+          <button
+            type="button"
             onClick={() => handleSave()}
             disabled={saving}
             className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
@@ -640,6 +679,79 @@ export default function ServisRaporuFormPage() {
           </button>
         </div>
       </div>
+
+      {/* Email dialog */}
+      {showEmailDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100">
+                  <Mail className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-900">Raporu E-posta ile Gönder</h2>
+                  <p className="text-xs text-slate-500">PDF eki olarak gönderilecek</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEmailDialog(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 text-slate-400"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">
+                  Alıcı E-posta Adresi
+                </label>
+                <input
+                  type="email"
+                  value={emailTarget}
+                  onChange={(e) => setEmailTarget(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
+                  placeholder="ornek@hastane.com"
+                  autoFocus
+                  className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {email && emailTarget !== email && (
+                  <button
+                    type="button"
+                    onClick={() => setEmailTarget(email)}
+                    className="mt-1.5 text-xs text-blue-600 hover:underline"
+                  >
+                    Rapordaki adresi kullan: {email}
+                  </button>
+                )}
+              </div>
+              <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-500 space-y-1">
+                <p><span className="font-bold text-slate-700">Rapor No:</span> {reportNo ?? "—"}</p>
+                <p><span className="font-bold text-slate-700">Tarih:</span> {serviceDate}</p>
+              </div>
+            </div>
+            <div className="flex gap-3 border-t border-slate-100 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowEmailDialog(false)}
+                className="flex-1 rounded-lg border border-slate-200 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                İptal
+              </button>
+              <button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={sendingEmail || !emailTarget.trim()}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {sendingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+                {sendingEmail ? "Gönderiliyor..." : "Gönder"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Preview modal */}
       {showPreview && (

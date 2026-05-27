@@ -14,6 +14,7 @@ import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 import { objectStorageClient as _objectStorageClient, ObjectStorageService } from "../lib/objectStorage";
 import { buildReportHtml } from "../lib/serviceReportHtml";
+import { sendServiceReportEmail } from "../lib/mailer";
 
 const router: IRouter = Router();
 
@@ -364,6 +365,107 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
     if (browser) { try { await browser.close(); } catch { /* ignore */ } }
     req.log.error({ err }, "PDF generation failed");
     res.status(500).json({ error: "PDF oluşturulamadı", detail: err instanceof Error ? err.message : String(err) });
+  }
+});
+
+// ─── Send report PDF via email ────────────────────────────────────────────────
+
+router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]);
+  if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
+
+  const bodyParsed = z.object({
+    email: z.string().email("Geçerli bir e-posta adresi girin"),
+  }).safeParse(req.body);
+  if (!bodyParsed.success) {
+    res.status(400).json({ error: bodyParsed.error.issues[0]?.message ?? "Geçersiz istek" });
+    return;
+  }
+  const { email } = bodyParsed.data;
+
+  const full = await loadFullReport(id);
+  if (!full) { res.status(404).json({ error: "Rapor bulunamadı" }); return; }
+
+  const html = buildReportHtml({
+    reportNo: full.reportNo,
+    serviceDate: full.serviceDate,
+    serviceTime: full.serviceTime,
+    serviceType: full.serviceType,
+    priority: full.priority,
+    status: full.status,
+    serviceCode: full.serviceCode,
+    createdBy: full.createdBy,
+    device: full.device
+      ? {
+          productName: full.device.productName,
+          model: full.device.model,
+          serialNumber: full.device.serialNumber,
+          customerFirm: full.device.customerFirm,
+          installDate: full.device.installDate,
+          warrantyEndDate: full.device.warrantyEndDate,
+          lastMaintenanceDate: full.device.lastMaintenanceDate,
+          nextMaintenanceDate: full.device.nextMaintenanceDate,
+        }
+      : { productName: "", model: "", serialNumber: "", customerFirm: "" },
+    reportDataJson: (full.reportDataJson ?? {}) as Record<string, unknown>,
+    photos: full.photos.map((p) => ({ url: (p as Record<string, unknown>)["url"] as string, caption: (p as Record<string, unknown>)["caption"] as string | null })),
+    signatures: full.signatures.map((s) => ({
+      role: (s as Record<string, unknown>)["role"] as string,
+      signerName: (s as Record<string, unknown>)["signerName"] as string | null,
+      imageDataUrl: (s as Record<string, unknown>)["imageDataUrl"] as string,
+    })),
+    parts: full.parts.map((p) => ({
+      partName: (p as Record<string, unknown>)["partName"] as string,
+      partCode: (p as Record<string, unknown>)["partCode"] as string | null,
+      quantity: ((p as Record<string, unknown>)["quantity"] as string) ?? "1",
+      condition: (p as Record<string, unknown>)["condition"] as string | null,
+    })),
+  });
+
+  let browser: import("puppeteer-core").Browser | undefined;
+  try {
+    const chromium = await import("@sparticuz/chromium-min");
+    const puppeteer = await import("puppeteer-core");
+
+    const executablePath = await chromium.default.executablePath();
+    browser = await puppeteer.default.launch({
+      args: chromium.default.args,
+      defaultViewport: { width: 794, height: 1123 },
+      executablePath,
+      headless: true,
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30_000 });
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      landscape: false,
+      printBackground: true,
+      margin: { top: "0", right: "0", bottom: "0", left: "0" },
+    });
+
+    await browser.close();
+    browser = undefined;
+
+    const rd = (full.reportDataJson ?? {}) as Record<string, unknown>;
+    const hospitalName = (rd["hospitalName"] as string | undefined) || full.device?.customerFirm || "";
+
+    await sendServiceReportEmail({
+      to: email,
+      reportNo: full.reportNo,
+      hospitalName,
+      serviceDate: full.serviceDate,
+      pdfBuffer: Buffer.from(pdfBuffer),
+    });
+
+    req.log.info({ reportId: id, email }, "Service report email sent");
+    res.json({ success: true, email });
+  } catch (err) {
+    if (browser) { try { await browser.close(); } catch { /* ignore */ } }
+    req.log.error({ err }, "Send email failed");
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: "E-posta gönderilemedi", detail: msg });
   }
 });
 
