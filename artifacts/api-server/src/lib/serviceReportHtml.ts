@@ -1,4 +1,5 @@
 // Server-side HTML template for service report PDF generation
+// Layout mirrors the A4 ServiceReportPage taslak design
 
 const SERVICE_TYPE_LABELS: Record<string, string> = {
   periyodik_bakim: "Periyodik Bakım",
@@ -16,14 +17,14 @@ const PRIORITY_LABELS: Record<string, string> = {
   dusuk: "Düşük",
 };
 
-const ALARM_LABELS: Record<string, string> = {
-  dusuk_vakum: "Düşük Vakum Alarmı",
-  yuksek_sicaklik: "Yüksek Sıcaklık Alarmı",
-  termik_hata: "Termik Hatası",
-  sensor_hata: "Sensör Hatası",
-  bakim_suresi_doldu: "Bakım Süresi Doldu",
-  acil_ariza: "Acil Arıza",
-};
+const ALARM_KEYS = [
+  { key: "dusuk_vakum",        label: "Düşük Vakum Alarmı" },
+  { key: "yuksek_sicaklik",    label: "Yüksek Sıcaklık Alarmı" },
+  { key: "termik_hata",        label: "Termik Hatası" },
+  { key: "sensor_hata",        label: "Sensör Hatası" },
+  { key: "bakim_suresi_doldu", label: "Bakım Süresi Doldu" },
+  { key: "acil_ariza",         label: "Acil Arıza" },
+];
 
 const ALARM_STATUS_LABELS: Record<string, string> = {
   yok: "Yok",
@@ -51,6 +52,11 @@ const DEFAULT_OPERATIONS = [
   "Sistem genel performans testi tamamlandı",
 ];
 
+const TURKISH_MONTHS = [
+  "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+  "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık",
+];
+
 function esc(str: unknown): string {
   if (str == null) return "";
   return String(str)
@@ -60,9 +66,64 @@ function esc(str: unknown): string {
     .replace(/"/g, "&quot;");
 }
 
-function infoRow(label: string, value: unknown): string {
-  if (!value) return "";
-  return `<tr><th>${esc(label)}</th><td>${esc(value)}</td></tr>`;
+function parseDateStr(dateStr: string): { day: number; month: number; year: number } | null {
+  if (!dateStr) return null;
+  if (dateStr.includes(".")) {
+    const parts = dateStr.split(".");
+    const day = parseInt(parts[0] ?? "", 10);
+    const month = parseInt(parts[1] ?? "", 10) - 1;
+    const year = parseInt(parts[2] ?? "", 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return { day, month, year };
+  } else if (dateStr.includes("-")) {
+    const parts = dateStr.split("-");
+    const year = parseInt(parts[0] ?? "", 10);
+    const month = parseInt(parts[1] ?? "", 10) - 1;
+    const day = parseInt(parts[2] ?? "", 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return { day, month, year };
+  }
+  return null;
+}
+
+function buildCalendarHtml(dateStr: string): string {
+  const parsed = parseDateStr(dateStr);
+  if (!parsed) return "";
+  const { day, month, year } = parsed;
+
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthLabel = `${TURKISH_MONTHS[month] ?? ""} ${year}`;
+
+  const headerCells = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"]
+    .map((h) => `<span style="font-weight:800;color:#08265f;font-size:6.5pt">${h}</span>`)
+    .join("");
+  const blankCells = Array.from({ length: startOffset })
+    .map(() => `<span></span>`)
+    .join("");
+  const dayCells = Array.from({ length: daysInMonth }, (_, i) => {
+    const n = i + 1;
+    const isActive = n === day;
+    return `<span style="${isActive ? "background:#08265f;color:#fff;border-radius:50%;font-weight:900;" : ""}">${n}</span>`;
+  }).join("");
+
+  return `
+    <div style="margin-top:3mm">
+      <strong style="display:block;font-size:7.5pt;font-weight:900;color:#08265f;text-align:center;margin-bottom:2mm">${esc(monthLabel)}</strong>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:7pt;text-align:center;line-height:1.9">
+        ${headerCells}${blankCells}${dayCells}
+      </div>
+    </div>`;
+}
+
+function panelTitle(label: string): string {
+  return `<div style="background:linear-gradient(90deg,#061f53,#082e6d);color:#fff;font-size:7pt;font-weight:800;text-transform:uppercase;letter-spacing:0.03em;padding:2mm 3mm;border-radius:1.5mm 1.5mm 0 0">${esc(label)}</div>`;
+}
+
+function panel(title: string, content: string): string {
+  return `<div style="border:0.25mm solid #9eabba;border-radius:1.5mm;overflow:hidden;background:#fff">
+    ${panelTitle(title)}
+    <div style="padding:2mm 3mm">${content}</div>
+  </div>`;
 }
 
 export interface ServiceReportPdfData {
@@ -100,200 +161,327 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   const signatures = data.signatures ?? [];
   const parts = data.parts ?? [];
 
-  const priorityColors: Record<string, string> = {
-    acil: "#ff3b30",
-    yuksek: "#ff9500",
-    normal: "#34c759",
-    dusuk: "#8e8e93",
-  };
-  const priorityColor = data.priority ? (priorityColors[data.priority] ?? "#8e8e93") : "#8e8e93";
+  const str = (k: string): string => ((rd[k] as string | undefined) ?? "");
 
-  const alarmRowsHtml = Object.entries(ALARM_LABELS).map(([key, label]) => {
-    const status = alarms[key] ?? "yok";
-    const statusLabel = ALARM_STATUS_LABELS[status] ?? status;
-    const bgColors: Record<string, string> = {
-      yok: "#f1f5f9",
-      var: "#fee2e2",
-      kontrol_edildi: "#fef3c7",
-      mudahale_edildi: "#d1fae5",
-    };
-    const textColors: Record<string, string> = {
-      yok: "#64748b",
-      var: "#dc2626",
-      kontrol_edildi: "#d97706",
-      mudahale_edildi: "#059669",
-    };
-    return `<tr><td>${esc(label)}</td><td><span style="font-size:7pt;font-weight:700;padding:1px 6px;border-radius:3px;background:${bgColors[status] ?? "#f1f5f9"};color:${textColors[status] ?? "#64748b"}">${esc(statusLabel)}</span></td></tr>`;
-  }).join("");
+  const hospitalName   = str("hospitalName") || data.device.customerFirm;
+  const department     = str("department");
+  const location       = str("location");
+  const contactPerson  = str("contactPerson");
+  const contact        = str("contact");
+  const email          = str("email");
 
-  const operationsHtml = allOperations.map((op) => {
-    const checked = operations.includes(op);
-    return `<li style="display:flex;align-items:center;gap:5px;font-size:7.5pt;padding:1.5px 0;border-bottom:1px solid #f1f5f9;color:${checked ? "#071b38" : "#94a3b8"};font-weight:${checked ? 600 : 400}">
-      <span style="width:13px;text-align:center;font-weight:900;color:${checked ? "#059669" : "#94a3b8"}">${checked ? "✓" : "○"}</span>${esc(op)}
-    </li>`;
-  }).join("");
+  const deviceType     = str("deviceType") || data.device.productName;
+  const deviceModel    = str("deviceModel") || data.device.model;
+  const plcSystem      = str("plcSystem");
+  const hmiModel       = str("hmiModel");
+  const productionDate = str("productionDate");
+  const commissionDate = str("commissionDate") || (data.device.installDate ?? "");
+  const warrantyStatus = str("warrantyStatus") || (data.device.warrantyEndDate ? `Bitiş: ${data.device.warrantyEndDate}` : "");
 
-  const partsRowsHtml = parts.map((p) =>
-    `<tr><td>${esc(p.partName)}</td><td>${esc(p.partCode ?? "—")}</td><td>${esc(p.quantity)}</td><td>${esc(p.condition ?? "—")}</td></tr>`
-  ).join("");
+  const pump1Hours        = str("pump1Hours");
+  const pump2Hours        = str("pump2Hours");
+  const pump3Hours        = str("pump3Hours");
+  const totalWorkHours    = str("totalWorkHours");
+  const lastMaintDate     = str("lastMaintenanceDate") || (data.device.lastMaintenanceDate ?? "");
+  const nextMaintDate     = str("nextMaintenanceDate") || (data.device.nextMaintenanceDate ?? "");
+  const maintenancePeriod = str("maintenancePeriod");
 
-  const photosHtml = photos.slice(0, 4).map((ph) =>
-    `<div style="break-inside:avoid">
-      <img src="${esc(ph.url)}" alt="${esc(ph.caption ?? "")}" style="width:100%;height:38mm;object-fit:cover;border-radius:3px;border:1px solid #e2e8f0" />
-      ${ph.caption ? `<p style="font-size:7pt;color:#64748b;text-align:center;margin:2px 0 0">${esc(ph.caption)}</p>` : ""}
+  const workingPressure = str("workingPressure");
+  const minVacuum       = str("minVacuum");
+  const testDuration    = str("testDuration");
+  const testResult      = str("testResult");
+
+  const notes                = str("notes");
+  const recommendedMaintDate = str("recommendedMaintenanceDate");
+  const recommendedMaintType = str("recommendedMaintenanceType");
+  const estimatedDuration    = str("estimatedDuration");
+  const maintenanceNote      = str("maintenanceNote");
+
+  // ── Hospital info rows ───────────────────────────────────────────────────
+  const hospitalRows: [string, string][] = ([
+    ["Hastane Adı",  hospitalName],
+    ["Bölüm",        department],
+    ["Lokasyon",     location],
+    ["Sorumlu Kişi", contactPerson],
+    ["İletişim",     contact],
+    ["E-posta",      email],
+  ] as [string, string][]).filter(([, v]) => v);
+
+  const hospitalHtml = hospitalRows.map(([l, v]) =>
+    `<div style="display:grid;grid-template-columns:22mm 2mm 1fr;min-height:5.5mm;border-bottom:0.2mm solid #e2e8f0;font-size:2.6mm;align-items:center">
+      <strong style="font-weight:800">${esc(l)}</strong><span>:</span><p style="margin:0">${esc(v)}</p>
     </div>`
   ).join("");
 
+  // ── Device info rows ─────────────────────────────────────────────────────
+  const deviceRows: [string, string][] = ([
+    ["Cihaz Türü",          deviceType],
+    ["Model",               deviceModel],
+    ["Seri Numarası",       data.device.serialNumber],
+    ["PLC Sistemi",         plcSystem],
+    ["HMI Modeli",          hmiModel],
+    ["Üretim Tarihi",       productionDate],
+    ["Devreye Alma",        commissionDate],
+    ["Garanti Durumu",      warrantyStatus],
+  ] as [string, string][]).filter(([, v]) => v);
+
+  const deviceHtml = deviceRows.map(([l, v]) =>
+    `<div style="display:grid;grid-template-columns:20mm 2mm 1fr;min-height:5mm;border-bottom:0.2mm solid #e2e8f0;font-size:2.4mm;align-items:center">
+      <strong style="font-weight:800">${esc(l)}</strong><span>:</span><p style="margin:0">${esc(v)}</p>
+    </div>`
+  ).join("");
+
+  // ── Alarms table ──────────────────────────────────────────────────────────
+  const alarmRowsHtml = ALARM_KEYS.map(({ key, label }) => {
+    const status = alarms[key] ?? "yok";
+    const statusLabel = ALARM_STATUS_LABELS[status] ?? status;
+    const isDanger = status === "var";
+    const color = isDanger ? "#c81922" : "#0a8f3d";
+    const dot = isDanger
+      ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#d71920;color:#fff;font-size:2.3mm;font-weight:900;margin-right:1mm">!</span>`
+      : `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#18a354;color:#fff;font-size:2.2mm;font-weight:900;margin-right:1mm">✓</span>`;
+    return `<tr>
+      <td style="font-size:2.5mm;border:0.2mm solid #d0d8e3;padding:1.3mm 2mm">${esc(label)}</td>
+      <td style="font-size:2.5mm;border:0.2mm solid #d0d8e3;padding:1.3mm 2mm;font-weight:800;color:${color}">${dot}${esc(statusLabel)}</td>
+    </tr>`;
+  }).join("");
+
+  // ── Work hours rows ───────────────────────────────────────────────────────
+  const hoursRows: string[] = [];
+  const td = (a: string, b: string) =>
+    `<tr><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(a)}</td><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(b)}</td></tr>`;
+  if (pump1Hours) hoursRows.push(td("Pompa 1", pump1Hours));
+  if (pump2Hours) hoursRows.push(td("Pompa 2", pump2Hours));
+  if (pump3Hours) hoursRows.push(td("Pompa 3", pump3Hours));
+  if (totalWorkHours) hoursRows.push(`<tr style="font-weight:900"><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Toplam Çalışma</td><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(totalWorkHours)}</td></tr>`);
+  if (lastMaintDate) hoursRows.push(td("Son Bakım", lastMaintDate));
+  if (nextMaintDate) hoursRows.push(td("Sonraki Bakım", nextMaintDate));
+  if (maintenancePeriod) hoursRows.push(td("Bakım Periyodu", maintenancePeriod));
+
+  // ── Vacuum test ───────────────────────────────────────────────────────────
+  const vacuumRows: string[] = [];
+  if (testResult) {
+    const c = testResult === "Başarılı" ? "#0a8f3d" : testResult === "Başarısız" ? "#c81922" : "#344563";
+    vacuumRows.push(`<tr><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Test Sonucu</td><td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm;font-weight:800;color:${c}">${esc(testResult)}</td></tr>`);
+  }
+  if (workingPressure) vacuumRows.push(td("Çalışma Basıncı", workingPressure));
+  if (minVacuum) vacuumRows.push(td("Minimum Vakum", minVacuum));
+  if (testDuration) vacuumRows.push(td("Test Süresi", testDuration));
+
+  const vacuumHtml = vacuumRows.length > 0
+    ? `<table style="width:100%;border-collapse:collapse"><tbody>${vacuumRows.join("")}</tbody></table>`
+    : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Vakum testi verisi girilmemiş.</p>`;
+
+  // ── Operations list ───────────────────────────────────────────────────────
+  const operationsHtml = allOperations.map((op) => {
+    const checked = operations.includes(op);
+    const dot = checked
+      ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#18a354;color:#fff;font-size:2.2mm;font-weight:900;flex-shrink:0;margin-right:1.3mm">✓</span>`
+      : `<span style="display:inline-flex;align-items:center;justify-content:center;width:2.8mm;height:2.8mm;border-radius:50%;background:#cbd5e1;color:#fff;font-size:2.2mm;flex-shrink:0;margin-right:1.3mm">○</span>`;
+    return `<div style="display:flex;align-items:center;font-size:2.3mm;padding:0.9mm 0;border-bottom:0.2mm solid #f1f5f9;color:${checked ? "#071b38" : "#94a3b8"};font-weight:${checked ? 600 : 400}">${dot}${esc(op)}</div>`;
+  }).join("");
+
+  // ── Parts table ───────────────────────────────────────────────────────────
+  const partsHtml = parts.length === 0
+    ? `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Parça değişimi yapılmadı.</p>`
+    : `<table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#f7f9fc">
+          <th style="font-size:2.2mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.2mm 1.8mm;text-align:left">Parça Adı</th>
+          <th style="font-size:2.2mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.2mm 1.8mm;text-align:left">Kod</th>
+          <th style="font-size:2.2mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.2mm 1.8mm;text-align:center">Adet</th>
+          <th style="font-size:2.2mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.2mm 1.8mm;text-align:left">Durum</th>
+        </tr></thead>
+        <tbody>${parts.map((p) =>
+          `<tr>
+            <td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(p.partName)}</td>
+            <td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(p.partCode ?? "—")}</td>
+            <td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm;text-align:center">${esc(p.quantity)}</td>
+            <td style="font-size:2.4mm;border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(p.condition ?? "—")}</td>
+          </tr>`
+        ).join("")}</tbody>
+      </table>`;
+
+  // ── Photos ────────────────────────────────────────────────────────────────
+  const photosHtml = photos.length === 0
+    ? `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Fotoğraf eklenmemiş.</p>`
+    : `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2mm">${photos.slice(0, 4).map((ph) =>
+        `<div>
+          <img src="${esc(ph.url)}" alt="${esc(ph.caption ?? "")}" style="width:100%;height:18mm;object-fit:cover;border-radius:1mm;border:0.2mm solid #e2e8f0"/>
+          ${ph.caption ? `<p style="font-size:2mm;color:#64748b;text-align:center;margin:1mm 0 0">${esc(ph.caption)}</p>` : ""}
+        </div>`
+      ).join("")}</div>`;
+
+  // ── Signatures ────────────────────────────────────────────────────────────
   const sigBoxes = (["personel", "sorumlu", "yetkili"] as const).map((role) => {
     const sig = signatures.find((s) => s.role === role);
-    return `<div style="display:flex;flex-direction:column;align-items:center;border:1px solid #e2e8f0;border-radius:4px;padding:3mm">
-      <div style="width:100%;height:22mm;display:flex;align-items:center;justify-content:center">
-        ${sig ? `<img src="${esc(sig.imageDataUrl)}" style="max-width:100%;max-height:22mm;object-fit:contain" />` : `<div style="width:100%;height:100%;border-bottom:1.5px solid #94a3b8"></div>`}
+    return `<div style="display:flex;flex-direction:column;align-items:center;border:0.25mm solid #d0d8e3;border-radius:1.5mm;padding:2mm;gap:1mm">
+      <div style="width:100%;height:15mm;display:flex;align-items:center;justify-content:center;border-bottom:0.4mm solid #cbd5e1">
+        ${sig?.imageDataUrl
+          ? `<img src="${esc(sig.imageDataUrl)}" style="max-width:100%;max-height:14mm;object-fit:contain"/>`
+          : `<div style="width:90%;height:0.4mm;background:#e2e8f0;margin-top:14mm"></div>`}
       </div>
-      <p style="font-size:8pt;font-weight:700;color:#071b38;margin:4px 0 1px;text-align:center">${esc(sig?.signerName ?? "—")}</p>
-      <p style="font-size:7pt;color:#64748b;margin:0;text-align:center">${esc(SIGNATURE_ROLE_LABELS[role])}</p>
+      <p style="font-size:2.5mm;font-weight:800;color:#071b38;margin:0;text-align:center">${esc(sig?.signerName ?? "—")}</p>
+      <p style="font-size:2mm;color:#64748b;margin:0;text-align:center">${esc(SIGNATURE_ROLE_LABELS[role] ?? role)}</p>
     </div>`;
   }).join("");
+
+  // ── Next maintenance ──────────────────────────────────────────────────────
+  const calDate = recommendedMaintDate || nextMaintDate;
+  const nextMaintRows: string[] = [];
+  if (calDate) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Önerilen Bakım Tarihi</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(calDate)}</td></tr>`);
+  if (recommendedMaintType) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Önerilen Bakım Türü</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(recommendedMaintType)}</td></tr>`);
+  if (estimatedDuration) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Tahmini Süre</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(estimatedDuration)}</td></tr>`);
+  if (maintenanceNote) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Not</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(maintenanceNote)}</td></tr>`);
+
+  const nextMaintHtml = nextMaintRows.length > 0
+    ? `<table style="width:100%;border-collapse:collapse;font-size:2.4mm"><tbody>${nextMaintRows.join("")}</tbody></table>${calDate ? buildCalendarHtml(calDate) : ""}`
+    : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Planlama girilmemiş.</p>`;
+
+  // ── Summary bar ───────────────────────────────────────────────────────────
+  const priorityColorMap: Record<string, string> = {
+    acil: "#ff3b30", yuksek: "#ff9500", normal: "#34c759", dusuk: "#8e8e93",
+  };
+  const pColor = data.priority ? (priorityColorMap[data.priority] ?? "#8e8e93") : "#8e8e93";
+
+  const summaryItems = [
+    `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
+      <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Tarihi</small>
+      <strong style="font-size:2.8mm;font-weight:800">${esc(data.serviceDate)}</strong></div>
+    </div>`,
+    data.serviceTime
+      ? `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
+          <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Saati</small>
+          <strong style="font-size:2.8mm;font-weight:800">${esc(data.serviceTime)}</strong></div>
+        </div>` : "",
+    `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
+      <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Türü</small>
+      <strong style="font-size:2.8mm;font-weight:800">${esc(SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType)}</strong></div>
+    </div>`,
+    data.priority
+      ? `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
+          <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Öncelik</small>
+          <strong style="font-size:2.8mm;font-weight:800;color:${pColor}">${esc(PRIORITY_LABELS[data.priority] ?? data.priority)}</strong></div>
+        </div>` : "",
+    `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
+      <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Durum</small>
+      <strong style="font-size:2.8mm;font-weight:800;color:#15a154">Tamamlandı</strong></div>
+    </div>`,
+    `<div style="display:block;padding:2mm 2.5mm 0;text-align:center;min-width:36mm">
+      <small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Kodu</small>
+      <strong style="display:block;margin-top:0.7mm;color:#18a24e;font-size:4.5mm;font-weight:900;letter-spacing:0.2mm">${esc(data.serviceCode ?? String(data.reportNo ?? ""))}</strong>
+    </div>`,
+  ].filter(Boolean).join("");
 
   return `<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; font-size: 9pt; color: #071b38; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { font-size: 8pt; padding: 2px 6px; border-bottom: 1px solid #e8edf4; vertical-align: top; text-align: left; }
-  th { font-weight: 700; color: #425169; width: 38%; }
+  body {
+    font-family: "Inter", Arial, Helvetica, sans-serif;
+    font-size: 2.72mm;
+    color: #0f172a;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    background: #d8dee8;
+    padding: 4mm;
+  }
+  @page { size: A4; margin: 0; }
 </style>
 </head>
 <body>
-<div style="width:297mm;min-height:210mm;background:#fff">
+<div style="
+  position:relative;
+  width:202mm;
+  min-height:289mm;
+  margin:0 auto;
+  padding:3.6mm 4mm 2.4mm;
+  border:0.45mm solid #0b2a5f;
+  border-radius:1.6mm;
+  background:#fff;
+  overflow:hidden
+">
 
   <!-- HEADER -->
-  <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#061b39,#082f5e);color:#fff;padding:8mm 10mm;gap:8mm">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div>
-        <p style="font-size:11pt;font-weight:900;letter-spacing:0.03em">OXYMED MEDİKAL GAZ SİSTEMLERİ</p>
-        <p style="font-size:8pt;opacity:0.75;margin-top:2px">Teknik Servis Birimi</p>
-      </div>
+  <div style="display:grid;grid-template-columns:55mm minmax(0,1fr) 39mm;align-items:center;gap:3mm;height:22mm">
+    <div>
+      <p style="font-size:5mm;font-weight:900;color:#08265f;line-height:1">OXYMED MEDİKAL</p>
+      <p style="font-size:3.2mm;font-weight:700;color:#5c667a;margin-top:1.5mm">Medikal Gaz Sistemleri</p>
+      <p style="font-size:2.6mm;color:#5c667a;margin-top:0.8mm">Teknik Servis Birimi</p>
     </div>
-    <div style="text-align:right">
-      <p style="font-size:11pt;font-weight:900;letter-spacing:0.04em">${esc(data.reportNo)}</p>
-      <p style="font-size:8pt;font-weight:700;margin-top:2px">${esc(data.serviceDate)}${data.serviceTime ? ` · ${esc(data.serviceTime)}` : ""}</p>
-      <p style="font-size:8pt;margin-top:2px">${esc(SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType)}</p>
-      ${data.priority ? `<span style="font-size:7.5pt;font-weight:800;padding:1px 7px;border-radius:999px;background:${priorityColor};color:#fff">${esc(PRIORITY_LABELS[data.priority] ?? data.priority)}</span>` : ""}
+    <div style="text-align:center;color:#08265f;transform:translateX(-4mm)">
+      <p style="font-size:5.9mm;font-weight:850;line-height:1;white-space:nowrap">SERVİS &amp; BAKIM RAPORU</p>
+      <p style="font-size:3.5mm;font-weight:760;color:#5c667a;margin-top:2mm">${esc(deviceType || data.device.productName).toUpperCase()}</p>
+    </div>
+    <div style="border:0.25mm solid #9aa7bd;border-radius:2mm;text-align:center;overflow:hidden;align-self:stretch">
+      <div style="background:#08265f;color:#fff;font-size:3.1mm;font-weight:900;padding:1.8mm 0">RAPOR NO</div>
+      <strong style="display:block;font-size:2.5mm;font-weight:900;margin-top:0.9mm">${esc(data.reportNo)}</strong>
+      <div style="width:26mm;height:5mm;margin:0.8mm auto 0;background:repeating-linear-gradient(90deg,#111827 0 0.35mm,transparent 0.35mm 0.7mm,#111827 0.7mm 1.25mm,transparent 1.25mm 1.85mm)"></div>
+      <span style="display:block;font-size:2.6mm;font-weight:800;margin-top:0.5mm">${esc(data.serviceDate)}${data.serviceTime ? ` · ${esc(data.serviceTime)}` : ""}</span>
     </div>
   </div>
 
-  <!-- BODY -->
-  <div style="padding:6mm 10mm 4mm;display:flex;flex-direction:column;gap:5mm">
+  <!-- SUMMARY BAR -->
+  <div style="display:flex;height:13mm;margin-top:2.4mm;border:0.25mm solid #a8b3c5;border-radius:1.5mm;overflow:hidden;background:rgba(255,255,255,0.92)">
+    ${summaryItems}
+  </div>
 
-    <!-- ROW 1: Hospital + Device -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6mm">
-      <div>
-        <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Hastane / Proje Bilgileri</h3>
-        <table><tbody>
-          ${infoRow("Hastane Adı", (rd["hospitalName"] as string) || data.device.customerFirm)}
-          ${infoRow("Bölüm", rd["department"])}
-          ${infoRow("Lokasyon", rd["location"])}
-          ${infoRow("Sorumlu Kişi", rd["contactPerson"])}
-          ${infoRow("İletişim", rd["contact"])}
-          ${infoRow("E-posta", rd["email"])}
-        </tbody></table>
-      </div>
-      <div>
-        <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Cihaz Bilgileri</h3>
-        <table><tbody>
-          ${infoRow("Cihaz Türü", (rd["deviceType"] as string) || data.device.productName)}
-          ${infoRow("Model", (rd["deviceModel"] as string) || data.device.model)}
-          ${infoRow("Seri Numarası", data.device.serialNumber)}
-          ${infoRow("PLC Sistemi", rd["plcSystem"])}
-          ${infoRow("HMI Modeli", rd["hmiModel"])}
-          ${infoRow("Üretim Tarihi", rd["productionDate"])}
-          ${infoRow("Devreye Alma", (rd["commissionDate"] as string) || data.device.installDate)}
-          ${infoRow("Garanti", (rd["warrantyStatus"] as string) || (data.device.warrantyEndDate ? `Bitiş: ${data.device.warrantyEndDate}` : "—"))}
-        </tbody></table>
-      </div>
-    </div>
+  <!-- TOP GRID: Hospital + Device -->
+  <div style="display:grid;grid-template-columns:41.2% 1fr;gap:2.3mm;margin-top:2.3mm">
+    ${panel("Hastane / Proje Bilgileri", hospitalHtml)}
+    ${panel("Cihaz Bilgileri", deviceHtml)}
+  </div>
 
-    <!-- ROW 2: Alarms + Hours -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6mm">
-      <div>
-        <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Alarm &amp; Arıza Bilgileri</h3>
-        <table>
-          <thead><tr style="background:#f5f7fa"><th style="font-size:7pt;font-weight:800;text-transform:uppercase">Alarm</th><th style="font-size:7pt;font-weight:800;text-transform:uppercase">Durum</th></tr></thead>
-          <tbody>${alarmRowsHtml}</tbody>
-        </table>
-      </div>
-      <div>
-        <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Çalışma Saatleri</h3>
-        <table><tbody>
-          ${infoRow("Pompa 1", rd["pump1Hours"])}
-          ${infoRow("Pompa 2", rd["pump2Hours"])}
-          ${infoRow("Pompa 3", rd["pump3Hours"])}
-          ${infoRow("Toplam", rd["totalWorkHours"])}
-          ${infoRow("Son Bakım", (rd["lastMaintenanceDate"] as string) || data.device.lastMaintenanceDate)}
-          ${infoRow("Sonraki Bakım", (rd["nextMaintenanceDate"] as string) || data.device.nextMaintenanceDate)}
-          ${infoRow("Bakım Periyodu", rd["maintenancePeriod"])}
-        </tbody></table>
-        ${(rd["workingPressure"] || rd["minVacuum"] || rd["testResult"]) ? `
-        <h4 style="font-size:7.5pt;font-weight:800;color:#344563;margin:6px 0 3px;text-transform:uppercase">Vakum Performans Testi</h4>
-        <table><tbody>
-          ${infoRow("Çalışma Basıncı", rd["workingPressure"])}
-          ${infoRow("Min Vakum", rd["minVacuum"])}
-          ${infoRow("Test Süresi", rd["testDuration"])}
-          ${infoRow("Test Sonucu", rd["testResult"])}
-          ${infoRow("Açıklama", rd["testDescription"])}
-        </tbody></table>` : ""}
-      </div>
-    </div>
+  <!-- THREE GRID: Alarms + Hours + Vacuum -->
+  <div style="display:grid;grid-template-columns:31% 35.3% 1fr;gap:2.3mm;margin-top:2.3mm">
+    ${panel("Alarm &amp; Arıza Bilgileri",
+      `<table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#f7f9fc">
+          <th style="font-size:2.3mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.3mm 2mm;text-align:left">Alarm / Arıza Türü</th>
+          <th style="font-size:2.3mm;font-weight:800;text-transform:uppercase;border:0.2mm solid #d0d8e3;padding:1.3mm 2mm;text-align:left">Durum</th>
+        </tr></thead>
+        <tbody>${alarmRowsHtml}</tbody>
+      </table>`
+    )}
+    ${panel("Çalışma Saatleri",
+      hoursRows.length > 0
+        ? `<table style="width:100%;border-collapse:collapse"><tbody>${hoursRows.join("")}</tbody></table>`
+        : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Çalışma saati girilmemiş.</p>`
+    )}
+    ${panel("Vakum Performans Testi", vacuumHtml)}
+  </div>
 
-    <!-- ROW 3: Operations + Parts -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6mm">
-      <div>
-        <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Yapılan İşlemler</h3>
-        <ul style="list-style:none;padding:0;margin:0">${operationsHtml}</ul>
-      </div>
-      <div>
-        <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Değiştirilen Parçalar</h3>
-        ${parts.length === 0 ? `<p style="font-size:7.5pt;color:#94a3b8;font-style:italic;margin:4px 0 0">Parça değişimi yapılmadı.</p>` : `
-        <table>
-          <thead><tr style="background:#f5f7fa"><th style="font-size:7pt;font-weight:800;text-transform:uppercase">Parça Adı</th><th style="font-size:7pt;font-weight:800;text-transform:uppercase">Kod</th><th style="font-size:7pt;font-weight:800;text-transform:uppercase">Adet</th><th style="font-size:7pt;font-weight:800;text-transform:uppercase">Durum</th></tr></thead>
-          <tbody>${partsRowsHtml}</tbody>
-        </table>`}
-        ${rd["notes"] ? `<h4 style="font-size:7.5pt;font-weight:800;color:#344563;margin:6px 0 3px;text-transform:uppercase">Notlar</h4><p style="font-size:8pt;color:#344563;padding:4px;background:#f8fafc;border-left:2px solid #cbd5e1;line-height:1.4">${esc(rd["notes"])}</p>` : ""}
-        ${(rd["recommendedMaintenanceDate"] || rd["recommendedMaintenanceType"]) ? `
-        <h4 style="font-size:7.5pt;font-weight:800;color:#344563;margin:6px 0 3px;text-transform:uppercase">Sonraki Bakım Planlaması</h4>
-        <table><tbody>
-          ${infoRow("Önerilen Tarih", rd["recommendedMaintenanceDate"])}
-          ${infoRow("Bakım Türü", rd["recommendedMaintenanceType"])}
-          ${infoRow("Tahmini Süre", rd["estimatedDuration"])}
-          ${infoRow("Not", rd["maintenanceNote"])}
-        </tbody></table>` : ""}
-      </div>
-    </div>
+  <!-- MID GRID: Operations + Notes -->
+  <div style="display:grid;grid-template-columns:53% 1fr;gap:2.3mm;margin-top:2.3mm">
+    ${panel("Yapılan İşlemler",
+      `<div style="display:grid;grid-template-columns:1fr 1.1fr;column-gap:4mm">${operationsHtml}</div>`
+    )}
+    ${panel("Açıklama / Notlar",
+      notes
+        ? `<div style="font-size:2.6mm;line-height:1.5;color:#344563">${notes.split("\n").map((l) => `<p>${esc(l)}</p>`).join("")}</div>`
+        : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Not girilmemiş.</p>`
+    )}
+  </div>
 
-    <!-- Photos -->
-    ${photos.length > 0 ? `
-    <div>
-      <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">Servis Fotoğrafları</h3>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin-top:4px">${photosHtml}</div>
-    </div>` : ""}
+  <!-- LOWER GRID: Parts + Photos -->
+  <div style="display:grid;grid-template-columns:40.5% 1fr;gap:2.3mm;margin-top:2.3mm">
+    ${panel("Değiştirilen Parçalar", partsHtml)}
+    ${panel("Servis Fotoğrafları", photosHtml)}
+  </div>
 
-    <!-- Signatures -->
-    <div style="break-inside:avoid">
-      <h3 style="font-size:8pt;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#061b39;border-bottom:2px solid #061b39;padding-bottom:3px;margin-bottom:4px">İmza &amp; Onay</h3>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6mm;margin-top:4px">${sigBoxes}</div>
-    </div>
-
+  <!-- BOTTOM GRID: Signatures + Next Maintenance -->
+  <div style="display:grid;grid-template-columns:53% 1fr;gap:2.3mm;margin-top:2.3mm">
+    ${panel("İmza &amp; Onay",
+      `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2mm">${sigBoxes}</div>`
+    )}
+    ${panel("Sonraki Bakım Planlaması", nextMaintHtml)}
   </div>
 
   <!-- FOOTER -->
-  <div style="display:flex;justify-content:space-between;align-items:center;background:#f1f5f9;padding:3mm 10mm;margin-top:2mm;border-top:1px solid #e2e8f0">
-    <p style="font-size:6.5pt;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>
-    <p style="font-size:6.5pt;color:#64748b">Doğrulama Kodu: ${esc(data.reportNo)}</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2.5mm;padding-top:2mm;border-top:0.2mm solid #e2e8f0">
+    <p style="font-size:2mm;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>
+    <p style="font-size:2mm;color:#64748b">Doğrulama Kodu: ${esc(data.reportNo)}</p>
   </div>
 
 </div>

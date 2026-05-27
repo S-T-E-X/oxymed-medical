@@ -19,6 +19,8 @@ import { useParams } from "react-router-dom";
 import { useGetServiceReport } from "@workspace/api-client-react";
 import "./ServiceReportPage.css";
 
+// ─── Static maps ──────────────────────────────────────────────────────────────
+
 const SERVICE_TYPE_LABELS: Record<string, string> = {
   periyodik_bakim:  "Periyodik Bakım",
   ariza_mudahalesi: "Arıza Müdahalesi",
@@ -29,19 +31,106 @@ const SERVICE_TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  aktif_garanti:     "Devam Ediyor",
-  yakin_bitis:       "Yakında Bitiyor",
-  garanti_disi:      "Sona Erdi",
-  bakim_riskli:      "Bakım Gerekiyor",
-  yetkisiz_askida:   "Askıda",
-  uzatilmis_garanti: "Uzatılmış",
-  bakim_anlasmasi:   "Bakım Anlaşması",
-  talep_incelemede:  "Talep İncelemede",
-  talep_onaylandi:   "Onaylandı",
-  talep_reddedildi:  "Reddedildi",
+  taslak:      "Taslak",
+  tamamlandi:  "Tamamlandı",
+  iptal:       "İptal",
 };
 
-// ─── Shared components (unchanged design) ─────────────────────────────────────
+const PRIORITY_LABELS: Record<string, string> = {
+  acil:   "ACİL",
+  yuksek: "Yüksek",
+  normal: "Normal",
+  dusuk:  "Düşük",
+};
+
+const ALARM_KEYS = [
+  { key: "dusuk_vakum",       label: "Düşük Vakum Alarmı" },
+  { key: "yuksek_sicaklik",   label: "Yüksek Sıcaklık Alarmı" },
+  { key: "termik_hata",       label: "Termik Hatası" },
+  { key: "sensor_hata",       label: "Sensör Hatası" },
+  { key: "bakim_suresi_doldu",label: "Bakım Süresi Doldu" },
+  { key: "acil_ariza",        label: "Acil Arıza" },
+];
+
+const DEFAULT_OPERATIONS = [
+  "Yağ seviyesi kontrol edildi",
+  "Vakum filtresi kontrol edildi",
+  "Yağ filtreleri değiştirildi",
+  "Kaçak kontrolü yapıldı",
+  "Elektrik bağlantıları kontrol edildi",
+  "Vakum sensörü kalibrasyonu kontrol edildi",
+  "Alarm sistemi test edildi",
+  "HMI ekran kontrolü yapıldı",
+  "PLC hata kayıtları incelendi",
+  "Sistem genel performans testi tamamlandı",
+];
+
+const TURKISH_MONTHS = [
+  "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+  "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık",
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function parseDateStr(dateStr: string): { day: number; month: number; year: number } | null {
+  if (!dateStr) return null;
+  if (dateStr.includes(".")) {
+    const [d, m, y] = dateStr.split(".");
+    const day = parseInt(d ?? "", 10);
+    const month = parseInt(m ?? "", 10) - 1;
+    const year = parseInt(y ?? "", 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return { day, month, year };
+  } else if (dateStr.includes("-")) {
+    const [y, m, d] = dateStr.split("-");
+    const year = parseInt(y ?? "", 10);
+    const month = parseInt(m ?? "", 10) - 1;
+    const day = parseInt(d ?? "", 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return { day, month, year };
+  }
+  return null;
+}
+
+interface CalendarData {
+  monthLabel: string;
+  cells: Array<{ label: string; active: boolean; isHeader: boolean }>;
+}
+
+function buildCalendar(dateStr: string | null | undefined): CalendarData | null {
+  if (!dateStr) return null;
+  const parsed = parseDateStr(dateStr);
+  if (!parsed) return null;
+  const { day, month, year } = parsed;
+
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const headers = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"].map((h) => ({
+    label: h, active: false, isHeader: true,
+  }));
+  const blanks = Array.from({ length: startOffset }, () => ({
+    label: "", active: false, isHeader: false,
+  }));
+  const days = Array.from({ length: daysInMonth }, (_, i) => ({
+    label: String(i + 1), active: i + 1 === day, isHeader: false,
+  }));
+
+  return {
+    monthLabel: `${TURKISH_MONTHS[month] ?? ""} ${year}`,
+    cells: [...headers, ...blanks, ...days],
+  };
+}
+
+function gaugeRotation(valueStr: string | null | undefined): number {
+  if (!valueStr) return -42;
+  const num = parseFloat(valueStr);
+  if (isNaN(num)) return -42;
+  const clamped = Math.max(-100, Math.min(0, num));
+  const percent = (clamped + 100) / 100;
+  return -90 + percent * 180;
+}
+
+// ─── Shared components ────────────────────────────────────────────────────────
 
 function Panel({
   title,
@@ -72,7 +161,7 @@ function DetailRows({ rows }: { rows: [string, string][] }) {
         <div className="sr-detail-row" key={label}>
           <strong>{label}</strong>
           <span>:</span>
-          <p>{value}</p>
+          <p>{value || "—"}</p>
         </div>
       ))}
     </div>
@@ -136,92 +225,181 @@ function DynamicReport({ recordId }: { recordId: number }) {
   if (isLoading) return <ReportSkeleton />;
   if (error || !data) return <ReportNotFound />;
 
-  // Map ServiceReportFull to display-friendly locals
   const rd = (data.reportDataJson ?? {}) as Record<string, unknown>;
   const device = (data.device ?? {}) as Record<string, unknown>;
 
-  const deviceProductName  = (device["productName"]  as string) ?? "";
-  const deviceModel        = (device["model"]         as string) ?? "";
-  const deviceSerialNumber = (device["serialNumber"]  as string) ?? "";
-  const deviceCustomerFirm = (device["customerFirm"]  as string) ?? "";
-  const deviceInstallDate  = (device["installDate"]   as string | undefined) ?? null;
-  const deviceWarrantyEnd  = (device["warrantyEndDate"] as string | undefined) ?? null;
-  const deviceStatus       = (device["status"]        as string) ?? "";
-  const deviceImageUrl     = null; // not in schema; kept for layout compat
+  const str = (key: string) => ((rd[key] as string | undefined) ?? "");
+  const deviceStr = (key: string) => ((device[key] as string | undefined) ?? "");
 
-  const workHours     = (rd["totalWorkHours"] as string | undefined) ?? null;
-  const description   = (rd["notes"]          as string | undefined) ?? null;
-  const servicePersonnel = data.signatures?.find((s) => (s as unknown as Record<string, unknown>)["role"] === "personel") as unknown as Record<string, unknown> | undefined;
-  const personnelName = (servicePersonnel?.["signerName"] as string | undefined) ?? null;
-  const photoUrls     = (data.photos ?? []).map((p) => (p as unknown as Record<string, unknown>)["url"] as string).filter(Boolean);
-  const parts         = (data.parts ?? []).length > 0 ? data.parts : null;
+  // Device fields
+  const deviceProductName  = deviceStr("productName");
+  const deviceModel        = deviceStr("model");
+  const deviceSerialNumber = deviceStr("serialNumber");
+  const deviceCustomerFirm = deviceStr("customerFirm");
+  const deviceInstallDate  = deviceStr("installDate");
+  const deviceWarrantyEnd  = deviceStr("warrantyEndDate");
+  const deviceLastMaint    = deviceStr("lastMaintenanceDate");
+  const deviceNextMaint    = deviceStr("nextMaintenanceDate");
+  const deviceImageUrl     = (device["imageUrl"] as string | null | undefined) ?? null;
 
-  const serviceSummary = [
-    { icon: CalendarDays,   label: "Servis Tarihi", value: data.serviceDate },
-    { icon: ClipboardCheck, label: "Servis Türü",   value: SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType, success: false },
-    { icon: CheckCircle2,   label: "İşlem Durumu",  value: "Tamamlandı", success: true },
-    ...(workHours ? [{ icon: Clock3, label: "Çalışma Saati", value: workHours, success: false }] : []),
-  ];
+  // Report data fields
+  const hospitalName    = str("hospitalName") || deviceCustomerFirm;
+  const department      = str("department");
+  const location        = str("location");
+  const contactPerson   = str("contactPerson");
+  const contact         = str("contact");
+  const email           = str("email");
+
+  const deviceType      = str("deviceType") || deviceProductName;
+  const deviceModelRd   = str("deviceModel") || deviceModel;
+  const plcSystem       = str("plcSystem");
+  const hmiModel        = str("hmiModel");
+  const productionDate  = str("productionDate");
+  const commissionDate  = str("commissionDate") || deviceInstallDate;
+  const warrantyStatus  = str("warrantyStatus") || (deviceWarrantyEnd ? `Bitiş: ${deviceWarrantyEnd}` : "—");
+
+  const alarms          = ((rd["alarms"] ?? {}) as Record<string, string>);
+  const pump1Hours      = str("pump1Hours");
+  const pump2Hours      = str("pump2Hours");
+  const pump3Hours      = str("pump3Hours");
+  const totalWorkHours  = str("totalWorkHours");
+  const lastMaintDate   = str("lastMaintenanceDate") || deviceLastMaint;
+  const nextMaintDate   = str("nextMaintenanceDate") || deviceNextMaint;
+  const maintenancePeriod = str("maintenancePeriod");
+
+  const workingPressure = str("workingPressure");
+  const minVacuum       = str("minVacuum");
+  const testDuration    = str("testDuration");
+  const testResult      = str("testResult");
+
+  const operations      = ((rd["operations"] ?? []) as string[]);
+  const customOps       = ((rd["customOperations"] ?? []) as string[]);
+  const allOperations   = [...DEFAULT_OPERATIONS, ...customOps];
+  const notes           = str("notes");
+
+  const recommendedMaintDate = str("recommendedMaintenanceDate");
+  const recommendedMaintType = str("recommendedMaintenanceType");
+  const estimatedDuration    = str("estimatedDuration");
+  const maintenanceNote      = str("maintenanceNote");
+
+  const photos     = data.photos ?? [];
+  const signatures = data.signatures ?? [];
+  const parts      = data.parts ?? [];
+
+  const sigPersonel = signatures.find((s) => s.role === "personel");
+  const sigSorumlu  = signatures.find((s) => s.role === "sorumlu");
+  const sigYetkili  = signatures.find((s) => s.role === "yetkili");
+  const personnelName = sigPersonel?.signerName ?? null;
+
+  const statusLabel   = STATUS_LABELS[data.status ?? ""] ?? data.status ?? "";
+  const isDone        = data.status === "tamamlandi";
+  const priorityLabel = PRIORITY_LABELS[data.priority ?? ""] ?? data.priority ?? "";
+
+  const calData = buildCalendar(recommendedMaintDate || nextMaintDate);
+  const needleRot = gaugeRotation(workingPressure || minVacuum);
 
   const hospitalInfoRows: [string, string][] = [
-    ["Firma / Kurum", deviceCustomerFirm],
-  ];
+    ["Hastane Adı",   hospitalName],
+    ["Bölüm",         department],
+    ["Lokasyon",      location],
+    ["Sorumlu Kişi",  contactPerson],
+    ["İletişim",      contact],
+    ["E-posta",       email],
+  ].filter(([, v]) => v) as [string, string][];
 
   const deviceInfoRows: [string, string][] = [
-    ["Cihaz Türü",    deviceProductName],
-    ["Model",         deviceModel],
-    ["Seri Numarası", deviceSerialNumber],
-    ...(deviceInstallDate ? [["Kurulum Tarihi", deviceInstallDate] as [string, string]] : []),
-    ["Garanti Durumu", STATUS_LABELS[deviceStatus] ?? deviceStatus],
-    ...(deviceWarrantyEnd ? [["Garanti Bitiş", deviceWarrantyEnd] as [string, string]] : []),
-  ];
+    ["Cihaz Türü",          deviceType],
+    ["Model",               deviceModelRd],
+    ["Seri Numarası",       deviceSerialNumber],
+    ["PLC Sistemi",         plcSystem],
+    ["HMI Modeli",          hmiModel],
+    ["Üretim Tarihi",       productionDate],
+    ["Devreye Alma Tarihi", commissionDate],
+    ["Garanti Durumu",      warrantyStatus],
+  ].filter(([, v]) => v) as [string, string][];
 
-  const actions = description
-    ? description.split(/\.\s+|\n/).map((s) => s.trim()).filter(Boolean)
-    : [];
+  const hasVacuumData = !!(workingPressure || minVacuum || testResult);
+  const hasNextMaint  = !!(recommendedMaintDate || recommendedMaintType);
 
   return (
     <main className="sr-preview">
       <article className="sr-page">
+
+        {/* ── HEADER ─────────────────────────────────────────────────────── */}
         <header className="sr-header">
           <div className="sr-logo-block">
             <img src="/assets/brand/oxymed-service-logo.webp" alt="Oxymed Medikal Gaz Sistemleri" />
           </div>
           <div className="sr-heading">
             <h1>SERVİS &amp; BAKIM RAPORU</h1>
-            <p>{deviceProductName.toUpperCase()}</p>
+            <p>{deviceType.toUpperCase() || deviceProductName.toUpperCase()}</p>
           </div>
           <div className="sr-report-no">
             <div>RAPOR NO</div>
             <strong>{data.reportNo ?? `SRV-${data.id}`}</strong>
             <div className="sr-barcode" />
-            <span>{data.serviceDate}</span>
+            <span>
+              {data.serviceDate}
+              {data.serviceTime ? `\u00a0\u00a0-\u00a0\u00a0${data.serviceTime}` : ""}
+            </span>
           </div>
         </header>
 
+        {/* ── SUMMARY BAR ────────────────────────────────────────────────── */}
         <section className="sr-summary">
-          {serviceSummary.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div className="sr-summary-item" key={item.label}>
-                <Icon size={17} className={item.success ? "sr-green" : ""} />
-                <div>
-                  <small>{item.label}</small>
-                  <strong>{item.value}</strong>
-                </div>
+          <div className="sr-summary-item">
+            <CalendarDays size={17} />
+            <div>
+              <small>Servis Tarihi</small>
+              <strong>{data.serviceDate}</strong>
+            </div>
+          </div>
+          {data.serviceTime && (
+            <div className="sr-summary-item">
+              <Clock3 size={17} />
+              <div>
+                <small>Servis Saati</small>
+                <strong>{data.serviceTime}</strong>
               </div>
-            );
-          })}
+            </div>
+          )}
+          <div className="sr-summary-item">
+            <ClipboardCheck size={17} />
+            <div>
+              <small>Servis Türü</small>
+              <strong>{SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType}</strong>
+            </div>
+          </div>
+          {priorityLabel && (
+            <div className="sr-summary-item">
+              <Gauge size={17} />
+              <div>
+                <small>Müdahale Önceliği</small>
+                <strong>
+                  <i className="ok-dot" />
+                  {priorityLabel}
+                </strong>
+              </div>
+            </div>
+          )}
+          <div className="sr-summary-item">
+            <CheckCircle2 size={17} className={isDone ? "sr-green" : ""} />
+            <div>
+              <small>İşlem Durumu</small>
+              <strong>{statusLabel}</strong>
+            </div>
+          </div>
           <div className="sr-service-code">
             <small>Servis Kodu</small>
-            <strong>{String(data.id).padStart(3, "0")}</strong>
+            <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
           </div>
         </section>
 
+        {/* ── TOP GRID: Hospital + Device ────────────────────────────────── */}
         <div className="sr-grid sr-top-grid">
           <Panel title="Hastane / Proje Bilgileri" icon={Building2}>
             <div className="sr-hospital-layout">
-              <DetailRows rows={hospitalInfoRows} />
+              <DetailRows rows={hospitalInfoRows.length > 0 ? hospitalInfoRows : [["Firma / Kurum", deviceCustomerFirm]]} />
               <Hospital className="sr-watermark" size={92} />
             </div>
           </Panel>
@@ -229,109 +407,307 @@ function DynamicReport({ recordId }: { recordId: number }) {
           <Panel title="Cihaz Bilgileri" icon={Settings}>
             <div className="sr-device">
               <DetailRows rows={deviceInfoRows} />
-              {deviceImageUrl && (
-                <img src={deviceImageUrl} alt="Cihaz görseli" />
-              )}
-              {!deviceImageUrl && (
-                <img src="/assets/images/product-medical-gas.png" alt="Medikal vakum santrali" />
-              )}
+              <img
+                src={deviceImageUrl ?? "/assets/images/product-medical-gas.png"}
+                alt="Medikal vakum santrali"
+              />
             </div>
           </Panel>
         </div>
 
-        {(actions.length > 0 || description) && (
-          <div className="sr-grid sr-mid-grid">
-            {actions.length > 0 && (
-              <Panel title="Yapılan İşlemler" icon={Wrench}>
-                <div className="sr-action-list">
-                  {actions.map((action, i) => (
-                    <p key={i}><span className="sr-check-dot"><Check size={9} /></span>{action}</p>
-                  ))}
-                </div>
-              </Panel>
-            )}
+        {/* ── THREE GRID: Alarms + Work Hours + Vacuum Test ──────────────── */}
+        <div className="sr-grid sr-three-grid">
+          <Panel title="Alarm & Arıza Bilgileri" icon={Bell}>
+            <table className="sr-table">
+              <thead>
+                <tr>
+                  <th>Alarm / Arıza Türü</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ALARM_KEYS.map(({ key, label }) => {
+                  const status = alarms[key] ?? "yok";
+                  const isOk = status === "yok" || status === "kontrol_edildi" || status === "mudahale_edildi";
+                  const isDanger = status === "var";
+                  const statusLabels: Record<string, string> = {
+                    yok: "Yok",
+                    var: "Var",
+                    kontrol_edildi: "Kontrol Edildi",
+                    mudahale_edildi: "Müdahale Edildi",
+                  };
+                  return (
+                    <tr key={key}>
+                      <td>{label}</td>
+                      <td className={isDanger ? "sr-danger-text" : isOk ? "sr-ok-text" : ""}>
+                        <span className={isDanger ? "sr-alert-dot" : "sr-check-dot"}>
+                          {isDanger ? "!" : <Check size={9} />}
+                        </span>
+                        {statusLabels[status] ?? status}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Panel>
 
-            <Panel title="Açıklama" icon={FileText}>
-              <div className="sr-notes">
-                <div>
-                  {description && <p>{description}</p>}
-                  {!description && <p>Bu servis kaydı için açıklama girilmemiştir.</p>}
+          <Panel title="Çalışma Saatleri" icon={Clock3}>
+            <table className="sr-table sr-hours-table">
+              <thead>
+                <tr>
+                  <th>Ekipman</th>
+                  <th>Çalışma Süresi</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pump1Hours && (
+                  <tr>
+                    <td>Pompa 1</td>
+                    <td>{pump1Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
+                {pump2Hours && (
+                  <tr>
+                    <td>Pompa 2</td>
+                    <td>{pump2Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
+                {pump3Hours && (
+                  <tr>
+                    <td>Pompa 3</td>
+                    <td>{pump3Hours}</td>
+                    <td><span className="sr-check-dot"><Check size={9} /></span></td>
+                  </tr>
+                )}
+                {totalWorkHours && (
+                  <tr className="sr-total-row">
+                    <td>Toplam Çalışma Süresi</td>
+                    <td colSpan={2}>{totalWorkHours}</td>
+                  </tr>
+                )}
+                {lastMaintDate && (
+                  <tr>
+                    <td>Son Bakım Tarihi</td>
+                    <td colSpan={2}>{lastMaintDate}</td>
+                  </tr>
+                )}
+                {nextMaintDate && (
+                  <tr>
+                    <td>Bir Sonraki Bakım Tarihi</td>
+                    <td colSpan={2}>{nextMaintDate}</td>
+                  </tr>
+                )}
+                {maintenancePeriod && (
+                  <tr>
+                    <td>Bakım Periyodu</td>
+                    <td colSpan={2}>{maintenancePeriod}</td>
+                  </tr>
+                )}
+                {!pump1Hours && !totalWorkHours && (
+                  <tr>
+                    <td colSpan={3} style={{ color: "#94a3b8", fontStyle: "italic" }}>Çalışma saati girilmemiş</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </Panel>
+
+          <Panel title="Vakum Performans Testi" icon={Gauge}>
+            {hasVacuumData ? (
+              <div className="sr-gauge-block">
+                <div className="sr-gauge">
+                  <div className="sr-gauge-arc" />
+                  <div
+                    className="sr-gauge-needle"
+                    style={{ transform: `rotate(${needleRot}deg)` }}
+                  />
+                  <strong>{workingPressure ? workingPressure.replace(/[^0-9\-]/g, "") : "—"}</strong>
+                  <span>kPa</span>
+                  <small className="sr-gauge-min">-100</small>
+                  <small className="sr-gauge-max">0</small>
                 </div>
-                <aside>
-                  {personnelName && (
-                    <>
-                      <strong>Servis Personeli</strong>
-                      <b>{personnelName}</b>
-                      <SignatureMark color="#475569" />
-                    </>
-                  )}
-                  <div className="sr-qr-row">
-                    <QrPattern />
-                    <span>Raporu Doğrulamak İçin QR Kodu Okutunuz.</span>
-                  </div>
-                </aside>
+                <table className="sr-table sr-test-table">
+                  <tbody>
+                    {testResult && (
+                      <tr>
+                        <td>Test Sonucu</td>
+                        <td className={testResult === "Başarılı" ? "sr-ok-text" : testResult === "Başarısız" ? "sr-danger-text" : ""}>
+                          {testResult}
+                        </td>
+                      </tr>
+                    )}
+                    {workingPressure && <tr><td>Çalışma Basıncı</td><td>{workingPressure}</td></tr>}
+                    {minVacuum && <tr><td>Minimum Vakum</td><td>{minVacuum}</td></tr>}
+                    {testDuration && <tr><td>Test Süresi</td><td>{testDuration}</td></tr>}
+                  </tbody>
+                </table>
               </div>
-            </Panel>
-          </div>
-        )}
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "4mm 1mm" }}>
+                Vakum testi verisi girilmemiş.
+              </p>
+            )}
+          </Panel>
+        </div>
 
-        {parts && parts.length > 0 && (
-          <div className="sr-grid sr-lower-grid">
-            <Panel title="Kullanılan Bakım Kitleri / Parçalar" icon={Settings}>
+        {/* ── MID GRID: Operations + Notes ───────────────────────────────── */}
+        <div className="sr-grid sr-mid-grid">
+          <Panel title="Yapılan İşlemler" icon={Wrench}>
+            <div className="sr-action-list">
+              {allOperations.map((action) => {
+                const checked = operations.includes(action);
+                return (
+                  <p key={action} style={{ color: checked ? "#071b38" : "#94a3b8", fontWeight: checked ? 700 : 400 }}>
+                    <span className={checked ? "sr-check-dot" : "sr-alert-dot"} style={checked ? {} : { background: "#cbd5e1" }}>
+                      {checked ? <Check size={9} /> : <span style={{ fontSize: "2mm" }}>○</span>}
+                    </span>
+                    {action}
+                  </p>
+                );
+              })}
+            </div>
+          </Panel>
+
+          <Panel title="Açıklama / Notlar" icon={FileText}>
+            <div className="sr-notes">
+              <div>
+                {notes
+                  ? notes.split(/\n/).map((line, i) => <p key={i}>{line}</p>)
+                  : <p>Bu servis kaydı için not girilmemiştir.</p>}
+              </div>
+              <aside>
+                {personnelName && (
+                  <>
+                    <strong>Servis Personeli</strong>
+                    <b>{personnelName}</b>
+                    <SignatureMark color="#475569" />
+                  </>
+                )}
+                <div className="sr-qr-row">
+                  <QrPattern />
+                  <span>Raporu Doğrulamak İçin QR Kodu Okutunuz.</span>
+                </div>
+              </aside>
+            </div>
+          </Panel>
+        </div>
+
+        {/* ── LOWER GRID: Parts + Photos ─────────────────────────────────── */}
+        <div className="sr-grid sr-lower-grid">
+          <Panel title="Değiştirilen Parçalar" icon={Settings}>
+            {parts.length > 0 ? (
               <table className="sr-table sr-parts-table">
                 <thead>
                   <tr>
-                    <th>Kit / Parça Adı</th>
+                    <th>Parça Adı</th>
                     <th>Kod / Model</th>
                     <th>Adet</th>
-                    <th>Birim</th>
+                    <th>Durum</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {parts.map((kit, idx) => {
-                    const k = kit as unknown as Record<string, unknown>;
-                    return (
-                      <tr key={idx}>
-                        <td>{k["partName"] as string}</td>
-                        <td>{(k["partCode"] as string) ?? "—"}</td>
-                        <td>{(k["quantity"] as string) ?? "—"}</td>
-                        <td>{(k["condition"] as string) ?? "—"}</td>
-                      </tr>
-                    );
-                  })}
+                  {parts.map((p, idx) => (
+                    <tr key={idx}>
+                      <td>{p.partName}</td>
+                      <td>{p.partCode ?? "—"}</td>
+                      <td>{p.quantity ?? "—"}</td>
+                      <td>{p.condition ?? "—"}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-            </Panel>
-
-            {photoUrls.length > 0 && (
-              <Panel title="Servis Fotoğrafları" icon={Camera}>
-                <div className="sr-photo-grid">
-                  {photoUrls.map((url, i) => (
-                    <figure key={i}>
-                      <img src={url} alt={`Servis fotoğrafı ${i + 1}`} />
-                    </figure>
-                  ))}
-                </div>
-              </Panel>
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "2mm 1mm" }}>
+                Parça değişimi yapılmadı.
+              </p>
             )}
-          </div>
-        )}
+          </Panel>
 
+          <Panel title="Servis Fotoğrafları" icon={Camera}>
+            {photos.length > 0 ? (
+              <div className="sr-photo-grid">
+                {photos.slice(0, 4).map((ph, i) => (
+                  <figure key={i}>
+                    <img src={ph.url} alt={ph.caption ?? `Servis fotoğrafı ${i + 1}`} />
+                    {ph.caption && <figcaption>{ph.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: "2.3mm", color: "#94a3b8", fontStyle: "italic", padding: "2mm 1mm" }}>
+                Fotoğraf eklenmemiş.
+              </p>
+            )}
+          </Panel>
+        </div>
+
+        {/* ── BOTTOM GRID: Signatures + Next Maintenance ─────────────────── */}
         <div className="sr-grid sr-bottom-grid">
-          <Panel title="İmza &amp; Onay" icon={ClipboardCheck}>
+          <Panel title="İmza & Onay" icon={ClipboardCheck}>
             <div className="sr-signatures">
-              {personnelName && (
-                <div>
-                  <small>Servis Personeli</small>
-                  <strong>{personnelName}</strong>
-                  <SignatureMark color="#475569" />
+              {[
+                { sig: sigPersonel, role: "Servis Personeli",  fallbackColor: "#475569" },
+                { sig: sigSorumlu,  role: "Teknik Sorumlu",    fallbackColor: "#475569" },
+                { sig: sigYetkili,  role: "Hastane Yetkilisi", fallbackColor: "#1d4ed8" },
+              ].map(({ sig, role, fallbackColor }) => (
+                <div key={role}>
+                  <small>{role}</small>
+                  {sig?.imageDataUrl ? (
+                    <img
+                      src={sig.imageDataUrl}
+                      alt={`${role} imzası`}
+                      style={{ maxWidth: "100%", maxHeight: "10mm", objectFit: "contain" }}
+                    />
+                  ) : (
+                    <strong>{sig?.signerName ?? "Onay / İmza"}</strong>
+                  )}
+                  <SignatureMark color={fallbackColor} />
+                </div>
+              ))}
+            </div>
+          </Panel>
+
+          <Panel title="Sonraki Bakım Planlaması" icon={CalendarDays}>
+            <div className="sr-plan">
+              <table className="sr-plan-table">
+                <tbody>
+                  {(recommendedMaintDate || nextMaintDate) && (
+                    <tr><td>Önerilen Bakım Tarihi</td><td>{recommendedMaintDate || nextMaintDate}</td></tr>
+                  )}
+                  {recommendedMaintType && (
+                    <tr><td>Önerilen Bakım Türü</td><td>{recommendedMaintType}</td></tr>
+                  )}
+                  {estimatedDuration && (
+                    <tr><td>Tahmini Süre</td><td>{estimatedDuration}</td></tr>
+                  )}
+                  {maintenanceNote && (
+                    <tr><td>Not</td><td>{maintenanceNote}</td></tr>
+                  )}
+                  {!hasNextMaint && !nextMaintDate && (
+                    <tr><td colSpan={2} style={{ color: "#94a3b8", fontStyle: "italic" }}>Planlama girilmemiş.</td></tr>
+                  )}
+                </tbody>
+              </table>
+              {calData && (
+                <div className="sr-calendar">
+                  <strong>{calData.monthLabel}</strong>
+                  <div className="sr-calendar-days">
+                    {calData.cells.map((cell, index) => (
+                      <span
+                        key={`${cell.label}-${index}`}
+                        className={cell.active ? "active" : ""}
+                        style={cell.isHeader ? { fontWeight: 800, color: "#08265f" } : {}}
+                      >
+                        {cell.label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
-              <div>
-                <small>Hastane Yetkilisi</small>
-                <strong>Onay / İmza</strong>
-                <SignatureMark color="#1d4ed8" />
-              </div>
             </div>
           </Panel>
         </div>
