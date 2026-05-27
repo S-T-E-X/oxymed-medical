@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, FileText, Trash2, Eye } from "lucide-react";
+import { Plus, Search, FileText, Trash2, Eye, Download, Mail, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -73,6 +73,17 @@ export default function ServisRaporlariPage() {
   const { reports, loading, loaded, load, setReports } = useServiceReports(search, statusFilter);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
+  // PDF download state
+  const [generatingPdfId, setGeneratingPdfId] = useState<number | null>(null);
+
+  // Email dialog state
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [emailTarget, setEmailTarget] = useState("");
+  const [emailReportId, setEmailReportId] = useState<number | null>(null);
+  const [emailReportNo, setEmailReportNo] = useState<string>("");
+  const [emailReportDate, setEmailReportDate] = useState<string>("");
+  const [sendingEmail, setSendingEmail] = useState(false);
+
   const filtered = reports.filter((r) => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
@@ -103,6 +114,70 @@ export default function ServisRaporlariPage() {
       toast.error("Rapor silinemedi");
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handleDownloadPdf(report: Report) {
+    setGeneratingPdfId(report.id);
+    toast.info("PDF oluşturuluyor...");
+    try {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(`${BASE}/api/service-reports/${report.id}/generate-pdf`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
+        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${report.reportNo}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success("PDF indirildi");
+    } catch (err) {
+      toast.error(`PDF oluşturulamadı: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setGeneratingPdfId(null);
+    }
+  }
+
+  function openEmailDialog(report: Report) {
+    setEmailReportId(report.id);
+    setEmailReportNo(report.reportNo);
+    setEmailReportDate(report.serviceDate);
+    setEmailTarget("");
+    setShowEmailDialog(true);
+  }
+
+  async function handleSendEmail() {
+    if (!emailReportId) return;
+    const target = emailTarget.trim();
+    if (!target) { toast.error("Lütfen bir e-posta adresi girin"); return; }
+    setSendingEmail(true);
+    toast.info("Rapor PDF olarak oluşturulup gönderiliyor...");
+    try {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(`${BASE}/api/service-reports/${emailReportId}/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ email: target }),
+      });
+      const body = await res.json().catch(() => ({})) as { error?: string; detail?: string; success?: boolean };
+      if (!res.ok) {
+        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
+      }
+      toast.success(`Rapor ${target} adresine gönderildi`);
+      setShowEmailDialog(false);
+    } catch (err) {
+      toast.error(`Gönderilemedi: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setSendingEmail(false);
     }
   }
 
@@ -204,7 +279,29 @@ export default function ServisRaporlariPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {r.status === "tamamlandi" && (
+                          <>
+                            <button
+                              onClick={() => handleDownloadPdf(r)}
+                              disabled={generatingPdfId === r.id}
+                              title="PDF İndir"
+                              className="flex items-center justify-center rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-50 hover:text-red-600 hover:border-red-200 disabled:opacity-40 transition-colors"
+                            >
+                              {generatingPdfId === r.id
+                                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                : <Download className="h-3.5 w-3.5" />
+                              }
+                            </button>
+                            <button
+                              onClick={() => openEmailDialog(r)}
+                              title="E-posta ile Gönder"
+                              className="flex items-center justify-center rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                            >
+                              <Mail className="h-3.5 w-3.5" />
+                            </button>
+                          </>
+                        )}
                         <Link
                           to={`/admin/servis-raporlari/${r.id}`}
                           className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
@@ -227,6 +324,70 @@ export default function ServisRaporlariPage() {
           </div>
         )}
       </div>
+
+      {/* Email dialog */}
+      {showEmailDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100">
+                  <Mail className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-slate-900">Raporu E-posta ile Gönder</h2>
+                  <p className="text-xs text-slate-500">PDF eki olarak gönderilecek</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEmailDialog(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-100 text-slate-400"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">
+                  Alıcı E-posta Adresi
+                </label>
+                <input
+                  type="email"
+                  value={emailTarget}
+                  onChange={(e) => setEmailTarget(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
+                  placeholder="ornek@hastane.com"
+                  autoFocus
+                  className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-500 space-y-1">
+                <p><span className="font-bold text-slate-700">Rapor No:</span> {emailReportNo}</p>
+                <p><span className="font-bold text-slate-700">Tarih:</span> {emailReportDate}</p>
+              </div>
+            </div>
+            <div className="flex gap-3 border-t border-slate-100 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowEmailDialog(false)}
+                className="flex-1 rounded-lg border border-slate-200 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                İptal
+              </button>
+              <button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={sendingEmail || !emailTarget.trim()}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {sendingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+                {sendingEmail ? "Gönderiliyor..." : "Gönder"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
