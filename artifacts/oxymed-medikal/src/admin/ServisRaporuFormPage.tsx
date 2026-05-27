@@ -641,6 +641,7 @@ export default function ServisRaporuFormPage() {
         serialNumber: selectedDevice.serialNumber, customerFirm: selectedDevice.customerFirm,
         installDate: selectedDevice.installDate, warrantyEndDate: selectedDevice.warrantyEndDate,
         lastMaintenanceDate: selectedDevice.lastMaintenanceDate, nextMaintenanceDate: selectedDevice.nextMaintenanceDate,
+        imageUrl: selectedDevice.imageUrl,
       } : { productName: "—", model: "—", serialNumber: "—", customerFirm: "—" },
       reportDataJson: buildReportData(),
       photos: photos.map((p) => ({ url: p.url, caption: p.caption })),

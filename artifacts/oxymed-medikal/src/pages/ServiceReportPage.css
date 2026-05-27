@@ -107,7 +107,7 @@
 
 .sr-summary {
   display: grid;
-  grid-template-columns: 16% 30% 18% 18% 18%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   width: 100%;
   height: 14.4mm;
   margin-top: 2.4mm;
@@ -121,10 +121,10 @@
 .sr-summary-item {
   display: flex;
   align-items: center;
-  gap: 1.6mm;
+  gap: 1.35mm;
   width: 100%;
   min-width: 0;
-  padding: 0 2.2mm;
+  padding: 0 1.75mm;
   border-right: 0.25mm solid #b7c0cf;
   overflow: hidden;
   box-sizing: border-box;
@@ -147,7 +147,7 @@
 .sr-summary-item small {
   display: block;
   color: #08265f;
-  font-size: 2mm;
+  font-size: 1.78mm;
   font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
@@ -161,17 +161,12 @@
   align-items: center;
   gap: 1.1mm;
   margin-top: 1.2mm;
-  font-size: 2.85mm;
+  font-size: 2.55mm;
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.sr-summary-code strong {
-  color: #18a24e;
-  letter-spacing: 0.15mm;
 }
 
 .sr-green {
@@ -269,7 +264,7 @@
 
 .sr-detail-row {
   display: grid;
-  grid-template-columns: 27mm 3mm 1fr;
+  grid-template-columns: 27mm 3mm minmax(0, 1fr);
   align-items: center;
   min-height: 6.35mm;
   border-bottom: 0.2mm solid #d5dce6;
@@ -284,8 +279,18 @@
   font-weight: 900;
 }
 
+.sr-detail-row span {
+  color: #64748b;
+  font-weight: 800;
+  text-align: center;
+}
+
 .sr-detail-row p {
   margin: 0;
+  min-width: 0;
+  font-weight: 700;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
 }
 
 .sr-hospital-layout {
@@ -302,21 +307,24 @@
 
 .sr-device {
   display: grid;
-  grid-template-columns: 58% 1fr;
+  grid-template-columns: minmax(0, 1fr) 38%;
   gap: 2mm;
   align-items: center;
 }
 
+.sr-device-no-image {
+  grid-template-columns: 1fr;
+}
+
 .sr-device .sr-detail-row {
-  grid-template-columns: 24mm 2mm 1fr;
-  min-height: 4mm;
+  grid-template-columns: 25.5mm 2mm minmax(0, 1fr);
+  min-height: 4.25mm;
   font-size: 2.18mm;
 }
 
 .sr-device .sr-detail-row p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.13;
+  white-space: normal;
 }
 
 .sr-device .sr-detail-row:last-child p {
@@ -328,6 +336,11 @@
   width: 100%;
   height: 34.5mm;
   object-fit: contain;
+}
+
+.sr-device-img {
+  min-width: 0;
+  margin: 0;
 }
 
 .sr-table {
@@ -643,10 +656,10 @@
 
 .sr-plan-row {
   display: grid;
-  grid-template-columns: 22mm 1fr;
+  grid-template-columns: 22mm minmax(0, 1fr);
   align-items: center;
   gap: 1.5mm;
-  padding: 1mm 1.4mm;
+  padding: 0.85mm 1.2mm;
   border: 0.2mm solid #e2e7ef;
   border-radius: 1.2mm;
   background: #f8fafc;
@@ -658,7 +671,7 @@
 }
 
 .sr-plan-label {
-  font-size: 1.85mm;
+  font-size: 1.7mm;
   font-weight: 900;
   color: #475569;
   text-transform: uppercase;
@@ -670,12 +683,11 @@
 }
 
 .sr-plan-value {
-  font-size: 2.4mm;
+  font-size: 2.18mm;
   font-weight: 900;
   color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
 }
 
 .sr-plan-highlight .sr-plan-value {
@@ -690,7 +702,7 @@
 }
 
 .sr-calendar {
-  padding: 1.1mm;
+  padding: 0.8mm;
   border: 0.2mm solid #d1d9e4;
   border-radius: 1.5mm;
   background: #fff;
@@ -699,9 +711,9 @@
 
 .sr-calendar > strong {
   display: block;
-  margin-bottom: 0.9mm;
+  margin-bottom: 0.55mm;
   color: #08265f;
-  font-size: 2.05mm;
+  font-size: 1.9mm;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.05mm;
@@ -717,17 +729,17 @@
 .sr-calendar-days span {
   display: grid;
   place-items: center;
-  width: 3.6mm;
-  height: 3.6mm;
+  width: 3.25mm;
+  height: 3.25mm;
   border-radius: 50%;
-  font-size: 1.7mm;
+  font-size: 1.62mm;
   font-weight: 700;
   color: #1e293b;
 }
 
 .sr-calendar-days .sr-cal-head {
   color: #08265f;
-  font-size: 1.55mm;
+  font-size: 1.45mm;
   font-weight: 900;
   text-transform: uppercase;
 }
@@ -806,7 +818,7 @@
 
 .sr-next-maint {
   display: grid;
-  grid-template-columns: 36mm 1fr;
+  grid-template-columns: minmax(0, 1fr) 36mm;
   gap: 2mm;
   align-items: start;
   padding-top: 0.4mm;
@@ -818,9 +830,9 @@
 
 .sr-cal-month {
   display: block;
-  margin-bottom: 0.9mm;
+  margin-bottom: 0.55mm;
   color: #08265f;
-  font-size: 2.05mm;
+  font-size: 1.9mm;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.05mm;
@@ -837,10 +849,10 @@
 .sr-cal-grid span {
   display: grid;
   place-items: center;
-  width: 3.6mm;
-  height: 3.6mm;
+  width: 3.25mm;
+  height: 3.25mm;
   border-radius: 50%;
-  font-size: 1.7mm;
+  font-size: 1.62mm;
   font-weight: 700;
   color: #1e293b;
 }
@@ -864,10 +876,10 @@
 
 .sr-maint-row {
   display: grid;
-  grid-template-columns: 22mm 1fr;
+  grid-template-columns: 22mm minmax(0, 1fr);
   align-items: start;
-  gap: 1.5mm;
-  padding: 1mm 1.4mm;
+  gap: 1.1mm;
+  padding: 0.75mm 1.1mm;
   border: 0.2mm solid #e2e7ef;
   border-radius: 1.2mm;
   background: #f8fafc;
@@ -879,7 +891,7 @@
 }
 
 .sr-maint-row span {
-  font-size: 1.85mm;
+  font-size: 1.65mm;
   font-weight: 900;
   color: #475569;
   text-transform: uppercase;
@@ -891,12 +903,11 @@
 }
 
 .sr-maint-row strong {
-  font-size: 2.2mm;
+  font-size: 2.05mm;
   font-weight: 900;
   color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
 }
 
 .sr-maint-row:first-child strong {

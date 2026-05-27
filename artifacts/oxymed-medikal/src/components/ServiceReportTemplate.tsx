@@ -145,8 +145,9 @@ function DetailRows({ rows }: { rows: [string, string][] }) {
     <div className="sr-detail-rows">
       {rows.map(([label, value]) => (
         <div className="sr-detail-row" key={label}>
-          <span>{label}</span>
-          <strong>{value}</strong>
+          <strong>{label}</strong>
+          <span>:</span>
+          <p>{value || "—"}</p>
         </div>
       ))}
     </div>
@@ -309,13 +310,6 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
               <strong>{statusLabel}</strong>
             </div>
           </div>
-          <div className="sr-summary-item sr-summary-code">
-            <FileText size={17} />
-            <div>
-              <small>Servis Kodu</small>
-              <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
-            </div>
-          </div>
         </section>
 
         {/* ── TOP GRID: Hospital + Device ── */}
@@ -327,7 +321,7 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
           </Panel>
 
           <Panel title="Cihaz Bilgileri" icon={Settings}>
-            <div className="sr-device">
+            <div className={`sr-device ${device.imageUrl ? "" : "sr-device-no-image"}`}>
               <DetailRows rows={deviceInfoRows} />
               {device.imageUrl && (
                 <figure className="sr-device-img">

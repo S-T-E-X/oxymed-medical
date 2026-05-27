@@ -396,13 +396,6 @@ function DynamicReport({ recordId }: { recordId: number }) {
               <strong>{statusLabel}</strong>
             </div>
           </div>
-          <div className="sr-summary-item sr-summary-code">
-            <FileText size={17} />
-            <div>
-              <small>Servis Kodu</small>
-              <strong>{data.serviceCode ?? String(data.id ?? "").padStart(3, "0")}</strong>
-            </div>
-          </div>
         </section>
 
         {/* ── TOP GRID: Hospital + Device ────────────────────────────────── */}

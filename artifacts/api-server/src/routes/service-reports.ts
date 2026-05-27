@@ -295,6 +295,7 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
           warrantyEndDate: full.device.warrantyEndDate,
           lastMaintenanceDate: full.device.lastMaintenanceDate,
           nextMaintenanceDate: full.device.nextMaintenanceDate,
+          imageUrl: full.device.imageUrl,
         }
       : { productName: "", model: "", serialNumber: "", customerFirm: "" },
     reportDataJson: (full.reportDataJson ?? {}) as Record<string, unknown>,
@@ -315,17 +316,21 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
   let browser: import("puppeteer-core").Browser | undefined;
   try {
     const puppeteer = await import("puppeteer-core");
-
     const executablePath = process.env["CHROMIUM_PATH"] ?? "/nix/store/qa9cnw4v5xkxyip6mb9kxqfq1z4x2dx1-chromium-138.0.7204.100/bin/chromium";
+
     browser = await puppeteer.default.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--no-zygote"],
       defaultViewport: { width: 794, height: 1123 },
       executablePath,
       headless: true,
     });
 
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    await page.setContent(html, { waitUntil: "load", timeout: 45_000 });
+    // wait for images to load in browser context
+    await (page.evaluate as (fn: string) => Promise<void>)(
+      `(() => Promise.all(Array.from(document.images).map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; }))))()`
+    );
 
     const pdfBuffer = await page.pdf({
       format: "A4",
@@ -404,6 +409,7 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
           warrantyEndDate: full.device.warrantyEndDate,
           lastMaintenanceDate: full.device.lastMaintenanceDate,
           nextMaintenanceDate: full.device.nextMaintenanceDate,
+          imageUrl: full.device.imageUrl,
         }
       : { productName: "", model: "", serialNumber: "", customerFirm: "" },
     reportDataJson: (full.reportDataJson ?? {}) as Record<string, unknown>,
@@ -424,17 +430,21 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
   let browser: import("puppeteer-core").Browser | undefined;
   try {
     const puppeteer = await import("puppeteer-core");
-
     const executablePath = process.env["CHROMIUM_PATH"] ?? "/nix/store/qa9cnw4v5xkxyip6mb9kxqfq1z4x2dx1-chromium-138.0.7204.100/bin/chromium";
+
     browser = await puppeteer.default.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--no-zygote"],
       defaultViewport: { width: 794, height: 1123 },
       executablePath,
       headless: true,
     });
 
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    await page.setContent(html, { waitUntil: "load", timeout: 45_000 });
+    // wait for images to load in browser context
+    await (page.evaluate as (fn: string) => Promise<void>)(
+      `(() => Promise.all(Array.from(document.images).map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; }))))()`
+    );
 
     const pdfBuffer = await page.pdf({
       format: "A4",

@@ -95,7 +95,7 @@ function buildCalendarHtml(dateStr: string): string {
   const monthLabel = `${TURKISH_MONTHS[month] ?? ""} ${year}`;
 
   const headerCells = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"]
-    .map((h) => `<span style="font-weight:800;color:#08265f;font-size:6.5pt">${h}</span>`)
+    .map((h) => `<span style="font-weight:900;color:#08265f;font-size:1.45mm">${h}</span>`)
     .join("");
   const blankCells = Array.from({ length: startOffset })
     .map(() => `<span></span>`)
@@ -103,13 +103,13 @@ function buildCalendarHtml(dateStr: string): string {
   const dayCells = Array.from({ length: daysInMonth }, (_, i) => {
     const n = i + 1;
     const isActive = n === day;
-    return `<span style="${isActive ? "background:#08265f;color:#fff;border-radius:50%;font-weight:900;" : ""}">${n}</span>`;
+    return `<span style="${isActive ? "display:inline-grid;place-items:center;width:3.05mm;height:3.05mm;margin:0 auto;background:#08265f;color:#fff;border-radius:50%;font-weight:900;" : ""}">${n}</span>`;
   }).join("");
 
   return `
-    <div style="margin-top:3mm">
-      <strong style="display:block;font-size:7.5pt;font-weight:900;color:#08265f;text-align:center;margin-bottom:2mm">${esc(monthLabel)}</strong>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:7pt;text-align:center;line-height:1.9">
+    <div style="border:0.2mm solid #d1d9e4;border-radius:1.5mm;background:#fff;padding:0.8mm;text-align:center">
+      <strong style="display:block;font-size:1.9mm;font-weight:900;color:#08265f;text-align:center;margin-bottom:0.55mm;text-transform:uppercase">${esc(monthLabel)}</strong>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:0.2mm;font-size:1.62mm;text-align:center;line-height:1.9">
         ${headerCells}${blankCells}${dayCells}
       </div>
     </div>`;
@@ -144,6 +144,7 @@ export interface ServiceReportPdfData {
     warrantyEndDate?: string | null;
     lastMaintenanceDate?: string | null;
     nextMaintenanceDate?: string | null;
+    imageUrl?: string | null;
   };
   reportDataJson?: Record<string, unknown>;
   photos?: Array<{ url: string; caption?: string | null }>;
@@ -225,11 +226,21 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
     ["Garanti Durumu",      warrantyStatus],
   ] as [string, string][]).filter(([, v]) => v);
 
-  const deviceHtml = deviceRows.map(([l, v]) =>
-    `<div style="display:grid;grid-template-columns:20mm 2mm 1fr;min-height:5mm;border-bottom:0.2mm solid #e2e8f0;font-size:2.4mm;align-items:center">
-      <strong style="font-weight:800">${esc(l)}</strong><span>:</span><p style="margin:0">${esc(v)}</p>
+  const deviceRowsHtml = deviceRows.map(([l, v]) =>
+    `<div style="display:grid;grid-template-columns:25.5mm 2mm minmax(0,1fr);min-height:4.25mm;border-bottom:0.2mm solid #e2e8f0;font-size:2.18mm;align-items:center">
+      <strong style="font-weight:800">${esc(l)}</strong><span style="color:#64748b;font-weight:800;text-align:center">:</span><p style="margin:0;line-height:1.13;overflow-wrap:anywhere">${esc(v)}</p>
     </div>`
   ).join("");
+
+  const deviceImageUrl = data.device.imageUrl && /^(https?:|data:)/i.test(data.device.imageUrl)
+    ? data.device.imageUrl
+    : "";
+  const deviceHtml = deviceImageUrl
+    ? `<div style="display:grid;grid-template-columns:minmax(0,1fr) 38%;gap:2mm;align-items:center">
+        <div>${deviceRowsHtml}</div>
+        <img src="${esc(deviceImageUrl)}" alt="${esc(deviceType)}" style="width:100%;height:34.5mm;object-fit:contain"/>
+      </div>`
+    : deviceRowsHtml;
 
   // ── Alarms table ──────────────────────────────────────────────────────────
   const alarmRowsHtml = ALARM_KEYS.map(({ key, label }) => {
@@ -328,13 +339,21 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   // ── Next maintenance ──────────────────────────────────────────────────────
   const calDate = recommendedMaintDate || nextMaintDate;
   const nextMaintRows: string[] = [];
-  if (calDate) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Önerilen Bakım Tarihi</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(calDate)}</td></tr>`);
-  if (recommendedMaintType) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Önerilen Bakım Türü</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(recommendedMaintType)}</td></tr>`);
-  if (estimatedDuration) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Tahmini Süre</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(estimatedDuration)}</td></tr>`);
-  if (maintenanceNote) nextMaintRows.push(`<tr><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">Not</td><td style="border:0.2mm solid #d0d8e3;padding:1mm 1.8mm">${esc(maintenanceNote)}</td></tr>`);
+  const maintRow = (label: string, value: string, highlight = false) =>
+    `<div style="display:grid;grid-template-columns:22mm minmax(0,1fr);align-items:start;gap:1.1mm;padding:0.75mm 1.1mm;border:0.2mm solid ${highlight ? "#18a354" : "#e2e7ef"};border-radius:1.2mm;background:${highlight ? "#ecfdf3" : "#f8fafc"}">
+      <span style="font-size:1.65mm;font-weight:900;color:${highlight ? "#0a7a3e" : "#475569"};text-transform:uppercase;letter-spacing:0.04mm">${esc(label)}</span>
+      <strong style="font-size:2.05mm;font-weight:900;color:${highlight ? "#08265f" : "#0f172a"};line-height:1.12;overflow-wrap:anywhere">${esc(value)}</strong>
+    </div>`;
+  if (calDate) nextMaintRows.push(maintRow("Önerilen Tarih", calDate, true));
+  if (recommendedMaintType) nextMaintRows.push(maintRow("Bakım Türü", recommendedMaintType));
+  if (estimatedDuration) nextMaintRows.push(maintRow("Tahmini Süre", estimatedDuration));
+  if (maintenanceNote) nextMaintRows.push(maintRow("Not", maintenanceNote));
 
   const nextMaintHtml = nextMaintRows.length > 0
-    ? `<table style="width:100%;border-collapse:collapse;font-size:2.4mm"><tbody>${nextMaintRows.join("")}</tbody></table>${calDate ? buildCalendarHtml(calDate) : ""}`
+    ? `<div style="display:grid;grid-template-columns:minmax(0,1fr) 36mm;gap:2mm;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:1mm">${nextMaintRows.join("")}</div>
+        ${calDate ? buildCalendarHtml(calDate) : ""}
+      </div>`
     : `<p style="font-size:2.3mm;color:#94a3b8;font-style:italic">Planlama girilmemiş.</p>`;
 
   // ── Summary bar ───────────────────────────────────────────────────────────
@@ -343,39 +362,28 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   };
   const pColor = data.priority ? (priorityColorMap[data.priority] ?? "#8e8e93") : "#8e8e93";
 
-  const summaryItems = [
-    `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
-      <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Tarihi</small>
-      <strong style="font-size:2.8mm;font-weight:800">${esc(data.serviceDate)}</strong></div>
-    </div>`,
-    data.serviceTime
-      ? `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
-          <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Saati</small>
-          <strong style="font-size:2.8mm;font-weight:800">${esc(data.serviceTime)}</strong></div>
-        </div>` : "",
-    `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
-      <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Türü</small>
-      <strong style="font-size:2.8mm;font-weight:800">${esc(SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType)}</strong></div>
-    </div>`,
-    data.priority
-      ? `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
-          <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Öncelik</small>
-          <strong style="font-size:2.8mm;font-weight:800;color:${pColor}">${esc(PRIORITY_LABELS[data.priority] ?? data.priority)}</strong></div>
-        </div>` : "",
-    `<div style="display:flex;align-items:center;gap:2mm;padding:0 3mm;border-right:0.25mm solid #b7c0cf">
-      <div><small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Durum</small>
-      <strong style="font-size:2.8mm;font-weight:800;color:#15a154">Tamamlandı</strong></div>
-    </div>`,
-    `<div style="display:block;padding:2mm 2.5mm 0;text-align:center;min-width:36mm">
-      <small style="display:block;font-size:2mm;font-weight:900;color:#08265f;text-transform:uppercase">Servis Kodu</small>
-      <strong style="display:block;margin-top:0.7mm;color:#18a24e;font-size:4.5mm;font-weight:900;letter-spacing:0.2mm">${esc(data.serviceCode ?? String(data.reportNo ?? ""))}</strong>
-    </div>`,
-  ].filter(Boolean).join("");
+  const summaryData = [
+    { label: "Servis Tarihi", value: data.serviceTime ? `${data.serviceDate} ${data.serviceTime}` : data.serviceDate },
+    { label: "Servis Türü", value: SERVICE_TYPE_LABELS[data.serviceType] ?? data.serviceType },
+    data.priority ? { label: "Müdahale Önceliği", value: PRIORITY_LABELS[data.priority] ?? data.priority, color: pColor } : null,
+    { label: "İşlem Durumu", value: data.status === "taslak" ? "Taslak" : data.status === "iptal" ? "İptal" : "Tamamlandı", color: data.status === "tamamlandi" ? "#15a154" : "#0f172a" },
+  ].filter(Boolean) as Array<{ label: string; value: string; color?: string }>;
+
+  const summaryItems = summaryData.map((item, i) =>
+    `<div style="display:flex;align-items:center;min-width:0;gap:1.35mm;padding:0 1.75mm;border-right:${i === summaryData.length - 1 ? "0" : "0.25mm solid #b7c0cf"};overflow:hidden">
+      <div style="min-width:0;overflow:hidden">
+        <small style="display:block;font-size:1.78mm;font-weight:900;color:#08265f;text-transform:uppercase;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(item.label)}</small>
+        <strong style="display:block;margin-top:1.2mm;font-size:2.55mm;font-weight:800;color:${item.color ?? "#0f172a"};line-height:1.05;white-space:normal;overflow-wrap:anywhere">${esc(item.value)}</strong>
+      </div>
+    </div>`
+  ).join("");
 
   return `<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -384,31 +392,38 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
     color: #0f172a;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
-    background: #d8dee8;
-    padding: 4mm;
+    background: #fff;
+    margin: 0;
+    padding: 0;
   }
-  @page { size: A4; margin: 0; }
+  @page { size: A4 portrait; margin: 0; }
 </style>
+<base href="http://localhost:80/">
 </head>
 <body>
 <div style="
   position:relative;
-  width:202mm;
-  min-height:289mm;
-  margin:0 auto;
+  width:210mm;
+  height:297mm;
   padding:3.6mm 4mm 2.4mm;
   border:0.45mm solid #0b2a5f;
-  border-radius:1.6mm;
-  background:#fff;
+  box-sizing:border-box;
+  background:
+    radial-gradient(circle at 22% 41%, rgba(7,39,96,0.055), transparent 21%),
+    radial-gradient(circle at 80% 37%, rgba(7,39,96,0.04), transparent 19%),
+    #ffffff;
   overflow:hidden
 ">
 
   <!-- HEADER -->
   <div style="display:grid;grid-template-columns:55mm minmax(0,1fr) 39mm;align-items:center;gap:3mm;height:22mm">
-    <div>
-      <p style="font-size:5mm;font-weight:900;color:#08265f;line-height:1">OXYMED MEDİKAL</p>
-      <p style="font-size:3.2mm;font-weight:700;color:#5c667a;margin-top:1.5mm">Medikal Gaz Sistemleri</p>
-      <p style="font-size:2.6mm;color:#5c667a;margin-top:0.8mm">Teknik Servis Birimi</p>
+    <div style="display:flex;align-items:center;height:22mm">
+      <img src="assets/brand/oxymed-service-logo.webp" alt="Oxymed Medikal" style="max-height:20mm;max-width:52mm;width:auto;object-fit:contain" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+      <div style="display:none">
+        <p style="font-size:5mm;font-weight:900;color:#08265f;line-height:1">OXYMED MEDİKAL</p>
+        <p style="font-size:3.2mm;font-weight:700;color:#5c667a;margin-top:1.5mm">Medikal Gaz Sistemleri</p>
+        <p style="font-size:2.6mm;color:#5c667a;margin-top:0.8mm">Teknik Servis Birimi</p>
+      </div>
     </div>
     <div style="text-align:center;color:#08265f;transform:translateX(-4mm)">
       <p style="font-size:5.9mm;font-weight:850;line-height:1;white-space:nowrap">SERVİS &amp; BAKIM RAPORU</p>
@@ -423,7 +438,7 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   </div>
 
   <!-- SUMMARY BAR -->
-  <div style="display:flex;height:13mm;margin-top:2.4mm;border:0.25mm solid #a8b3c5;border-radius:1.5mm;overflow:hidden;background:rgba(255,255,255,0.92)">
+  <div style="display:grid;grid-template-columns:repeat(${summaryData.length},minmax(0,1fr));height:13mm;margin-top:2.4mm;border:0.25mm solid #a8b3c5;border-radius:1.5mm;overflow:hidden;background:rgba(255,255,255,0.92)">
     ${summaryItems}
   </div>
 
@@ -479,9 +494,13 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   </div>
 
   <!-- FOOTER -->
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2.5mm;padding-top:2mm;border-top:0.2mm solid #e2e8f0">
-    <p style="font-size:2mm;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>
-    <p style="font-size:2mm;color:#64748b">Doğrulama Kodu: ${esc(data.reportNo)}</p>
+  <div style="margin-top:2.5mm;border-top:0.2mm solid #e2e8f0;padding-top:1.5mm">
+    <img src="assets/brand/oxymed-service-footer.webp" alt="" style="width:100%;height:auto;max-height:8mm;object-fit:contain;object-position:center"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+    <div style="display:none;justify-content:space-between;align-items:center">
+      <p style="font-size:2mm;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>
+      <p style="font-size:2mm;color:#64748b">Doğrulama Kodu: ${esc(data.reportNo)}</p>
+    </div>
   </div>
 
 </div>
