@@ -267,10 +267,10 @@ function DynamicReport({ recordId }: { recordId: number }) {
   const nextMaintDate   = str("nextMaintenanceDate") || deviceNextMaint;
   const maintenancePeriod = str("maintenancePeriod");
 
-  const workingPressure = str("workingPressure");
-  const minVacuum       = str("minVacuum");
-  const testDuration    = str("testDuration");
-  const testResult      = str("testResult");
+  const workingPressure = str("workingPressure") || str("vacuumTestPressure");
+  const minVacuum       = str("minVacuum") || str("vacuumMinPressure");
+  const testDuration    = str("testDuration") || str("vacuumTestDuration");
+  const testResult      = str("testResult") || str("vacuumTestResult");
 
   const operations      = ((rd["operations"] ?? []) as string[]);
   const customOps       = ((rd["customOperations"] ?? []) as string[]);
@@ -278,9 +278,9 @@ function DynamicReport({ recordId }: { recordId: number }) {
   const notes           = str("notes");
 
   const recommendedMaintDate = str("recommendedMaintenanceDate");
-  const recommendedMaintType = str("recommendedMaintenanceType");
-  const estimatedDuration    = str("estimatedDuration");
-  const maintenanceNote      = str("maintenanceNote");
+  const recommendedMaintType = str("recommendedMaintenanceType") || str("nextMaintenanceType");
+  const estimatedDuration    = str("estimatedDuration") || str("nextMaintenanceDuration");
+  const maintenanceNote      = str("maintenanceNote") || str("nextMaintenanceNote");
 
   const photos     = data.photos ?? [];
   const signatures = data.signatures ?? [];
@@ -507,7 +507,7 @@ function DynamicReport({ recordId }: { recordId: number }) {
                     <td colSpan={2}>{maintenancePeriod}</td>
                   </tr>
                 )}
-                {!pump1Hours && !totalWorkHours && (
+                {!pump1Hours && !pump2Hours && !pump3Hours && !totalWorkHours && (
                   <tr>
                     <td colSpan={3} style={{ color: "#94a3b8", fontStyle: "italic" }}>Çalışma saati girilmemiş</td>
                   </tr>

@@ -186,16 +186,16 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
   const nextMaintDate     = str("nextMaintenanceDate") || (data.device.nextMaintenanceDate ?? "");
   const maintenancePeriod = str("maintenancePeriod");
 
-  const workingPressure = str("workingPressure");
-  const minVacuum       = str("minVacuum");
-  const testDuration    = str("testDuration");
-  const testResult      = str("testResult");
+  const workingPressure = str("workingPressure") || str("vacuumTestPressure");
+  const minVacuum       = str("minVacuum") || str("vacuumMinPressure");
+  const testDuration    = str("testDuration") || str("vacuumTestDuration");
+  const testResult      = str("testResult") || str("vacuumTestResult");
 
   const notes                = str("notes");
   const recommendedMaintDate = str("recommendedMaintenanceDate");
-  const recommendedMaintType = str("recommendedMaintenanceType");
-  const estimatedDuration    = str("estimatedDuration");
-  const maintenanceNote      = str("maintenanceNote");
+  const recommendedMaintType = str("recommendedMaintenanceType") || str("nextMaintenanceType");
+  const estimatedDuration    = str("estimatedDuration") || str("nextMaintenanceDuration");
+  const maintenanceNote      = str("maintenanceNote") || str("nextMaintenanceNote");
 
   // ── Hospital info rows ───────────────────────────────────────────────────
   const hospitalRows: [string, string][] = ([
