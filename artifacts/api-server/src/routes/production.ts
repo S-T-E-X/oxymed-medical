@@ -224,6 +224,21 @@ router.delete("/production/orders/:id", requireAuth, async (req, res): Promise<v
   res.sendStatus(204);
 });
 
+// ── Bulk delete orders ─────────────────────────────────────────────────────────
+
+router.delete("/production/orders", requireAuth, async (req, res): Promise<void> => {
+  const parsed = z.object({ ids: z.array(z.number().int().positive()).min(1) }).safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Geçerli bir ID listesi girin" });
+    return;
+  }
+  const { ids } = parsed.data;
+  await db.delete(materialReservationsTable).where(inArray(materialReservationsTable.orderId, ids));
+  await db.delete(productionOrderItemsTable).where(inArray(productionOrderItemsTable.orderId, ids));
+  await db.delete(productionOrdersTable).where(inArray(productionOrdersTable.id, ids));
+  res.json({ deleted: ids.length });
+});
+
 // ── Check finished goods stock ─────────────────────────────────────────────────
 
 router.post("/production/orders/:id/check-stock", requireAuth, async (req, res): Promise<void> => {
