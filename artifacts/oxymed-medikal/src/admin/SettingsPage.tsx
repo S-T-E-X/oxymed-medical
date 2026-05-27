@@ -587,7 +587,7 @@ export default function SettingsPage() {
           ))}
           <NewsCategoriesSection currentRaw={settingsMap["news_categories"] ?? ""} />
           <PreparersSection currentRaw={settingsMap["hazirlayan_kisiler"] ?? ""} />
-          <SmtpSettingsSection />
+          <div id="smtp"><SmtpSettingsSection /></div>
         </div>
       )}
     </section>

@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import {
   Bell,
   BookOpen,
@@ -83,7 +83,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
           </button>
         )}
       </div>
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
+      <nav className="admin-sidebar-scroll flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
         <p className="mb-2 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Ana Menü</p>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -105,6 +105,14 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
             </NavLink>
           );
         })}
+        <Link
+          to="/admin/ayarlar#smtp"
+          onClick={onClose}
+          className="flex h-9 items-center gap-3 rounded-lg pl-8 pr-3 text-[12px] font-semibold text-slate-500 transition hover:bg-white/6 hover:text-white"
+        >
+          <Mail className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">E-posta Ayarları</span>
+        </Link>
         <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Garanti &amp; Servis</p>
         {warrantyNavItems.map((item) => {
           const Icon = item.icon;
