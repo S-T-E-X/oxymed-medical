@@ -500,7 +500,7 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
                   : <p>Bu servis kaydı için not girilmemiştir.</p>}
               </div>
               <aside className="sr-qr-aside">
-                <ServiceReportQRCode value={qrValue} size={24} />
+                <ServiceReportQRCode value={qrValue} size={18} />
                 <span>Raporu Doğrulamak İçin QR Kodu Okutunuz</span>
               </aside>
             </div>
@@ -569,7 +569,7 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
                   <div className="sr-sig-image">
                     {sig?.imageDataUrl
                       ? <img src={sig.imageDataUrl} alt={`${label} imzası`} />
-                      : <SignatureMark />
+                      : <span className="sr-sig-empty">—</span>
                     }
                   </div>
                   <p className="sr-sig-name">{sig?.signerName ?? "—"}</p>

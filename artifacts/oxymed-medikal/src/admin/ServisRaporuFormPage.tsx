@@ -645,6 +645,12 @@ export default function ServisRaporuFormPage() {
       reportDataJson: buildReportData(),
       photos: photos.map((p) => ({ url: p.url, caption: p.caption })),
       signatures: Object.values(signatures).filter(Boolean) as Signature[],
+      parts: parts.map((p) => ({
+        partName: p.partName,
+        partCode: p.partCode || null,
+        quantity: p.quantity || "1",
+        condition: p.condition || null,
+      })),
     };
   }
 
