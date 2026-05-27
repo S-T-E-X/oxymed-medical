@@ -314,13 +314,11 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
 
   let browser: import("puppeteer-core").Browser | undefined;
   try {
-    const chromium = await import("@sparticuz/chromium-min");
     const puppeteer = await import("puppeteer-core");
 
-    const executablePath = await chromium.default.executablePath();
-
+    const executablePath = process.env["CHROMIUM_PATH"] ?? "/nix/store/qa9cnw4v5xkxyip6mb9kxqfq1z4x2dx1-chromium-138.0.7204.100/bin/chromium";
     browser = await puppeteer.default.launch({
-      args: chromium.default.args,
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
       defaultViewport: { width: 794, height: 1123 },
       executablePath,
       headless: true,
@@ -425,12 +423,11 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
 
   let browser: import("puppeteer-core").Browser | undefined;
   try {
-    const chromium = await import("@sparticuz/chromium-min");
     const puppeteer = await import("puppeteer-core");
 
-    const executablePath = await chromium.default.executablePath();
+    const executablePath = process.env["CHROMIUM_PATH"] ?? "/nix/store/qa9cnw4v5xkxyip6mb9kxqfq1z4x2dx1-chromium-138.0.7204.100/bin/chromium";
     browser = await puppeteer.default.launch({
-      args: chromium.default.args,
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
       defaultViewport: { width: 794, height: 1123 },
       executablePath,
       headless: true,
