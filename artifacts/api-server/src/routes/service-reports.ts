@@ -13,8 +13,7 @@ import { eq, desc, and, sql, asc } from "drizzle-orm";
 import { requireAuth, type JwtPayload } from "../lib/auth";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
-import { objectStorageClient as _objectStorageClient, ObjectStorageService } from "../lib/objectStorage";
-import { buildReportHtml } from "../lib/serviceReportHtml";
+import { buildReportHtml, type ServiceReportPdfData } from "../lib/serviceReportHtml";
 import { sendServiceReportEmail } from "../lib/mailer";
 
 const router: IRouter = Router();
@@ -269,6 +268,49 @@ router.post("/service-reports/:id/save-pdf-url", requireAuth, async (req, res): 
 
 // ─── Server-side PDF generation (puppeteer-core + chromium-min) ───────────────
 
+// ─── Preview HTML (returns rendered HTML for iframe preview) ─────────────────
+
+router.post("/service-reports/preview-html", requireAuth, async (req, res): Promise<void> => {
+  const deviceSchema = z.object({
+    productName: z.string(),
+    model: z.string(),
+    serialNumber: z.string(),
+    customerFirm: z.string(),
+    installDate: z.string().optional().nullable(),
+    warrantyEndDate: z.string().optional().nullable(),
+    lastMaintenanceDate: z.string().optional().nullable(),
+    nextMaintenanceDate: z.string().optional().nullable(),
+    imageUrl: z.string().optional().nullable(),
+  });
+  const bodySchema = z.object({
+    reportNo: z.string(),
+    serviceDate: z.string(),
+    serviceTime: z.string().optional().nullable(),
+    serviceType: z.string(),
+    priority: z.string().optional().nullable(),
+    status: z.string(),
+    serviceCode: z.string().optional().nullable(),
+    createdBy: z.string().optional().nullable(),
+    device: deviceSchema,
+    reportDataJson: z.record(z.string(), z.unknown()).optional(),
+    photos: z.array(z.object({ url: z.string(), caption: z.string().optional().nullable() })).optional(),
+    signatures: z.array(z.object({ role: z.string(), signerName: z.string().optional().nullable(), imageDataUrl: z.string() })).optional(),
+    parts: z.array(z.object({ partName: z.string(), partCode: z.string().optional().nullable(), quantity: z.string(), condition: z.string().optional().nullable() })).optional(),
+  });
+
+  const parsed = bodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Geçersiz veri", detail: parsed.error.message });
+    return;
+  }
+
+  const html = buildReportHtml(parsed.data as ServiceReportPdfData);
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.send(html);
+});
+
+// ─── Generate PDF (returns binary directly) ───────────────────────────────────
+
 router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]);
   if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
@@ -342,29 +384,14 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
     await browser.close();
     browser = undefined;
 
-    // Upload via presigned URL
-    const storageService = new ObjectStorageService();
-    const uploadURL = await storageService.getObjectEntityUploadURL();
-    const objectPath = storageService.normalizeObjectEntityPath(uploadURL);
-
-    const uploadRes = await fetch(uploadURL, {
-      method: "PUT",
-      body: pdfBuffer,
-      headers: { "Content-Type": "application/pdf" },
+    const filename = `${full.reportNo ?? `rapor-${id}`}.pdf`;
+    req.log.info({ reportId: id }, "PDF generated, sending binary");
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Length": String(pdfBuffer.length),
     });
-    if (!uploadRes.ok) {
-      throw new Error(`GCS upload failed: ${uploadRes.status}`);
-    }
-
-    // Store pdfUrl as a browser-accessible public URL
-    const pdfUrl = `/api/storage/public-objects/${objectPath}`;
-    await db
-      .update(serviceReportsTable)
-      .set({ pdfUrl, updatedAt: new Date() })
-      .where(eq(serviceReportsTable.id, id));
-
-    req.log.info({ reportId: id, pdfUrl }, "PDF generated and uploaded");
-    res.json({ pdfUrl });
+    res.send(Buffer.from(pdfBuffer));
   } catch (err) {
     if (browser) { try { await browser.close(); } catch { /* ignore */ } }
     req.log.error({ err }, "PDF generation failed");

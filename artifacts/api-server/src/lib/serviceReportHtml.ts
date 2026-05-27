@@ -369,8 +369,16 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
     { label: "İşlem Durumu", value: data.status === "taslak" ? "Taslak" : data.status === "iptal" ? "İptal" : "Tamamlandı", color: data.status === "tamamlandi" ? "#15a154" : "#0f172a" },
   ].filter(Boolean) as Array<{ label: string; value: string; color?: string }>;
 
+  const SUMMARY_ICONS: Record<string, string> = {
+    "Servis Tarihi": `<svg xmlns="http://www.w3.org/2000/svg" style="width:4mm;height:4mm;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="#08265f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="14" r="0.7" fill="#08265f" stroke="none"/><circle cx="12" cy="14" r="0.7" fill="#08265f" stroke="none"/><circle cx="16" cy="14" r="0.7" fill="#08265f" stroke="none"/><circle cx="8" cy="18" r="0.7" fill="#08265f" stroke="none"/><circle cx="12" cy="18" r="0.7" fill="#08265f" stroke="none"/></svg>`,
+    "Servis Türü": `<svg xmlns="http://www.w3.org/2000/svg" style="width:4mm;height:4mm;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="#08265f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>`,
+    "Müdahale Önceliği": `<svg xmlns="http://www.w3.org/2000/svg" style="width:4mm;height:4mm;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="#08265f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>`,
+    "İşlem Durumu": `<svg xmlns="http://www.w3.org/2000/svg" style="width:4mm;height:4mm;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="#08265f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+  };
+
   const summaryItems = summaryData.map((item, i) =>
     `<div style="display:flex;align-items:center;min-width:0;gap:1.35mm;padding:0 1.75mm;border-right:${i === summaryData.length - 1 ? "0" : "0.25mm solid #b7c0cf"};overflow:hidden">
+      ${SUMMARY_ICONS[item.label] ?? ""}
       <div style="min-width:0;overflow:hidden">
         <small style="display:block;font-size:1.78mm;font-weight:900;color:#08265f;text-transform:uppercase;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(item.label)}</small>
         <strong style="display:block;margin-top:1.2mm;font-size:2.55mm;font-weight:800;color:${item.color ?? "#0f172a"};line-height:1.05;white-space:normal;overflow-wrap:anywhere">${esc(item.value)}</strong>
@@ -495,7 +503,7 @@ export function buildReportHtml(data: ServiceReportPdfData): string {
 
   <!-- FOOTER -->
   <div style="margin-top:2.5mm;border-top:0.2mm solid #e2e8f0;padding-top:1.5mm">
-    <img src="assets/brand/oxymed-service-footer.webp" alt="" style="width:100%;height:auto;max-height:8mm;object-fit:contain;object-position:center"
+    <img src="assets/brand/oxymed-service-footer.webp" alt="" style="width:100%;height:auto;display:block"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
     <div style="display:none;justify-content:space-between;align-items:center">
       <p style="font-size:2mm;color:#64748b">Bu rapor Oxymed Medikal Gaz Sistemleri tarafından düzenlenmiştir. · www.oxymed.com.tr</p>

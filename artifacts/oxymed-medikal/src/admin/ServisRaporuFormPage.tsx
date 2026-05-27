@@ -5,7 +5,6 @@ import {
   Camera, ChevronDown, ChevronUp, Loader2, Plus, Save, Trash2, X,
   FileText, Eye, CheckSquare, Square, Search, Mail,
 } from "lucide-react";
-import ServiceReportTemplate, { type ServiceReportTemplateData } from "../components/ServiceReportTemplate";
 import { useImageUpload } from "./useImageUpload";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -382,6 +381,8 @@ export default function ServisRaporuFormPage() {
   const [saving, setSaving] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [reportNo, setReportNo] = useState<string | null>(null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
@@ -533,13 +534,16 @@ export default function ServisRaporuFormPage() {
           body: JSON.stringify(payload),
         });
       }
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
+        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
+      }
       const saved = await res.json() as { id: number; reportNo: string };
       setReportNo(saved.reportNo);
       toast.success(saveStatus === "tamamlandi" ? "Rapor tamamlandı ve kaydedildi" : "Rapor kaydedildi");
       if (isNew) navigate(`/admin/servis-raporlari/${saved.id}`, { replace: true });
-    } catch {
-      toast.error("Kaydedilemedi");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Kaydedilemedi");
     } finally {
       setSaving(false);
     }
@@ -578,31 +582,53 @@ export default function ServisRaporuFormPage() {
     toast.info("Sunucuda PDF oluşturuluyor...");
     try {
       const token = localStorage.getItem("admin_token");
-
-      // Call server-side Puppeteer PDF endpoint
       const res = await fetch(`${BASE}/api/service-reports/${id}/generate-pdf`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? `HTTP ${res.status}`);
+        const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
+        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
       }
-      const { pdfUrl } = await res.json() as { pdfUrl: string };
-
-      toast.success("PDF oluşturuldu ve kaydedildi");
-
-      // Auto-download via a temporary anchor
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
       const filename = `${reportNo ?? "rapor"}.pdf`;
       const link = document.createElement("a");
-      link.href = pdfUrl.startsWith("/") ? `${BASE}${pdfUrl}` : pdfUrl;
+      link.href = url;
       link.download = filename;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success("PDF indirildi");
     } catch (err) {
       console.error(err);
       toast.error(`PDF oluşturulamadı: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setGeneratingPdf(false);
+    }
+  }
+
+  async function handleShowPreview() {
+    setPreviewHtml(null);
+    setShowPreview(true);
+    setPreviewLoading(true);
+    try {
+      const token = localStorage.getItem("admin_token");
+      const payload = buildTemplateData();
+      const res = await fetch(`${BASE}/api/service-reports/preview-html`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const html = await res.text();
+      setPreviewHtml(html);
+    } catch (err) {
+      toast.error(`Önizleme yüklenemedi: ${err instanceof Error ? err.message : String(err)}`);
+      setShowPreview(false);
+    } finally {
+      setPreviewLoading(false);
     }
   }
 
@@ -630,7 +656,7 @@ export default function ServisRaporuFormPage() {
     setNewOperation("");
   }
 
-  function buildTemplateData(): ServiceReportTemplateData {
+  function buildTemplateData() {
     return {
       reportNo: reportNo ?? `OXM-SRV-${new Date().getFullYear()}-XXXXXX`,
       serviceDate, serviceTime: serviceTime || null,
@@ -668,10 +694,11 @@ export default function ServisRaporuFormPage() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => setShowPreview((p) => !p)}
-            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            onClick={() => void handleShowPreview()}
+            disabled={previewLoading}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           >
-            <Eye className="h-4 w-4" /> Önizle
+            {previewLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />} Önizle
           </button>
           <button
             type="button"
@@ -790,8 +817,9 @@ export default function ServisRaporuFormPage() {
       {/* Preview modal */}
       {showPreview && (
         <div className="fixed inset-0 z-50 overflow-auto bg-black/60 py-8">
-          <div className="mx-auto max-w-[297mm]">
-            <div className="flex justify-end mb-3">
+          <div className="mx-auto max-w-[210mm]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-semibold text-white">PDF Önizleme</span>
               <button
                 onClick={() => setShowPreview(false)}
                 className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow hover:bg-slate-50"
@@ -799,9 +827,18 @@ export default function ServisRaporuFormPage() {
                 <X className="h-4 w-4" /> Kapat
               </button>
             </div>
-            <div id="srt-preview-container">
-              <ServiceReportTemplate data={buildTemplateData()} />
-            </div>
+            {previewLoading ? (
+              <div className="flex items-center justify-center h-[297mm] bg-white rounded shadow">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            ) : previewHtml ? (
+              <iframe
+                srcDoc={previewHtml}
+                title="PDF Önizleme"
+                style={{ width: "210mm", height: "297mm", border: "none", display: "block", borderRadius: "2px", boxShadow: "0 4px 24px rgba(0,0,0,0.3)" }}
+                sandbox="allow-same-origin"
+              />
+            ) : null}
           </div>
         </div>
       )}
