@@ -97,6 +97,9 @@ import type {
   Slider,
   SliderInput,
   SliderUpdate,
+  SmtpStatusResult,
+  SmtpTestInput,
+  SmtpTestResult,
   StartProductionOrder200,
   WarrantyAlertListResult,
   WarrantyClaimDecision,
@@ -3184,6 +3187,154 @@ export const useUpsertSetting = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getUpsertSettingMutationOptions(options));
+    }
+
+export const getGetSmtpStatusUrl = () => {
+
+
+
+
+  return `/api/settings/smtp/status`
+}
+
+/**
+ * @summary Get SMTP configuration status
+ */
+export const getSmtpStatus = async ( options?: RequestInit): Promise<SmtpStatusResult> => {
+
+  return customFetch<SmtpStatusResult>(getGetSmtpStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSmtpStatusQueryKey = () => {
+    return [
+    `/api/settings/smtp/status`
+    ] as const;
+    }
+
+
+export const getGetSmtpStatusQueryOptions = <TData = Awaited<ReturnType<typeof getSmtpStatus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSmtpStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSmtpStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSmtpStatus>>> = ({ signal }) => getSmtpStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSmtpStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSmtpStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getSmtpStatus>>>
+export type GetSmtpStatusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get SMTP configuration status
+ */
+
+export function useGetSmtpStatus<TData = Awaited<ReturnType<typeof getSmtpStatus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSmtpStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSmtpStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getTestSmtpConnectionUrl = () => {
+
+
+
+
+  return `/api/settings/smtp/test`
+}
+
+/**
+ * @summary Send a test email to verify SMTP configuration
+ */
+export const testSmtpConnection = async (smtpTestInput: SmtpTestInput, options?: RequestInit): Promise<SmtpTestResult> => {
+
+  return customFetch<SmtpTestResult>(getTestSmtpConnectionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      smtpTestInput,)
+  }
+);}
+
+
+
+
+export const getTestSmtpConnectionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testSmtpConnection>>, TError,{data: BodyType<SmtpTestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof testSmtpConnection>>, TError,{data: BodyType<SmtpTestInput>}, TContext> => {
+
+const mutationKey = ['testSmtpConnection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof testSmtpConnection>>, {data: BodyType<SmtpTestInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  testSmtpConnection(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TestSmtpConnectionMutationResult = NonNullable<Awaited<ReturnType<typeof testSmtpConnection>>>
+    export type TestSmtpConnectionMutationBody = BodyType<SmtpTestInput>
+    export type TestSmtpConnectionMutationError = ErrorType<void>
+
+    /**
+ * @summary Send a test email to verify SMTP configuration
+ */
+export const useTestSmtpConnection = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testSmtpConnection>>, TError,{data: BodyType<SmtpTestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof testSmtpConnection>>,
+        TError,
+        {data: BodyType<SmtpTestInput>},
+        TContext
+      > => {
+      return useMutation(getTestSmtpConnectionMutationOptions(options));
     }
 
 export const getListMediaFilesUrl = (params?: ListMediaFilesParams,) => {

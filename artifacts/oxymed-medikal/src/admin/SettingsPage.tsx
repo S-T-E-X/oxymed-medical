@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useListSettings, useUpsertSetting } from "@workspace/api-client-react";
+import { useListSettings, useUpsertSetting, useGetSmtpStatus, useTestSmtpConnection } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Upload, X, Loader2, Tag } from "lucide-react";
+import { Save, Plus, Trash2, Upload, X, Loader2, Tag, Mail, CheckCircle, XCircle, AlertCircle, Send } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 
 type Preparer = {
@@ -390,6 +390,170 @@ function SettingField({ settingKey, label, type = "text", currentValue }: {
   );
 }
 
+function SmtpSettingsSection() {
+  const [testEmail, setTestEmail] = useState("");
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  const { data: status, isLoading: statusLoading, refetch: refetchStatus } = useGetSmtpStatus();
+
+  const testMut = useTestSmtpConnection({
+    mutation: {
+      onSuccess: (data) => {
+        setTestResult({ success: data.success, message: data.message ?? "" });
+        if (data.success) {
+          toast.success("Test e-postası gönderildi");
+          void refetchStatus();
+        } else {
+          toast.error("Test başarısız");
+        }
+      },
+      onError: (err: unknown) => {
+        const message =
+          err && typeof err === "object" && "message" in err
+            ? String((err as { message: unknown }).message)
+            : "Bağlantı hatası";
+        setTestResult({ success: false, message });
+        toast.error("Test başarısız");
+      },
+    },
+  });
+
+  function handleTest() {
+    if (!testEmail.trim()) {
+      toast.error("Lütfen bir e-posta adresi girin");
+      return;
+    }
+    setTestResult(null);
+    testMut.mutate({ data: { to: testEmail.trim() } });
+  }
+
+  const configured = status?.configured ?? false;
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
+          <Mail className="h-5 w-5 text-blue-600" />
+        </div>
+        <div>
+          <h2 className="text-sm font-bold text-slate-900">E-posta Ayarları (SMTP)</h2>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Ortam değişkenleriyle yapılandırılır. Bağlantıyı test etmek için aşağıdaki butonu kullanın.
+          </p>
+        </div>
+      </div>
+
+      {statusLoading ? (
+        <div className="flex items-center gap-2 text-sm text-slate-400">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Durum kontrol ediliyor…
+        </div>
+      ) : (
+        <>
+          <div className="mb-5 grid gap-2 sm:grid-cols-2">
+            <StatusRow label="SMTP_HOST" ok={status?.host ?? false} />
+            <StatusRow label="SMTP_PORT" ok={true} value={String(status?.port ?? 587)} />
+            <StatusRow label="SMTP_USER" ok={status?.user ?? false} />
+            <StatusRow label="SMTP_FROM" ok={status?.from ?? false} optional />
+          </div>
+
+          {!configured && (
+            <div className="mb-5 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              <p className="text-sm text-amber-800">
+                SMTP yapılandırması eksik. <strong>SMTP_HOST</strong>, <strong>SMTP_USER</strong> ve{" "}
+                <strong>SMTP_PASS</strong> ortam değişkenleri tanımlanmalıdır.
+              </p>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="flex-1">
+              <label className="mb-1.5 block text-xs font-medium text-slate-700">
+                Test e-postası alıcı adresi
+              </label>
+              <input
+                type="email"
+                className="input w-full"
+                placeholder="ornek@firma.com"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleTest()}
+                disabled={testMut.isPending}
+              />
+            </div>
+            <button
+              onClick={handleTest}
+              disabled={testMut.isPending || !testEmail.trim()}
+              className="flex h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-40"
+            >
+              {testMut.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              Test Gönder
+            </button>
+          </div>
+
+          {testResult && (
+            <div
+              className={`mt-4 flex items-start gap-3 rounded-lg border p-4 ${
+                testResult.success
+                  ? "border-emerald-200 bg-emerald-50"
+                  : "border-red-200 bg-red-50"
+              }`}
+            >
+              {testResult.success ? (
+                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              ) : (
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
+              )}
+              <p
+                className={`text-sm ${testResult.success ? "text-emerald-800" : "text-red-800"}`}
+              >
+                {testResult.message}
+              </p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function StatusRow({
+  label,
+  ok,
+  value,
+  optional,
+}: {
+  label: string;
+  ok: boolean;
+  value?: string;
+  optional?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5">
+      {ok ? (
+        <CheckCircle className="h-4 w-4 shrink-0 text-emerald-500" />
+      ) : (
+        <XCircle className={`h-4 w-4 shrink-0 ${optional ? "text-slate-300" : "text-red-400"}`} />
+      )}
+      <span className="flex-1 font-mono text-xs text-slate-700">{label}</span>
+      {value ? (
+        <span className="text-xs font-medium text-slate-500">{value}</span>
+      ) : ok ? (
+        <span className="text-xs text-emerald-600">Tanımlı</span>
+      ) : (
+        <span className={`text-xs ${optional ? "text-slate-400" : "text-red-500"}`}>
+          {optional ? "Opsiyonel" : "Eksik"}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const { data: settings, isLoading } = useListSettings();
   const settingsMap: Record<string, string> = (settings as Record<string, string>) ?? {};
@@ -423,6 +587,7 @@ export default function SettingsPage() {
           ))}
           <NewsCategoriesSection currentRaw={settingsMap["news_categories"] ?? ""} />
           <PreparersSection currentRaw={settingsMap["hazirlayan_kisiler"] ?? ""} />
+          <SmtpSettingsSection />
         </div>
       )}
     </section>

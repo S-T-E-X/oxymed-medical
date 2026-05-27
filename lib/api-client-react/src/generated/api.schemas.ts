@@ -962,6 +962,23 @@ export interface ServiceReportVerification {
   device?: ServiceReportVerificationDevice;
 }
 
+export interface SmtpStatusResult {
+  configured: boolean;
+  host: boolean;
+  port: number;
+  user: boolean;
+  from: boolean;
+}
+
+export interface SmtpTestInput {
+  to: string;
+}
+
+export interface SmtpTestResult {
+  success: boolean;
+  message?: string;
+}
+
 export interface QuoteFormEmailInput {
   email: string;
 }

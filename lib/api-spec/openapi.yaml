@@ -933,6 +933,44 @@ paths:
               schema:
                 $ref: "#/components/schemas/Setting"
 
+  /settings/smtp/status:
+    get:
+      operationId: getSmtpStatus
+      tags: [settings]
+      summary: Get SMTP configuration status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: SMTP configuration status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpStatusResult"
+
+  /settings/smtp/test:
+    post:
+      operationId: testSmtpConnection
+      tags: [settings]
+      summary: Send a test email to verify SMTP configuration
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SmtpTestInput"
+      responses:
+        "200":
+          description: Test result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpTestResult"
+        "400":
+          description: Invalid request or SMTP not configured
+
   # MEDIA
   /media:
     get:
@@ -3572,6 +3610,38 @@ components:
             productName: { type: string }
             model: { type: string }
             customerFirm: { type: string }
+
+    SmtpStatusResult:
+      type: object
+      required: [configured, host, port, user, from]
+      properties:
+        configured:
+          type: boolean
+        host:
+          type: boolean
+        port:
+          type: integer
+        user:
+          type: boolean
+        from:
+          type: boolean
+
+    SmtpTestInput:
+      type: object
+      required: [to]
+      properties:
+        to:
+          type: string
+          format: email
+
+    SmtpTestResult:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
 
     QuoteFormEmailInput:
       type: object

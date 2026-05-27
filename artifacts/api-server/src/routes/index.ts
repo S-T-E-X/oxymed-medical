@@ -17,6 +17,7 @@ import warrantyRouter from "./warranty";
 import productionRouter from "./production";
 import serviceReportsRouter from "./service-reports";
 import emailLogsRouter from "./email-logs";
+import smtpRouter from "./smtp";
 
 const router: IRouter = Router();
 
@@ -38,5 +39,6 @@ router.use(warrantyRouter);
 router.use(productionRouter);
 router.use(serviceReportsRouter);
 router.use(emailLogsRouter);
+router.use(smtpRouter);
 
 export default router;

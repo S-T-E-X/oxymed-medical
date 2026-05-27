@@ -1036,6 +1036,31 @@ export const UpsertSettingResponse = zod.object({
 
 
 /**
+ * @summary Get SMTP configuration status
+ */
+export const GetSmtpStatusResponse = zod.object({
+  "configured": zod.boolean(),
+  "host": zod.boolean(),
+  "port": zod.number(),
+  "user": zod.boolean(),
+  "from": zod.boolean()
+})
+
+
+/**
+ * @summary Send a test email to verify SMTP configuration
+ */
+export const TestSmtpConnectionBody = zod.object({
+  "to": zod.string().email()
+})
+
+export const TestSmtpConnectionResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().optional()
+})
+
+
+/**
  * @summary List media files (admin only)
  */
 export const ListMediaFilesQueryParams = zod.object({
