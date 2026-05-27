@@ -8,6 +8,7 @@
 
 export type ListEmailLogsParams = {
 emailType?: string;
+search?: string;
 limit?: number;
 offset?: number;
 };

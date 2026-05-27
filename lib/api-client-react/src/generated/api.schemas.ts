@@ -1072,6 +1072,7 @@ export type ListServiceReportEmailLogs200 = {
 
 export type ListEmailLogsParams = {
 emailType?: string;
+search?: string;
 limit?: number;
 offset?: number;
 };

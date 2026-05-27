@@ -21,6 +21,7 @@ export interface SendQuoteFormEmailOptions {
     unit: string;
     unitPrice: string | null;
   }>;
+  pdfBuffer?: Buffer;
 }
 
 export interface SendReportEmailOptions {
@@ -104,8 +105,8 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td>
-                  <div style="font-size:22px;font-weight:800;color:#ffffff;letter-spacing:0.5px">OXYMED MEDİKAL</div>
-                  <div style="font-size:12px;color:#93c5fd;margin-top:4px">Medikal Gaz Sistemleri &amp; Hastane Ekipmanları</div>
+                  <img src="https://www.oxymedmedical.com/assets/brand/oxymed-service-logo.webp" alt="Oxymed Medikal" width="150" style="display:block;height:auto;max-height:48px;object-fit:contain;margin-bottom:10px">
+                  <div style="font-size:12px;color:#93c5fd;margin-top:0">Medikal Gaz Sistemleri &amp; Hastane Ekipmanları</div>
                 </td>
                 <td align="right">
                   <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:8px 14px;display:inline-block;text-align:right">
@@ -209,8 +210,9 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
         <tr>
           <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
             <p style="margin:0;font-size:11px;color:#94a3b8">
-              Bu teklif ${dateStr} tarihinde Oxymed Medikal tarafından hazırlanmıştır.<br>
-              Ankara · <a href="https://www.oxymedmedical.com" style="color:#3b82f6;text-decoration:none">www.oxymedmedical.com</a>
+              Bu e-posta Oxymed Medikal Gaz Sistemleri tarafından otomatik olarak gönderilmiştir.<br>
+              Teklif No: ${opts.quoteNo} | Tarih: ${dateStr}<br>
+              <a href="https://www.oxymedmedical.com" style="color:#64748b;text-decoration:none">www.oxymedmedical.com</a>
             </p>
           </td>
         </tr>
@@ -220,6 +222,9 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
   </table>
 </body>
 </html>`,
+    attachments: opts.pdfBuffer
+      ? [{ filename: `Teklif-${opts.quoteNo}.pdf`, content: opts.pdfBuffer, contentType: "application/pdf" }]
+      : [],
   });
 }
 

@@ -2120,6 +2120,7 @@ export const SendQuoteFormEmailResponse = zod.object({
  */
 export const ListEmailLogsQueryParams = zod.object({
   "emailType": zod.coerce.string().optional(),
+  "search": zod.coerce.string().optional(),
   "limit": zod.coerce.number().optional(),
   "offset": zod.coerce.number().optional()
 })

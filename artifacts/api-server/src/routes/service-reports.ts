@@ -7,6 +7,7 @@ import {
   serviceReportSignaturesTable,
   serviceReportPartsTable,
   serviceReportEmailLogsTable,
+  emailLogsTable,
   serialSequencesTable,
 } from "@workspace/db";
 import { eq, desc, and, sql, asc } from "drizzle-orm";
@@ -507,6 +508,15 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
         sentBy,
         status: "success",
       });
+      await db.insert(emailLogsTable).values({
+        emailType: "service_report",
+        recipientEmail: email,
+        subject: `Servis Raporu - ${full.reportNo} | ${hospitalName}`,
+        relatedId: id,
+        relatedRef: full.reportNo,
+        status: "success",
+        sentBy,
+      }).catch(() => { /* best-effort */ });
 
       req.log.info({ reportId: id, email }, "Service report email sent");
       res.json({ success: true, email });
@@ -519,6 +529,16 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
         status: "failed",
         errorMessage: msg,
       }).catch(() => { /* best-effort log */ });
+      await db.insert(emailLogsTable).values({
+        emailType: "service_report",
+        recipientEmail: email,
+        subject: `Servis Raporu - ${full.reportNo} | ${hospitalName}`,
+        relatedId: id,
+        relatedRef: full.reportNo,
+        status: "failed",
+        errorMessage: msg,
+        sentBy,
+      }).catch(() => { /* best-effort */ });
       req.log.error({ err: mailErr }, "Send email failed");
       res.status(500).json({ error: "E-posta gönderilemedi", detail: msg });
     }
