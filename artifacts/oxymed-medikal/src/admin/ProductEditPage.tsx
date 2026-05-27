@@ -354,6 +354,13 @@ export default function ProductEditPage() {
     }
   }
 
+  useEffect(() => {
+    if (tab === "bom" && !isNew) {
+      if (bom === null) loadBom();
+      if (bomMaterials.length === 0) loadBomMaterials();
+    }
+  }, [tab, isNew, bom, bomMaterials.length, loadBom, loadBomMaterials]);
+
   if (!isNew && isLoading) {
     return (
       <section className="px-4 py-7 sm:px-6 lg:px-8">
@@ -361,13 +368,6 @@ export default function ProductEditPage() {
       </section>
     );
   }
-
-  useEffect(() => {
-    if (tab === "bom" && !isNew) {
-      if (bom === null) loadBom();
-      if (bomMaterials.length === 0) loadBomMaterials();
-    }
-  }, [tab, isNew, bom, bomMaterials.length, loadBom, loadBomMaterials]);
 
   const tabs: { key: Tab; label: string; icon?: React.ReactNode }[] = [
     { key: "temel", label: "Temel Bilgiler" },
