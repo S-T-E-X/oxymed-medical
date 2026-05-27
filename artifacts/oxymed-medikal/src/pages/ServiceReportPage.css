@@ -107,7 +107,7 @@
 
 .sr-summary {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   height: 14.4mm;
   margin-top: 2.4mm;
   overflow: hidden;
