@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetWarrantyDevice,
@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import jsPDF from "jspdf";
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 // ─── QR label PDF helper ────────────────────────────────────────────────────
 
@@ -134,6 +136,29 @@ async function generateQrLabelPdf(params: {
 
   doc.save(`QR-Etiket-${params.serialNumber}.pdf`);
 }
+
+// ─── Service Report types ─────────────────────────────────────────────────────
+
+interface ServiceReport {
+  id: number;
+  reportNo: string;
+  serviceDate: string;
+  serviceType: string;
+  status: string;
+  priority: string;
+  createdBy: string | null;
+  pdfUrl: string | null;
+}
+
+const REPORT_STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
+  taslak:      { label: "Taslak",      cls: "bg-slate-100 text-slate-600 ring-slate-200" },
+  tamamlandi:  { label: "Tamamlandı",  cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
+  onaylandi:   { label: "Onaylandı",   cls: "bg-blue-50 text-blue-700 ring-blue-200" },
+  iptal:       { label: "İptal",       cls: "bg-red-50 text-red-600 ring-red-200" },
+};
+
+function reportStatusCls(v: string)   { return REPORT_STATUS_CONFIG[v]?.cls   ?? "bg-slate-100 text-slate-500 ring-slate-200"; }
+function reportStatusLabel(v: string) { return REPORT_STATUS_CONFIG[v]?.label ?? v; }
 
 // ─── Status config ────────────────────────────────────────────────────────────
 
@@ -396,7 +421,8 @@ export default function WarrantyDeviceDetailPage() {
   const { id: idStr } = useParams<{ id: string }>();
   const id = parseInt(idStr ?? "", 10);
   const qc = useQueryClient();
-  const [tab, setTab] = useState<"info" | "records" | "claims">("info");
+  const navigate = useNavigate();
+  const [tab, setTab] = useState<"info" | "records" | "claims" | "reports">("info");
   const [svcModal, setSvcModal] = useState<{ open: boolean; record?: Partial<ServiceFormState> & { id?: number } }>({ open: false });
   const [claimDecision, setClaimDecision] = useState<{
     open: boolean;
@@ -407,9 +433,25 @@ export default function WarrantyDeviceDetailPage() {
   const [infoForm, setInfoForm] = useState<Record<string, string>>({});
   const [copiedQr, setCopiedQr] = useState(false);
 
+  const [serviceReports, setServiceReports] = useState<ServiceReport[]>([]);
+  const [reportsLoading, setReportsLoading] = useState(false);
+
   const { data: device, isLoading } = useGetWarrantyDevice(id);
   const { data: recordsData } = useListServiceRecords(id);
   const { data: claimsData } = useListWarrantyClaims(id);
+
+  useEffect(() => {
+    if (!id || isNaN(id)) return;
+    setReportsLoading(true);
+    const token = localStorage.getItem("admin_token");
+    fetch(`${BASE}/api/service-reports?deviceId=${id}&limit=100`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data: { items: ServiceReport[] }) => setServiceReports(data.items ?? []))
+      .catch(() => {})
+      .finally(() => setReportsLoading(false));
+  }, [id]);
 
   const updateMut = useUpdateWarrantyDevice({
     mutation: {
@@ -517,6 +559,7 @@ export default function WarrantyDeviceDetailPage() {
         {([
           ["info",    "Cihaz Bilgileri",    Settings],
           ["records", "Servis Geçmişi",     Wrench],
+          ["reports", "Servis Raporları",   FileText],
           ["claims",  "Garanti Talepleri",  ShieldAlert],
         ] as const).map(([t, lbl, Icon]) => (
           <button
@@ -527,6 +570,7 @@ export default function WarrantyDeviceDetailPage() {
             <Icon className="h-4 w-4" />
             {lbl}
             {t === "records" && <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black text-slate-600">{records.length}</span>}
+            {t === "reports" && serviceReports.length > 0 && <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-black text-blue-600">{serviceReports.length}</span>}
             {t === "claims" && claims.length > 0 && <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-[10px] font-black text-rose-600">{claims.length}</span>}
           </button>
         ))}
@@ -684,6 +728,74 @@ export default function WarrantyDeviceDetailPage() {
                 </div>
               </div>
             </>
+          )}
+        </div>
+      )}
+
+      {/* TAB: Service Reports (new PDF system) */}
+      {tab === "reports" && (
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-bold text-slate-900">Servis Raporları</h2>
+            <button
+              className="btn-primary flex items-center gap-2"
+              onClick={() => navigate(`/admin/servis-raporlari/yeni?deviceId=${id}`)}
+            >
+              <Plus className="h-4 w-4" /> Yeni Rapor Oluştur
+            </button>
+          </div>
+
+          {reportsLoading ? (
+            <div className="py-12 text-center text-slate-400">Yükleniyor…</div>
+          ) : serviceReports.length === 0 ? (
+            <div className="rounded-xl border-2 border-dashed border-slate-200 py-16 text-center">
+              <FileText className="mx-auto mb-3 h-10 w-10 text-slate-300" />
+              <p className="text-slate-400">Bu cihaz için henüz servis raporu yok</p>
+              <button
+                className="mt-4 btn-primary text-sm"
+                onClick={() => navigate(`/admin/servis-raporlari/yeni?deviceId=${id}`)}
+              >
+                İlk Raporu Oluştur
+              </button>
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Rapor No</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Tarih</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Servis Tipi</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Durum</th>
+                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Oluşturan</th>
+                    <th className="px-4 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {serviceReports.map((r) => (
+                    <tr key={r.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 font-mono text-xs font-semibold text-slate-700">{r.reportNo}</td>
+                      <td className="px-4 py-3 text-slate-600">{r.serviceDate}</td>
+                      <td className="px-4 py-3 text-slate-600">{SERVICE_TYPE_LABELS[r.serviceType] ?? r.serviceType}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ring-1 ${reportStatusCls(r.status)}`}>
+                          {reportStatusLabel(r.status)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">{r.createdBy ?? "—"}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          to={`/admin/servis-raporlari/${r.id}`}
+                          className="flex items-center gap-1.5 justify-end text-xs font-bold text-blue-600 hover:underline"
+                        >
+                          <Pencil className="h-3.5 w-3.5" /> Görüntüle / Düzenle
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}

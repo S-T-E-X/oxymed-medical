@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Camera, ChevronDown, ChevronUp, Loader2, Plus, Save, Trash2, X,
@@ -300,6 +300,7 @@ function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
 export default function ServisRaporuFormPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isNew = !id || id === "yeni";
   const { uploadFile, uploading: uploadingPhoto } = useImageUpload();
 
@@ -401,6 +402,39 @@ export default function ServisRaporuFormPage() {
       setTotalWorkHours(Number.isInteger(sum) ? String(sum) : sum.toFixed(1));
     }
   }, [pump1Hours, pump2Hours, pump3Hours, pump4Hours]);
+
+  // Auto-select device from deviceId query param (for new reports created from device detail page)
+  useEffect(() => {
+    if (!isNew) return;
+    const deviceIdParam = searchParams.get("deviceId");
+    if (!deviceIdParam) return;
+    const deviceId = parseInt(deviceIdParam, 10);
+    if (isNaN(deviceId)) return;
+    const token = localStorage.getItem("admin_token");
+    fetch(`${BASE}/api/warranty/devices/${deviceId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: Device | null) => {
+        if (data) {
+          setSelectedDevice(data);
+          if (data.customerFirm) setHospitalName(data.customerFirm);
+          if (data.customerDepartment) setDepartment(data.customerDepartment);
+          if (data.customerLocation) setLocation(data.customerLocation);
+          if (data.customerContact) setContactPerson(data.customerContact);
+          if (data.customerPhone) setContact(data.customerPhone);
+          if (data.customerEmail) setEmail(data.customerEmail);
+          if (data.deviceType) setDeviceType(data.deviceType);
+          if (data.model) setDeviceModel(data.model);
+          if (data.plcSystem) setPlcSystem(data.plcSystem);
+          if (data.hmiModel) setHmiModel(data.hmiModel);
+          if (data.productionDate) setProductionDate(data.productionDate);
+          if (data.installDate) setCommissionDate(data.installDate);
+          if (data.warrantyEndDate) setWarrantyStatus(`Garanti Bitiş: ${data.warrantyEndDate}`);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Load existing report
   useEffect(() => {
