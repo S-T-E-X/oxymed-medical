@@ -541,7 +541,11 @@ export default function ServisRaporuFormPage() {
       const saved = await res.json() as { id: number; reportNo: string };
       setReportNo(saved.reportNo);
       toast.success(saveStatus === "tamamlandi" ? "Rapor tamamlandı ve kaydedildi" : "Rapor kaydedildi");
-      if (isNew) navigate(`/admin/servis-raporlari/${saved.id}`, { replace: true });
+      if (saveStatus === "tamamlandi") {
+        navigate("/admin/servis-raporlari");
+      } else if (isNew) {
+        navigate(`/admin/servis-raporlari/${saved.id}`, { replace: true });
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Kaydedilemedi");
     } finally {
