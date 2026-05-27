@@ -25,3 +25,4 @@ export * from "./serviceReports";
 export * from "./serviceReportPhotos";
 export * from "./serviceReportSignatures";
 export * from "./serviceReportParts";
+export * from "./serviceReportEmailLogs";

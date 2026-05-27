@@ -931,6 +931,20 @@ export interface DeviceServiceHistory {
   reports: DeviceServiceHistoryReportsItem[];
 }
 
+export interface ServiceReportEmailInput {
+  email: string;
+}
+
+export interface ServiceReportEmailLog {
+  id: number;
+  reportId: number;
+  sentTo: string;
+  sentBy?: string | null;
+  status: string;
+  errorMessage?: string | null;
+  sentAt: string;
+}
+
 export type ServiceReportVerificationDevice = {
   serialNumber?: string;
   productName?: string;
@@ -1019,5 +1033,14 @@ offset?: number;
 
 export type ListServiceReports200 = {
   items: ServiceReportListItem[];
+};
+
+export type DispatchServiceReportEmail200 = {
+  success: boolean;
+  email: string;
+};
+
+export type ListServiceReportEmailLogs200 = {
+  items: ServiceReportEmailLog[];
 };
 

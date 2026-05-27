@@ -1735,6 +1735,70 @@ paths:
         "204":
           description: Deleted
 
+  /service-reports/{id}/send-email:
+    post:
+      operationId: dispatchServiceReportEmail
+      tags: [service-reports]
+      summary: Send service report PDF via email and log the attempt
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceReportEmailInput"
+      responses:
+        "200":
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, email]
+                properties:
+                  success:
+                    type: boolean
+                  email:
+                    type: string
+        "400":
+          description: Invalid request
+        "404":
+          description: Report not found
+        "500":
+          description: Email sending failed
+
+  /service-reports/{id}/email-logs:
+    get:
+      operationId: listServiceReportEmailLogs
+      tags: [service-reports]
+      summary: List email send history for a service report
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Email log list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ServiceReportEmailLog"
+
   /service-reports/{id}/generate-pdf:
     post:
       operationId: generateServiceReportPdf
@@ -3396,6 +3460,26 @@ components:
               pdfUrl: { type: string, nullable: true }
               verificationToken: { type: string }
               createdBy: { type: string, nullable: true }
+
+    ServiceReportEmailInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    ServiceReportEmailLog:
+      type: object
+      required: [id, reportId, sentTo, status, sentAt]
+      properties:
+        id: { type: integer }
+        reportId: { type: integer }
+        sentTo: { type: string }
+        sentBy: { type: string, nullable: true }
+        status: { type: string }
+        errorMessage: { type: string, nullable: true }
+        sentAt: { type: string }
 
     ServiceReportVerification:
       type: object

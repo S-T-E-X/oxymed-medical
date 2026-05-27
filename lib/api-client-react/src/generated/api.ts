@@ -32,6 +32,7 @@ import type {
   CorporateSectionInput,
   DashboardStats,
   DeviceServiceHistory,
+  DispatchServiceReportEmail200,
   ErrorResponse,
   HealthStatus,
   ListCatalogsParams,
@@ -41,6 +42,7 @@ import type {
   ListProductsParams,
   ListQuotesParams,
   ListReferencesParams,
+  ListServiceReportEmailLogs200,
   ListServiceReports200,
   ListServiceReportsParams,
   ListSlidersParams,
@@ -80,6 +82,7 @@ import type {
   ServiceRecordInput,
   ServiceRecordItem,
   ServiceRecordListResult,
+  ServiceReportEmailInput,
   ServiceReportFull,
   ServiceReportInput,
   ServiceReportPdfResult,
@@ -5792,6 +5795,155 @@ export const useDeleteServiceReport = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getDeleteServiceReportMutationOptions(options));
     }
+
+export const getDispatchServiceReportEmailUrl = (id: number,) => {
+
+
+
+
+  return `/api/service-reports/${id}/send-email`
+}
+
+/**
+ * @summary Send service report PDF via email and log the attempt
+ */
+export const dispatchServiceReportEmail = async (id: number,
+    serviceReportEmailInput: ServiceReportEmailInput, options?: RequestInit): Promise<DispatchServiceReportEmail200> => {
+
+  return customFetch<DispatchServiceReportEmail200>(getDispatchServiceReportEmailUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceReportEmailInput,)
+  }
+);}
+
+
+
+
+export const getDispatchServiceReportEmailMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof dispatchServiceReportEmail>>, TError,{id: number;data: BodyType<ServiceReportEmailInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof dispatchServiceReportEmail>>, TError,{id: number;data: BodyType<ServiceReportEmailInput>}, TContext> => {
+
+const mutationKey = ['dispatchServiceReportEmail'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof dispatchServiceReportEmail>>, {id: number;data: BodyType<ServiceReportEmailInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  dispatchServiceReportEmail(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DispatchServiceReportEmailMutationResult = NonNullable<Awaited<ReturnType<typeof dispatchServiceReportEmail>>>
+    export type DispatchServiceReportEmailMutationBody = BodyType<ServiceReportEmailInput>
+    export type DispatchServiceReportEmailMutationError = ErrorType<void>
+
+    /**
+ * @summary Send service report PDF via email and log the attempt
+ */
+export const useDispatchServiceReportEmail = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof dispatchServiceReportEmail>>, TError,{id: number;data: BodyType<ServiceReportEmailInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof dispatchServiceReportEmail>>,
+        TError,
+        {id: number;data: BodyType<ServiceReportEmailInput>},
+        TContext
+      > => {
+      return useMutation(getDispatchServiceReportEmailMutationOptions(options));
+    }
+
+export const getListServiceReportEmailLogsUrl = (id: number,) => {
+
+
+
+
+  return `/api/service-reports/${id}/email-logs`
+}
+
+/**
+ * @summary List email send history for a service report
+ */
+export const listServiceReportEmailLogs = async (id: number, options?: RequestInit): Promise<ListServiceReportEmailLogs200> => {
+
+  return customFetch<ListServiceReportEmailLogs200>(getListServiceReportEmailLogsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListServiceReportEmailLogsQueryKey = (id: number,) => {
+    return [
+    `/api/service-reports/${id}/email-logs`
+    ] as const;
+    }
+
+
+export const getListServiceReportEmailLogsQueryOptions = <TData = Awaited<ReturnType<typeof listServiceReportEmailLogs>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listServiceReportEmailLogs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListServiceReportEmailLogsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServiceReportEmailLogs>>> = ({ signal }) => listServiceReportEmailLogs(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServiceReportEmailLogs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListServiceReportEmailLogsQueryResult = NonNullable<Awaited<ReturnType<typeof listServiceReportEmailLogs>>>
+export type ListServiceReportEmailLogsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List email send history for a service report
+ */
+
+export function useListServiceReportEmailLogs<TData = Awaited<ReturnType<typeof listServiceReportEmailLogs>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listServiceReportEmailLogs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListServiceReportEmailLogsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
 export const getGenerateServiceReportPdfUrl = (id: number,) => {
 

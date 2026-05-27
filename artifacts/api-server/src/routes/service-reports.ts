@@ -6,10 +6,11 @@ import {
   serviceReportPhotosTable,
   serviceReportSignaturesTable,
   serviceReportPartsTable,
+  serviceReportEmailLogsTable,
   serialSequencesTable,
 } from "@workspace/db";
-import { eq, desc, and, sql } from "drizzle-orm";
-import { requireAuth } from "../lib/auth";
+import { eq, desc, and, sql, asc } from "drizzle-orm";
+import { requireAuth, type JwtPayload } from "../lib/auth";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 import { objectStorageClient as _objectStorageClient, ObjectStorageService } from "../lib/objectStorage";
@@ -451,22 +452,59 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
     const rd = (full.reportDataJson ?? {}) as Record<string, unknown>;
     const hospitalName = (rd["hospitalName"] as string | undefined) || full.device?.customerFirm || "";
 
-    await sendServiceReportEmail({
-      to: email,
-      reportNo: full.reportNo,
-      hospitalName,
-      serviceDate: full.serviceDate,
-      pdfBuffer: Buffer.from(pdfBuffer),
-    });
+    const sentBy = ((req as Parameters<typeof requireAuth>[0] & { adminPayload?: JwtPayload }).adminPayload)?.email ?? null;
 
-    req.log.info({ reportId: id, email }, "Service report email sent");
-    res.json({ success: true, email });
+    try {
+      await sendServiceReportEmail({
+        to: email,
+        reportNo: full.reportNo,
+        hospitalName,
+        serviceDate: full.serviceDate,
+        pdfBuffer: Buffer.from(pdfBuffer),
+      });
+
+      await db.insert(serviceReportEmailLogsTable).values({
+        reportId: id,
+        sentTo: email,
+        sentBy,
+        status: "success",
+      });
+
+      req.log.info({ reportId: id, email }, "Service report email sent");
+      res.json({ success: true, email });
+    } catch (mailErr) {
+      const msg = mailErr instanceof Error ? mailErr.message : String(mailErr);
+      await db.insert(serviceReportEmailLogsTable).values({
+        reportId: id,
+        sentTo: email,
+        sentBy,
+        status: "failed",
+        errorMessage: msg,
+      }).catch(() => { /* best-effort log */ });
+      req.log.error({ err: mailErr }, "Send email failed");
+      res.status(500).json({ error: "E-posta gönderilemedi", detail: msg });
+    }
   } catch (err) {
     if (browser) { try { await browser.close(); } catch { /* ignore */ } }
     req.log.error({ err }, "Send email failed");
     const msg = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: "E-posta gönderilemedi", detail: msg });
   }
+});
+
+// ─── Email send logs ──────────────────────────────────────────────────────────
+
+router.get("/service-reports/:id/email-logs", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]);
+  if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
+
+  const logs = await db
+    .select()
+    .from(serviceReportEmailLogsTable)
+    .where(eq(serviceReportEmailLogsTable.reportId, id))
+    .orderBy(asc(serviceReportEmailLogsTable.sentAt));
+
+  res.json({ items: logs });
 });
 
 // ─── Routes: Public ───────────────────────────────────────────────────────────

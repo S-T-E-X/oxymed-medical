@@ -1992,6 +1992,43 @@ export const DeleteServiceReportParams = zod.object({
 
 
 /**
+ * @summary Send service report PDF via email and log the attempt
+ */
+export const DispatchServiceReportEmailParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DispatchServiceReportEmailBody = zod.object({
+  "email": zod.string().email()
+})
+
+export const DispatchServiceReportEmailResponse = zod.object({
+  "success": zod.boolean(),
+  "email": zod.string()
+})
+
+
+/**
+ * @summary List email send history for a service report
+ */
+export const ListServiceReportEmailLogsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListServiceReportEmailLogsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "reportId": zod.number(),
+  "sentTo": zod.string(),
+  "sentBy": zod.string().nullish(),
+  "status": zod.string(),
+  "errorMessage": zod.string().nullish(),
+  "sentAt": zod.string()
+}))
+})
+
+
+/**
  * @summary Generate PDF server-side using headless Chrome
  */
 export const GenerateServiceReportPdfParams = zod.object({

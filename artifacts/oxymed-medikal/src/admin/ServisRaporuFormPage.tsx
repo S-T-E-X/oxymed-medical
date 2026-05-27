@@ -87,6 +87,15 @@ const MAINTENANCE_INTERVALS = [
 
 interface Photo { url: string; caption: string; sortOrder: number; }
 interface Part { partName: string; partCode: string; quantity: string; condition: string; }
+interface EmailLog {
+  id: number;
+  reportId: number;
+  sentTo: string;
+  sentBy: string | null;
+  status: string;
+  errorMessage: string | null;
+  sentAt: string;
+}
 interface Signature { role: string; signerName: string; imageDataUrl: string; }
 
 // ─── Signature Canvas ─────────────────────────────────────────────────────────
@@ -371,6 +380,7 @@ export default function ServisRaporuFormPage() {
   const [sendingEmail, setSendingEmail] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [emailTarget, setEmailTarget] = useState("");
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
 
   // Service code is assigned server-side after first save (reportNo format: OXM-SRV-YYYY-NNNNNN)
 
@@ -387,8 +397,26 @@ export default function ServisRaporuFormPage() {
 
   // Load existing report
   useEffect(() => {
-    if (!isNew) loadReport();
+    if (!isNew) {
+      loadReport();
+      loadEmailLogs();
+    }
   }, [id]);
+
+  async function loadEmailLogs() {
+    if (!id) return;
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`${BASE}/api/service-reports/${id}/email-logs`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const data = await res.json() as { items: EmailLog[] };
+      setEmailLogs(data.items ?? []);
+    } catch {
+      /* best-effort */
+    }
+  }
 
   async function loadReport() {
     try {
@@ -530,6 +558,7 @@ export default function ServisRaporuFormPage() {
       }
       toast.success(`Rapor ${target} adresine gönderildi`);
       setShowEmailDialog(false);
+      loadEmailLogs();
     } catch (err) {
       toast.error(`Gönderilemedi: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
@@ -1176,6 +1205,46 @@ export default function ServisRaporuFormPage() {
           </div>
         </Section>
       </div>
+
+      {/* Email send history */}
+      {!isNew && (
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-3.5 bg-slate-50">
+            <Mail className="h-4 w-4 text-slate-500" />
+            <h3 className="text-sm font-bold text-slate-700">Gönderim Geçmişi</h3>
+            {emailLogs.length > 0 && (
+              <span className="ml-auto text-xs text-slate-400">{emailLogs.length} kayıt</span>
+            )}
+          </div>
+          {emailLogs.length === 0 ? (
+            <p className="px-5 py-4 text-sm text-slate-400 italic">Henüz e-posta gönderilmedi.</p>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {emailLogs.map((log) => (
+                <div key={log.id} className="flex items-start justify-between px-5 py-3 gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-slate-800 truncate">{log.sentTo}</p>
+                    {log.sentBy && (
+                      <p className="text-xs text-slate-400 mt-0.5">Gönderen: {log.sentBy}</p>
+                    )}
+                    {log.status === "failed" && log.errorMessage && (
+                      <p className="text-xs text-red-500 mt-0.5 truncate" title={log.errorMessage}>Hata: {log.errorMessage}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${log.status === "success" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
+                      {log.status === "success" ? "Başarılı" : "Başarısız"}
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {new Date(log.sentAt).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Bottom action bar */}
       <div className="mt-6 flex flex-wrap justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
