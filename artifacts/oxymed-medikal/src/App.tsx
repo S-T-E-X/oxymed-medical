@@ -103,6 +103,7 @@ export default function App() {
             <Route path="servis-raporlari/yeni" element={<ServisRaporuFormPage />} />
             <Route path="servis-raporlari/:id" element={<ServisRaporuFormPage />} />
             <Route path="eposta-loglari" element={<AdminEmailLogsPage />} />
+            <Route path="email-logs" element={<AdminEmailLogsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

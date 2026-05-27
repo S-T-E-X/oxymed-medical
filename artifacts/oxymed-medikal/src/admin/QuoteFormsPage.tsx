@@ -272,13 +272,15 @@ export default function QuoteFormsPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => openEmailDialog(f)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-500 hover:bg-blue-50"
-                        title="E-posta ile Gönder"
-                      >
-                        <Mail className="h-3.5 w-3.5" />
-                      </button>
+                      {(f.status === "sent" || f.status === "approved") && (
+                        <button
+                          onClick={() => openEmailDialog(f)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-500 hover:bg-blue-50"
+                          title="E-posta ile Gönder"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                        </button>
+                      )}
                       <a
                         href={`/teklif-goruntule/${f.id}`}
                         target="_blank"

@@ -417,6 +417,11 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
   const [form] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
   if (!form) { res.status(404).json({ error: "Teklif formu bulunamadı" }); return; }
 
+  if (form.status !== "sent" && form.status !== "approved") {
+    res.status(409).json({ error: "Yalnızca gönderilmiş veya onaylanmış teklif formları e-posta ile gönderilebilir" });
+    return;
+  }
+
   const items = await db
     .select()
     .from(quoteFormItems)
