@@ -36,6 +36,7 @@ import ProductsPage from "./pages/ProductsPage";
 import QuotePage from "./pages/QuotePage";
 import ReferencesPage from "./pages/ReferencesPage";
 import ServicePage from "./pages/ServicePage";
+import ServicePageTaslak from "./pages/ServicePageTaslak";
 import DeviceQrPage from "./pages/DeviceQrPage";
 import ServiceReportPage from "./pages/ServiceReportPage";
 import GasControlPanelPage from "./pages/GasControlPanelPage";
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/haberler" element={<NewsPage />} />
           <Route path="/haberler/:slug" element={<NewsDetailPage />} />
           <Route path="/teklif-al" element={<QuotePage />} />
+          <Route path="/taslak" element={<ServicePageTaslak />} />
           <Route path="/servis" element={<ServicePage />} />
           <Route path="/servis/:serialNo" element={<ServicePage />} />
           <Route path="/servis/qr/:qrToken" element={<DeviceQrPage />} />
