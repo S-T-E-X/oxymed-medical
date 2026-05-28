@@ -34,7 +34,7 @@ export function useImageUpload() {
         size: file.size,
       });
 
-      const publicUrl = `/api/storage/public-objects/${objectPath}`;
+      const publicUrl = `/api/storage/public-objects${objectPath.startsWith("/") ? "" : "/"}${objectPath}`;
       return { objectPath, publicUrl };
     } finally {
       setUploading(false);

@@ -55,7 +55,21 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
   try {
     const raw = req.params.filePath;
     const filePath = Array.isArray(raw) ? raw.join("/") : raw;
-    const file = await objectStorageService.searchPublicObject(filePath);
+
+    // First try public search paths, then fall back to private object dir
+    // (admin-uploaded site content is public by intent even if stored in private dir)
+    let file = await objectStorageService.searchPublicObject(filePath);
+    if (!file) {
+      const normalizedPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
+      if (normalizedPath.startsWith("/objects/")) {
+        try {
+          file = await objectStorageService.getObjectEntityFile(normalizedPath);
+        } catch {
+          // not found in private dir either
+        }
+      }
+    }
+
     if (!file) {
       res.status(404).json({ error: "File not found" });
       return;
