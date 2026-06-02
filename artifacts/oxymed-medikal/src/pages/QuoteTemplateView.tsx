@@ -67,9 +67,14 @@ function fmtPrice(num: number, currency: string): string {
 }
 
 function itemVisualWeight(it: QuoteViewItem): number {
-  if (it.itemType === "group") return 1;
-  if (it.itemType === "child") return 1;
-  return it.imageUrl ? 3 : 1;
+  // Groups and children are always one standard row (~9mm)
+  if (it.itemType !== "single") return 1;
+  // Single items: each bullet ≈ 4.5mm; base row ≈ 9mm → 0.5 budget units per bullet
+  // Image adds ~12mm over baseline → +2 units; no-image items that have many bullets
+  // can easily be 5–6× taller than a plain row
+  const bulletBonus = Math.round(it.bullets.length * 0.5);
+  const imageBonus = it.imageUrl ? 2 : 0;
+  return 1 + bulletBonus + imageBonus;
 }
 
 function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 22): QuoteViewItem[][] {
@@ -406,7 +411,10 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
   const itemPages = chunkItems(data.items);
   const lastItemPage = itemPages[itemPages.length - 1] ?? [];
   const lastPageWeight = lastItemPage.reduce((s, it) => s + itemVisualWeight(it), 0);
-  const canAttachFooter = itemPages.length > 1 ? lastPageWeight <= 8 : lastPageWeight <= 6;
+  // 1 budget unit ≈ 9mm (bullet-adjusted); footer ≈ 70mm, continuation rows ≈ 219mm
+  // → max item weight for footer on continuation page: (219-70)/9 ≈ 16
+  // first page rows ≈ 165mm → max: (165-70)/9 ≈ 10
+  const canAttachFooter = itemPages.length > 1 ? lastPageWeight <= 16 : lastPageWeight <= 10;
   const totalPages = itemPages.length + (canAttachFooter ? 0 : 1);
 
   if (data.items.length === 0) {
