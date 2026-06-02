@@ -407,7 +407,8 @@
   font-weight: 900 !important;
 }
 
-.qt-group-row {
+.qt-group-row,
+.qt-items tbody tr:not(.qt-group-row):not(.qt-child-row) {
   background: #f0f4fb;
 }
 
