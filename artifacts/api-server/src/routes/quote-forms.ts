@@ -55,6 +55,8 @@ const QuoteFormBody = z.object({
   iskonto: z.string().optional().nullable(),
   iskontoTipi: z.enum(["yuzde", "tutar"]).optional(),
   kdv: z.string().optional().nullable(),
+  showKdv: z.boolean().optional(),
+  showGenelToplam: z.boolean().optional(),
   hazirlayan: z.string().optional().nullable(),
   hazirlayanTelefon: z.string().optional().nullable(),
   hazirlayanEmail: z.string().optional().nullable(),

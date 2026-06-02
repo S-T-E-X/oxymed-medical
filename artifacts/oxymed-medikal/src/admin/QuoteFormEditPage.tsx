@@ -119,6 +119,8 @@ type FormDraft = {
   iskonto: string;
   iskontoTipi: "yuzde" | "tutar";
   kdv: string;
+  showKdv: boolean;
+  showGenelToplam: boolean;
   hizmetlerText: string;
   sartlarText: string;
   notlar: string;
@@ -1203,6 +1205,8 @@ export default function QuoteFormEditPage() {
     iskonto: "0",
     iskontoTipi: "yuzde",
     kdv: "20",
+    showKdv: true,
+    showGenelToplam: true,
     hizmetlerText: DEFAULT_HIZMETLER,
     sartlarText: DEFAULT_SARTLAR,
     notlar: "",
@@ -1242,6 +1246,8 @@ export default function QuoteFormEditPage() {
           iskonto: data.iskonto ?? "0",
           iskontoTipi: (data.iskontoTipi === "tutar" ? "tutar" : "yuzde") as "yuzde" | "tutar",
           kdv: data.kdv ?? "20",
+          showKdv: data.showKdv ?? true,
+          showGenelToplam: data.showGenelToplam ?? true,
           hizmetlerText:
             (data.hizmetler ?? []).length > 0
               ? (data.hizmetler as string[]).join("\n")
@@ -1471,6 +1477,8 @@ export default function QuoteFormEditPage() {
         iskonto: form.iskonto,
         iskontoTipi: form.iskontoTipi,
         kdv: form.kdv,
+        showKdv: form.showKdv,
+        showGenelToplam: form.showGenelToplam,
         hizmetler: form.hizmetlerText
           .split("\n")
           .map((s) => s.trim())
@@ -1778,6 +1786,37 @@ export default function QuoteFormEditPage() {
                 <div>
                   <label className="label">KDV (%)</label>
                   <input type="number" min={0} max={100} value={form.kdv} onChange={setField("kdv")} className="input w-full text-sm" />
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="mb-2.5 text-xs font-bold uppercase tracking-wide text-slate-500">PDF'te Gösterilecek Toplam Kutucukları</p>
+                <div className="flex flex-wrap gap-5">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-slate-300 bg-white">
+                      <svg className="h-2.5 w-2.5 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" /></svg>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-600">Ara Toplam</span>
+                    <span className="text-[10px] text-slate-400">(her zaman gösterilir)</span>
+                  </div>
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={form.showKdv}
+                      onChange={(e) => setForm((p) => ({ ...p, showKdv: e.target.checked }))}
+                      className="h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600"
+                    />
+                    <span className="text-sm font-semibold text-slate-700">KDV Satırı</span>
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={form.showGenelToplam}
+                      onChange={(e) => setForm((p) => ({ ...p, showGenelToplam: e.target.checked }))}
+                      className="h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600"
+                    />
+                    <span className="text-sm font-semibold text-slate-700">Genel Toplam Satırı</span>
+                  </label>
                 </div>
               </div>
             </section>

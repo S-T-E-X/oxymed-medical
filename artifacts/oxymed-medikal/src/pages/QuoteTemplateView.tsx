@@ -45,6 +45,8 @@ export type QuoteViewData = {
   iskonto: number;
   iskontoTipi: "yuzde" | "tutar";
   kdv: number;
+  showKdv: boolean;
+  showGenelToplam: boolean;
   hazirlayan: string;
   hazirlayanTelefon: string;
   hazirlayanEmail: string;
@@ -317,6 +319,8 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
   const iskontoLabel = data.iskontoTipi === "tutar"
     ? "İskonto"
     : `İskonto (%${data.iskonto})`;
+  const showKdvRow = data.showKdv && data.kdv > 0;
+  const showGenelToplamRow = data.showGenelToplam;
 
   return (
     <section className="qt-footer-blocks">
@@ -346,10 +350,12 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             {iskontoAmount > 0 && (
               <div><dt>{iskontoLabel}</dt><dd>-{fmtPrice(iskontoAmount, cur)}</dd></div>
             )}
-            {data.kdv > 0 && (
+            {showKdvRow && (
               <div><dt>KDV (%{data.kdv})</dt><dd>{fmtPrice(kdvAmount, cur)}</dd></div>
             )}
-            <div className="grand"><dt>Genel Toplam</dt><dd>{fmtPrice(genelTopam, cur)}</dd></div>
+            {showGenelToplamRow && (
+              <div className="grand"><dt>Genel Toplam</dt><dd>{fmtPrice(genelTopam, cur)}</dd></div>
+            )}
           </dl>
         </article>
       </div>

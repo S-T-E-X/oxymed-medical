@@ -23,6 +23,8 @@ type ApiForm = {
   iskonto?: string | null;
   iskontoTipi?: "yuzde" | "tutar" | null;
   kdv?: string | null;
+  showKdv?: boolean | null;
+  showGenelToplam?: boolean | null;
   hazirlayan?: string | null;
   hazirlayanTelefon?: string | null;
   hazirlayanEmail?: string | null;
@@ -133,6 +135,8 @@ function toViewData(form: ApiForm): QuoteViewData {
     iskonto: parseFloat(form.iskonto ?? "0") || 0,
     iskontoTipi: form.iskontoTipi ?? "yuzde",
     kdv: parseFloat(form.kdv ?? "20") || 0,
+    showKdv: form.showKdv ?? true,
+    showGenelToplam: form.showGenelToplam ?? true,
     hazirlayan: form.hazirlayan ?? "",
     hazirlayanTelefon: form.hazirlayanTelefon ?? "",
     hazirlayanEmail: form.hazirlayanEmail ?? "",

@@ -20,6 +20,8 @@ export const quoteForms = pgTable("quote_forms", {
   iskonto: text("iskonto").default("0"),
   iskontoTipi: text("iskonto_tipi").notNull().default("yuzde"),
   kdv: text("kdv").default("20"),
+  showKdv: boolean("show_kdv").notNull().default(true),
+  showGenelToplam: boolean("show_genel_toplam").notNull().default(true),
   hazirlayan: text("hazirlayan"),
   hazirlayanTelefon: text("hazirlayan_telefon"),
   hazirlayanEmail: text("hazirlayan_email"),

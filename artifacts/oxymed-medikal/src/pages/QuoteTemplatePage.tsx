@@ -34,6 +34,8 @@ const DEMO_DATA: QuoteViewData = {
   iskonto: 5,
   iskontoTipi: "yuzde",
   kdv: 20,
+  showKdv: true,
+  showGenelToplam: true,
   hazirlayan: "Ahmet Yılmaz",
   hazirlayanTelefon: "0(312) 385 49 12",
   hazirlayanEmail: "ahmet.yilmaz@oxymedmedical.com",
