@@ -47,6 +47,7 @@ type ApiForm = {
     unit: string;
     unitPrice?: string | null;
     showInPdf?: boolean | null;
+    pageBreakBefore?: boolean | null;
     sortOrder: number;
   }>;
 };
@@ -81,6 +82,7 @@ function toViewData(form: ApiForm): QuoteViewData {
         unit: "",
         unitPrice: 0,
         imageUrl: it.imageUrl,
+        pageBreakBefore: it.pageBreakBefore ?? false,
       }];
     }
 
@@ -113,6 +115,7 @@ function toViewData(form: ApiForm): QuoteViewData {
       unit: it.unit,
       unitPrice: parseFloat(it.unitPrice ?? "0") || 0,
       imageUrl: it.imageUrl,
+      pageBreakBefore: it.pageBreakBefore ?? false,
     }];
   });
 

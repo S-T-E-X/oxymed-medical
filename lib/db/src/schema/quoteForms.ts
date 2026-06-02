@@ -47,6 +47,7 @@ export const quoteFormItems = pgTable("quote_form_items", {
   unit: text("unit").notNull().default("ADET"),
   unitPrice: numeric("unit_price", { precision: 12, scale: 2 }).default("0"),
   showInPdf: boolean("show_in_pdf").notNull().default(true),
+  pageBreakBefore: boolean("page_break_before").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 

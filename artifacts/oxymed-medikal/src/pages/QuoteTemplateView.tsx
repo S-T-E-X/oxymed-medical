@@ -24,6 +24,7 @@ export type QuoteViewItem = {
   unit: string;
   unitPrice: number;
   imageUrl?: string | null;
+  pageBreakBefore?: boolean;
 };
 
 export type QuoteViewData = {
@@ -110,6 +111,9 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       const firstChildW = group.length > 1 ? itemVisualWeight(group[1]!) : 0;
       const minStart = headerW + firstChildW;
 
+      // Manual page break: user forced this group to start on a new page
+      if (page.length > 0 && it.pageBreakBefore) flush();
+
       // Flush if: (a) the whole group doesn't fit, OR
       //           (b) remaining budget can't even hold header + first child
       //           — prevents orphan group headers at the bottom of a page
@@ -128,6 +132,8 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       i = j;
     } else {
       const w = itemVisualWeight(it);
+      // Manual page break: user forced this item to start on a new page
+      if (page.length > 0 && it.pageBreakBefore) flush();
       if (used + w > budget && page.length > 0) flush();
       page.push(it);
       used += w;

@@ -1,1 +1,2 @@
 - [Chromium / Puppeteer PDF](chromium-puppeteer.md) — @sparticuz/chromium-min bin/ doesn't exist in Replit; use system `chromium` nix package + puppeteer-core instead.
+- [Quote form item schema](quote-form-schema.md) — quote-item fields live in inline Zod + ItemDraft, not openapi.yaml; no codegen needed, wire DB+API+editor+view in lockstep.

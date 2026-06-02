@@ -79,6 +79,7 @@ const QuoteFormItemBody = z.object({
   unitPrice: z.string().optional().nullable(),
   sortOrder: z.coerce.number().int().optional(),
   showInPdf: z.boolean().optional().default(true),
+  pageBreakBefore: z.boolean().optional().default(false),
 });
 
 // List quote forms

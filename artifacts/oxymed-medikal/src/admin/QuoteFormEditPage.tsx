@@ -15,6 +15,7 @@ import {
   Layers,
   BookOpen,
   BookmarkPlus,
+  SeparatorHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useListSettings } from "@workspace/api-client-react";
@@ -85,6 +86,7 @@ type ItemDraft = {
   unitPrice: string;
   sortOrder: number;
   expanded: boolean;
+  pageBreakBefore: boolean;
   children: ChildItemDraft[];
 };
 
@@ -174,6 +176,7 @@ function newItem(sortOrder: number): ItemDraft {
     unitPrice: "0",
     sortOrder,
     expanded: true,
+    pageBreakBefore: false,
     children: [],
   };
 }
@@ -190,6 +193,7 @@ function newGroup(sortOrder: number): ItemDraft {
     unitPrice: "0",
     sortOrder,
     expanded: true,
+    pageBreakBefore: false,
     children: [newChildItem()],
   };
 }
@@ -207,6 +211,7 @@ type ApiItem = {
   unitPrice?: string | null;
   sortOrder: number;
   showInPdf?: boolean | null;
+  pageBreakBefore?: boolean | null;
 };
 
 function apiItemToDraft(it: ApiItem): ItemDraft {
@@ -223,6 +228,7 @@ function apiItemToDraft(it: ApiItem): ItemDraft {
     unitPrice: it.unitPrice ?? "0",
     sortOrder: it.sortOrder,
     expanded: false,
+    pageBreakBefore: it.pageBreakBefore ?? false,
     children: [],
   };
 }
@@ -245,6 +251,7 @@ function apiItemsToHierarchical(apiItems: ApiItem[]): ItemDraft[] {
         unitPrice: "0",
         sortOrder: it.sortOrder,
         expanded: false,
+        pageBreakBefore: it.pageBreakBefore ?? false,
         children: [],
       };
       result.push(currentGroup);
@@ -398,6 +405,7 @@ function SingleItemTemplatePickerModal({
       quantity: src?.quantity ?? 1,
       unit: src?.unit ?? "ADET",
       unitPrice: src?.unitPrice ?? "0",
+      pageBreakBefore: false,
     });
     onClose();
     toast.success(`"${t.name}" şablonu eklendi`);
@@ -785,6 +793,17 @@ function GroupItemRow({
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
           <button
+            onClick={() => onChange("pageBreakBefore", !item.pageBreakBefore)}
+            title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu grubu yeni sayfaya taşı"}
+            className={`flex h-6 w-6 items-center justify-center rounded ${
+              item.pageBreakBefore
+                ? "bg-amber-500 text-white hover:bg-amber-600"
+                : "text-slate-400 hover:bg-blue-200"
+            }`}
+          >
+            <SeparatorHorizontal className="h-3.5 w-3.5" />
+          </button>
+          <button
             onClick={onRemove}
             className="flex h-6 w-6 items-center justify-center rounded text-red-400 hover:bg-red-50"
           >
@@ -1026,6 +1045,17 @@ function ItemRow({
             className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-100 disabled:opacity-30"
           >
             <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => onChange("pageBreakBefore", !item.pageBreakBefore)}
+            title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu kalemi yeni sayfaya taşı"}
+            className={`flex h-6 w-6 items-center justify-center rounded ${
+              item.pageBreakBefore
+                ? "bg-amber-500 text-white hover:bg-amber-600"
+                : "text-slate-400 hover:bg-slate-100"
+            }`}
+          >
+            <SeparatorHorizontal className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={onRemove}
@@ -1373,6 +1403,7 @@ export default function QuoteFormEditPage() {
       unitPrice: p.quoteUnitPrice ?? "0",
       sortOrder: items.length,
       expanded: false,
+      pageBreakBefore: false,
       children: [],
     };
     setItems((prev) => [...prev, draft]);
@@ -1403,6 +1434,7 @@ export default function QuoteFormEditPage() {
             unitPrice: "0",
             sortOrder: sortOrder++,
             showInPdf: true,
+            pageBreakBefore: item.pageBreakBefore,
           });
           for (const child of item.children) {
             body.push({
@@ -1437,6 +1469,7 @@ export default function QuoteFormEditPage() {
             unitPrice: item.unitPrice,
             sortOrder: sortOrder++,
             showInPdf: true,
+            pageBreakBefore: item.pageBreakBefore,
           });
         }
       }
@@ -1648,17 +1681,45 @@ export default function QuoteFormEditPage() {
           ) : (
             <div className="space-y-2">
               {itemsWithNo.map(({ item, topNo }, i) => {
+                const breakDivider = item.pageBreakBefore && i > 0 ? (
+                  <div className="flex items-center gap-2 px-1 py-1 text-amber-600" key={`brk-${i}`}>
+                    <span className="h-px flex-1 border-t border-dashed border-amber-300" />
+                    <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide">
+                      <SeparatorHorizontal className="h-3 w-3" />
+                      Yeni sayfa
+                    </span>
+                    <span className="h-px flex-1 border-t border-dashed border-amber-300" />
+                  </div>
+                ) : null;
                 if (item.itemType === "group") {
                   return (
-                    <GroupItemRow
-                      key={i}
+                    <div key={i}>
+                      {breakDivider}
+                      <GroupItemRow
+                        item={item}
+                        groupNo={topNo}
+                        onChange={(field, value) => updateItem(i, field, value)}
+                        onChildChange={(ci, field, value) => updateGroupChild(i, ci, field, value)}
+                        onChildRemove={(ci) => removeGroupChild(i, ci)}
+                        onChildAdd={() => addGroupChild(i)}
+                        onChildMove={(ci, dir) => moveGroupChild(i, ci, dir)}
+                        onRemove={() => removeItem(i)}
+                        onMoveUp={() => moveItem(i, -1)}
+                        onMoveDown={() => moveItem(i, 1)}
+                        isFirst={i === 0}
+                        isLast={i === items.length - 1}
+                        authFetch={authFetch}
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <div key={i}>
+                    {breakDivider}
+                    <ItemRow
                       item={item}
-                      groupNo={topNo}
+                      index={i}
                       onChange={(field, value) => updateItem(i, field, value)}
-                      onChildChange={(ci, field, value) => updateGroupChild(i, ci, field, value)}
-                      onChildRemove={(ci) => removeGroupChild(i, ci)}
-                      onChildAdd={() => addGroupChild(i)}
-                      onChildMove={(ci, dir) => moveGroupChild(i, ci, dir)}
                       onRemove={() => removeItem(i)}
                       onMoveUp={() => moveItem(i, -1)}
                       onMoveDown={() => moveItem(i, 1)}
@@ -1666,21 +1727,7 @@ export default function QuoteFormEditPage() {
                       isLast={i === items.length - 1}
                       authFetch={authFetch}
                     />
-                  );
-                }
-                return (
-                  <ItemRow
-                    key={i}
-                    item={item}
-                    index={i}
-                    onChange={(field, value) => updateItem(i, field, value)}
-                    onRemove={() => removeItem(i)}
-                    onMoveUp={() => moveItem(i, -1)}
-                    onMoveDown={() => moveItem(i, 1)}
-                    isFirst={i === 0}
-                    isLast={i === items.length - 1}
-                    authFetch={authFetch}
-                  />
+                  </div>
                 );
               })}
             </div>
