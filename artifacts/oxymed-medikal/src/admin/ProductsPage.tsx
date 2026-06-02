@@ -128,7 +128,7 @@ export default function ProductsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50">
-                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">Ürün</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 w-52">Ürün</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 sm:table-cell">Kategori</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 md:table-cell">Slug</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">Durum</th>
@@ -139,12 +139,14 @@ export default function ProductsPage() {
               {products.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col gap-2">
                       {p.imageUrl ? (
-                        <img src={p.imageUrl} alt={p.title} className="h-[180px] w-[180px] rounded-lg object-contain bg-slate-50" />
+                        <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-50">
+                          <img src={p.imageUrl} alt={p.title} className="h-full w-full object-contain" />
+                        </div>
                       ) : (
-                        <div className="flex h-[180px] w-[180px] items-center justify-center rounded-lg bg-slate-100">
-                          <ImageIcon className="h-4 w-4 text-slate-300" />
+                        <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-slate-100">
+                          <ImageIcon className="h-8 w-8 text-slate-300" />
                         </div>
                       )}
                       <p className="font-semibold text-slate-900">{p.title}</p>

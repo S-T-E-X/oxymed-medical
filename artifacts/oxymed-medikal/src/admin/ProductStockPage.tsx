@@ -114,7 +114,7 @@ export default function ProductStockPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <th className="px-5 py-3">Ürün</th>
+                <th className="px-5 py-3 w-52">Ürün</th>
                 <th className="px-4 py-3 w-28">Stok Adedi</th>
                 <th className="px-4 py-3 w-40">Konum</th>
                 <th className="px-4 py-3">Notlar</th>
@@ -128,12 +128,14 @@ export default function ProductStockPage() {
                 return (
                   <tr key={item.productId} className="hover:bg-slate-50">
                     <td className="px-5 py-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={item.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
-                          alt={item.title}
-                          className="h-[180px] w-[180px] rounded-lg object-contain bg-slate-50"
-                        />
+                      <div className="flex flex-col gap-2">
+                        <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-50">
+                          <img
+                            src={item.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
+                            alt={item.title}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
                         <span className="font-semibold text-slate-900">{item.title}</span>
                       </div>
                     </td>
