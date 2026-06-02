@@ -77,7 +77,7 @@ function toViewData(form: ApiForm): QuoteViewData {
         no: String(topCounter),
         itemType: "group" as const,
         title: it.title,
-        bullets: [] as string[],
+        bullets: it.bullets ?? [],
         code: it.modelCode ?? "",
         quantity: 0,
         unit: "",
