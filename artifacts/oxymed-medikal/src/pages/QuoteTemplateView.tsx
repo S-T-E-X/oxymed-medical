@@ -105,8 +105,15 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 22): 
       const group = items.slice(i, j);
       const groupWeight = group.reduce((s, g) => s + itemVisualWeight(g), 0);
 
-      // If the group doesn't fit on current page AND page has content, flush first
-      if (used + groupWeight > budget && page.length > 0) flush();
+      // Minimum weight to start a group meaningfully: header + first child (if any)
+      const headerW = itemVisualWeight(group[0]!);
+      const firstChildW = group.length > 1 ? itemVisualWeight(group[1]!) : 0;
+      const minStart = headerW + firstChildW;
+
+      // Flush if: (a) the whole group doesn't fit, OR
+      //           (b) remaining budget can't even hold header + first child
+      //           — prevents orphan group headers at the bottom of a page
+      if (page.length > 0 && (used + groupWeight > budget || budget - used < minStart)) flush();
 
       // Add group items one by one.
       // The header (k=0) and first child (k=1) are always kept together.
