@@ -67,8 +67,10 @@ function fmtPrice(num: number, currency: string): string {
 }
 
 function itemVisualWeight(it: QuoteViewItem): number {
-  // Groups and children are always one standard row (~9mm)
-  if (it.itemType !== "single") return 1;
+  // Children are always one standard row (~9mm)
+  if (it.itemType === "child") return 1;
+  // Group headers with an image have a 110px slot (~29mm) → ~3 budget units
+  if (it.itemType === "group") return it.imageUrl ? 3 : 1;
   // Single items: each bullet ≈ 4.5mm; base row ≈ 9mm → 0.5 budget units per bullet
   // Image adds ~12mm over baseline → +2 units; no-image items that have many bullets
   // can easily be 5–6× taller than a plain row
@@ -239,7 +241,7 @@ function ItemsTable({
                   <td className="qt-image-cell">
                     {item.imageUrl ? (
                       <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                        <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "62px", objectFit: "contain" }} />
+                        <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                       </div>
                     ) : null}
                   </td>
@@ -269,7 +271,7 @@ function ItemsTable({
                 <td className="qt-image-cell">
                   {!isChild && item.imageUrl ? (
                     <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                      <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "62px", objectFit: "contain" }} />
+                      <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                     </div>
                   ) : null}
                 </td>

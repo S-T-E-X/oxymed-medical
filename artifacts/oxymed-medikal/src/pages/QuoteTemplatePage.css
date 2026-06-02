@@ -445,8 +445,8 @@
   display: grid;
   place-items: center;
   width: calc(100% - 2mm);
-  height: 80px;
-  min-height: 80px;
+  height: 110px;
+  min-height: 110px;
   margin: 0 auto;
   border: 0.2mm dashed #b9c5d6;
   border-radius: 1mm;
