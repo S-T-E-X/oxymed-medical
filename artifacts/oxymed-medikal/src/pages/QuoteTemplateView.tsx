@@ -81,7 +81,7 @@ function itemVisualWeight(it: QuoteViewItem): number {
   return 1 + bulletBonus + imageBonus;
 }
 
-function chunkItems(items: QuoteViewItem[], firstBudget = 17, nextBudget = 20): QuoteViewItem[][] {
+function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 21): QuoteViewItem[][] {
   const pages: QuoteViewItem[][] = [];
   let budget = firstBudget;
   let page: QuoteViewItem[] = [];
@@ -422,7 +422,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
   // 1 budget unit ≈ 9mm (bullet-adjusted); footer ≈ 70mm, continuation rows ≈ 219mm
   // → max item weight for footer on continuation page: (219-70)/9 ≈ 16 → reduced to 14 for note clearance
   // first page rows ≈ 165mm → max: (165-70)/9 ≈ 10 → reduced to 8 for note clearance
-  const canAttachFooter = itemPages.length > 1 ? lastPageWeight <= 14 : lastPageWeight <= 8;
+  const canAttachFooter = itemPages.length > 1 ? lastPageWeight <= 15 : lastPageWeight <= 9;
   const totalPages = itemPages.length + (canAttachFooter ? 0 : 1);
 
   if (data.items.length === 0) {
