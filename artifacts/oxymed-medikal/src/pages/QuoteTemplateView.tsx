@@ -72,7 +72,7 @@ function itemVisualWeight(it: QuoteViewItem): number {
   return it.imageUrl ? 3 : 1;
 }
 
-function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 26): QuoteViewItem[][] {
+function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 22): QuoteViewItem[][] {
   const pages: QuoteViewItem[][] = [];
   let budget = firstBudget;
   let page: QuoteViewItem[] = [];
@@ -90,19 +90,24 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 26): 
     const it = items[i]!;
 
     if (it.itemType === "group") {
-      // Collect the entire group (header + its child rows)
+      // Collect the full group (header + children)
       let j = i + 1;
       while (j < items.length && items[j]!.itemType === "child") j++;
       const group = items.slice(i, j);
       const groupWeight = group.reduce((s, g) => s + itemVisualWeight(g), 0);
 
-      // If the group won't fit on the current page AND there's already content, flush first
+      // If the group doesn't fit on current page AND page has content, flush first
       if (used + groupWeight > budget && page.length > 0) flush();
 
-      // Add group items; if the group alone exceeds a full page, still add it (unavoidable)
-      for (const gi of group) {
+      // Add group items one by one.
+      // The header (k=0) and first child (k=1) are always kept together.
+      // From the second child onwards (k>=2) we allow page breaks if budget is exceeded.
+      for (let k = 0; k < group.length; k++) {
+        const gi = group[k]!;
+        const w = itemVisualWeight(gi);
+        if (k >= 2 && used + w > budget && page.length > 0) flush();
         page.push(gi);
-        used += itemVisualWeight(gi);
+        used += w;
       }
       i = j;
     } else {
