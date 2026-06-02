@@ -12,11 +12,16 @@ import {
   Search,
   X,
   Upload,
+  Layers,
+  BookOpen,
+  BookmarkPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useListSettings } from "@workspace/api-client-react";
 import { useAuth } from "./AuthContext";
 import { useImageUpload } from "./useImageUpload";
+
+const UNITS = ["ADET", "SET", "METRE", "MT", "M2", "KG", "PAKET", "KUTU", "TAKIM"] as const;
 
 type Preparer = {
   id: string;
@@ -57,9 +62,20 @@ type Product = {
   quoteUnitPrice?: string | null;
 };
 
+type ChildItemDraft = {
+  id?: number;
+  title: string;
+  modelCode: string;
+  quantity: number;
+  unit: string;
+  unitPrice: string;
+  showInPdf: boolean;
+};
+
 type ItemDraft = {
   id?: number;
   productId?: number | null;
+  itemType: "single" | "group";
   title: string;
   bulletsText: string;
   modelCode: string;
@@ -69,6 +85,15 @@ type ItemDraft = {
   unitPrice: string;
   sortOrder: number;
   expanded: boolean;
+  children: ChildItemDraft[];
+};
+
+type GroupTemplate = {
+  id: number;
+  name: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  children: Array<{ title: string; modelCode?: string; unit?: string }>;
 };
 
 type FormDraft = {
@@ -123,8 +148,13 @@ const DEFAULT_SARTLAR = [
   "Detaylı teknik şartname ve çizimler talep halinde sunulacaktır.",
 ].join("\n");
 
+function newChildItem(): ChildItemDraft {
+  return { title: "", modelCode: "", quantity: 1, unit: "METRE", unitPrice: "0", showInPdf: true };
+}
+
 function newItem(sortOrder: number): ItemDraft {
   return {
+    itemType: "single",
     title: "",
     bulletsText: "",
     modelCode: "",
@@ -134,12 +164,30 @@ function newItem(sortOrder: number): ItemDraft {
     unitPrice: "0",
     sortOrder,
     expanded: true,
+    children: [],
   };
 }
 
-function apiItemToDraft(it: {
+function newGroup(sortOrder: number): ItemDraft {
+  return {
+    itemType: "group",
+    title: "",
+    bulletsText: "",
+    modelCode: "",
+    imageUrl: "",
+    quantity: 0,
+    unit: "ADET",
+    unitPrice: "0",
+    sortOrder,
+    expanded: true,
+    children: [newChildItem()],
+  };
+}
+
+type ApiItem = {
   id: number;
   productId?: number | null;
+  itemType?: string | null;
   title: string;
   bullets?: string[];
   modelCode?: string | null;
@@ -148,10 +196,14 @@ function apiItemToDraft(it: {
   unit: string;
   unitPrice?: string | null;
   sortOrder: number;
-}): ItemDraft {
+  showInPdf?: boolean | null;
+};
+
+function apiItemToDraft(it: ApiItem): ItemDraft {
   return {
     id: it.id,
     productId: it.productId,
+    itemType: "single",
     title: it.title,
     bulletsText: (it.bullets ?? []).join("\n"),
     modelCode: it.modelCode ?? "",
@@ -161,8 +213,50 @@ function apiItemToDraft(it: {
     unitPrice: it.unitPrice ?? "0",
     sortOrder: it.sortOrder,
     expanded: false,
+    children: [],
   };
 }
+
+function apiItemsToHierarchical(apiItems: ApiItem[]): ItemDraft[] {
+  const result: ItemDraft[] = [];
+  let currentGroup: ItemDraft | null = null;
+  for (const it of apiItems) {
+    const itype = it.itemType ?? "single";
+    if (itype === "group") {
+      currentGroup = {
+        id: it.id,
+        itemType: "group",
+        title: it.title,
+        bulletsText: "",
+        modelCode: "",
+        imageUrl: it.imageUrl ?? "",
+        quantity: 0,
+        unit: "ADET",
+        unitPrice: "0",
+        sortOrder: it.sortOrder,
+        expanded: false,
+        children: [],
+      };
+      result.push(currentGroup);
+    } else if (itype === "child" && currentGroup) {
+      currentGroup.children.push({
+        id: it.id,
+        title: it.title,
+        modelCode: it.modelCode ?? "",
+        quantity: it.quantity,
+        unit: it.unit,
+        unitPrice: it.unitPrice ?? "0",
+        showInPdf: it.showInPdf ?? true,
+      });
+    } else {
+      currentGroup = null;
+      result.push(apiItemToDraft(it));
+    }
+  }
+  return result;
+}
+
+// ── Product Selector Modal (unchanged) ──────────────────────────────────────
 
 function ProductSelectorModal({
   authFetch,
@@ -245,6 +339,461 @@ function ProductSelectorModal({
   );
 }
 
+// ── Template Picker Modal ────────────────────────────────────────────────────
+
+function TemplatePickerModal({
+  authFetch,
+  onApply,
+  onClose,
+}: {
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  onApply: (children: ChildItemDraft[]) => void;
+  onClose: () => void;
+}) {
+  const [templates, setTemplates] = useState<GroupTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<number | null>(null);
+
+  useEffect(() => {
+    authFetch("/api/quote-group-templates")
+      .then((r) => r.json())
+      .then((data: GroupTemplate[]) => { setTemplates(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [authFetch]);
+
+  const handleDelete = async (id: number) => {
+    setDeleting(id);
+    try {
+      await authFetch(`/api/quote-group-templates/${id}`, { method: "DELETE" });
+      setTemplates((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Şablon silindi");
+    } catch {
+      toast.error("Silinemedi");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const handleApply = (t: GroupTemplate) => {
+    const children: ChildItemDraft[] = (t.children ?? []).map((c) => ({
+      title: c.title,
+      modelCode: c.modelCode ?? "",
+      quantity: 1,
+      unit: c.unit ?? "METRE",
+      unitPrice: "0",
+      showInPdf: true,
+    }));
+    onApply(children);
+    onClose();
+    toast.success(`"${t.name}" şablonu uygulandı`);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="flex h-[70vh] w-full max-w-lg flex-col rounded-xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h2 className="text-base font-bold text-slate-900">Grup Şablonları</h2>
+          <button onClick={onClose}><X className="h-5 w-5 text-slate-400" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          {loading ? (
+            <div className="flex h-24 items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin text-slate-300" />
+            </div>
+          ) : templates.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-400">
+              Henüz şablon yok. Bir grubun içindeki "Şablon Olarak Kaydet" butonunu kullanın.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {templates.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 truncate">{t.name}</p>
+                    <p className="text-xs text-slate-400">{(t.children ?? []).length} alt kalem</p>
+                    {t.description && (
+                      <p className="text-xs text-slate-500 truncate">{t.description}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleApply(t)}
+                    className="shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-700"
+                  >
+                    Uygula
+                  </button>
+                  <button
+                    onClick={() => handleDelete(t.id)}
+                    disabled={deleting === t.id}
+                    className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-red-400 hover:bg-red-50 disabled:opacity-40"
+                  >
+                    {deleting === t.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="border-t border-slate-100 px-5 py-3">
+          <p className="text-xs text-slate-400">
+            Şablon oluşturmak için bir grubun içindeki "Şablon Olarak Kaydet" butonunu kullanın.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Child Item Row ───────────────────────────────────────────────────────────
+
+function ChildItemRow({
+  child,
+  subNo,
+  onChange,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+}: {
+  child: ChildItemDraft;
+  subNo: string;
+  onChange: (field: keyof ChildItemDraft, value: ChildItemDraft[keyof ChildItemDraft]) => void;
+  onRemove: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  const total = child.quantity * parseFloat(child.unitPrice || "0");
+
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+      <div className="flex items-start gap-2 mb-2">
+        <span className="mt-1 flex h-5 min-w-[2.2rem] items-center justify-center rounded bg-blue-100 px-1 text-[10px] font-bold text-blue-700 shrink-0">
+          {subNo}
+        </span>
+        <input
+          value={child.title}
+          onChange={(e) => onChange("title", e.target.value)}
+          className="input flex-1 text-xs"
+          placeholder="Alt kalem açıklaması *"
+        />
+        <input
+          value={child.modelCode}
+          onChange={(e) => onChange("modelCode", e.target.value)}
+          className="input w-28 text-xs shrink-0"
+          placeholder="Model/Kod"
+        />
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={onMoveUp}
+            disabled={isFirst}
+            className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200 disabled:opacity-30"
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={isLast}
+            className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200 disabled:opacity-30"
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onRemove}
+            className="flex h-6 w-6 items-center justify-center rounded text-red-400 hover:bg-red-50"
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 pl-9 flex-wrap">
+        <div className="flex items-center gap-1">
+          <label className="text-[10px] text-slate-500 shrink-0">Miktar</label>
+          <input
+            type="number"
+            min={0}
+            value={child.quantity}
+            onChange={(e) => onChange("quantity", parseFloat(e.target.value) || 0)}
+            className="input w-16 text-xs"
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <label className="text-[10px] text-slate-500 shrink-0">Birim</label>
+          <select
+            value={child.unit}
+            onChange={(e) => onChange("unit", e.target.value)}
+            className="input w-20 text-xs"
+          >
+            {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </div>
+        <div className="flex items-center gap-1">
+          <label className="text-[10px] text-slate-500 shrink-0">Birim Fiyat</label>
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            value={child.unitPrice}
+            onChange={(e) => onChange("unitPrice", e.target.value)}
+            className="input w-24 text-xs"
+          />
+        </div>
+        <div className="text-xs font-bold text-slate-600 min-w-[4rem]">
+          = {total.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
+        </div>
+        <label className="flex items-center gap-1 text-[10px] text-slate-500 cursor-pointer select-none ml-auto">
+          <input
+            type="checkbox"
+            checked={child.showInPdf}
+            onChange={(e) => onChange("showInPdf", e.target.checked)}
+            className="h-3 w-3"
+          />
+          PDF'te göster
+        </label>
+      </div>
+    </div>
+  );
+}
+
+// ── Group Item Row ───────────────────────────────────────────────────────────
+
+function GroupItemRow({
+  item,
+  groupNo,
+  onChange,
+  onChildChange,
+  onChildRemove,
+  onChildAdd,
+  onChildMove,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+  authFetch,
+}: {
+  item: ItemDraft;
+  groupNo: number;
+  onChange: (field: keyof ItemDraft, value: ItemDraft[keyof ItemDraft]) => void;
+  onChildChange: (childIdx: number, field: keyof ChildItemDraft, value: ChildItemDraft[keyof ChildItemDraft]) => void;
+  onChildRemove: (childIdx: number) => void;
+  onChildAdd: () => void;
+  onChildMove: (childIdx: number, dir: -1 | 1) => void;
+  onRemove: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+}) {
+  const groupTotal = item.children.reduce(
+    (s, c) => s + c.quantity * parseFloat(c.unitPrice || "0"),
+    0
+  );
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [saveTemplateName, setSaveTemplateName] = useState("");
+  const [showSaveForm, setShowSaveForm] = useState(false);
+
+  const handleSaveAsTemplate = async () => {
+    if (!saveTemplateName.trim()) return;
+    setSavingTemplate(true);
+    try {
+      const children = item.children.map((c) => ({
+        title: c.title,
+        modelCode: c.modelCode || undefined,
+        unit: c.unit,
+      }));
+      await authFetch("/api/quote-group-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: saveTemplateName.trim(), children }),
+      });
+      toast.success(`"${saveTemplateName.trim()}" şablon olarak kaydedildi`);
+      setSaveTemplateName("");
+      setShowSaveForm(false);
+    } catch {
+      toast.error("Şablon kaydedilemedi");
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  return (
+    <div className="overflow-hidden rounded-lg border-2 border-blue-200 bg-white">
+      <div
+        className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-3 hover:bg-blue-100"
+        onClick={() => onChange("expanded", !item.expanded)}
+      >
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+          {groupNo}
+        </span>
+        <Layers className="h-4 w-4 shrink-0 text-blue-400" />
+        <p className="flex-1 truncate text-sm font-bold text-blue-900">
+          {item.title || <span className="italic font-normal text-blue-400">Grup adı giriniz…</span>}
+        </p>
+        <span className="shrink-0 text-xs text-slate-500">
+          {item.children.length} alt kalem
+        </span>
+        {groupTotal > 0 && (
+          <span className="shrink-0 text-xs font-bold text-slate-600">
+            {groupTotal.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
+          </span>
+        )}
+        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={onMoveUp}
+            disabled={isFirst}
+            className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-blue-200 disabled:opacity-30"
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onMoveDown}
+            disabled={isLast}
+            className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-blue-200 disabled:opacity-30"
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onRemove}
+            className="flex h-6 w-6 items-center justify-center rounded text-red-400 hover:bg-red-50"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        {item.expanded ? (
+          <ChevronUp className="h-4 w-4 shrink-0 text-blue-400" />
+        ) : (
+          <ChevronDown className="h-4 w-4 shrink-0 text-blue-400" />
+        )}
+      </div>
+
+      {item.expanded && (
+        <div className="border-t border-blue-100 px-4 py-4 space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="label">Grup Adı *</label>
+              <input
+                value={item.title}
+                onChange={(e) => onChange("title", e.target.value)}
+                className="input w-full text-sm"
+                placeholder="Medikal Gaz Boruları, İstasyon Ekipmanları…"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <div>
+              <label className="label">Grup Görseli URL (isteğe bağlı)</label>
+              <input
+                value={item.imageUrl}
+                onChange={(e) => onChange("imageUrl", e.target.value)}
+                className="input w-full text-sm"
+                placeholder="https://…"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setShowTemplatePicker(true)}
+              className="flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              Şablondan Yükle
+            </button>
+            {!showSaveForm ? (
+              <button
+                onClick={() => setShowSaveForm(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              >
+                <BookmarkPlus className="h-3.5 w-3.5" />
+                Şablon Olarak Kaydet
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  value={saveTemplateName}
+                  onChange={(e) => setSaveTemplateName(e.target.value)}
+                  className="input text-xs"
+                  placeholder="Şablon adı…"
+                  style={{ width: "160px" }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveAsTemplate(); }}
+                />
+                <button
+                  onClick={handleSaveAsTemplate}
+                  disabled={savingTemplate || !saveTemplateName.trim()}
+                  className="flex items-center gap-1 rounded-lg bg-slate-700 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-60"
+                >
+                  {savingTemplate ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                  Kaydet
+                </button>
+                <button
+                  onClick={() => { setShowSaveForm(false); setSaveTemplateName(""); }}
+                  className="flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                Alt Kalemler ({item.children.length})
+              </span>
+            </div>
+            {item.children.length === 0 ? (
+              <div className="rounded-lg border-2 border-dashed border-blue-100 py-6 text-center text-xs text-slate-400">
+                Alt kalem yok. Aşağıdan ekleyin.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {item.children.map((child, j) => (
+                  <ChildItemRow
+                    key={j}
+                    child={child}
+                    subNo={`${groupNo}.${j + 1}`}
+                    onChange={(field, value) => onChildChange(j, field, value)}
+                    onRemove={() => onChildRemove(j)}
+                    onMoveUp={() => onChildMove(j, -1)}
+                    onMoveDown={() => onChildMove(j, 1)}
+                    isFirst={j === 0}
+                    isLast={j === item.children.length - 1}
+                  />
+                ))}
+              </div>
+            )}
+            <button
+              onClick={onChildAdd}
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-blue-200 py-2 text-xs font-semibold text-blue-600 hover:border-blue-400 hover:bg-blue-50"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Alt Kalem Ekle
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showTemplatePicker && (
+        <TemplatePickerModal
+          authFetch={authFetch}
+          onApply={(children) => onChange("children", children)}
+          onClose={() => setShowTemplatePicker(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── Single Item Row ──────────────────────────────────────────────────────────
+
 function ItemRow({
   item,
   index,
@@ -279,7 +828,7 @@ function ItemRow({
           {item.title || <span className="italic text-slate-300">Başlıksız kalem</span>}
         </p>
         <span className="text-xs font-bold text-slate-500">
-          {total.toLocaleString("tr-TR")} {item.unitPrice ? "" : ""}
+          {total.toLocaleString("tr-TR")}
         </span>
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           <button
@@ -372,7 +921,7 @@ function ItemRow({
                 onChange={(e) => onChange("unit", e.target.value)}
                 className="input w-full text-sm"
               >
-                {["ADET", "SET", "METRE", "KG", "PAKET", "KUTU", "TAKIM"].map((u) => (
+                {UNITS.map((u) => (
                   <option key={u} value={u}>{u}</option>
                 ))}
               </select>
@@ -403,6 +952,8 @@ function ItemRow({
     </div>
   );
 }
+
+// ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function QuoteFormEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -456,7 +1007,7 @@ export default function QuoteFormEditPage() {
       })
       .then((data) => {
         setQuoteNo(data.quoteNo ?? "");
-        setItems((data.items ?? []).map(apiItemToDraft));
+        setItems(apiItemsToHierarchical(data.items ?? []));
         setForm((prev) => ({
           ...prev,
           status: data.status ?? "draft",
@@ -500,6 +1051,8 @@ export default function QuoteFormEditPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // ── Item callbacks ──
+
   const updateItem = useCallback((index: number, field: keyof ItemDraft, value: ItemDraft[keyof ItemDraft]) => {
     setItems((prev) =>
       prev.map((it, i) => (i === index ? { ...it, [field]: value } : it))
@@ -520,13 +1073,62 @@ export default function QuoteFormEditPage() {
     });
   }, []);
 
+  // ── Group child callbacks ──
+
+  const updateGroupChild = useCallback((groupIdx: number, childIdx: number, field: keyof ChildItemDraft, value: ChildItemDraft[keyof ChildItemDraft]) => {
+    setItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== groupIdx) return it;
+        return { ...it, children: it.children.map((c, j) => j === childIdx ? { ...c, [field]: value } : c) };
+      })
+    );
+  }, []);
+
+  const removeGroupChild = useCallback((groupIdx: number, childIdx: number) => {
+    setItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== groupIdx) return it;
+        return { ...it, children: it.children.filter((_, j) => j !== childIdx) };
+      })
+    );
+  }, []);
+
+  const addGroupChild = useCallback((groupIdx: number) => {
+    setItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== groupIdx) return it;
+        return { ...it, children: [...it.children, newChildItem()] };
+      })
+    );
+  }, []);
+
+  const moveGroupChild = useCallback((groupIdx: number, childIdx: number, dir: -1 | 1) => {
+    setItems((prev) =>
+      prev.map((it, i) => {
+        if (i !== groupIdx) return it;
+        const arr = [...it.children];
+        const target = childIdx + dir;
+        if (target < 0 || target >= arr.length) return it;
+        [arr[childIdx], arr[target]] = [arr[target]!, arr[childIdx]!];
+        return { ...it, children: arr };
+      })
+    );
+  }, []);
+
+  // ── Add actions ──
+
   const addBlankItem = () => {
     setItems((prev) => [...prev, newItem(prev.length)]);
+  };
+
+  const addBlankGroup = () => {
+    setItems((prev) => [...prev, newGroup(prev.length)]);
   };
 
   const addFromProduct = (p: Product) => {
     const draft: ItemDraft = {
       productId: p.id,
+      itemType: "single",
       title: p.quoteTitle ?? p.title,
       bulletsText: (p.quoteBullets ?? []).join("\n"),
       modelCode: p.quoteModelCode ?? "",
@@ -536,40 +1138,83 @@ export default function QuoteFormEditPage() {
       unitPrice: p.quoteUnitPrice ?? "0",
       sortOrder: items.length,
       expanded: false,
+      children: [],
     };
     setItems((prev) => [...prev, draft]);
     setShowProductModal(false);
     toast.success(`"${draft.title}" eklendi`);
   };
 
+  // ── Save ──
+
   const saveItems = async () => {
     if (!id) return;
     setSaving(true);
     try {
-      const body = items.map((it, i) => ({
-        productId: it.productId ?? null,
-        title: it.title,
-        bullets: it.bulletsText
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        modelCode: it.modelCode || null,
-        imageUrl: it.imageUrl || null,
-        quantity: it.quantity,
-        unit: it.unit,
-        unitPrice: it.unitPrice,
-        sortOrder: i,
-      }));
+      const body: Array<Record<string, unknown>> = [];
+      let sortOrder = 0;
+      for (const item of items) {
+        if (item.itemType === "group") {
+          body.push({
+            productId: null,
+            itemType: "group",
+            parentItemId: null,
+            title: item.title || "Grup",
+            bullets: [],
+            modelCode: null,
+            imageUrl: item.imageUrl || null,
+            quantity: 0,
+            unit: "ADET",
+            unitPrice: "0",
+            sortOrder: sortOrder++,
+            showInPdf: true,
+          });
+          for (const child of item.children) {
+            body.push({
+              productId: null,
+              itemType: "child",
+              parentItemId: null,
+              title: child.title || "—",
+              bullets: [],
+              modelCode: child.modelCode || null,
+              imageUrl: null,
+              quantity: child.quantity,
+              unit: child.unit,
+              unitPrice: child.unitPrice,
+              sortOrder: sortOrder++,
+              showInPdf: child.showInPdf,
+            });
+          }
+        } else {
+          body.push({
+            productId: item.productId ?? null,
+            itemType: "single",
+            parentItemId: null,
+            title: item.title,
+            bullets: item.bulletsText
+              .split("\n")
+              .map((s) => s.trim())
+              .filter(Boolean),
+            modelCode: item.modelCode || null,
+            imageUrl: item.imageUrl || null,
+            quantity: item.quantity,
+            unit: item.unit,
+            unitPrice: item.unitPrice,
+            sortOrder: sortOrder++,
+            showInPdf: true,
+          });
+        }
+      }
+
       const r = await authFetch(`/api/quote-forms/${id}/items`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
       if (!r.ok) throw new Error();
-      const saved = (await r.json()) as Array<{ id: number; sortOrder: number }>;
-      setItems((prev) =>
-        prev.map((it, i) => ({ ...it, id: saved[i]?.id }))
-      );
+      const saved = (await r.json()) as ApiItem[];
+      // Reload with new IDs
+      setItems(apiItemsToHierarchical(saved));
       toast.success("Kalemler kaydedildi");
     } catch {
       toast.error("Kalemler kaydedilemedi");
@@ -640,10 +1285,21 @@ export default function QuoteFormEditPage() {
     );
   }
 
-  const araTopam = items.reduce(
-    (s, it) => s + it.quantity * parseFloat(it.unitPrice || "0"),
-    0
-  );
+  const araTopam = items.reduce((sum, item) => {
+    if (item.itemType === "group") {
+      return sum + item.children.reduce((cs, c) => cs + c.quantity * parseFloat(c.unitPrice || "0"), 0);
+    }
+    return sum + item.quantity * parseFloat(item.unitPrice || "0");
+  }, 0);
+
+  const totalItemCount = items.reduce((n, item) => n + (item.itemType === "group" ? item.children.length : 1), 0);
+
+  // Compute top-level display numbers (both singles and groups count together)
+  let topNoCounter = 0;
+  const itemsWithNo = items.map((item) => {
+    topNoCounter++;
+    return { item, topNo: topNoCounter };
+  });
 
   return (
     <div className="flex flex-col">
@@ -707,16 +1363,16 @@ export default function QuoteFormEditPage() {
 
       {tab === "items" && (
         <div className="px-4 py-5 sm:px-6">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <span className="text-sm font-semibold text-slate-700">{items.length} kalem</span>
-              {items.length > 0 && (
+              <span className="text-sm font-semibold text-slate-700">{totalItemCount} kalem</span>
+              {totalItemCount > 0 && (
                 <span className="ml-3 text-sm text-slate-500">
                   Ara Toplam: {araTopam.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} {form.paraBirimi}
                 </span>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 justify-end">
               <button
                 onClick={() => setShowProductModal(true)}
                 className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
@@ -726,33 +1382,62 @@ export default function QuoteFormEditPage() {
               </button>
               <button
                 onClick={addBlankItem}
-                className="flex items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold text-white hover:bg-slate-700"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-bold text-white hover:bg-slate-700"
               >
                 <Plus className="h-3.5 w-3.5" />
-                Kalem Ekle
+                Tekli Ürün
+              </button>
+              <button
+                onClick={addBlankGroup}
+                className="flex items-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 py-2 text-xs font-bold text-white hover:bg-blue-700"
+              >
+                <Layers className="h-3.5 w-3.5" />
+                Gruplu Ürün
               </button>
             </div>
           </div>
 
           {items.length === 0 ? (
             <div className="rounded-xl border-2 border-dashed border-slate-200 py-16 text-center">
-              <p className="text-slate-400">Henüz kalem yok. Ürün seç veya manuel ekle.</p>
+              <p className="text-slate-400">Henüz kalem yok. Ürün seç, tekli ya da gruplu ekle.</p>
             </div>
           ) : (
             <div className="space-y-2">
-              {items.map((item, i) => (
-                <ItemRow
-                  key={i}
-                  item={item}
-                  index={i}
-                  onChange={(field, value) => updateItem(i, field, value)}
-                  onRemove={() => removeItem(i)}
-                  onMoveUp={() => moveItem(i, -1)}
-                  onMoveDown={() => moveItem(i, 1)}
-                  isFirst={i === 0}
-                  isLast={i === items.length - 1}
-                />
-              ))}
+              {itemsWithNo.map(({ item, topNo }, i) => {
+                if (item.itemType === "group") {
+                  return (
+                    <GroupItemRow
+                      key={i}
+                      item={item}
+                      groupNo={topNo}
+                      onChange={(field, value) => updateItem(i, field, value)}
+                      onChildChange={(ci, field, value) => updateGroupChild(i, ci, field, value)}
+                      onChildRemove={(ci) => removeGroupChild(i, ci)}
+                      onChildAdd={() => addGroupChild(i)}
+                      onChildMove={(ci, dir) => moveGroupChild(i, ci, dir)}
+                      onRemove={() => removeItem(i)}
+                      onMoveUp={() => moveItem(i, -1)}
+                      onMoveDown={() => moveItem(i, 1)}
+                      isFirst={i === 0}
+                      isLast={i === items.length - 1}
+                      authFetch={authFetch}
+                    />
+                  );
+                }
+                return (
+                  <ItemRow
+                    key={i}
+                    item={item}
+                    index={i}
+                    onChange={(field, value) => updateItem(i, field, value)}
+                    onRemove={() => removeItem(i)}
+                    onMoveUp={() => moveItem(i, -1)}
+                    onMoveDown={() => moveItem(i, 1)}
+                    isFirst={i === 0}
+                    isLast={i === items.length - 1}
+                  />
+                );
+              })}
             </div>
           )}
 

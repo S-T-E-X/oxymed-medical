@@ -15,7 +15,8 @@ import {
 import "./QuoteTemplatePage.css";
 
 export type QuoteViewItem = {
-  no: number;
+  no: string;
+  itemType: "single" | "group" | "child";
   title: string;
   bullets: string[];
   code: string;
@@ -202,9 +203,32 @@ function ItemsTable({
         </thead>
         <tbody>
           {items.map((item) => {
+            if (item.itemType === "group") {
+              return (
+                <tr key={item.no} className="qt-group-row">
+                  <td className="qt-no">{item.no}</td>
+                  <td className="qt-description" colSpan={2}>
+                    <strong style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.title}</strong>
+                  </td>
+                  <td className="qt-image-cell">
+                    {item.imageUrl ? (
+                      <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
+                        <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100px", objectFit: "contain" }} />
+                      </div>
+                    ) : null}
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              );
+            }
+
+            const isChild = item.itemType === "child";
             const total = item.quantity * item.unitPrice;
             return (
-              <tr key={item.no}>
+              <tr key={item.no} className={isChild ? "qt-child-row" : ""}>
                 <td className="qt-no">{item.no}</td>
                 <td className="qt-description">
                   <strong>{item.title}</strong>
@@ -218,12 +242,14 @@ function ItemsTable({
                 </td>
                 <td className="qt-code">{item.code}</td>
                 <td className="qt-image-cell">
-                  <ProductImageCell imageUrl={item.imageUrl} title={item.title} />
+                  {isChild && !item.imageUrl ? null : (
+                    <ProductImageCell imageUrl={item.imageUrl} title={item.title} />
+                  )}
                 </td>
-                <td>{item.quantity}</td>
+                <td>{item.quantity > 0 ? item.quantity : ""}</td>
                 <td>{item.unit}</td>
-                <td>{fmtPrice(item.unitPrice, currency)}</td>
-                <td>{fmtPrice(total, currency)}</td>
+                <td>{item.quantity > 0 ? fmtPrice(item.unitPrice, currency) : ""}</td>
+                <td>{item.quantity > 0 ? fmtPrice(total, currency) : ""}</td>
               </tr>
             );
           })}
@@ -239,6 +265,7 @@ function ItemsTable({
 }
 
 function FooterBlocks({ data }: { data: QuoteViewData }) {
+  // Group items have quantity=0 and unitPrice=0, so they don't affect totals
   const araTopam = data.items.reduce((s, it) => s + it.quantity * it.unitPrice, 0);
   const iskontoAmount = data.iskontoTipi === "tutar"
     ? Math.min(data.iskonto, araTopam)

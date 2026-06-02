@@ -35,6 +35,8 @@ type ApiForm = {
     id: number;
     formId: number;
     productId?: number | null;
+    itemType?: string | null;
+    parentItemId?: number | null;
     title: string;
     bullets?: string[];
     modelCode?: string | null;
@@ -42,6 +44,7 @@ type ApiForm = {
     quantity: number;
     unit: string;
     unitPrice?: string | null;
+    showInPdf?: boolean | null;
     sortOrder: number;
   }>;
 };
@@ -51,6 +54,66 @@ function toViewData(form: ApiForm): QuoteViewData {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
+
+  // Build numbered items — sequential scan determines hierarchy
+  // group → top-level number; child → sub-number under last group; single → top-level number
+  const rawItems = form.items ?? [];
+  let topCounter = 0;
+  let currentGroupNo = 0;
+  let childCounter = 0;
+
+  const numberedItems = rawItems.flatMap((it): import("./QuoteTemplateView").QuoteViewItem[] => {
+    const itype = (it.itemType ?? "single") as "single" | "group" | "child";
+
+    if (itype === "group") {
+      topCounter++;
+      currentGroupNo = topCounter;
+      childCounter = 0;
+      return [{
+        no: String(topCounter),
+        itemType: "group" as const,
+        title: it.title,
+        bullets: [] as string[],
+        code: it.modelCode ?? "",
+        quantity: 0,
+        unit: "",
+        unitPrice: 0,
+        imageUrl: it.imageUrl,
+      }];
+    }
+
+    if (itype === "child") {
+      childCounter++;
+      // Filter out children that should not appear in PDF (showInPdf=false AND qty=0)
+      if (it.showInPdf === false && (it.quantity ?? 0) === 0) return [];
+      return [{
+        no: `${currentGroupNo}.${childCounter}`,
+        itemType: "child" as const,
+        title: it.title,
+        bullets: it.bullets ?? [],
+        code: it.modelCode ?? "",
+        quantity: it.quantity ?? 0,
+        unit: it.unit,
+        unitPrice: parseFloat(it.unitPrice ?? "0") || 0,
+        imageUrl: it.imageUrl,
+      }];
+    }
+
+    // single
+    topCounter++;
+    return [{
+      no: String(topCounter),
+      itemType: "single" as const,
+      title: it.title,
+      bullets: it.bullets ?? [],
+      code: it.modelCode ?? "",
+      quantity: it.quantity,
+      unit: it.unit,
+      unitPrice: parseFloat(it.unitPrice ?? "0") || 0,
+      imageUrl: it.imageUrl,
+    }];
+  });
+
   return {
     quoteNo: form.quoteNo,
     quoteDate: `${day}.${month}.${year}`,
@@ -77,16 +140,7 @@ function toViewData(form: ApiForm): QuoteViewData {
     onaylayan: form.onaylayan ?? "",
     onaytayanGorev: form.onaytayanGorev ?? "",
     onayTarihi: form.onayTarihi ?? "",
-    items: (form.items ?? []).map((it, i) => ({
-      no: i + 1,
-      title: it.title,
-      bullets: it.bullets ?? [],
-      code: it.modelCode ?? "",
-      quantity: it.quantity,
-      unit: it.unit,
-      unitPrice: parseFloat(it.unitPrice ?? "0") || 0,
-      imageUrl: it.imageUrl,
-    })),
+    items: numberedItems,
   };
 }
 

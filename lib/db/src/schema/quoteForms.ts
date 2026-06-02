@@ -1,4 +1,4 @@
-import { integer, jsonb, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, numeric, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const quoteForms = pgTable("quote_forms", {
   id: serial("id").primaryKey(),
@@ -35,6 +35,8 @@ export const quoteFormItems = pgTable("quote_form_items", {
   id: serial("id").primaryKey(),
   formId: integer("form_id").notNull().references(() => quoteForms.id, { onDelete: "cascade" }),
   productId: integer("product_id"),
+  itemType: text("item_type").notNull().default("single"),
+  parentItemId: integer("parent_item_id"),
   title: text("title").notNull(),
   bullets: jsonb("bullets").$type<string[]>().default([]),
   modelCode: text("model_code"),
@@ -42,8 +44,25 @@ export const quoteFormItems = pgTable("quote_form_items", {
   quantity: integer("quantity").notNull().default(1),
   unit: text("unit").notNull().default("ADET"),
   unitPrice: numeric("unit_price", { precision: 12, scale: 2 }).default("0"),
+  showInPdf: boolean("show_in_pdf").notNull().default(true),
   sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const quoteGroupTemplates = pgTable("quote_group_templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  children: jsonb("children").$type<Array<{
+    title: string;
+    modelCode?: string;
+    unit?: string;
+  }>>().default([]),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export type QuoteForm = typeof quoteForms.$inferSelect;
 export type QuoteFormItem = typeof quoteFormItems.$inferSelect;
+export type QuoteGroupTemplate = typeof quoteGroupTemplates.$inferSelect;

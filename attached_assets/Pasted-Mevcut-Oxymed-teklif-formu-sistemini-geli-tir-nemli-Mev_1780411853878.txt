@@ -1,0 +1,216 @@
+Mevcut Oxymed teklif formu sistemini geliştir.
+
+Önemli:
+Mevcut teklif formunun ana tasarımını, renklerini, kolon yapısını, PDF görünümünü, CSS class isimlerini ve genel layout yapısını değiştirme. Kafasına göre yeni tasarım ekleme, footer/header/tabloları yeniden tasarlama. Sadece mevcut teklif kalemleri sistemine “tekli ürün” ve “gruplu ürün / alt kalemli ürün” desteği ekle.
+
+Şu an teklif formunda ürünler şu kolonlarla görünüyor:
+
+- NO
+- ÜRÜN / HİZMET AÇIKLAMASI
+- MODEL / KOD
+- ÜRÜN GÖRSELİ
+- MİKTAR
+- BİRİM
+- BİRİM FİYAT
+- TOPLAM FİYAT
+
+Bu yapı aynı kalacak.
+
+Ama artık iki farklı teklif kalemi tipi olacak:
+
+1. TEKLİ ÜRÜN
+Örnek:
+- Medikal gaz bakır boru tesisatı
+- Vakum regülatörü
+- Dental vakum pompası
+- Gaz prizi
+- Pendant ünitesi
+
+Bu ürünler mevcut sistemde olduğu gibi tek satır olarak görünsün.
+Ürün açıklaması, model/kod, ürün görseli, miktar, birim, birim fiyat ve toplam fiyat aynı şekilde basılsın.
+
+2. GRUPLU ÜRÜN / ALT KALEMLİ ÜRÜN
+Bazı ürünlerde tek bir ürün grubu altında birden fazla alt kalem olacak.
+Örnek:
+“MEDİKAL BAKIR BORULARI”
+
+Bu ürün grubunun altında ölçüye göre ayrı satırlar olacak:
+
+6.1 Medikal Bakır Boru - Ø12 mm
+6.2 Medikal Bakır Boru - Ø15 mm
+6.3 Medikal Bakır Boru - Ø22 mm
+6.4 Medikal Bakır Boru - Ø28 mm
+6.5 Medikal Bakır Boru - Ø35 mm
+6.6 Q 40 MM PPRC BORU
+
+Her alt kalemin kendi:
+- açıklaması
+- model/kod değeri
+- miktarı
+- birimi
+- birim fiyatı
+- toplam fiyatı
+
+olacak.
+
+Gruplu ürünlerde sistem şöyle çalışmalı:
+
+- Ana ürün grubu teklif tablosunda bir grup başlığı olarak görünsün.
+- Ana grup numarası örnek: 6
+- Alt kalemler 6.1, 6.2, 6.3 şeklinde numaralandırılsın.
+- Grup başlığı satırında “MEDİKAL BAKIR BORULARI” yazsın.
+- İstenirse grup açıklaması yazılabilsin.
+- Grup için tek bir ortak görsel seçilebilsin.
+- Alt kalemlerde aynı görsel tekrar tekrar basılmak zorunda değil.
+- Eğer mevcut tablo yapısı bozulmayacaksa grup görseli grup başlığı satırında veya ilk alt kalemin görsel alanında gösterilebilir.
+- Alt kalemlerin toplamları genel teklif toplamına dahil edilsin.
+- Miktarı 0 olan alt kalemler opsiyonel olarak teklif PDF’inde gizlenebilsin.
+- Admin panelde “0 miktarlı alt kalemleri PDF’de göster/gizle” seçeneği olsun.
+
+Admin panelde teklif oluştururken şu özellikler eklensin:
+
+1. Ürün ekleme sırasında seçim:
+- Tekli Ürün Ekle
+- Gruplu Ürün Ekle
+
+2. Tekli ürün ekleme:
+Mevcut sistem nasıl çalışıyorsa aynı kalsın.
+
+3. Gruplu ürün ekleme:
+Admin önce grup adını girsin:
+Örnek: MEDİKAL BAKIR BORULARI
+
+Sonra alt kalemleri ekleyebilsin:
+- Alt kalem açıklaması
+- Model / Kod
+- Miktar
+- Birim
+- Birim fiyat
+- Toplam fiyat otomatik hesap
+- Para birimi
+- Alt kalem notu
+
+Admin alt kalem ekleyebilsin, silebilsin, sıralamasını değiştirebilsin.
+
+4. Hazır şablon sistemi:
+Admin isterse “Medikal Bakır Boruları” gibi hazır ürün grubu şablonu oluşturabilsin.
+Bu şablonda alt kalemler önceden tanımlı olsun.
+
+Örnek hazır şablon:
+Grup adı: MEDİKAL BAKIR BORULARI
+Alt kalemler:
+- Medikal Bakır Boru - Ø12 mm
+- Medikal Bakır Boru - Ø15 mm
+- Medikal Bakır Boru - Ø22 mm
+- Medikal Bakır Boru - Ø28 mm
+- Medikal Bakır Boru - Ø35 mm
+- Medikal Bakır Boru - Ø42 mm
+- Medikal Bakır Boru - Ø54 mm
+- Medikal Bakır Boru - Ø76 mm
+- Medikal Bakır Boru - Ø108 mm
+- Q 20 MM PPRC BORU
+- Q 32 MM PPRC BORU
+- Q 40 MM PPRC BORU
+- Q 50 MM PPRC BORU
+
+Admin bu şablonu teklife eklediğinde alt kalemler otomatik gelsin, sonra miktar ve fiyatları düzenleyebilsin.
+
+Database / veri yapısı:
+
+Mevcut sistemi bozmadan şu mantığı ekle:
+
+quote_items tablosunda veya mevcut teklif kalemleri yapısında item_type alanı olsun:
+
+item_type:
+- single
+- group
+- child
+
+Alanlar:
+- id
+- quote_id
+- parent_item_id nullable
+- item_type
+- sort_order
+- item_no
+- title
+- description
+- model_code
+- image_url
+- quantity
+- unit
+- unit_price
+- currency
+- total_price
+- show_in_pdf
+- created_at
+- updated_at
+
+Mantık:
+- Tekli ürünlerde item_type = single
+- Grup başlığında item_type = group
+- Alt kalemlerde item_type = child ve parent_item_id grup satırına bağlı olacak
+
+PDF render mantığı:
+
+Mevcut teklif PDF tasarımını değiştirme.
+
+Render sırasında:
+- single ürünler mevcut haliyle tek satır basılsın.
+- group ürün gelirse önce grup başlığı basılsın.
+- child ürünler grup altında 6.1, 6.2, 6.3 şeklinde basılsın.
+- Grup alt kalemlerinin toplamları genel toplam hesabına dahil edilsin.
+- Grup başlığı tek başına fiyat hesabına dahil edilmesin.
+- Eğer child quantity 0 ise ve show_in_pdf false ise PDF’de görünmesin.
+- Eğer show_in_pdf true ise miktar 0 olsa bile satır görünsün ama toplam 0 yazsın.
+
+Numaralandırma:
+Mevcut teklif no sistemi korunacak.
+Örnek:
+5 Tekli Ürün
+6 MEDİKAL BAKIR BORULARI
+6.1 Medikal Bakır Boru - Ø12 mm
+6.2 Medikal Bakır Boru - Ø15 mm
+6.3 Medikal Bakır Boru - Ø22 mm
+7 Vakum Regülatörü
+8 Başka Ürün
+
+Yani gruplu ürün altındaki alt kalemler ana numaranın devamı gibi değil, ana numaranın alt kırılımı gibi görünmeli.
+
+Toplam hesaplama:
+Genel ara toplam, KDV, iskonto, genel toplam hesapları değişmesin.
+Sadece group item’ın kendi fiyatı hesaplamaya dahil edilmesin.
+child item toplamları dahil edilsin.
+single item toplamları dahil edilsin.
+
+Admin panel UX:
+Teklif düzenleme ekranında her kalem kart/table olarak görünsün.
+Gruplu ürünlerde alt kalemler iç içe görünsün.
+Admin alt kalemleri aç/kapat yapabilsin.
+Alt kalemlerin sırasını değiştirebilsin.
+Yeni alt kalem ekleyebilsin.
+Alt kalemi silebilsin.
+Grup toplamı otomatik görünsün.
+
+Önemli kısıtlar:
+- Mevcut teklif tasarımı bozulmayacak.
+- Mevcut tekli ürün sistemi çalışmaya devam edecek.
+- Eski teklifler bozulmayacak.
+- Eğer eski kayıtlarda item_type yoksa otomatik single kabul edilecek.
+- Mevcut PDF şablonunun kolon ölçüleri korunacak.
+- Ürün görseli alanı mevcut ölçülerde kalacak.
+- Sayfa taşarsa mevcut sistemdeki gibi sonraki sayfaya devam edecek.
+
+Test senaryoları:
+1. Tekli ürün ekle, PDF eski haliyle düzgün oluşmalı.
+2. Medikal Bakır Boruları grubu ekle, alt kalemler 6.1, 6.2 şeklinde görünmeli.
+3. Alt kalem miktarları ve toplamları genel toplamda doğru hesaplanmalı.
+4. 0 miktarlı alt kalem show_in_pdf false ise PDF’de görünmemeli.
+5. 0 miktarlı alt kalem show_in_pdf true ise PDF’de görünmeli.
+6. Eski teklifler bozulmadan açılmalı.
+7. Grup satırı toplam hesaplamaya dahil edilmemeli.
+8. PDF tasarımı, renkleri, kolonları ve mevcut görünüm korunmalı.
+
+İlk olarak mevcut teklif formu kodlarını analiz et.
+Sonra sadece gerekli minimum değişiklikleri yap.
+Tasarımı yeniden yapma.

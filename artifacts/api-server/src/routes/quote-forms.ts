@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db, quoteForms, quoteFormItems, productionOrdersTable, emailLogsTable } from "@workspace/db";
+import { db, quoteForms, quoteFormItems, quoteGroupTemplates, productionOrdersTable, emailLogsTable } from "@workspace/db";
 import { eq, desc, like } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { sendQuoteFormEmail } from "../lib/mailer";
@@ -66,14 +66,17 @@ const QuoteFormBody = z.object({
 
 const QuoteFormItemBody = z.object({
   productId: z.coerce.number().int().optional().nullable(),
+  itemType: z.enum(["single", "group", "child"]).optional().default("single"),
+  parentItemId: z.coerce.number().int().optional().nullable(),
   title: z.string().min(1),
   bullets: z.array(z.string()).optional(),
   modelCode: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
-  quantity: z.coerce.number().int().min(1).optional(),
+  quantity: z.coerce.number().int().min(0).optional(),
   unit: z.string().optional(),
   unitPrice: z.string().optional().nullable(),
   sortOrder: z.coerce.number().int().optional(),
+  showInPdf: z.boolean().optional().default(true),
 });
 
 // List quote forms
@@ -165,8 +168,10 @@ router.patch("/quote-forms/:id", requireAuth, async (req, res): Promise<void> =>
       const [formRow] = await db.select({ firmaAdi: quoteForms.firmaAdi }).from(quoteForms).where(eq(quoteForms.id, id));
 
       // Consolidate same-product lines into one production order each
+      // Skip group headers (itemType=group) — only process single and child items
       const grouped = new Map<string, { productId: number | null; title: string; modelCode: string | null; quantity: number }>();
       for (const item of items) {
+        if (item.itemType === "group") continue;
         if ((item.quantity ?? 0) < 1) continue;
         const key = item.productId ? `pid:${item.productId}` : `title:${item.title}:${item.modelCode ?? ""}`;
         const existing = grouped.get(key);
@@ -299,7 +304,6 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
 
   const sentBy = (req as typeof req & { adminPayload?: { email?: string } }).adminPayload?.email ?? null;
 
-  // Read logo for email header (embedded as data URL to avoid external URL blocking)
   let logoBase64 = "";
   try {
     const logoPath = path.resolve(process.cwd(), "artifacts/oxymed-medikal/public/assets/brand/oxymed-service-logo.webp");
@@ -309,10 +313,8 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
     // proceed without logo
   }
 
-  // Extract raw JWT from the Authorization header so puppeteer can inject it into localStorage
   const rawJwt = (req.headers["authorization"] as string | undefined)?.replace(/^Bearer\s+/i, "") ?? "";
 
-  // Generate PDF by rendering the real teklif-goruntule page with puppeteer
   let pdfBuffer: Buffer | undefined;
   let pdfBrowser: import("puppeteer-core").Browser | undefined;
   try {
@@ -325,7 +327,6 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
       headless: true,
     });
     const pdfPage = await pdfBrowser.newPage();
-    // Inject auth token into localStorage before the page loads
     await pdfPage.evaluateOnNewDocument(
       (tokenKey: string, token: string) => { localStorage.setItem(tokenKey, token); },
       "admin_token",
@@ -335,7 +336,6 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
       waitUntil: "networkidle2",
       timeout: 60_000,
     });
-    // Wait for the template content to be rendered
     await pdfPage.waitForSelector(".qt-page", { timeout: 20_000 }).catch(() => { /* render anyway */ });
     const rawPdf = await pdfPage.pdf({
       format: "A4",
@@ -407,6 +407,65 @@ router.put("/quote-forms/:id/items", requireAuth, async (req, res): Promise<void
     .values(parsed.data.map((item, i) => ({ ...item, formId, sortOrder: item.sortOrder ?? i })))
     .returning();
   res.json(items);
+});
+
+// ─── Group Template Routes ──────────────────────────────────────────────────
+
+// List templates
+router.get("/quote-group-templates", requireAuth, async (_req, res): Promise<void> => {
+  const rows = await db
+    .select()
+    .from(quoteGroupTemplates)
+    .orderBy(quoteGroupTemplates.sortOrder, quoteGroupTemplates.createdAt);
+  res.json(rows);
+});
+
+const GroupTemplateBody = z.object({
+  name: z.string().min(1),
+  description: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  children: z.array(z.object({
+    title: z.string().min(1),
+    modelCode: z.string().optional(),
+    unit: z.string().optional(),
+  })).optional().default([]),
+  sortOrder: z.coerce.number().int().optional().default(0),
+});
+
+// Create template
+router.post("/quote-group-templates", requireAuth, async (req, res): Promise<void> => {
+  const parsed = GroupTemplateBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [row] = await db.insert(quoteGroupTemplates).values(parsed.data).returning();
+  res.status(201).json(row);
+});
+
+// Update template
+router.put("/quote-group-templates/:id", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+  const parsed = GroupTemplateBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [row] = await db
+    .update(quoteGroupTemplates)
+    .set({ ...parsed.data, updatedAt: new Date() })
+    .where(eq(quoteGroupTemplates.id, id))
+    .returning();
+  if (!row) { res.status(404).json({ error: "Template not found" }); return; }
+  res.json(row);
+});
+
+// Delete template
+router.delete("/quote-group-templates/:id", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+  const [deleted] = await db.delete(quoteGroupTemplates).where(eq(quoteGroupTemplates.id, id)).returning();
+  if (!deleted) { res.status(404).json({ error: "Template not found" }); return; }
+  res.sendStatus(204);
 });
 
 export default router;

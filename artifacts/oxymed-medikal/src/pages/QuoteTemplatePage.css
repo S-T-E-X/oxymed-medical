@@ -407,6 +407,26 @@
   font-weight: 900 !important;
 }
 
+.qt-group-row {
+  background: #f0f4fb;
+}
+
+.qt-group-row .qt-description strong {
+  font-size: 3mm;
+  color: #061f53;
+  letter-spacing: 0.03em;
+}
+
+.qt-child-row .qt-no {
+  color: #3a5a9b;
+  font-size: 2.5mm !important;
+}
+
+.qt-child-row .qt-description strong {
+  font-size: 2.75mm;
+  color: #1a3060;
+}
+
 .qt-product-image-slot {
   display: grid;
   place-items: center;
