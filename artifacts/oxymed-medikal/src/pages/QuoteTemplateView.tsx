@@ -66,37 +66,33 @@ function fmtPrice(num: number, currency: string): string {
   return num.toLocaleString("tr-TR", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " " + currency;
 }
 
-function chunkItems<T>(items: T[], firstPageCount = 6, nextPageCount = 5): T[][] {
-  const pages: T[][] = [];
-  let cursor = 0;
-  pages.push(items.slice(cursor, cursor + firstPageCount));
-  cursor += firstPageCount;
-  while (cursor < items.length) {
-    pages.push(items.slice(cursor, cursor + nextPageCount));
-    cursor += nextPageCount;
-  }
-  return pages;
+function itemVisualWeight(it: QuoteViewItem): number {
+  if (it.itemType === "group") return 1;
+  if (it.itemType === "child") return 1;
+  return it.imageUrl ? 3 : 1;
 }
 
-function ProductImageCell({ imageUrl, title }: { imageUrl?: string | null; title: string }) {
-  if (imageUrl) {
-    return (
-      <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-        <img
-          src={imageUrl}
-          alt={title}
-          style={{ width: "100%", height: "100px", objectFit: "contain" }}
-        />
-      </div>
-    );
+function chunkItems(items: QuoteViewItem[], firstBudget = 18, nextBudget = 26): QuoteViewItem[][] {
+  const pages: QuoteViewItem[][] = [];
+  let cursor = 0;
+  let budget = firstBudget;
+  let page: QuoteViewItem[] = [];
+  let usedBudget = 0;
+  while (cursor < items.length) {
+    const it = items[cursor]!;
+    const w = itemVisualWeight(it);
+    if (usedBudget + w > budget && page.length > 0) {
+      pages.push(page);
+      page = [];
+      usedBudget = 0;
+      budget = nextBudget;
+    }
+    page.push(it);
+    usedBudget += w;
+    cursor++;
   }
-  return (
-    <div className="qt-product-image-slot">
-      <span>Ürün görseli</span>
-      <strong>190 x 105 px</strong>
-      <small>WEBP</small>
-    </div>
-  );
+  if (page.length > 0) pages.push(page);
+  return pages;
 }
 
 function QuoteTopInfo({ data }: { data: QuoteViewData }) {
@@ -192,9 +188,9 @@ function ItemsTable({
         <thead>
           <tr>
             <th>No</th>
-            <th>Ürün / Hizmet Açıklaması</th>
-            <th>Model / Kod</th>
             <th>Ürün Görseli</th>
+            <th>Model / Kod</th>
+            <th>Ürün / Hizmet Açıklaması</th>
             <th>Miktar</th>
             <th>Birim</th>
             <th>Birim Fiyat</th>
@@ -207,20 +203,17 @@ function ItemsTable({
               return (
                 <tr key={item.no} className="qt-group-row">
                   <td className="qt-no">{item.no}</td>
-                  <td className="qt-description" colSpan={2}>
-                    <strong style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.title}</strong>
-                  </td>
                   <td className="qt-image-cell">
                     {item.imageUrl ? (
                       <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                        <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100px", objectFit: "contain" }} />
+                        <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "62px", objectFit: "contain" }} />
                       </div>
                     ) : null}
                   </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td className="qt-code">{item.code}</td>
+                  <td colSpan={5} className="qt-description">
+                    <strong style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.title}</strong>
+                  </td>
                 </tr>
               );
             }
@@ -230,6 +223,14 @@ function ItemsTable({
             return (
               <tr key={item.no} className={isChild ? "qt-child-row" : ""}>
                 <td className="qt-no">{item.no}</td>
+                <td className="qt-image-cell">
+                  {!isChild && item.imageUrl ? (
+                    <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
+                      <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "62px", objectFit: "contain" }} />
+                    </div>
+                  ) : null}
+                </td>
+                <td className="qt-code">{item.code}</td>
                 <td className="qt-description">
                   <strong>{item.title}</strong>
                   {item.bullets.length > 0 && (
@@ -238,12 +239,6 @@ function ItemsTable({
                         <li key={i}>{bullet}</li>
                       ))}
                     </ul>
-                  )}
-                </td>
-                <td className="qt-code">{item.code}</td>
-                <td className="qt-image-cell">
-                  {isChild && !item.imageUrl ? null : (
-                    <ProductImageCell imageUrl={item.imageUrl} title={item.title} />
                   )}
                 </td>
                 <td>{item.quantity > 0 ? item.quantity : ""}</td>
@@ -372,7 +367,8 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
 export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
   const itemPages = chunkItems(data.items);
   const lastItemPage = itemPages[itemPages.length - 1] ?? [];
-  const canAttachFooter = itemPages.length > 1 ? lastItemPage.length <= 4 : lastItemPage.length <= 2;
+  const lastPageWeight = lastItemPage.reduce((s, it) => s + itemVisualWeight(it), 0);
+  const canAttachFooter = itemPages.length > 1 ? lastPageWeight <= 8 : lastPageWeight <= 6;
   const totalPages = itemPages.length + (canAttachFooter ? 0 : 1);
 
   if (data.items.length === 0) {

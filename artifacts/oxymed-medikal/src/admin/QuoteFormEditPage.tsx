@@ -93,7 +93,15 @@ type GroupTemplate = {
   name: string;
   description?: string | null;
   imageUrl?: string | null;
-  children: Array<{ title: string; modelCode?: string; unit?: string }>;
+  children: Array<{
+    title: string;
+    modelCode?: string;
+    unit?: string;
+    bullets?: string[];
+    unitPrice?: string;
+    quantity?: number;
+    imageUrl?: string;
+  }>;
 };
 
 type FormDraft = {
@@ -228,7 +236,7 @@ function apiItemsToHierarchical(apiItems: ApiItem[]): ItemDraft[] {
         itemType: "group",
         title: it.title,
         bulletsText: "",
-        modelCode: "",
+        modelCode: it.modelCode ?? "",
         imageUrl: it.imageUrl ?? "",
         quantity: 0,
         unit: "ADET",
@@ -339,6 +347,120 @@ function ProductSelectorModal({
   );
 }
 
+// ── Single Item Template Picker Modal ────────────────────────────────────────
+
+function SingleItemTemplatePickerModal({
+  authFetch,
+  onApply,
+  onClose,
+}: {
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  onApply: (draft: Omit<ItemDraft, "sortOrder" | "expanded" | "children" | "id" | "productId">) => void;
+  onClose: () => void;
+}) {
+  const [templates, setTemplates] = useState<GroupTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<number | null>(null);
+
+  useEffect(() => {
+    authFetch("/api/quote-group-templates")
+      .then((r) => r.json())
+      .then((data: GroupTemplate[]) => {
+        setTemplates(data.filter((t) => t.description === "__single_item_template"));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [authFetch]);
+
+  const handleDelete = async (id: number) => {
+    setDeleting(id);
+    try {
+      await authFetch(`/api/quote-group-templates/${id}`, { method: "DELETE" });
+      setTemplates((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Şablon silindi");
+    } catch {
+      toast.error("Silinemedi");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const handleApply = (t: GroupTemplate) => {
+    const src = t.children[0];
+    onApply({
+      itemType: "single",
+      title: src?.title ?? t.name,
+      bulletsText: (src?.bullets ?? []).join("\n"),
+      modelCode: src?.modelCode ?? "",
+      imageUrl: src?.imageUrl ?? "",
+      quantity: src?.quantity ?? 1,
+      unit: src?.unit ?? "ADET",
+      unitPrice: src?.unitPrice ?? "0",
+    });
+    onClose();
+    toast.success(`"${t.name}" şablonu eklendi`);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="flex h-[70vh] w-full max-w-lg flex-col rounded-xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h2 className="text-base font-bold text-slate-900">Tekli Ürün Şablonları</h2>
+          <button onClick={onClose}><X className="h-5 w-5 text-slate-400" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          {loading ? (
+            <div className="flex h-24 items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin text-slate-300" />
+            </div>
+          ) : templates.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-400">
+              Henüz tekli şablon yok. Bir kalemin içindeki "Şablon Olarak Kaydet" butonunu kullanın.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {templates.map((t) => {
+                const src = t.children[0];
+                return (
+                  <div key={t.id} className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-800 truncate">{t.name}</p>
+                      {src && (
+                        <p className="text-xs text-slate-400 truncate">
+                          {src.modelCode && <span className="mr-2 font-semibold">{src.modelCode}</span>}
+                          {src.unit} · {src.unitPrice} · ×{src.quantity ?? 1}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleApply(t)}
+                      className="shrink-0 rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-slate-800"
+                    >
+                      Ekle
+                    </button>
+                    <button
+                      onClick={() => handleDelete(t.id)}
+                      disabled={deleting === t.id}
+                      className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-red-400 hover:bg-red-50 disabled:opacity-40"
+                    >
+                      {deleting === t.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div className="border-t border-slate-100 px-5 py-3">
+          <p className="text-xs text-slate-400">
+            Şablon oluşturmak için tekli bir kalemin içindeki "Şablon Olarak Kaydet" butonunu kullanın.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Template Picker Modal ────────────────────────────────────────────────────
 
 function TemplatePickerModal({
@@ -357,7 +479,7 @@ function TemplatePickerModal({
   useEffect(() => {
     authFetch("/api/quote-group-templates")
       .then((r) => r.json())
-      .then((data: GroupTemplate[]) => { setTemplates(data); setLoading(false); })
+      .then((data: GroupTemplate[]) => { setTemplates(data.filter((t) => t.description !== "__single_item_template")); setLoading(false); })
       .catch(() => setLoading(false));
   }, [authFetch]);
 
@@ -676,8 +798,8 @@ function GroupItemRow({
 
       {item.expanded && (
         <div className="border-t border-blue-100 px-4 py-4 space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="sm:col-span-2">
               <label className="label">Grup Adı *</label>
               <input
                 value={item.title}
@@ -688,6 +810,16 @@ function GroupItemRow({
               />
             </div>
             <div>
+              <label className="label">Model / Kod</label>
+              <input
+                value={item.modelCode}
+                onChange={(e) => onChange("modelCode", e.target.value)}
+                className="input w-full text-sm"
+                placeholder="OXM-GRP-01"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <div className="sm:col-span-3">
               <label className="label">Grup Görseli URL (isteğe bağlı)</label>
               <input
                 value={item.imageUrl}
@@ -803,6 +935,7 @@ function ItemRow({
   onMoveDown,
   isFirst,
   isLast,
+  authFetch,
 }: {
   item: ItemDraft;
   index: number;
@@ -812,8 +945,44 @@ function ItemRow({
   onMoveDown: () => void;
   isFirst: boolean;
   isLast: boolean;
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 }) {
   const total = item.quantity * parseFloat(item.unitPrice || "0");
+  const [showSaveForm, setShowSaveForm] = useState(false);
+  const [saveTemplateName, setSaveTemplateName] = useState("");
+  const [savingTemplate, setSavingTemplate] = useState(false);
+
+  const handleSaveAsTemplate = async () => {
+    if (!saveTemplateName.trim()) return;
+    setSavingTemplate(true);
+    try {
+      const bullets = item.bulletsText.split("\n").map((s) => s.trim()).filter(Boolean);
+      await authFetch("/api/quote-group-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: saveTemplateName.trim(),
+          description: "__single_item_template",
+          children: [{
+            title: item.title,
+            modelCode: item.modelCode || undefined,
+            unit: item.unit,
+            bullets,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+            imageUrl: item.imageUrl || undefined,
+          }],
+        }),
+      });
+      toast.success(`"${saveTemplateName.trim()}" şablon olarak kaydedildi`);
+      setSaveTemplateName("");
+      setShowSaveForm(false);
+    } catch {
+      toast.error("Şablon kaydedilemedi");
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
@@ -947,6 +1116,43 @@ function ItemRow({
               </div>
             </div>
           </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+            {!showSaveForm ? (
+              <button
+                onClick={() => setShowSaveForm(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              >
+                <BookmarkPlus className="h-3.5 w-3.5" />
+                Şablon Olarak Kaydet
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  value={saveTemplateName}
+                  onChange={(e) => setSaveTemplateName(e.target.value)}
+                  className="input text-xs"
+                  placeholder="Şablon adı…"
+                  style={{ width: "160px" }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveAsTemplate(); }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveAsTemplate}
+                  disabled={savingTemplate || !saveTemplateName.trim()}
+                  className="flex items-center gap-1 rounded-lg bg-slate-700 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-60"
+                >
+                  {savingTemplate ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                  Kaydet
+                </button>
+                <button
+                  onClick={() => { setShowSaveForm(false); setSaveTemplateName(""); }}
+                  className="flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -970,6 +1176,7 @@ export default function QuoteFormEditPage() {
   const [saving, setSaving] = useState(false);
   const [items, setItems] = useState<ItemDraft[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [showSingleTemplatePicker, setShowSingleTemplatePicker] = useState(false);
   const [form, setForm] = useState<FormDraft>({
     status: "draft",
     firmaAdi: "",
@@ -1125,6 +1332,17 @@ export default function QuoteFormEditPage() {
     setItems((prev) => [...prev, newGroup(prev.length)]);
   };
 
+  const addFromSingleTemplate = (draft: Omit<ItemDraft, "sortOrder" | "expanded" | "children" | "id" | "productId">) => {
+    const item: ItemDraft = {
+      ...draft,
+      productId: null,
+      sortOrder: items.length,
+      expanded: false,
+      children: [],
+    };
+    setItems((prev) => [...prev, item]);
+  };
+
   const addFromProduct = (p: Product) => {
     const draft: ItemDraft = {
       productId: p.id,
@@ -1161,7 +1379,7 @@ export default function QuoteFormEditPage() {
             parentItemId: null,
             title: item.title || "Grup",
             bullets: [],
-            modelCode: null,
+            modelCode: item.modelCode || null,
             imageUrl: item.imageUrl || null,
             quantity: 0,
             unit: "ADET",
@@ -1388,6 +1606,13 @@ export default function QuoteFormEditPage() {
                 Tekli Ürün
               </button>
               <button
+                onClick={() => setShowSingleTemplatePicker(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              >
+                <BookmarkPlus className="h-3.5 w-3.5" />
+                Tekli Şablondan
+              </button>
+              <button
                 onClick={addBlankGroup}
                 className="flex items-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 py-2 text-xs font-bold text-white hover:bg-blue-700"
               >
@@ -1435,6 +1660,7 @@ export default function QuoteFormEditPage() {
                     onMoveDown={() => moveItem(i, 1)}
                     isFirst={i === 0}
                     isLast={i === items.length - 1}
+                    authFetch={authFetch}
                   />
                 );
               })}
@@ -1710,6 +1936,13 @@ export default function QuoteFormEditPage() {
           authFetch={authFetch}
           onSelect={addFromProduct}
           onClose={() => setShowProductModal(false)}
+        />
+      )}
+      {showSingleTemplatePicker && (
+        <SingleItemTemplatePickerModal
+          authFetch={authFetch}
+          onApply={addFromSingleTemplate}
+          onClose={() => setShowSingleTemplatePicker(false)}
         />
       )}
     </div>
