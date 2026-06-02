@@ -132,7 +132,7 @@ export default function ProductStockPage() {
                         <img
                           src={item.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
                           alt={item.title}
-                          className="h-10 w-10 rounded-lg object-cover bg-slate-100"
+                          className="h-16 w-20 rounded-lg object-contain bg-slate-50"
                         />
                         <span className="font-semibold text-slate-900">{item.title}</span>
                       </div>
