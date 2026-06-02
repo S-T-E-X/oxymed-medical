@@ -485,11 +485,14 @@
 }
 
 .qt-table-note {
+  position: absolute;
+  bottom: 3mm;
+  left: 4mm;
+  right: 4mm;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4mm;
-  margin-top: 2mm;
   color: #1a2d58;
   font-size: 2.7mm;
   font-weight: 800;

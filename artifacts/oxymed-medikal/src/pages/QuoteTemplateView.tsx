@@ -81,7 +81,7 @@ function itemVisualWeight(it: QuoteViewItem): number {
   return 1 + bulletBonus + imageBonus;
 }
 
-function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 21): QuoteViewItem[][] {
+function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 20): QuoteViewItem[][] {
   const pages: QuoteViewItem[][] = [];
   let budget = firstBudget;
   let page: QuoteViewItem[] = [];
