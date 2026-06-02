@@ -72,25 +72,48 @@ function itemVisualWeight(it: QuoteViewItem): number {
   return it.imageUrl ? 3 : 1;
 }
 
-function chunkItems(items: QuoteViewItem[], firstBudget = 18, nextBudget = 26): QuoteViewItem[][] {
+function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 26): QuoteViewItem[][] {
   const pages: QuoteViewItem[][] = [];
-  let cursor = 0;
   let budget = firstBudget;
   let page: QuoteViewItem[] = [];
-  let usedBudget = 0;
-  while (cursor < items.length) {
-    const it = items[cursor]!;
-    const w = itemVisualWeight(it);
-    if (usedBudget + w > budget && page.length > 0) {
-      pages.push(page);
-      page = [];
-      usedBudget = 0;
-      budget = nextBudget;
+  let used = 0;
+  let i = 0;
+
+  const flush = () => {
+    pages.push(page);
+    page = [];
+    used = 0;
+    budget = nextBudget;
+  };
+
+  while (i < items.length) {
+    const it = items[i]!;
+
+    if (it.itemType === "group") {
+      // Collect the entire group (header + its child rows)
+      let j = i + 1;
+      while (j < items.length && items[j]!.itemType === "child") j++;
+      const group = items.slice(i, j);
+      const groupWeight = group.reduce((s, g) => s + itemVisualWeight(g), 0);
+
+      // If the group won't fit on the current page AND there's already content, flush first
+      if (used + groupWeight > budget && page.length > 0) flush();
+
+      // Add group items; if the group alone exceeds a full page, still add it (unavoidable)
+      for (const gi of group) {
+        page.push(gi);
+        used += itemVisualWeight(gi);
+      }
+      i = j;
+    } else {
+      const w = itemVisualWeight(it);
+      if (used + w > budget && page.length > 0) flush();
+      page.push(it);
+      used += w;
+      i++;
     }
-    page.push(it);
-    usedBudget += w;
-    cursor++;
   }
+
   if (page.length > 0) pages.push(page);
   return pages;
 }
@@ -210,9 +233,14 @@ function ItemsTable({
                       </div>
                     ) : null}
                   </td>
-                  <td className="qt-code">{item.code}</td>
+                  <td className="qt-code"></td>
                   <td colSpan={5} className="qt-description">
                     <strong style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.title}</strong>
+                    {item.code && (
+                      <span style={{ display: "block", fontSize: "2.5mm", fontWeight: 800, color: "#2c4a8a", marginTop: "0.4mm", marginBottom: "0.5mm" }}>
+                        {item.code}
+                      </span>
+                    )}
                     {item.bullets && item.bullets.length > 0 && (
                       <div className="qt-group-description">
                         {item.bullets.map((b, bi) => <span key={bi}>{b}</span>)}

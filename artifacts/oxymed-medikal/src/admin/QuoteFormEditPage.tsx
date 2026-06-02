@@ -998,10 +998,10 @@ function ItemRow({
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
       <div
-        className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-slate-50"
+        className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-3 hover:bg-blue-100"
         onClick={() => onChange("expanded", !item.expanded)}
       >
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
           {index + 1}
         </span>
         <p className="flex-1 truncate text-sm font-semibold text-slate-800">
