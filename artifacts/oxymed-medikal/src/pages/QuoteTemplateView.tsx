@@ -241,7 +241,7 @@ function ItemsTable({
                   <td className="qt-image-cell">
                     {item.imageUrl ? (
                       <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                        <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        <img src={item.imageUrl} alt={item.title} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain" }} />
                       </div>
                     ) : null}
                   </td>
@@ -271,7 +271,7 @@ function ItemsTable({
                 <td className="qt-image-cell">
                   {!isChild && item.imageUrl ? (
                     <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                      <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      <img src={item.imageUrl} alt={item.title} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain" }} />
                     </div>
                   ) : null}
                 </td>
