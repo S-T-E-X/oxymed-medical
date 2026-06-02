@@ -73,6 +73,7 @@ Corporate website for Oxymed Medikal — a Turkish medical gas systems and hospi
 
 - Orval generates response type names from operation IDs; rename schemas in openapi.yaml if TS2308 appears
 - `pnpm --filter @workspace/db run push` — schema push, use `push-force` if column conflicts occur
+- After any `lib/db` schema change + push, RESTART the `artifacts/api-server: API Server` workflow — tsx watch does not reload the linked `@workspace/db` package, so new columns are silently dropped on insert until restart
 - JWT_SECRET env var is required; defaults to a dev secret if unset
 - Object Storage env vars: `DEFAULT_OBJECT_STORAGE_BUCKET_ID`, `PUBLIC_OBJECT_SEARCH_PATHS`, `PRIVATE_OBJECT_DIR`
 

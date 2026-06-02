@@ -25,6 +25,7 @@ export type QuoteViewItem = {
   unitPrice: number;
   imageUrl?: string | null;
   pageBreakBefore?: boolean;
+  keepWithPrevious?: boolean;
 };
 
 export type QuoteViewData = {
@@ -114,10 +115,14 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       // Manual page break: user forced this group to start on a new page
       if (page.length > 0 && it.pageBreakBefore) flush();
 
+      // Manual keep-with-previous: user forced this group onto the previous
+      // (upper) page, so we skip the automatic overflow flush below.
+      const forceKeep = it.keepWithPrevious && !it.pageBreakBefore;
+
       // Flush if: (a) the whole group doesn't fit, OR
       //           (b) remaining budget can't even hold header + first child
       //           — prevents orphan group headers at the bottom of a page
-      if (page.length > 0 && (used + groupWeight > budget || budget - used < minStart)) flush();
+      if (!forceKeep && page.length > 0 && (used + groupWeight > budget || budget - used < minStart)) flush();
 
       // Add group items one by one.
       // The header (k=0) and first child (k=1) are always kept together.
@@ -125,7 +130,7 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       for (let k = 0; k < group.length; k++) {
         const gi = group[k]!;
         const w = itemVisualWeight(gi);
-        if (k >= 2 && used + w > budget && page.length > 0) flush();
+        if (!forceKeep && k >= 2 && used + w > budget && page.length > 0) flush();
         page.push(gi);
         used += w;
       }
@@ -134,7 +139,10 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       const w = itemVisualWeight(it);
       // Manual page break: user forced this item to start on a new page
       if (page.length > 0 && it.pageBreakBefore) flush();
-      if (used + w > budget && page.length > 0) flush();
+      // Manual keep-with-previous: user forced this item onto the previous
+      // (upper) page, so skip the automatic overflow flush.
+      const forceKeep = it.keepWithPrevious && !it.pageBreakBefore;
+      if (!forceKeep && used + w > budget && page.length > 0) flush();
       page.push(it);
       used += w;
       i++;

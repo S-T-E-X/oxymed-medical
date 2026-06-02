@@ -16,6 +16,7 @@ import {
   BookOpen,
   BookmarkPlus,
   SeparatorHorizontal,
+  ArrowUpToLine,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useListSettings } from "@workspace/api-client-react";
@@ -87,6 +88,7 @@ type ItemDraft = {
   sortOrder: number;
   expanded: boolean;
   pageBreakBefore: boolean;
+  keepWithPrevious: boolean;
   children: ChildItemDraft[];
 };
 
@@ -177,6 +179,7 @@ function newItem(sortOrder: number): ItemDraft {
     sortOrder,
     expanded: true,
     pageBreakBefore: false,
+    keepWithPrevious: false,
     children: [],
   };
 }
@@ -194,6 +197,7 @@ function newGroup(sortOrder: number): ItemDraft {
     sortOrder,
     expanded: true,
     pageBreakBefore: false,
+    keepWithPrevious: false,
     children: [newChildItem()],
   };
 }
@@ -212,6 +216,7 @@ type ApiItem = {
   sortOrder: number;
   showInPdf?: boolean | null;
   pageBreakBefore?: boolean | null;
+  keepWithPrevious?: boolean | null;
 };
 
 function apiItemToDraft(it: ApiItem): ItemDraft {
@@ -229,6 +234,7 @@ function apiItemToDraft(it: ApiItem): ItemDraft {
     sortOrder: it.sortOrder,
     expanded: false,
     pageBreakBefore: it.pageBreakBefore ?? false,
+    keepWithPrevious: it.keepWithPrevious ?? false,
     children: [],
   };
 }
@@ -252,6 +258,7 @@ function apiItemsToHierarchical(apiItems: ApiItem[]): ItemDraft[] {
         sortOrder: it.sortOrder,
         expanded: false,
         pageBreakBefore: it.pageBreakBefore ?? false,
+        keepWithPrevious: it.keepWithPrevious ?? false,
         children: [],
       };
       result.push(currentGroup);
@@ -406,6 +413,7 @@ function SingleItemTemplatePickerModal({
       unit: src?.unit ?? "ADET",
       unitPrice: src?.unitPrice ?? "0",
       pageBreakBefore: false,
+      keepWithPrevious: false,
     });
     onClose();
     toast.success(`"${t.name}" şablonu eklendi`);
@@ -793,8 +801,25 @@ function GroupItemRow({
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => onChange("pageBreakBefore", !item.pageBreakBefore)}
-            title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu grubu yeni sayfaya taşı"}
+            onClick={() => {
+              onChange("keepWithPrevious", !item.keepWithPrevious);
+              if (!item.keepWithPrevious && item.pageBreakBefore) onChange("pageBreakBefore", false);
+            }}
+            title={item.keepWithPrevious ? "Önceki sayfaya sıkıştırılıyor — kaldır" : "Bu grubu önceki (üst) sayfaya sıkıştır"}
+            className={`flex h-6 w-6 items-center justify-center rounded ${
+              item.keepWithPrevious
+                ? "bg-sky-600 text-white hover:bg-sky-700"
+                : "text-slate-400 hover:bg-blue-200"
+            }`}
+          >
+            <ArrowUpToLine className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => {
+              onChange("pageBreakBefore", !item.pageBreakBefore);
+              if (!item.pageBreakBefore && item.keepWithPrevious) onChange("keepWithPrevious", false);
+            }}
+            title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu grubu yeni (alt) sayfaya taşı"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
               item.pageBreakBefore
                 ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -1047,8 +1072,25 @@ function ItemRow({
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => onChange("pageBreakBefore", !item.pageBreakBefore)}
-            title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu kalemi yeni sayfaya taşı"}
+            onClick={() => {
+              onChange("keepWithPrevious", !item.keepWithPrevious);
+              if (!item.keepWithPrevious && item.pageBreakBefore) onChange("pageBreakBefore", false);
+            }}
+            title={item.keepWithPrevious ? "Önceki sayfaya sıkıştırılıyor — kaldır" : "Bu kalemi önceki (üst) sayfaya sıkıştır"}
+            className={`flex h-6 w-6 items-center justify-center rounded ${
+              item.keepWithPrevious
+                ? "bg-sky-600 text-white hover:bg-sky-700"
+                : "text-slate-400 hover:bg-slate-100"
+            }`}
+          >
+            <ArrowUpToLine className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => {
+              onChange("pageBreakBefore", !item.pageBreakBefore);
+              if (!item.pageBreakBefore && item.keepWithPrevious) onChange("keepWithPrevious", false);
+            }}
+            title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu kalemi yeni (alt) sayfaya taşı"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
               item.pageBreakBefore
                 ? "bg-amber-500 text-white hover:bg-amber-600"
@@ -1404,6 +1446,7 @@ export default function QuoteFormEditPage() {
       sortOrder: items.length,
       expanded: false,
       pageBreakBefore: false,
+      keepWithPrevious: false,
       children: [],
     };
     setItems((prev) => [...prev, draft]);
@@ -1435,6 +1478,7 @@ export default function QuoteFormEditPage() {
             sortOrder: sortOrder++,
             showInPdf: true,
             pageBreakBefore: item.pageBreakBefore,
+            keepWithPrevious: item.pageBreakBefore ? false : item.keepWithPrevious,
           });
           for (const child of item.children) {
             body.push({
@@ -1470,6 +1514,7 @@ export default function QuoteFormEditPage() {
             sortOrder: sortOrder++,
             showInPdf: true,
             pageBreakBefore: item.pageBreakBefore,
+            keepWithPrevious: item.pageBreakBefore ? false : item.keepWithPrevious,
           });
         }
       }
@@ -1686,9 +1731,18 @@ export default function QuoteFormEditPage() {
                     <span className="h-px flex-1 border-t border-dashed border-amber-300" />
                     <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide">
                       <SeparatorHorizontal className="h-3 w-3" />
-                      Yeni sayfa
+                      Yeni (alt) sayfa
                     </span>
                     <span className="h-px flex-1 border-t border-dashed border-amber-300" />
+                  </div>
+                ) : item.keepWithPrevious && i > 0 ? (
+                  <div className="flex items-center gap-2 px-1 py-1 text-sky-600" key={`brk-${i}`}>
+                    <span className="h-px flex-1 border-t border-dashed border-sky-300" />
+                    <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide">
+                      <ArrowUpToLine className="h-3 w-3" />
+                      Önceki (üst) sayfaya sıkıştır
+                    </span>
+                    <span className="h-px flex-1 border-t border-dashed border-sky-300" />
                   </div>
                 ) : null;
                 if (item.itemType === "group") {

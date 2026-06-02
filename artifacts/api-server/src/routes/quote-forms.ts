@@ -80,7 +80,16 @@ const QuoteFormItemBody = z.object({
   sortOrder: z.coerce.number().int().optional(),
   showInPdf: z.boolean().optional().default(true),
   pageBreakBefore: z.boolean().optional().default(false),
+  keepWithPrevious: z.boolean().optional().default(false),
 });
+
+// pageBreakBefore (push to new page) and keepWithPrevious (pull onto previous
+// page) are mutually exclusive; pageBreakBefore wins.
+function normalizePageFlags<T extends { pageBreakBefore?: boolean; keepWithPrevious?: boolean }>(
+  item: T,
+): T {
+  return item.pageBreakBefore ? { ...item, keepWithPrevious: false } : item;
+}
 
 // List quote forms
 router.get("/quote-forms", requireAuth, async (req, res): Promise<void> => {
@@ -246,7 +255,7 @@ router.post("/quote-forms/:id/items", requireAuth, async (req, res): Promise<voi
   }
   const [item] = await db
     .insert(quoteFormItems)
-    .values({ ...parsed.data, formId })
+    .values({ ...normalizePageFlags(parsed.data), formId })
     .returning();
   res.status(201).json(item);
 });
@@ -261,7 +270,7 @@ router.patch("/quote-forms/:id/items/:itemId", requireAuth, async (req, res): Pr
   }
   const [item] = await db
     .update(quoteFormItems)
-    .set(parsed.data)
+    .set(normalizePageFlags(parsed.data))
     .where(eq(quoteFormItems.id, itemId))
     .returning();
   if (!item) {
@@ -407,7 +416,13 @@ router.put("/quote-forms/:id/items", requireAuth, async (req, res): Promise<void
   }
   const items = await db
     .insert(quoteFormItems)
-    .values(parsed.data.map((item, i) => ({ ...item, formId, sortOrder: item.sortOrder ?? i })))
+    .values(
+      parsed.data.map((item, i) => ({
+        ...normalizePageFlags(item),
+        formId,
+        sortOrder: item.sortOrder ?? i,
+      })),
+    )
     .returning();
   res.json(items);
 });
