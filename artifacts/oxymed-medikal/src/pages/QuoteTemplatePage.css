@@ -499,6 +499,11 @@
   font-weight: 800;
 }
 
+.qt-page.with-footer .qt-table-note {
+  position: static;
+  margin: 2mm 4mm 0;
+}
+
 .qt-table-note span {
   display: inline-flex;
   align-items: center;
