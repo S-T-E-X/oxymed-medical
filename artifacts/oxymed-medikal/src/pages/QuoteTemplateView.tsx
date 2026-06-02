@@ -213,6 +213,11 @@ function ItemsTable({
                   <td className="qt-code">{item.code}</td>
                   <td colSpan={5} className="qt-description">
                     <strong style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.title}</strong>
+                    {item.bullets && item.bullets.length > 0 && (
+                      <div className="qt-group-description">
+                        {item.bullets.map((b, bi) => <span key={bi}>{b}</span>)}
+                      </div>
+                    )}
                   </td>
                 </tr>
               );

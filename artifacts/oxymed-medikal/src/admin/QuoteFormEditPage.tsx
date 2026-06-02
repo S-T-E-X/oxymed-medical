@@ -235,7 +235,7 @@ function apiItemsToHierarchical(apiItems: ApiItem[]): ItemDraft[] {
         id: it.id,
         itemType: "group",
         title: it.title,
-        bulletsText: "",
+        bulletsText: (it.bullets ?? []).join("\n"),
         modelCode: it.modelCode ?? "",
         imageUrl: it.imageUrl ?? "",
         quantity: 0,
@@ -747,7 +747,7 @@ function GroupItemRow({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border-2 border-blue-200 bg-white">
+    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
       <div
         className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-3 hover:bg-blue-100"
         onClick={() => onChange("expanded", !item.expanded)}
@@ -816,6 +816,17 @@ function GroupItemRow({
                 onChange={(e) => onChange("modelCode", e.target.value)}
                 className="input w-full text-sm"
                 placeholder="OXM-GRP-01"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <label className="label">Açıklama (isteğe bağlı)</label>
+              <textarea
+                value={item.bulletsText}
+                onChange={(e) => onChange("bulletsText", e.target.value)}
+                className="input w-full text-sm"
+                rows={2}
+                placeholder="Gruba ait kısa açıklama veya notlar…"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
@@ -1378,7 +1389,7 @@ export default function QuoteFormEditPage() {
             itemType: "group",
             parentItemId: null,
             title: item.title || "Grup",
-            bullets: [],
+            bullets: item.bulletsText.split("\n").map((s) => s.trim()).filter(Boolean),
             modelCode: item.modelCode || null,
             imageUrl: item.imageUrl || null,
             quantity: 0,
