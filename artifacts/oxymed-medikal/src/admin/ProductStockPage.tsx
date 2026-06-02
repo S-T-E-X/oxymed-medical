@@ -128,14 +128,12 @@ export default function ProductStockPage() {
                 return (
                   <tr key={item.productId} className="hover:bg-slate-50">
                     <td className="px-5 py-3">
-                      <div className="flex flex-col gap-2">
-                        <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-50">
-                          <img
-                            src={item.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
-                            alt={item.title}
-                            className="h-full w-full object-contain"
-                          />
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
+                          alt={item.title}
+                          className="h-[180px] w-[180px] shrink-0 rounded-lg object-contain bg-slate-50"
+                        />
                         <span className="font-semibold text-slate-900">{item.title}</span>
                       </div>
                     </td>

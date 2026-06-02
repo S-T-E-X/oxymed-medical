@@ -139,13 +139,11 @@ export default function ProductsPage() {
               {products.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3">
-                    <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
                       {p.imageUrl ? (
-                        <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-50">
-                          <img src={p.imageUrl} alt={p.title} className="h-full w-full object-contain" />
-                        </div>
+                        <img src={p.imageUrl} alt={p.title} className="h-[180px] w-[180px] shrink-0 rounded-lg object-contain bg-slate-50" />
                       ) : (
-                        <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-slate-100">
+                        <div className="flex h-[180px] w-[180px] shrink-0 items-center justify-center rounded-lg bg-slate-100">
                           <ImageIcon className="h-8 w-8 text-slate-300" />
                         </div>
                       )}
