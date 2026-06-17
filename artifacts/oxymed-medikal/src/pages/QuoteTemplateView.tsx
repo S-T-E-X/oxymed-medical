@@ -186,6 +186,11 @@ function QuoteTopInfo({ data }: { data: QuoteViewData }) {
           alt="Oxymed Medikal Gaz Sistemleri"
         />
         <h1>Teklif Formu</h1>
+        <img
+          className="qt-logo-client"
+          src="/assets/brand/baskent-medikal-logo-125x90-1.webp"
+          alt="Başkent Medikal"
+        />
         <aside className="qt-offer-card" aria-label="Teklif bilgileri">
           <div>
             <strong>Teklif No</strong>
