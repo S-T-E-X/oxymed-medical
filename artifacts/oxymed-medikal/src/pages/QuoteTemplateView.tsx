@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./QuoteTemplatePage.css";
 
 export type QuoteViewItem = {
@@ -444,44 +445,151 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
 }
 
 export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
-  const rawPages = chunkItems(data.items);
+  const rawPages = useMemo(() => chunkItems(data.items), [data.items]);
   const weightOf = (arr: QuoteViewItem[]) =>
     arr.reduce((s, it) => s + itemVisualWeight(it), 0);
-  // 1 budget unit ≈ 9mm (bullet-adjusted); footer ≈ 70mm, continuation rows ≈ 219mm
-  // → items that can share a page with the footer: continuation (219-70)/9 ≈ 16,
-  // first page rows ≈ 165mm → (165-70)/9 ≈ 10
-  const attachBudget = rawPages.length > 1 ? 16 : 10;
   const lastRaw = rawPages[rawPages.length - 1] ?? [];
 
-  // Footer placement. Default: attach the footer under the last item page.
-  // If that page is too full for the footer, the footer needs its own page —
-  // but rather than leaving a lonely footer-only page (which looks like an empty
-  // trailing page), peel the last item down so the footer page always has at
-  // least one item above it.
-  let itemPages = rawPages;
-  let footerOwnItems: QuoteViewItem[] | null = null; // null => attach under last item page
-  if (weightOf(lastRaw) > attachBudget) {
-    // Identify the trailing "unit" to peel onto the footer page: a single/group
-    // item, or — when the page ends mid-group — the whole group block, so a
-    // child row is never detached from its header.
-    let start = lastRaw.length - 1;
-    if (lastRaw[start]?.itemType === "child") {
-      while (start > 0 && lastRaw[start]?.itemType === "child") start--;
+  // Weight-based fallback plan. The heuristic over/under-estimates real row
+  // heights, so it is only used before the measured pass completes (first paint)
+  // and for single-page documents. For multi-page documents, the measured plan
+  // below replaces it using the true rendered pixel heights.
+  // 1 budget unit ≈ 9mm; footer ≈ 70mm, continuation rows ≈ 219mm → items that
+  // can share a page with the footer: continuation (219-70)/9 ≈ 16,
+  // first page rows ≈ 165mm → (165-70)/9 ≈ 10
+  const fallbackPlan = useMemo<{
+    itemPages: QuoteViewItem[][];
+    footerOwnItems: QuoteViewItem[] | null;
+  }>(() => {
+    const attachBudget = rawPages.length > 1 ? 16 : 10;
+    let itemPages = rawPages;
+    let footerOwnItems: QuoteViewItem[] | null = null; // null => attach under last item page
+    if (weightOf(lastRaw) > attachBudget) {
+      let start = lastRaw.length - 1;
+      if (lastRaw[start]?.itemType === "child") {
+        while (start > 0 && lastRaw[start]?.itemType === "child") start--;
+      }
+      const unit = lastRaw.slice(start);
+      if (start > 0 && weightOf(unit) <= 16) {
+        itemPages = [...rawPages.slice(0, -1), lastRaw.slice(0, start)];
+        footerOwnItems = unit;
+      } else {
+        footerOwnItems = [];
+      }
     }
-    const unit = lastRaw.slice(start);
-    // Only peel when at least one item stays above and the unit fits on a page
-    // alongside the footer.
-    if (start > 0 && weightOf(unit) <= 16) {
-      itemPages = [...rawPages.slice(0, -1), lastRaw.slice(0, start)];
-      footerOwnItems = unit;
-    } else {
-      // Nothing safe to peel (single tall item, orphaned children, or a unit
-      // too large to share with the footer) — footer stands on its own.
-      footerOwnItems = [];
+    return { itemPages, footerOwnItems };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawPages]);
+
+  // Measurement-based footer placement (multi-page only). We render a hidden
+  // copy of the last item page + footer, measure the true rendered heights
+  // (after images load), and decide whether the footer fits under the whole
+  // last page or how many trailing rows can share the footer page. This is the
+  // source of truth — heuristics are unreliable for items whose visual height
+  // does not track bullet/image counts.
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [measuredPlan, setMeasuredPlan] = useState<{
+    itemPages: QuoteViewItem[][];
+    footerOwnItems: QuoteViewItem[] | null;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    setMeasuredPlan(null);
+  }, [data]);
+
+  useEffect(() => {
+    if (rawPages.length <= 1) return;
+    const root = measureRef.current;
+    if (!root) return;
+    let cancelled = false;
+
+    const compute = () => {
+      if (cancelled) return;
+      const pageEl = root.querySelector<HTMLElement>(".qt-page");
+      const headerEl = root.querySelector<HTMLElement>(".qt-repeat-header");
+      const sectionEl = root.querySelector<HTMLElement>(".qt-items");
+      const footerEl = root.querySelector<HTMLElement>(".qt-footer-blocks");
+      if (!pageEl || !sectionEl || !footerEl) return;
+      const rowEls = [...sectionEl.querySelectorAll<HTMLElement>("tbody tr")];
+      const rowHeights = rowEls.map((r) => r.offsetHeight);
+      const sumRows = rowHeights.reduce((a, b) => a + b, 0);
+      const pageH = pageEl.clientHeight;
+      const repeatHeaderH = headerEl?.offsetHeight ?? 0;
+      const tableOverhead = Math.max(0, sectionEl.offsetHeight - sumRows);
+      const footerH = footerEl.offsetHeight;
+      const SAFE = 24; // px guard against measurement variance / sub-pixel rounding
+      const contentSpace = pageH - repeatHeaderH - tableOverhead - SAFE;
+
+      let itemPages = rawPages;
+      let footerOwnItems: QuoteViewItem[] | null = null;
+
+      if (sumRows + footerH <= contentSpace) {
+        // The whole last page + footer fit together — attach, no extra page.
+        footerOwnItems = null;
+      } else {
+        // Move as many trailing rows as truly fit onto the footer page.
+        const footerRowSpace =
+          pageH - repeatHeaderH - tableOverhead - footerH - SAFE;
+        let acc = 0;
+        let cut = lastRaw.length;
+        for (let k = lastRaw.length - 1; k >= 0; k--) {
+          const h = rowHeights[k] ?? 0;
+          if (acc + h > footerRowSpace) break;
+          acc += h;
+          cut = k;
+        }
+        // Never split a group header from its children: if the cut lands on a
+        // child row, push it forward so the child travels with its header.
+        while (cut < lastRaw.length && lastRaw[cut]?.itemType === "child") cut++;
+        if (cut > 0 && cut < lastRaw.length) {
+          itemPages = [...rawPages.slice(0, -1), lastRaw.slice(0, cut)];
+          footerOwnItems = lastRaw.slice(cut);
+        } else if (cut <= 0) {
+          // Everything actually fits with the footer — attach.
+          footerOwnItems = null;
+        } else {
+          // Nothing safe to peel — footer stands on its own page.
+          footerOwnItems = [];
+        }
+      }
+      if (!cancelled) setMeasuredPlan({ itemPages, footerOwnItems });
+    };
+
+    // Heights depend on images (product images + signature), so measure only
+    // once every image in the hidden container has settled.
+    const imgs = [...root.querySelectorAll("img")];
+    const pending = imgs.filter((img) => !img.complete);
+    if (pending.length === 0) {
+      compute();
+      return () => {
+        cancelled = true;
+      };
     }
-  }
+    let left = pending.length;
+    const done = () => {
+      if (--left <= 0) compute();
+    };
+    pending.forEach((img) => {
+      img.addEventListener("load", done);
+      img.addEventListener("error", done);
+    });
+    const timer = window.setTimeout(compute, 1500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      pending.forEach((img) => {
+        img.removeEventListener("load", done);
+        img.removeEventListener("error", done);
+      });
+    };
+  }, [data, rawPages, lastRaw]);
+
+  const plan = rawPages.length > 1 && measuredPlan ? measuredPlan : fallbackPlan;
+  const itemPages = plan.itemPages;
+  const footerOwnItems = plan.footerOwnItems;
   const attachToLast = footerOwnItems === null;
   const totalPages = itemPages.length + (attachToLast ? 0 : 1);
+  const ready = rawPages.length <= 1 || measuredPlan !== null;
 
   if (data.items.length === 0) {
     const totalPages0 = 1;
@@ -497,53 +605,88 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
   }
 
   return (
-    <main className="qt-preview">
-      {itemPages.map((items, index) => {
-        const isFirst = index === 0;
-        const isLastItemPage = index === itemPages.length - 1;
-        return (
-          <article
-            className={`qt-page ${isFirst ? "first" : "continuation"} ${attachToLast && isLastItemPage ? "with-footer" : ""}`}
-            key={index}
-          >
-            {isFirst ? (
-              <QuoteTopInfo data={data} />
-            ) : (
-              <header className="qt-repeat-header">
-                <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
-                <strong>Teklif Formu</strong>
-                <span>{data.quoteNo}</span>
-              </header>
-            )}
-            <ItemsTable
-              items={items}
-              pageIndex={index}
-              totalPages={totalPages}
-              currency={data.paraBirimi}
-            />
-            {attachToLast && isLastItemPage ? <FooterBlocks data={data} /> : null}
-          </article>
-        );
-      })}
+    <>
+      <main className="qt-preview" data-quote-ready={ready ? "1" : undefined}>
+        {itemPages.map((items, index) => {
+          const isFirst = index === 0;
+          const isLastItemPage = index === itemPages.length - 1;
+          return (
+            <article
+              className={`qt-page ${isFirst ? "first" : "continuation"} ${attachToLast && isLastItemPage ? "with-footer" : ""}`}
+              key={index}
+            >
+              {isFirst ? (
+                <QuoteTopInfo data={data} />
+              ) : (
+                <header className="qt-repeat-header">
+                  <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
+                  <strong>Teklif Formu</strong>
+                  <span>{data.quoteNo}</span>
+                </header>
+              )}
+              <ItemsTable
+                items={items}
+                pageIndex={index}
+                totalPages={totalPages}
+                currency={data.paraBirimi}
+              />
+              {attachToLast && isLastItemPage ? <FooterBlocks data={data} /> : null}
+            </article>
+          );
+        })}
 
-      {!attachToLast ? (
-        <article className="qt-page continuation with-footer qt-footer-page">
-          <header className="qt-repeat-header">
-            <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
-            <strong>Teklif Formu</strong>
-            <span>{data.quoteNo}</span>
-          </header>
-          {footerOwnItems && footerOwnItems.length > 0 ? (
+        {!attachToLast ? (
+          <article className="qt-page continuation with-footer qt-footer-page">
+            <header className="qt-repeat-header">
+              <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
+              <strong>Teklif Formu</strong>
+              <span>{data.quoteNo}</span>
+            </header>
+            {footerOwnItems && footerOwnItems.length > 0 ? (
+              <ItemsTable
+                items={footerOwnItems}
+                pageIndex={itemPages.length}
+                totalPages={totalPages}
+                currency={data.paraBirimi}
+              />
+            ) : null}
+            <FooterBlocks data={data} />
+          </article>
+        ) : null}
+      </main>
+
+      {/* Hidden measuring container: a copy of the last item page + footer used
+          to measure true rendered heights for footer placement. Never visible
+          and excluded from print. */}
+      {rawPages.length > 1 ? (
+        <div
+          ref={measureRef}
+          aria-hidden="true"
+          className="qt-measure-host"
+          style={{
+            position: "absolute",
+            left: "-99999px",
+            top: 0,
+            visibility: "hidden",
+            pointerEvents: "none",
+          }}
+        >
+          <article className="qt-page continuation">
+            <header className="qt-repeat-header">
+              <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
+              <strong>Teklif Formu</strong>
+              <span>{data.quoteNo}</span>
+            </header>
             <ItemsTable
-              items={footerOwnItems}
-              pageIndex={itemPages.length}
-              totalPages={totalPages}
+              items={lastRaw}
+              pageIndex={0}
+              totalPages={1}
               currency={data.paraBirimi}
             />
-          ) : null}
-          <FooterBlocks data={data} />
-        </article>
+            <FooterBlocks data={data} />
+          </article>
+        </div>
       ) : null}
-    </main>
+    </>
   );
 }

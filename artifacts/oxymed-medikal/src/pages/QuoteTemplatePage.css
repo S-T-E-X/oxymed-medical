@@ -808,4 +808,8 @@
     break-after: auto;
     page-break-after: auto;
   }
+
+  .qt-measure-host {
+    display: none !important;
+  }
 }

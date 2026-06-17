@@ -13,7 +13,14 @@ Per-item page-control flags drive the multi-page paginator in `QuoteTemplateView
 
 **Why push-down for keepWithNext:** glue/chain semantics required flagging the item *just before* the break, so single clicks felt non-functional. Push-down makes one click do the obvious thing.
 
-## Footer "lonely page" rule
-The signature/terms footer attaches under the last item page. If that page is too heavy (weight > attachBudget: 16 continuation / 10 first), do NOT emit a footer-only trailing page (looks empty). Instead **peel the trailing unit** down onto a new footer page:
-- The unit is the last single/group item, or — if the page ends mid-group — the *whole group block* (walk back over `child` rows to the header) so a child is never detached from its header.
-- Only peel when at least one item stays above AND the unit weight ≤ 16; otherwise fall back to a standalone footer page.
+## Footer placement is MEASURED, not heuristic (source of truth)
+Footer/last-page placement is decided at runtime from **real rendered pixel heights**, not the `itemVisualWeight` heuristic. The heuristic is unreliable per-item (e.g. items with many bullets+image render ~120px but the model scored them ~7 units ≈ 2× too heavy), which orphaned trailing items on a sparse penultimate page.
+
+**Why:** ground-truth puppeteer measurement showed several trailing items + footer physically fit one A4 page while the weight model said they didn't. No recalibration of weights fixes per-item variance — only measurement does.
+
+**How it works (`QuoteTemplateView.tsx`, multi-page only):** a hidden off-screen clone of `lastRaw` + footer is rendered; after its images load, a `useEffect` measures row heights, repeat-header, table overhead, footer, and page height, then either attaches the footer under the whole last page (if it fits) or moves as many trailing rows as fit onto the footer page (advancing the cut off `child` rows so a group header is never split). A `SAFE` px margin guards sub-pixel variance. The weight heuristic survives only as a pre-measurement fallback and for single-page docs.
+
+**PDF coupling:** once measured, `<main data-quote-ready="1">` is set; the puppeteer PDF route waits for that selector before `pdf()` so it captures the measured layout (graceful timeout fallback to heuristic). The clone is `display:none` in print media → no phantom PDF pages. Any change to the measuring clone, the ready flag, or the route's wait must stay in lockstep or PDFs silently fall back to the old heuristic.
+
+## Per-item flags still apply (group-aware peel)
+The three mutually-exclusive editor flags above still control `chunkItems` page grouping; the measured pass only decides footer placement on the resulting last page. When peeling, never detach a `child` row from its group header.

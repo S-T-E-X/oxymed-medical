@@ -350,6 +350,9 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
       timeout: 60_000,
     });
     await pdfPage.waitForSelector(".qt-page", { timeout: 20_000 }).catch(() => { /* render anyway */ });
+    // Wait for the measured pagination pass to settle so trailing items pack
+    // onto the footer page correctly. Falls through if it never sets the flag.
+    await pdfPage.waitForSelector("main.qt-preview[data-quote-ready='1']", { timeout: 10_000 }).catch(() => { /* render anyway */ });
     const rawPdf = await pdfPage.pdf({
       format: "A4",
       landscape: false,
