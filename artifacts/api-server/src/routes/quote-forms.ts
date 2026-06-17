@@ -81,6 +81,7 @@ const QuoteFormItemBody = z.object({
   showInPdf: z.boolean().optional().default(true),
   pageBreakBefore: z.boolean().optional().default(false),
   keepWithPrevious: z.boolean().optional().default(false),
+  keepWithNext: z.boolean().optional().default(false),
 });
 
 // pageBreakBefore (push to new page) and keepWithPrevious (pull onto previous

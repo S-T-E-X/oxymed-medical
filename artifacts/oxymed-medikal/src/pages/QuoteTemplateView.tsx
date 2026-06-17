@@ -26,6 +26,7 @@ export type QuoteViewItem = {
   imageUrl?: string | null;
   pageBreakBefore?: boolean;
   keepWithPrevious?: boolean;
+  keepWithNext?: boolean;
 };
 
 export type QuoteViewData = {
@@ -91,9 +92,46 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
   let i = 0;
 
   const flush = () => {
-    pages.push(page);
-    page = [];
-    used = 0;
+    if (page.length === 0) {
+      budget = nextBudget;
+      return;
+    }
+    // Keep-with-next ("alt sayfaya sıkıştır"): the trailing block flagged
+    // keepWithNext is carried onto the next page so it stays glued to the
+    // following item. A single item carries itself; a whole group carries when
+    // its header has the flag.
+    let cut = page.length;
+    let k = page.length - 1;
+    while (k >= 0) {
+      const item = page[k]!;
+      if (item.itemType === "child") {
+        // Rewind to this child block's group header.
+        let h = k;
+        while (h >= 0 && page[h]!.itemType === "child") h--;
+        if (h >= 0 && page[h]!.itemType === "group" && page[h]!.keepWithNext) {
+          cut = h;
+          k = h - 1;
+          continue;
+        }
+        break;
+      }
+      if ((item.itemType === "single" || item.itemType === "group") && item.keepWithNext) {
+        cut = k;
+        k--;
+        continue;
+      }
+      break;
+    }
+
+    if (cut === 0) {
+      // The entire page is glued to the following item — keep it as-is and let
+      // the next item join, rather than emitting an empty page.
+      return;
+    }
+    const carried = page.slice(cut);
+    pages.push(page.slice(0, cut));
+    page = carried;
+    used = carried.reduce((s, g) => s + itemVisualWeight(g), 0);
     budget = nextBudget;
   };
 

@@ -17,6 +17,7 @@ import {
   BookmarkPlus,
   SeparatorHorizontal,
   ArrowUpToLine,
+  ArrowDownToLine,
   Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -90,6 +91,7 @@ type ItemDraft = {
   expanded: boolean;
   pageBreakBefore: boolean;
   keepWithPrevious: boolean;
+  keepWithNext: boolean;
   children: ChildItemDraft[];
 };
 
@@ -228,6 +230,7 @@ function newItem(sortOrder: number): ItemDraft {
     expanded: true,
     pageBreakBefore: false,
     keepWithPrevious: false,
+    keepWithNext: false,
     children: [],
   };
 }
@@ -246,6 +249,7 @@ function newGroup(sortOrder: number): ItemDraft {
     expanded: true,
     pageBreakBefore: false,
     keepWithPrevious: false,
+    keepWithNext: false,
     children: [newChildItem()],
   };
 }
@@ -265,6 +269,7 @@ type ApiItem = {
   showInPdf?: boolean | null;
   pageBreakBefore?: boolean | null;
   keepWithPrevious?: boolean | null;
+  keepWithNext?: boolean | null;
 };
 
 function apiItemToDraft(it: ApiItem): ItemDraft {
@@ -283,6 +288,7 @@ function apiItemToDraft(it: ApiItem): ItemDraft {
     expanded: false,
     pageBreakBefore: it.pageBreakBefore ?? false,
     keepWithPrevious: it.keepWithPrevious ?? false,
+    keepWithNext: it.keepWithNext ?? false,
     children: [],
   };
 }
@@ -307,6 +313,7 @@ function apiItemsToHierarchical(apiItems: ApiItem[]): ItemDraft[] {
         expanded: false,
         pageBreakBefore: it.pageBreakBefore ?? false,
         keepWithPrevious: it.keepWithPrevious ?? false,
+        keepWithNext: it.keepWithNext ?? false,
         children: [],
       };
       result.push(currentGroup);
@@ -462,6 +469,7 @@ function SingleItemTemplatePickerModal({
       unitPrice: src?.unitPrice ?? "0",
       pageBreakBefore: false,
       keepWithPrevious: false,
+      keepWithNext: false,
     });
     onClose();
     toast.success(`"${t.name}" şablonu eklendi`);
@@ -815,6 +823,7 @@ function GroupTemplateAddModal({
       expanded: true,
       pageBreakBefore: false,
       keepWithPrevious: false,
+      keepWithNext: false,
       children: (t.children ?? []).map((c) => ({
         title: c.title,
         modelCode: c.modelCode ?? "",
@@ -1156,6 +1165,17 @@ function GroupItemRow({
             <SeparatorHorizontal className="h-3.5 w-3.5" />
           </button>
           <button
+            onClick={() => onChange("keepWithNext", !item.keepWithNext)}
+            title={item.keepWithNext ? "Sonraki sayfaya sıkıştırılıyor — kaldır" : "Bu grubu sonraki (alt) sayfaya sıkıştır"}
+            className={`flex h-6 w-6 items-center justify-center rounded ${
+              item.keepWithNext
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "text-slate-400 hover:bg-blue-200"
+            }`}
+          >
+            <ArrowDownToLine className="h-3.5 w-3.5" />
+          </button>
+          <button
             onClick={onRemove}
             className="flex h-6 w-6 items-center justify-center rounded text-red-400 hover:bg-red-50"
           >
@@ -1430,6 +1450,17 @@ function ItemRow({
             }`}
           >
             <SeparatorHorizontal className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => onChange("keepWithNext", !item.keepWithNext)}
+            title={item.keepWithNext ? "Sonraki sayfaya sıkıştırılıyor — kaldır" : "Bu kalemi sonraki (alt) sayfaya sıkıştır"}
+            className={`flex h-6 w-6 items-center justify-center rounded ${
+              item.keepWithNext
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "text-slate-400 hover:bg-slate-100"
+            }`}
+          >
+            <ArrowDownToLine className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={onRemove}
@@ -1782,6 +1813,7 @@ export default function QuoteFormEditPage() {
       expanded: false,
       pageBreakBefore: false,
       keepWithPrevious: false,
+      keepWithNext: false,
       children: [],
     };
     setItems((prev) => [...prev, draft]);
@@ -1814,6 +1846,7 @@ export default function QuoteFormEditPage() {
             showInPdf: true,
             pageBreakBefore: item.pageBreakBefore,
             keepWithPrevious: item.pageBreakBefore ? false : item.keepWithPrevious,
+            keepWithNext: item.keepWithNext,
           });
           for (const child of item.children) {
             body.push({
@@ -1850,6 +1883,7 @@ export default function QuoteFormEditPage() {
             showInPdf: true,
             pageBreakBefore: item.pageBreakBefore,
             keepWithPrevious: item.pageBreakBefore ? false : item.keepWithPrevious,
+            keepWithNext: item.keepWithNext,
           });
         }
       }

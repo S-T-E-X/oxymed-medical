@@ -49,6 +49,7 @@ export const quoteFormItems = pgTable("quote_form_items", {
   showInPdf: boolean("show_in_pdf").notNull().default(true),
   pageBreakBefore: boolean("page_break_before").notNull().default(false),
   keepWithPrevious: boolean("keep_with_previous").notNull().default(false),
+  keepWithNext: boolean("keep_with_next").notNull().default(false),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 

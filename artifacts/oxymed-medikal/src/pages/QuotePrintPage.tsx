@@ -49,6 +49,7 @@ type ApiForm = {
     showInPdf?: boolean | null;
     pageBreakBefore?: boolean | null;
     keepWithPrevious?: boolean | null;
+    keepWithNext?: boolean | null;
     sortOrder: number;
   }>;
 };
@@ -85,6 +86,7 @@ function toViewData(form: ApiForm): QuoteViewData {
         imageUrl: it.imageUrl,
         pageBreakBefore: it.pageBreakBefore ?? false,
         keepWithPrevious: it.keepWithPrevious ?? false,
+        keepWithNext: it.keepWithNext ?? false,
       }];
     }
 
@@ -119,6 +121,7 @@ function toViewData(form: ApiForm): QuoteViewData {
       imageUrl: it.imageUrl,
       pageBreakBefore: it.pageBreakBefore ?? false,
       keepWithPrevious: it.keepWithPrevious ?? false,
+      keepWithNext: it.keepWithNext ?? false,
     }];
   });
 
