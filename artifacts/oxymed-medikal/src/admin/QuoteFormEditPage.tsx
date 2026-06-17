@@ -17,6 +17,7 @@ import {
   BookmarkPlus,
   SeparatorHorizontal,
   ArrowUpToLine,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useListSettings } from "@workspace/api-client-react";
@@ -164,7 +165,53 @@ const DEFAULT_SARTLAR = [
 ].join("\n");
 
 function newChildItem(): ChildItemDraft {
-  return { title: "", modelCode: "", quantity: 1, unit: "METRE", unitPrice: "0", showInPdf: true };
+  return { title: "", modelCode: "", quantity: 1, unit: "ADET", unitPrice: "0", showInPdf: true };
+}
+
+// ── Controlled numeric input — allows clearing/typing without snap-to-default ─
+function QtyInput({
+  value,
+  onChange,
+  min = 0,
+  className,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  className?: string;
+}) {
+  const [raw, setRaw] = useState(String(value));
+  const syncedRef = useRef(value);
+
+  useEffect(() => {
+    if (syncedRef.current !== value) {
+      syncedRef.current = value;
+      setRaw(String(value));
+    }
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      value={raw}
+      onFocus={(e) => e.target.select()}
+      onChange={(e) => {
+        const v = e.target.value;
+        setRaw(v);
+        const n = parseFloat(v);
+        if (!isNaN(n)) { syncedRef.current = n; onChange(n); }
+      }}
+      onBlur={() => {
+        const n = parseFloat(raw);
+        const final = isNaN(n) ? min : n;
+        syncedRef.current = final;
+        setRaw(String(final));
+        onChange(final);
+      }}
+      className={className}
+    />
+  );
 }
 
 function newItem(sortOrder: number): ItemDraft {
@@ -520,7 +567,7 @@ function TemplatePickerModal({
       title: c.title,
       modelCode: c.modelCode ?? "",
       quantity: 0,
-      unit: c.unit ?? "METRE",
+      unit: c.unit ?? "ADET",
       unitPrice: c.unitPrice ?? "0",
       showInPdf: false,
     }));
@@ -590,6 +637,133 @@ function TemplatePickerModal({
 // ── Group Template Add Modal ─────────────────────────────────────────────────
 // Adds a WHOLE GROUP (header + children) from a saved group template.
 
+// ── Group Template Edit Modal ─────────────────────────────────────────────────
+function GroupTemplateEditModal({
+  template,
+  authFetch,
+  onUpdated,
+  onClose,
+}: {
+  template: GroupTemplate;
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  onUpdated: (t: GroupTemplate) => void;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(template.name);
+  const [modelCode, setModelCode] = useState(template.modelCode ?? "");
+  const [description, setDescription] = useState(template.description ?? "");
+  const [imageUrl, setImageUrl] = useState(template.imageUrl ?? "");
+  const [children, setChildren] = useState<NonNullable<GroupTemplate["children"]>>(template.children ?? []);
+  const [saving, setSaving] = useState(false);
+
+  const addChild = () => setChildren((p) => [...p, { title: "", modelCode: "", unit: "ADET", quantity: 0, unitPrice: "0" }]);
+  const removeChild = (i: number) => setChildren((p) => p.filter((_, idx) => idx !== i));
+  const updateChild = (i: number, field: string, val: string | number) =>
+    setChildren((p) => p.map((c, idx) => idx === i ? { ...c, [field]: val } : c));
+
+  const handleSave = async () => {
+    if (!name.trim()) { toast.error("Şablon adı boş olamaz"); return; }
+    setSaving(true);
+    try {
+      const r = await authFetch(`/api/quote-group-templates/${template.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          modelCode: modelCode || undefined,
+          description: description || undefined,
+          imageUrl: imageUrl || undefined,
+          children: children.map((c) => ({
+            title: c.title || "—",
+            modelCode: c.modelCode || undefined,
+            unit: c.unit,
+            quantity: c.quantity,
+            unitPrice: c.unitPrice,
+          })),
+        }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => null) as { error?: string } | null;
+        throw new Error(e?.error ?? `Sunucu hatası (${r.status})`);
+      }
+      const updated = await r.json() as GroupTemplate;
+      toast.success("Şablon güncellendi");
+      onUpdated(updated);
+      onClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Güncellenemedi");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+      <div className="flex h-[85vh] w-full max-w-2xl flex-col rounded-xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h2 className="text-base font-bold text-slate-900">Şablonu Düzenle</h2>
+          <button onClick={onClose}><X className="h-5 w-5 text-slate-400" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <label className="label">Şablon Adı *</label>
+              <input value={name} onChange={(e) => setName(e.target.value)} className="input w-full text-sm" placeholder="Şablon adı" />
+            </div>
+            <div>
+              <label className="label">Model/Kod</label>
+              <input value={modelCode} onChange={(e) => setModelCode(e.target.value)} className="input w-full text-sm" placeholder="Model kodu" />
+            </div>
+            <div>
+              <label className="label">Görsel URL</label>
+              <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="input w-full text-sm" placeholder="https://..." />
+            </div>
+            <div className="col-span-2">
+              <label className="label">Açıklama</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="input w-full text-sm resize-none" placeholder="Her satır ayrı bir madde olur" />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Alt Kalemler ({children.length})</span>
+              <button onClick={addChild} className="flex items-center gap-1 rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-blue-700">
+                <Plus className="h-3.5 w-3.5" /> Ekle
+              </button>
+            </div>
+            <div className="space-y-2">
+              {children.length === 0 ? (
+                <p className="py-4 text-center text-xs text-slate-400">Alt kalem yok</p>
+              ) : children.map((c, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                  <div className="flex-1 grid grid-cols-3 gap-2">
+                    <input value={c.title} onChange={(e) => updateChild(i, "title", e.target.value)} className="input col-span-3 text-xs" placeholder="Kalem açıklaması *" />
+                    <input value={c.modelCode ?? ""} onChange={(e) => updateChild(i, "modelCode", e.target.value)} className="input text-xs" placeholder="Model/Kod" />
+                    <select value={c.unit ?? "ADET"} onChange={(e) => updateChild(i, "unit", e.target.value)} className="input text-xs">
+                      {["ADET", "SET", "METRE", "MT", "M2", "KG", "PAKET", "KUTU", "TAKIM"].map((u) => <option key={u}>{u}</option>)}
+                    </select>
+                    <input value={c.unitPrice ?? "0"} onChange={(e) => updateChild(i, "unitPrice", e.target.value)} className="input text-xs" placeholder="Birim fiyat" />
+                  </div>
+                  <button onClick={() => removeChild(i)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-red-400 hover:bg-red-50">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 border-t border-slate-100 px-5 py-4">
+          <button onClick={onClose} className="flex-1 rounded-lg border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">İptal</button>
+          <button onClick={handleSave} disabled={saving || !name.trim()} className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Güncelle
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GroupTemplateAddModal({
   authFetch,
   onApply,
@@ -602,6 +776,7 @@ function GroupTemplateAddModal({
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<GroupTemplate | null>(null);
 
   useEffect(() => {
     authFetch("/api/quote-group-templates")
@@ -644,7 +819,7 @@ function GroupTemplateAddModal({
         title: c.title,
         modelCode: c.modelCode ?? "",
         quantity: 0,
-        unit: c.unit ?? "METRE",
+        unit: c.unit ?? "ADET",
         unitPrice: c.unitPrice ?? "0",
         showInPdf: false,
       })),
@@ -688,6 +863,13 @@ function GroupTemplateAddModal({
                     Ekle
                   </button>
                   <button
+                    onClick={() => setEditingTemplate(t)}
+                    title="Şablonu düzenle"
+                    className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
                     onClick={() => handleDelete(t.id)}
                     disabled={deleting === t.id}
                     className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-red-400 hover:bg-red-50 disabled:opacity-40"
@@ -705,6 +887,18 @@ function GroupTemplateAddModal({
           </p>
         </div>
       </div>
+
+      {editingTemplate && (
+        <GroupTemplateEditModal
+          template={editingTemplate}
+          authFetch={authFetch}
+          onUpdated={(updated) => {
+            setTemplates((prev) => prev.map((t) => t.id === updated.id ? updated : t));
+            setEditingTemplate(null);
+          }}
+          onClose={() => setEditingTemplate(null)}
+        />
+      )}
     </div>
   );
 }
@@ -777,11 +971,9 @@ function ChildItemRow({
       <div className="flex items-center gap-2 pl-9 flex-wrap">
         <div className="flex items-center gap-1">
           <label className="text-[10px] text-slate-500 shrink-0">Miktar</label>
-          <input
-            type="number"
-            min={0}
+          <QtyInput
             value={child.quantity}
-            onChange={(e) => onChange("quantity", parseFloat(e.target.value) || 0)}
+            onChange={(n) => { onChange("quantity", n); onChange("showInPdf", n > 0); }}
             className="input w-16 text-xs"
           />
         </div>
@@ -1299,11 +1491,9 @@ function ItemRow({
 
             <div>
               <label className="label">Miktar</label>
-              <input
-                type="number"
-                min={1}
+              <QtyInput
                 value={item.quantity}
-                onChange={(e) => onChange("quantity", parseInt(e.target.value) || 1)}
+                onChange={(n) => onChange("quantity", n)}
                 className="input w-full text-sm"
               />
             </div>
