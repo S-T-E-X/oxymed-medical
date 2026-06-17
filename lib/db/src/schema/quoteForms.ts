@@ -56,11 +56,16 @@ export const quoteGroupTemplates = pgTable("quote_group_templates", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
+  modelCode: text("model_code"),
   imageUrl: text("image_url"),
   children: jsonb("children").$type<Array<{
     title: string;
     modelCode?: string;
     unit?: string;
+    quantity?: number;
+    unitPrice?: string;
+    bullets?: string[];
+    imageUrl?: string;
   }>>().default([]),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

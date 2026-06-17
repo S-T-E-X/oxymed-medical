@@ -441,11 +441,16 @@ router.get("/quote-group-templates", requireAuth, async (_req, res): Promise<voi
 const GroupTemplateBody = z.object({
   name: z.string().min(1),
   description: z.string().optional().nullable(),
+  modelCode: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   children: z.array(z.object({
     title: z.string().min(1),
     modelCode: z.string().optional(),
     unit: z.string().optional(),
+    quantity: z.number().optional(),
+    unitPrice: z.string().optional(),
+    bullets: z.array(z.string()).optional(),
+    imageUrl: z.string().optional(),
   })).optional().default([]),
   sortOrder: z.coerce.number().int().optional().default(0),
 });

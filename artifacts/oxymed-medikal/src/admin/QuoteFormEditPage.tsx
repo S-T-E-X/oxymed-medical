@@ -96,6 +96,7 @@ type GroupTemplate = {
   id: number;
   name: string;
   description?: string | null;
+  modelCode?: string | null;
   imageUrl?: string | null;
   children: Array<{
     title: string;
@@ -409,7 +410,7 @@ function SingleItemTemplatePickerModal({
       bulletsText: (src?.bullets ?? []).join("\n"),
       modelCode: src?.modelCode ?? "",
       imageUrl: src?.imageUrl ?? "",
-      quantity: src?.quantity ?? 1,
+      quantity: 0,
       unit: src?.unit ?? "ADET",
       unitPrice: src?.unitPrice ?? "0",
       pageBreakBefore: false,
@@ -518,10 +519,10 @@ function TemplatePickerModal({
     const children: ChildItemDraft[] = (t.children ?? []).map((c) => ({
       title: c.title,
       modelCode: c.modelCode ?? "",
-      quantity: 1,
+      quantity: 0,
       unit: c.unit ?? "METRE",
-      unitPrice: "0",
-      showInPdf: true,
+      unitPrice: c.unitPrice ?? "0",
+      showInPdf: false,
     }));
     onApply(children);
     onClose();
@@ -629,8 +630,8 @@ function GroupTemplateAddModal({
     const draft: ItemDraft = {
       itemType: "group",
       title: t.name,
-      bulletsText: "",
-      modelCode: "",
+      bulletsText: t.description ?? "",
+      modelCode: t.modelCode ?? "",
       imageUrl: t.imageUrl ?? "",
       quantity: 0,
       unit: "ADET",
@@ -642,10 +643,10 @@ function GroupTemplateAddModal({
       children: (t.children ?? []).map((c) => ({
         title: c.title,
         modelCode: c.modelCode ?? "",
-        quantity: c.quantity ?? 1,
+        quantity: 0,
         unit: c.unit ?? "METRE",
         unitPrice: c.unitPrice ?? "0",
-        showInPdf: true,
+        showInPdf: false,
       })),
     };
     onApply(draft);
@@ -870,11 +871,19 @@ function GroupItemRow({
         title: c.title || "—",
         modelCode: c.modelCode || undefined,
         unit: c.unit,
+        quantity: c.quantity,
+        unitPrice: c.unitPrice,
       }));
       const r = await authFetch("/api/quote-group-templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: saveTemplateName.trim(), children }),
+        body: JSON.stringify({
+          name: saveTemplateName.trim(),
+          modelCode: item.modelCode || undefined,
+          description: item.bulletsText || undefined,
+          imageUrl: item.imageUrl || undefined,
+          children,
+        }),
       });
       if (!r.ok) {
         const e = await r.json().catch(() => null) as { error?: string } | null;
@@ -1024,7 +1033,7 @@ function GroupItemRow({
             </button>
             {!showSaveForm ? (
               <button
-                onClick={() => setShowSaveForm(true)}
+                onClick={() => { setShowSaveForm(true); setSaveTemplateName(item.title || ""); }}
                 className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
               >
                 <BookmarkPlus className="h-3.5 w-3.5" />
@@ -1039,6 +1048,7 @@ function GroupItemRow({
                   placeholder="Şablon adı…"
                   style={{ width: "160px" }}
                   onKeyDown={(e) => { if (e.key === "Enter") handleSaveAsTemplate(); }}
+                  autoFocus
                 />
                 <button
                   onClick={handleSaveAsTemplate}
@@ -1334,7 +1344,7 @@ function ItemRow({
           <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
             {!showSaveForm ? (
               <button
-                onClick={() => setShowSaveForm(true)}
+                onClick={() => { setShowSaveForm(true); setSaveTemplateName(item.title || ""); }}
                 className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
               >
                 <BookmarkPlus className="h-3.5 w-3.5" />
