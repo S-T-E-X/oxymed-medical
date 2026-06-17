@@ -24,6 +24,7 @@ import {
   ClipboardList,
   Gauge,
   ClipboardCheck,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
@@ -197,6 +198,21 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
             </NavLink>
           );
         })}
+        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Sistem</p>
+        <NavLink
+          to="/admin/kullanicilar"
+          onClick={onClose}
+          className={({ isActive }) =>
+            `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
+              isActive
+                ? "bg-blue-600 text-white"
+                : "text-slate-400 hover:bg-white/6 hover:text-white"
+            }`
+          }
+        >
+          <Users className="h-4 w-4 shrink-0" />
+          <span className="truncate">Yönetici Hesapları</span>
+        </NavLink>
       </nav>
       <div className="border-t border-white/8 p-4">
         <div className="flex items-center gap-3">
