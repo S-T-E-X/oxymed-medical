@@ -96,42 +96,9 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       budget = nextBudget;
       return;
     }
-    // Keep-with-next ("alt sayfaya sıkıştır"): the trailing block flagged
-    // keepWithNext is carried onto the next page so it stays glued to the
-    // following item. A single item carries itself; a whole group carries when
-    // its header has the flag.
-    let cut = page.length;
-    let k = page.length - 1;
-    while (k >= 0) {
-      const item = page[k]!;
-      if (item.itemType === "child") {
-        // Rewind to this child block's group header.
-        let h = k;
-        while (h >= 0 && page[h]!.itemType === "child") h--;
-        if (h >= 0 && page[h]!.itemType === "group" && page[h]!.keepWithNext) {
-          cut = h;
-          k = h - 1;
-          continue;
-        }
-        break;
-      }
-      if ((item.itemType === "single" || item.itemType === "group") && item.keepWithNext) {
-        cut = k;
-        k--;
-        continue;
-      }
-      break;
-    }
-
-    if (cut === 0) {
-      // The entire page is glued to the following item — keep it as-is and let
-      // the next item join, rather than emitting an empty page.
-      return;
-    }
-    const carried = page.slice(cut);
-    pages.push(page.slice(0, cut));
-    page = carried;
-    used = carried.reduce((s, g) => s + itemVisualWeight(g), 0);
+    pages.push(page);
+    page = [];
+    used = 0;
     budget = nextBudget;
   };
 
@@ -150,8 +117,9 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       const firstChildW = group.length > 1 ? itemVisualWeight(group[1]!) : 0;
       const minStart = headerW + firstChildW;
 
-      // Manual page break: user forced this group to start on a new page
-      if (page.length > 0 && it.pageBreakBefore) flush();
+      // Manual push-down: "alt sayfaya taşı" (pageBreakBefore) and "alt sayfaya
+      // indir" (keepWithNext) both move this group onto a fresh (lower) page.
+      if (page.length > 0 && (it.pageBreakBefore || it.keepWithNext)) flush();
 
       // Manual keep-with-previous: user forced this group onto the previous
       // (upper) page, so we skip the automatic overflow flush below.
@@ -175,8 +143,9 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
       i = j;
     } else {
       const w = itemVisualWeight(it);
-      // Manual page break: user forced this item to start on a new page
-      if (page.length > 0 && it.pageBreakBefore) flush();
+      // Manual push-down: "alt sayfaya taşı" (pageBreakBefore) and "alt sayfaya
+      // indir" (keepWithNext) both move this item onto a fresh (lower) page.
+      if (page.length > 0 && (it.pageBreakBefore || it.keepWithNext)) flush();
       // Manual keep-with-previous: user forced this item onto the previous
       // (upper) page, so skip the automatic overflow flush.
       const forceKeep = it.keepWithPrevious && !it.pageBreakBefore;
@@ -475,14 +444,44 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
 }
 
 export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
-  const itemPages = chunkItems(data.items);
-  const lastItemPage = itemPages[itemPages.length - 1] ?? [];
-  const lastPageWeight = lastItemPage.reduce((s, it) => s + itemVisualWeight(it), 0);
+  const rawPages = chunkItems(data.items);
+  const weightOf = (arr: QuoteViewItem[]) =>
+    arr.reduce((s, it) => s + itemVisualWeight(it), 0);
   // 1 budget unit ≈ 9mm (bullet-adjusted); footer ≈ 70mm, continuation rows ≈ 219mm
-  // → max item weight for footer on continuation page: (219-70)/9 ≈ 16
-  // first page rows ≈ 165mm → max: (165-70)/9 ≈ 10
-  const canAttachFooter = itemPages.length > 1 ? lastPageWeight <= 16 : lastPageWeight <= 10;
-  const totalPages = itemPages.length + (canAttachFooter ? 0 : 1);
+  // → items that can share a page with the footer: continuation (219-70)/9 ≈ 16,
+  // first page rows ≈ 165mm → (165-70)/9 ≈ 10
+  const attachBudget = rawPages.length > 1 ? 16 : 10;
+  const lastRaw = rawPages[rawPages.length - 1] ?? [];
+
+  // Footer placement. Default: attach the footer under the last item page.
+  // If that page is too full for the footer, the footer needs its own page —
+  // but rather than leaving a lonely footer-only page (which looks like an empty
+  // trailing page), peel the last item down so the footer page always has at
+  // least one item above it.
+  let itemPages = rawPages;
+  let footerOwnItems: QuoteViewItem[] | null = null; // null => attach under last item page
+  if (weightOf(lastRaw) > attachBudget) {
+    // Identify the trailing "unit" to peel onto the footer page: a single/group
+    // item, or — when the page ends mid-group — the whole group block, so a
+    // child row is never detached from its header.
+    let start = lastRaw.length - 1;
+    if (lastRaw[start]?.itemType === "child") {
+      while (start > 0 && lastRaw[start]?.itemType === "child") start--;
+    }
+    const unit = lastRaw.slice(start);
+    // Only peel when at least one item stays above and the unit fits on a page
+    // alongside the footer.
+    if (start > 0 && weightOf(unit) <= 16) {
+      itemPages = [...rawPages.slice(0, -1), lastRaw.slice(0, start)];
+      footerOwnItems = unit;
+    } else {
+      // Nothing safe to peel (single tall item, orphaned children, or a unit
+      // too large to share with the footer) — footer stands on its own.
+      footerOwnItems = [];
+    }
+  }
+  const attachToLast = footerOwnItems === null;
+  const totalPages = itemPages.length + (attachToLast ? 0 : 1);
 
   if (data.items.length === 0) {
     const totalPages0 = 1;
@@ -504,7 +503,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
         const isLastItemPage = index === itemPages.length - 1;
         return (
           <article
-            className={`qt-page ${isFirst ? "first" : "continuation"} ${canAttachFooter && isLastItemPage ? "with-footer" : ""}`}
+            className={`qt-page ${isFirst ? "first" : "continuation"} ${attachToLast && isLastItemPage ? "with-footer" : ""}`}
             key={index}
           >
             {isFirst ? (
@@ -522,13 +521,26 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
               totalPages={totalPages}
               currency={data.paraBirimi}
             />
-            {canAttachFooter && isLastItemPage ? <FooterBlocks data={data} /> : null}
+            {attachToLast && isLastItemPage ? <FooterBlocks data={data} /> : null}
           </article>
         );
       })}
 
-      {!canAttachFooter ? (
-        <article className="qt-page qt-footer-page">
+      {!attachToLast ? (
+        <article className="qt-page continuation with-footer qt-footer-page">
+          <header className="qt-repeat-header">
+            <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
+            <strong>Teklif Formu</strong>
+            <span>{data.quoteNo}</span>
+          </header>
+          {footerOwnItems && footerOwnItems.length > 0 ? (
+            <ItemsTable
+              items={footerOwnItems}
+              pageIndex={itemPages.length}
+              totalPages={totalPages}
+              currency={data.paraBirimi}
+            />
+          ) : null}
           <FooterBlocks data={data} />
         </article>
       ) : null}

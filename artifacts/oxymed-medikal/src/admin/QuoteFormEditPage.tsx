@@ -1138,8 +1138,12 @@ function GroupItemRow({
           </button>
           <button
             onClick={() => {
-              onChange("keepWithPrevious", !item.keepWithPrevious);
-              if (!item.keepWithPrevious && item.pageBreakBefore) onChange("pageBreakBefore", false);
+              const next = !item.keepWithPrevious;
+              onChange("keepWithPrevious", next);
+              if (next) {
+                if (item.pageBreakBefore) onChange("pageBreakBefore", false);
+                if (item.keepWithNext) onChange("keepWithNext", false);
+              }
             }}
             title={item.keepWithPrevious ? "Önceki sayfaya sıkıştırılıyor — kaldır" : "Bu grubu önceki (üst) sayfaya sıkıştır"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
@@ -1152,8 +1156,12 @@ function GroupItemRow({
           </button>
           <button
             onClick={() => {
-              onChange("pageBreakBefore", !item.pageBreakBefore);
-              if (!item.pageBreakBefore && item.keepWithPrevious) onChange("keepWithPrevious", false);
+              const next = !item.pageBreakBefore;
+              onChange("pageBreakBefore", next);
+              if (next) {
+                if (item.keepWithPrevious) onChange("keepWithPrevious", false);
+                if (item.keepWithNext) onChange("keepWithNext", false);
+              }
             }}
             title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu grubu yeni (alt) sayfaya taşı"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
@@ -1165,8 +1173,15 @@ function GroupItemRow({
             <SeparatorHorizontal className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => onChange("keepWithNext", !item.keepWithNext)}
-            title={item.keepWithNext ? "Sonraki sayfaya sıkıştırılıyor — kaldır" : "Bu grubu sonraki (alt) sayfaya sıkıştır"}
+            onClick={() => {
+              const next = !item.keepWithNext;
+              onChange("keepWithNext", next);
+              if (next) {
+                if (item.keepWithPrevious) onChange("keepWithPrevious", false);
+                if (item.pageBreakBefore) onChange("pageBreakBefore", false);
+              }
+            }}
+            title={item.keepWithNext ? "Alt sayfaya indiriliyor — kaldır" : "Bu grubu alt sayfaya indir"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
               item.keepWithNext
                 ? "bg-teal-600 text-white hover:bg-teal-700"
@@ -1425,8 +1440,12 @@ function ItemRow({
           </button>
           <button
             onClick={() => {
-              onChange("keepWithPrevious", !item.keepWithPrevious);
-              if (!item.keepWithPrevious && item.pageBreakBefore) onChange("pageBreakBefore", false);
+              const next = !item.keepWithPrevious;
+              onChange("keepWithPrevious", next);
+              if (next) {
+                if (item.pageBreakBefore) onChange("pageBreakBefore", false);
+                if (item.keepWithNext) onChange("keepWithNext", false);
+              }
             }}
             title={item.keepWithPrevious ? "Önceki sayfaya sıkıştırılıyor — kaldır" : "Bu kalemi önceki (üst) sayfaya sıkıştır"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
@@ -1439,8 +1458,12 @@ function ItemRow({
           </button>
           <button
             onClick={() => {
-              onChange("pageBreakBefore", !item.pageBreakBefore);
-              if (!item.pageBreakBefore && item.keepWithPrevious) onChange("keepWithPrevious", false);
+              const next = !item.pageBreakBefore;
+              onChange("pageBreakBefore", next);
+              if (next) {
+                if (item.keepWithPrevious) onChange("keepWithPrevious", false);
+                if (item.keepWithNext) onChange("keepWithNext", false);
+              }
             }}
             title={item.pageBreakBefore ? "Yeni sayfada başlıyor — kaldır" : "Bu kalemi yeni (alt) sayfaya taşı"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
@@ -1452,8 +1475,15 @@ function ItemRow({
             <SeparatorHorizontal className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => onChange("keepWithNext", !item.keepWithNext)}
-            title={item.keepWithNext ? "Sonraki sayfaya sıkıştırılıyor — kaldır" : "Bu kalemi sonraki (alt) sayfaya sıkıştır"}
+            onClick={() => {
+              const next = !item.keepWithNext;
+              onChange("keepWithNext", next);
+              if (next) {
+                if (item.keepWithPrevious) onChange("keepWithPrevious", false);
+                if (item.pageBreakBefore) onChange("pageBreakBefore", false);
+              }
+            }}
+            title={item.keepWithNext ? "Alt sayfaya indiriliyor — kaldır" : "Bu kalemi alt sayfaya indir"}
             className={`flex h-6 w-6 items-center justify-center rounded ${
               item.keepWithNext
                 ? "bg-teal-600 text-white hover:bg-teal-700"
