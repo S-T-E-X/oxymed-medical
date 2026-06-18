@@ -27,6 +27,68 @@ const STATUS_OPTIONS = [
 function statusClass(s: string) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.cls ?? "bg-slate-100 text-slate-500 ring-slate-200";
 }
+
+function escHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function buildEmailPreviewHtml(quoteNo: string, firmaAdi: string, konu: string, bodyText: string): string {
+  const dateStr = new Date().toLocaleDateString("tr-TR", { day: "2-digit", month: "long", year: "numeric" });
+  const greet = firmaAdi
+    ? `Sayın <strong style="color:#1e293b">${escHtml(firmaAdi)}</strong>,`
+    : "Sayın İlgili,";
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:20px 12px">
+    <tr><td align="center">
+      <table width="540" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+        <tr>
+          <td style="background:linear-gradient(135deg,#08265f 0%,#0e3a8a 100%);padding:20px 24px">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <div style="font-size:17px;font-weight:800;color:#ffffff;letter-spacing:0.5px">OXYMED MEDİKAL</div>
+                  <div style="font-size:11px;color:#93c5fd;margin-top:2px">Medikal Gaz Sistemleri &amp; Hastane Ekipmanları</div>
+                </td>
+                <td align="right">
+                  <div style="background:rgba(255,255,255,0.12);border-radius:8px;padding:6px 12px;display:inline-block;text-align:right">
+                    <div style="font-size:10px;color:#93c5fd;text-transform:uppercase;letter-spacing:1px">Teklif No</div>
+                    <div style="font-size:14px;font-weight:700;color:#ffffff;margin-top:2px">${escHtml(quoteNo)}</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:10px 22px;background:#f8fafc;border-bottom:1px solid #e2e8f0">
+            <p style="margin:0;font-size:12px;color:#64748b"><span style="font-weight:700;color:#1e293b">Konu:</span> ${escHtml(konu)}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 24px 20px">
+            <p style="margin:0 0 10px;font-size:14px;color:#475569">${greet}</p>
+            <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">${escHtml(bodyText)}</p>
+            <p style="margin:14px 0 0;font-size:13px;color:#64748b">Teklifinizin detaylı PDF'i bu e-postaya eklenmiştir.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:14px 24px;text-align:center">
+            <p style="margin:0;font-size:11px;color:#94a3b8">
+              Bu e-posta Oxymed Medikal Gaz Sistemleri tarafından otomatik olarak gönderilmiştir.<br>
+              Teklif No: ${escHtml(quoteNo)} | Tarih: ${dateStr}<br>
+              <a href="https://www.oxymedmedical.com" style="color:#64748b;text-decoration:none">www.oxymedmedical.com</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
 function statusRowBg(s: string) {
   return STATUS_OPTIONS.find((o) => o.value === s)?.rowBg ?? "";
 }
@@ -123,6 +185,10 @@ export default function QuoteFormsPage() {
   const [emailDefaultAddress, setEmailDefaultAddress] = useState("");
   const [emailFormId, setEmailFormId] = useState<number | null>(null);
   const [emailFormNo, setEmailFormNo] = useState("");
+  const [emailFirmaAdi, setEmailFirmaAdi] = useState("");
+  const [emailKonu, setEmailKonu] = useState("");
+  const [emailBodyText, setEmailBodyText] = useState("");
+  const [emailTab, setEmailTab] = useState<"form" | "preview">("form");
   const [sendingEmail, setSendingEmail] = useState(false);
 
   const forms = useMemo(() => {
@@ -141,9 +207,13 @@ export default function QuoteFormsPage() {
   function openEmailDialog(form: QuoteForm) {
     setEmailFormId(form.id);
     setEmailFormNo(form.quoteNo);
+    setEmailFirmaAdi(form.firmaAdi ?? "");
     const defaultEmail = form.firmaEmail ?? "";
     setEmailDefaultAddress(defaultEmail);
     setEmailTarget(defaultEmail);
+    setEmailKonu(`Teklif - ${form.quoteNo}${form.firmaAdi ? ` | ${form.firmaAdi}` : ""}`);
+    setEmailBodyText("Tarafınıza sunmakta olduğumuz teklif aşağıda yer almaktadır. Herhangi bir sorunuz için bizimle iletişime geçebilirsiniz.");
+    setEmailTab("form");
     setShowEmailDialog(true);
   }
 
@@ -157,7 +227,7 @@ export default function QuoteFormsPage() {
       const res = await authFetch(`${BASE}/api/quote-forms/${emailFormId}/send-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: target }),
+        body: JSON.stringify({ email: target, subject: emailKonu.trim(), bodyText: emailBodyText.trim() }),
       });
       const body = await res.json().catch(() => ({})) as { error?: string; detail?: string; success?: boolean };
       if (!res.ok) {
@@ -340,15 +410,16 @@ export default function QuoteFormsPage() {
       {/* Email dialog */}
       {showEmailDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl flex flex-col" style={{ maxHeight: "90vh" }}>
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100">
                   <Mail className="h-4 w-4 text-blue-600" />
                 </div>
                 <div>
                   <h2 className="font-bold text-slate-900">Teklifi E-posta ile Gönder</h2>
-                  <p className="text-xs text-slate-500">Teklif bilgileri e-posta olarak iletilecek</p>
+                  <p className="text-xs text-slate-500">{emailFormNo}</p>
                 </div>
               </div>
               <button
@@ -359,37 +430,94 @@ export default function QuoteFormsPage() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="px-6 py-5 space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide">
-                    Alıcı E-posta Adresi
-                  </label>
-                  {emailDefaultAddress && emailTarget.trim() !== emailDefaultAddress && (
-                    <button
-                      type="button"
-                      onClick={() => setEmailTarget(emailDefaultAddress)}
-                      className="text-xs text-blue-600 hover:underline font-medium"
-                    >
-                      Firma adresine dön ↩
-                    </button>
-                  )}
-                </div>
-                <input
-                  type="email"
-                  value={emailTarget}
-                  onChange={(e) => setEmailTarget(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
-                  placeholder="ornek@firma.com"
-                  autoFocus
-                  className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-500">
-                <p><span className="font-bold text-slate-700">Teklif No:</span> {emailFormNo}</p>
-              </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-slate-100 px-6 shrink-0">
+              <button
+                type="button"
+                onClick={() => setEmailTab("form")}
+                className={`px-1 py-3 mr-6 text-sm font-semibold border-b-2 transition-colors ${emailTab === "form" ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+              >
+                Mesaj
+              </button>
+              <button
+                type="button"
+                onClick={() => setEmailTab("preview")}
+                className={`px-1 py-3 text-sm font-semibold border-b-2 transition-colors ${emailTab === "preview" ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+              >
+                Önizleme
+              </button>
             </div>
-            <div className="flex gap-3 border-t border-slate-100 px-6 py-4">
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {emailTab === "form" ? (
+                <div className="px-6 py-5 space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide">
+                        Alıcı E-posta Adresi
+                      </label>
+                      {emailDefaultAddress && emailTarget.trim() !== emailDefaultAddress && (
+                        <button
+                          type="button"
+                          onClick={() => setEmailTarget(emailDefaultAddress)}
+                          className="text-xs text-blue-600 hover:underline font-medium"
+                        >
+                          Firma adresine dön ↩
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="email"
+                      value={emailTarget}
+                      onChange={(e) => setEmailTarget(e.target.value)}
+                      placeholder="ornek@firma.com"
+                      autoFocus
+                      className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">
+                      Konu
+                    </label>
+                    <input
+                      type="text"
+                      value={emailKonu}
+                      onChange={(e) => setEmailKonu(e.target.value)}
+                      placeholder="E-posta konusu"
+                      className="w-full h-10 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">
+                      Mesaj
+                    </label>
+                    <textarea
+                      value={emailBodyText}
+                      onChange={(e) => setEmailBodyText(e.target.value)}
+                      rows={4}
+                      placeholder="E-posta mesajı..."
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400">PDF teklif formu otomatik olarak eke eklenir.</p>
+                </div>
+              ) : (
+                <div className="p-4">
+                  <iframe
+                    srcDoc={buildEmailPreviewHtml(emailFormNo, emailFirmaAdi, emailKonu, emailBodyText)}
+                    title="E-posta önizlemesi"
+                    className="w-full rounded-lg border border-slate-200"
+                    style={{ height: "440px" }}
+                    sandbox="allow-same-origin"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-3 border-t border-slate-100 px-6 py-4 shrink-0">
               <button
                 type="button"
                 onClick={() => setShowEmailDialog(false)}

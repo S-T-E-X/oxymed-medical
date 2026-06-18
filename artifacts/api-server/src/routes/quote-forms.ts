@@ -300,12 +300,14 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
   const id = parseId(req.params["id"]!);
   const bodyParsed = z.object({
     email: z.string().email("Geçerli bir e-posta adresi girin"),
+    subject: z.string().max(300).optional(),
+    bodyText: z.string().max(3000).optional(),
   }).safeParse(req.body);
   if (!bodyParsed.success) {
     res.status(400).json({ error: bodyParsed.error.issues[0]?.message ?? "Geçersiz istek" });
     return;
   }
-  const { email } = bodyParsed.data;
+  const { email, subject, bodyText } = bodyParsed.data;
 
   const [form] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
   if (!form) { res.status(404).json({ error: "Teklif formu bulunamadı" }); return; }
@@ -374,6 +376,8 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
       firmaAdi: form.firmaAdi ?? null,
       logoBase64,
       pdfBuffer,
+      subject,
+      bodyText,
     });
 
     await db.insert(emailLogsTable).values({

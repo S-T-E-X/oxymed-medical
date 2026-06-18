@@ -6,6 +6,8 @@ export interface SendQuoteFormEmailOptions {
   firmaAdi: string | null;
   logoBase64?: string;
   pdfBuffer?: Buffer;
+  subject?: string;
+  bodyText?: string;
 }
 
 export interface SendReportEmailOptions {
@@ -47,7 +49,7 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
   await transport.sendMail({
     from: `"Oxymed Medikal" <${from}>`,
     to: opts.to,
-    subject: `Teklif - ${opts.quoteNo}${opts.firmaAdi ? ` | ${opts.firmaAdi}` : ""}`,
+    subject: opts.subject ?? `Teklif - ${opts.quoteNo}${opts.firmaAdi ? ` | ${opts.firmaAdi}` : ""}`,
     html: `<!DOCTYPE html>
 <html lang="tr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -81,7 +83,7 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
           <td style="padding:32px 32px 28px">
             <p style="margin:0 0 10px;font-size:14px;color:#475569">Sayın${opts.firmaAdi ? ` <strong style="color:#1e293b">${opts.firmaAdi}</strong>` : " İlgili"},</p>
             <p style="margin:0;font-size:14px;color:#475569;line-height:1.7">
-              Tarafınıza sunmakta olduğumuz teklif aşağıda yer almaktadır. Herhangi bir sorunuz için bizimle iletişime geçebilirsiniz.
+              ${opts.bodyText ?? "Tarafınıza sunmakta olduğumuz teklif aşağıda yer almaktadır. Herhangi bir sorunuz için bizimle iletişime geçebilirsiniz."}
             </p>
             ${opts.pdfBuffer ? `<p style="margin:16px 0 0;font-size:13px;color:#64748b">Teklifinizin detaylı PDF'i bu e-postaya eklenmiştir.</p>` : ""}
           </td>
