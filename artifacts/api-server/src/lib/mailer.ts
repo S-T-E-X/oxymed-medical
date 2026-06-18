@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { logger } from "./logger";
 
 export interface SendQuoteFormEmailOptions {
   to: string;
@@ -33,6 +34,7 @@ function createTransport() {
     port,
     secure: port === 465,
     auth: { user, pass },
+    tls: { rejectUnauthorized: false },
   });
 }
 
@@ -46,7 +48,7 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
     ? `<img src="${opts.logoBase64}" alt="Oxymed Medikal" width="160" style="display:block;height:auto;max-height:52px;object-fit:contain;margin-bottom:10px">`
     : `<div style="font-size:20px;font-weight:800;color:#ffffff;letter-spacing:0.5px">OXYMED MEDİKAL</div>`;
 
-  await transport.sendMail({
+  const info = await transport.sendMail({
     from: `"Oxymed Medikal" <${from}>`,
     to: opts.to,
     subject: opts.subject ?? `Teklif - ${opts.quoteNo}${opts.firmaAdi ? ` | ${opts.firmaAdi}` : ""}`,
@@ -109,6 +111,15 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
       ? [{ filename: `Teklif-${opts.quoteNo}.pdf`, content: opts.pdfBuffer, contentType: "application/pdf" }]
       : [],
   });
+
+  logger.info(
+    { to: opts.to, messageId: info.messageId, response: info.response, accepted: info.accepted, rejected: info.rejected },
+    "Quote form email SMTP result"
+  );
+
+  if (info.rejected && (info.rejected as string[]).length > 0) {
+    throw new Error(`SMTP alıcı reddi: ${(info.rejected as string[]).join(", ")} — sunucu yanıtı: ${info.response}`);
+  }
 }
 
 export async function sendServiceReportEmail(opts: SendReportEmailOptions): Promise<void> {
