@@ -416,7 +416,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
                 <img
                   src={data.hazirlayanImzaUrl}
                   alt="İmza / Kaşe"
-                  style={{ display: "block", width: "auto", height: "auto", maxWidth: "100%", maxHeight: "45mm", objectFit: "contain" }}
+                  style={{ display: "block", width: "auto", height: "auto", maxWidth: "100%", maxHeight: "20mm", objectFit: "contain" }}
                 />
               </div>
             </>
@@ -430,6 +430,11 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>Ad Soyad</span><b>:</b><em>{data.onaylayan}</em>
             <span>Görev</span><b>:</b><em>{data.onaytayanGorev}</em>
             <span>Onay Tarihi</span><b>:</b><em>{data.onayTarihi}</em>
+          </div>
+          <strong>İmza / Kaşe</strong>
+          <div className="qt-signature-image-slot">
+            <span>İmza / Kaşe</span>
+            <small>Yetkili imza ve kaşe</small>
           </div>
         </article>
       </div>

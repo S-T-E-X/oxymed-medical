@@ -703,8 +703,11 @@
 .qt-signature-image-slot {
   position: relative;
   z-index: 2;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  min-height: 14mm;
   margin: 1.5mm 0 0;
   border: 0.22mm dashed #b9c5d6;
   border-radius: 0.8mm;
