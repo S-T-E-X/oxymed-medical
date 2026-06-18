@@ -40,7 +40,7 @@ function createTransport() {
 
 export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promise<void> {
   const transport = createTransport();
-  const from = process.env["SMTP_FROM"] ?? process.env["SMTP_USER"] ?? "noreply@oxymed.com.tr";
+  const from = process.env["SMTP_FROM"] ?? process.env["SMTP_USER"] ?? "noreply@oxymedmedical.com";
 
   const dateStr = new Date().toLocaleDateString("tr-TR", { day: "2-digit", month: "long", year: "numeric" });
 
@@ -124,7 +124,7 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
 
 export async function sendServiceReportEmail(opts: SendReportEmailOptions): Promise<void> {
   const transport = createTransport();
-  const from = process.env["SMTP_FROM"] ?? process.env["SMTP_USER"] ?? "noreply@oxymed.com.tr";
+  const from = process.env["SMTP_FROM"] ?? process.env["SMTP_USER"] ?? "noreply@oxymedmedical.com";
 
   await transport.sendMail({
     from: `"Oxymed Medikal Teknik Servis" <${from}>`,
