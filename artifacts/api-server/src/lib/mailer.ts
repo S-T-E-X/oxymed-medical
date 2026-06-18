@@ -60,7 +60,7 @@ export async function sendQuoteFormEmail(opts: SendQuoteFormEmailOptions): Promi
 
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#08265f 0%,#0e3a8a 100%);padding:28px 32px">
+          <td bgcolor="#08265f" style="background:linear-gradient(135deg,#08265f 0%,#0e3a8a 100%);padding:28px 32px">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td>
