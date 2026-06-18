@@ -412,11 +412,11 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
           {data.hazirlayanImzaUrl ? (
             <>
               <strong>İmza / Kaşe</strong>
-              <div className="qt-signature-image-slot" style={{ background: "none", border: "none", padding: 0 }}>
+              <div className="qt-signature-image-slot" style={{ background: "none", border: "none", padding: "1.5mm" }}>
                 <img
                   src={data.hazirlayanImzaUrl}
                   alt="İmza / Kaşe"
-                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                  style={{ display: "block", width: "auto", height: "auto", maxWidth: "100%", maxHeight: "45mm", objectFit: "contain" }}
                 />
               </div>
             </>

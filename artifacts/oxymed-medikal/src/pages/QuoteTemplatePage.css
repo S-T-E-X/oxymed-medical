@@ -701,15 +701,11 @@
 }
 
 .qt-signature-image-slot {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  display: grid;
-  place-items: center;
-  left: 28mm;
-  width: 260px;
-  height: 55px;
-  bottom: 0;
-  margin: 0;
+  display: block;
+  width: 100%;
+  margin: 1.5mm 0 0;
   border: 0.22mm dashed #b9c5d6;
   border-radius: 0.8mm;
   background: rgba(248, 251, 255, 0.78);
