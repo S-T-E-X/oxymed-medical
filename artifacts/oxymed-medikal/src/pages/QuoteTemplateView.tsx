@@ -431,6 +431,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>Görev</span><b>:</b><em>{data.onaytayanGorev}</em>
             <span>Onay Tarihi</span><b>:</b><em>{data.onayTarihi}</em>
           </div>
+          <strong>İmza / Kaşe</strong>
         </article>
       </div>
 
