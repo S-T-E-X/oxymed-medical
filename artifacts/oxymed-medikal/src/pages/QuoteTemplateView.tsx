@@ -431,11 +431,6 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>Görev</span><b>:</b><em>{data.onaytayanGorev}</em>
             <span>Onay Tarihi</span><b>:</b><em>{data.onayTarihi}</em>
           </div>
-          <strong>İmza / Kaşe</strong>
-          <div className="qt-signature-image-slot">
-            <span>İmza / Kaşe</span>
-            <small>Yetkili imza ve kaşe</small>
-          </div>
         </article>
       </div>
 
