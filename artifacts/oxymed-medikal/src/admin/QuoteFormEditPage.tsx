@@ -112,6 +112,16 @@ type GroupTemplate = {
   }>;
 };
 
+type InfoTemplate = {
+  id: string;
+  name: string;
+  notlar: string;
+  hazirlayan: string;
+  hazirlayanTelefon: string;
+  hazirlayanEmail: string;
+  hazirlayanImzaUrl: string;
+};
+
 type FormDraft = {
   status: string;
   firmaAdi: string;
@@ -936,21 +946,21 @@ function ChildItemRow({
   const total = child.quantity * parseFloat(child.unitPrice || "0");
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-      <div className="flex items-start gap-2 mb-2">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 overflow-hidden">
+      <div className="flex items-start gap-2 mb-2 min-w-0">
         <span className="mt-1 flex h-5 min-w-[2.2rem] items-center justify-center rounded bg-blue-100 px-1 text-[10px] font-bold text-blue-700 shrink-0">
           {subNo}
         </span>
         <input
           value={child.title}
           onChange={(e) => onChange("title", e.target.value)}
-          className="input flex-1 text-xs"
+          className="input flex-1 min-w-0 text-xs"
           placeholder="Alt kalem açıklaması *"
         />
         <input
           value={child.modelCode}
           onChange={(e) => onChange("modelCode", e.target.value)}
-          className="input w-28 text-xs shrink-0"
+          className="input w-20 text-xs shrink-0"
           placeholder="Model/Kod"
         />
         <div className="flex items-center gap-1 shrink-0">
@@ -1110,7 +1120,10 @@ function GroupItemRow({
           {groupNo}
         </span>
         <Layers className="h-4 w-4 shrink-0 text-blue-400" />
-        <p className="flex-1 truncate text-sm font-bold text-blue-900">
+        {item.imageUrl && (
+          <img src={item.imageUrl} alt="" className="h-8 w-8 shrink-0 rounded object-contain border border-blue-200 bg-white" />
+        )}
+        <p className="flex-1 min-w-0 truncate text-sm font-bold text-blue-900">
           {item.title || <span className="italic font-normal text-blue-400">Grup adı giriniz…</span>}
         </p>
         <span className="shrink-0 text-xs text-slate-500">
@@ -1417,7 +1430,10 @@ function ItemRow({
         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
           {index + 1}
         </span>
-        <p className="flex-1 truncate text-sm font-semibold text-slate-800">
+        {item.imageUrl && (
+          <img src={item.imageUrl} alt="" className="h-8 w-8 shrink-0 rounded object-contain border border-slate-200 bg-white" />
+        )}
+        <p className="flex-1 min-w-0 truncate text-sm font-semibold text-slate-800">
           {item.title || <span className="italic text-slate-300">Başlıksız kalem</span>}
         </p>
         <span className="text-xs font-bold text-slate-500">
@@ -1654,6 +1670,10 @@ export default function QuoteFormEditPage() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [showSingleTemplatePicker, setShowSingleTemplatePicker] = useState(false);
   const [showGroupTemplatePicker, setShowGroupTemplatePicker] = useState(false);
+  const [infoTemplates, setInfoTemplates] = useState<InfoTemplate[]>([]);
+  const [showInfoTemplateSave, setShowInfoTemplateSave] = useState(false);
+  const [infoTemplateName, setInfoTemplateName] = useState("");
+  const [showInfoTemplateLoad, setShowInfoTemplateLoad] = useState(false);
   const [form, setForm] = useState<FormDraft>({
     status: "draft",
     firmaAdi: "",
@@ -1682,6 +1702,13 @@ export default function QuoteFormEditPage() {
     onaytayanGorev: "",
     onayTarihi: "",
   });
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("oxymed_info_templates");
+      if (raw) setInfoTemplates(JSON.parse(raw) as InfoTemplate[]);
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -2352,7 +2379,134 @@ export default function QuoteFormEditPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-sm font-extrabold uppercase tracking-widest text-slate-400">Notlar</h2>
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-sm font-extrabold uppercase tracking-widest text-slate-400">Notlar</h2>
+                <div className="flex items-center gap-2">
+                  {infoTemplates.length > 0 && (
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowInfoTemplateLoad((p) => !p)}
+                        className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                      >
+                        <BookOpen className="h-3.5 w-3.5" />
+                        Bilgileri Getir
+                      </button>
+                      {showInfoTemplateLoad && (
+                        <div className="absolute right-0 top-full z-20 mt-1 w-60 rounded-lg border border-slate-200 bg-white shadow-lg">
+                          <div className="border-b border-slate-100 px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wide">Kayıtlı Şablonlar</div>
+                          {infoTemplates.map((tpl) => (
+                            <div key={tpl.id} className="flex items-center gap-1 px-2 py-1.5 hover:bg-slate-50">
+                              <button
+                                type="button"
+                                className="flex-1 text-left text-xs text-slate-700 truncate"
+                                onClick={() => {
+                                  setForm((p) => ({
+                                    ...p,
+                                    notlar: tpl.notlar,
+                                    hazirlayan: tpl.hazirlayan,
+                                    hazirlayanTelefon: tpl.hazirlayanTelefon,
+                                    hazirlayanEmail: tpl.hazirlayanEmail,
+                                    hazirlayanImzaUrl: tpl.hazirlayanImzaUrl,
+                                  }));
+                                  setShowInfoTemplateLoad(false);
+                                  toast.success(`"${tpl.name}" bilgileri yüklendi`);
+                                }}
+                              >
+                                {tpl.name}
+                              </button>
+                              <button
+                                type="button"
+                                title="Sil"
+                                onClick={() => {
+                                  const updated = infoTemplates.filter((t) => t.id !== tpl.id);
+                                  setInfoTemplates(updated);
+                                  localStorage.setItem("oxymed_info_templates", JSON.stringify(updated));
+                                }}
+                                className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-red-400 hover:bg-red-50"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {!showInfoTemplateSave ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowInfoTemplateSave(true)}
+                      className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    >
+                      <BookmarkPlus className="h-3.5 w-3.5" />
+                      Şablon Kaydet
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        value={infoTemplateName}
+                        onChange={(e) => setInfoTemplateName(e.target.value)}
+                        className="input text-xs"
+                        placeholder="Şablon adı…"
+                        style={{ width: "140px" }}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && infoTemplateName.trim()) {
+                            const tpl: InfoTemplate = {
+                              id: crypto.randomUUID(),
+                              name: infoTemplateName.trim(),
+                              notlar: form.notlar,
+                              hazirlayan: form.hazirlayan,
+                              hazirlayanTelefon: form.hazirlayanTelefon,
+                              hazirlayanEmail: form.hazirlayanEmail,
+                              hazirlayanImzaUrl: form.hazirlayanImzaUrl,
+                            };
+                            const updated = [...infoTemplates, tpl];
+                            setInfoTemplates(updated);
+                            localStorage.setItem("oxymed_info_templates", JSON.stringify(updated));
+                            toast.success(`"${tpl.name}" şablonu kaydedildi`);
+                            setInfoTemplateName("");
+                            setShowInfoTemplateSave(false);
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        disabled={!infoTemplateName.trim()}
+                        onClick={() => {
+                          const tpl: InfoTemplate = {
+                            id: crypto.randomUUID(),
+                            name: infoTemplateName.trim(),
+                            notlar: form.notlar,
+                            hazirlayan: form.hazirlayan,
+                            hazirlayanTelefon: form.hazirlayanTelefon,
+                            hazirlayanEmail: form.hazirlayanEmail,
+                            hazirlayanImzaUrl: form.hazirlayanImzaUrl,
+                          };
+                          const updated = [...infoTemplates, tpl];
+                          setInfoTemplates(updated);
+                          localStorage.setItem("oxymed_info_templates", JSON.stringify(updated));
+                          toast.success(`"${tpl.name}" şablonu kaydedildi`);
+                          setInfoTemplateName("");
+                          setShowInfoTemplateSave(false);
+                        }}
+                        className="flex items-center gap-1 rounded-lg bg-slate-700 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-60"
+                      >
+                        <Save className="h-3 w-3" />
+                        Kaydet
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setShowInfoTemplateSave(false); setInfoTemplateName(""); }}
+                        className="flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
               <textarea
                 value={form.notlar}
                 onChange={setField("notlar")}
