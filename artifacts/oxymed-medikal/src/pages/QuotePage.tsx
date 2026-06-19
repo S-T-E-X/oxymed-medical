@@ -96,7 +96,7 @@ function QuoteRequestSection() {
           </div>
         </aside>
 
-        <div className="flex min-w-0 items-end">
+        <div className="flex min-w-0 items-end mt-16 lg:mt-0">
           <div className="min-w-0 flex-1">
             <QuoteForm />
           </div>
