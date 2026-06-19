@@ -96,8 +96,14 @@ function QuoteRequestSection() {
           </div>
         </aside>
 
-        <div className="flex min-w-0 items-end">
-          <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-end mt-16 lg:mt-0">
+          <div className="min-w-0 flex-1 relative">
+            <img
+              src="/assets/brand/oxymedmanhead.webp"
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute -top-[101px] right-3 h-28 w-auto select-none object-contain lg:hidden"
+            />
             <QuoteForm />
           </div>
           <div className="hidden shrink-0 items-end self-end lg:flex" style={{ height: 500 }}>
