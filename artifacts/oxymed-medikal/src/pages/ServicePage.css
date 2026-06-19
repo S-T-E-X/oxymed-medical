@@ -587,30 +587,73 @@
 
 @media (max-width: 720px) {
   .service-hero {
-    height: 310px;
+    height: 260px;
   }
 
   .service-hero__jacket-logo {
     display: none;
   }
 
-  .service-hero__inner,
-  .service-main {
+  .service-hero__inner {
     width: min(100% - 28px, 1120px);
+    padding-top: 44px;
+  }
+
+  .service-hero h1 {
+    font-size: 26px;
+  }
+
+  .service-hero p {
+    font-size: 14px;
+    margin-top: 8px;
+    display: none;
+  }
+
+  .service-breadcrumb {
+    margin-top: 14px;
+    font-size: 12px;
+    gap: 8px;
   }
 
   .service-main {
-    margin-top: -52px;
+    width: min(100% - 28px, 1120px);
+    margin-top: -40px;
   }
 
   .service-query-card__content,
   .service-device-card,
   .service-history-card,
   .service-request-card {
-    padding: 24px 18px;
+    padding: 20px 16px;
   }
 
-  .service-query-tabs,
+  .service-query-card h2,
+  .service-device-card h2,
+  .service-history-card h2,
+  .service-request-card h2 {
+    font-size: 17px;
+  }
+
+  .service-query-tabs {
+    margin-top: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .service-query-tabs button {
+    height: 44px;
+    font-size: 12px;
+    border-radius: 4px !important;
+  }
+
+  .service-query-tabs button:last-child {
+    border-left: 1px solid #cfd8e5;
+    border-top: 0;
+  }
+
+  .service-field {
+    margin-top: 16px;
+  }
+
   .service-query-row,
   .service-device-card__body,
   .service-device-card dl div,
@@ -618,13 +661,16 @@
     grid-template-columns: 1fr;
   }
 
-  .service-query-tabs button {
-    border-radius: 4px !important;
+  .service-query-row {
+    max-width: 100%;
   }
 
-  .service-query-tabs button:last-child {
-    border-left: 1px solid #cfd8e5;
-    border-top: 0;
+  .service-query-row button {
+    height: 44px;
+  }
+
+  .service-hint {
+    margin-top: 10px;
   }
 
   .service-device-card__body {
