@@ -25,4 +25,17 @@ export interface SliderUpdate {
   sortOrder?: number;
   isActive?: boolean;
   showCatalogButton?: boolean;
+  overlayEnabled?: boolean;
+  /** @nullable */
+  overlayColor?: string | null;
+  /** @nullable */
+  overlayFromOpacity?: number | null;
+  /** @nullable */
+  overlayToOpacity?: number | null;
+  /** @nullable */
+  textColor?: string | null;
+  /** @nullable */
+  ctaPrimaryBg?: string | null;
+  /** @nullable */
+  ctaSecondaryBg?: string | null;
 }

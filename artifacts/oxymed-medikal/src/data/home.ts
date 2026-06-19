@@ -11,12 +11,18 @@ export type FooterColumn = {
   links: { label: string; href: string }[];
 };
 
+export type NavItem = {
+  label: string;
+  href: string;
+  dropdown?: "categories";
+};
+
 export const languages = ["TR", "EN"];
 
-export const navItems = [
+export const navItems: NavItem[] = [
   { label: "ANASAYFA", href: "/" },
-  { label: "KURUMSAL", href: "/kurumsal", hasChildren: true },
-  { label: "ÜRÜNLER", href: "/urunler", hasChildren: true },
+  { label: "KURUMSAL", href: "/kurumsal" },
+  { label: "ÜRÜNLER", href: "/urunler", dropdown: "categories" },
   { label: "REFERANSLAR", href: "/referanslar" },
   { label: "HABERLER", href: "/haberler" },
   { label: "SERVİS", href: "/servis" },

@@ -2054,6 +2054,20 @@ components:
           type: boolean
         showCatalogButton:
           type: boolean
+        overlayEnabled:
+          type: boolean
+        overlayColor:
+          type: ["string", "null"]
+        overlayFromOpacity:
+          type: ["integer", "null"]
+        overlayToOpacity:
+          type: ["integer", "null"]
+        textColor:
+          type: ["string", "null"]
+        ctaPrimaryBg:
+          type: ["string", "null"]
+        ctaSecondaryBg:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -2085,6 +2099,20 @@ components:
           type: boolean
         showCatalogButton:
           type: boolean
+        overlayEnabled:
+          type: boolean
+        overlayColor:
+          type: string
+        overlayFromOpacity:
+          type: integer
+        overlayToOpacity:
+          type: integer
+        textColor:
+          type: string
+        ctaPrimaryBg:
+          type: string
+        ctaSecondaryBg:
+          type: string
 
     SliderUpdate:
       type: object
@@ -2111,6 +2139,20 @@ components:
           type: boolean
         showCatalogButton:
           type: boolean
+        overlayEnabled:
+          type: boolean
+        overlayColor:
+          type: ["string", "null"]
+        overlayFromOpacity:
+          type: ["integer", "null"]
+        overlayToOpacity:
+          type: ["integer", "null"]
+        textColor:
+          type: ["string", "null"]
+        ctaPrimaryBg:
+          type: ["string", "null"]
+        ctaSecondaryBg:
+          type: ["string", "null"]
 
     # CATALOGS
     Catalog:

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronDown, Instagram, Linkedin, Mail, Menu, Phone, X, Youtube } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useListSettings } from "@workspace/api-client-react";
+import { useListSettings, useListProductCategories } from "@workspace/api-client-react";
 import Logo from "./Logo";
 import { languages, navItems } from "../../data/home";
 
@@ -20,9 +20,12 @@ function isActivePath(currentPath: string, href: string) {
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [urunlerOpen, setUrunlerOpen] = useState(false);
+  const urunlerTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { pathname } = useLocation();
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
+  const { data: categories = [] } = useListProductCategories();
 
   const phone = settings?.["phone"] ?? "+90 232 870 0 222";
   const email = settings?.["email"] ?? "info@oxymed.com.tr";
@@ -32,6 +35,15 @@ export default function Header() {
     { label: "Instagram", href: settings?.["instagram"] ?? "#" },
     { label: "YouTube", href: settings?.["youtube"] ?? "#" },
   ];
+
+  function openUrunler() {
+    if (urunlerTimeout.current) clearTimeout(urunlerTimeout.current);
+    setUrunlerOpen(true);
+  }
+
+  function closeUrunler() {
+    urunlerTimeout.current = setTimeout(() => setUrunlerOpen(false), 120);
+  }
 
   return (
     <header className="relative z-30 bg-white shadow-[0_2px_16px_rgba(2,20,35,0.05)]">
@@ -80,18 +92,67 @@ export default function Header() {
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Ana menü">
           {navItems.map((item) => {
             const active = isActivePath(pathname, item.href);
+            const baseClass = `inline-flex h-[92px] items-center gap-1.5 border-b-2 text-[13px] font-bold transition ${
+              active
+                ? "border-oxynavy-900 text-oxynavy-950"
+                : "border-transparent text-oxynavy-950 hover:border-oxynavy-200 hover:text-oxynavy-500"
+            }`;
+
+            if (item.dropdown === "categories") {
+              return (
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={openUrunler}
+                  onMouseLeave={closeUrunler}
+                >
+                  <Link to={item.href} className={baseClass}>
+                    {item.label}
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform duration-200 ${urunlerOpen ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    />
+                  </Link>
+
+                  {urunlerOpen && (
+                    <div
+                      className="absolute left-0 top-full z-50 min-w-[230px] rounded-xl border border-steel-100 bg-white py-2 shadow-[0_14px_35px_rgba(2,20,35,0.12)]"
+                      onMouseEnter={openUrunler}
+                      onMouseLeave={closeUrunler}
+                    >
+                      <Link
+                        to="/urunler"
+                        className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-bold text-oxynavy-950 hover:bg-steel-50"
+                        onClick={() => setUrunlerOpen(false)}
+                      >
+                        Tüm Ürünler
+                      </Link>
+                      {categories.length > 0 && (
+                        <div className="my-1 border-t border-steel-100" />
+                      )}
+                      {categories.map((cat) => (
+                        <Link
+                          key={cat.id}
+                          to={`/urunler?category=${cat.id}`}
+                          className="flex items-center gap-2 px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950"
+                          onClick={() => setUrunlerOpen(false)}
+                        >
+                          {cat.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.label}
                 to={item.href}
-                className={`inline-flex h-[92px] items-center gap-1.5 border-b-2 text-[13px] font-bold transition ${
-                  active
-                    ? "border-oxynavy-900 text-oxynavy-950"
-                    : "border-transparent text-oxynavy-950 hover:border-oxynavy-200 hover:text-oxynavy-500"
-                }`}
+                className={baseClass}
               >
                 {item.label}
-                {item.hasChildren ? <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" /> : null}
               </Link>
             );
           })}
@@ -128,7 +189,7 @@ export default function Header() {
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
-                {item.hasChildren ? <ChevronDown className="h-4 w-4" aria-hidden="true" /> : null}
+                {item.dropdown === "categories" ? <ChevronDown className="h-4 w-4" aria-hidden="true" /> : null}
               </Link>
             ))}
             <Link

@@ -49,6 +49,19 @@ export interface Slider {
   sortOrder: number;
   isActive: boolean;
   showCatalogButton?: boolean;
+  overlayEnabled?: boolean;
+  /** @nullable */
+  overlayColor?: string | null;
+  /** @nullable */
+  overlayFromOpacity?: number | null;
+  /** @nullable */
+  overlayToOpacity?: number | null;
+  /** @nullable */
+  textColor?: string | null;
+  /** @nullable */
+  ctaPrimaryBg?: string | null;
+  /** @nullable */
+  ctaSecondaryBg?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +78,13 @@ export interface SliderInput {
   sortOrder?: number;
   isActive?: boolean;
   showCatalogButton?: boolean;
+  overlayEnabled?: boolean;
+  overlayColor?: string;
+  overlayFromOpacity?: number;
+  overlayToOpacity?: number;
+  textColor?: string;
+  ctaPrimaryBg?: string;
+  ctaSecondaryBg?: string;
 }
 
 export interface SliderUpdate {
@@ -86,6 +106,19 @@ export interface SliderUpdate {
   sortOrder?: number;
   isActive?: boolean;
   showCatalogButton?: boolean;
+  overlayEnabled?: boolean;
+  /** @nullable */
+  overlayColor?: string | null;
+  /** @nullable */
+  overlayFromOpacity?: number | null;
+  /** @nullable */
+  overlayToOpacity?: number | null;
+  /** @nullable */
+  textColor?: string | null;
+  /** @nullable */
+  ctaPrimaryBg?: string | null;
+  /** @nullable */
+  ctaSecondaryBg?: string | null;
 }
 
 export interface Catalog {

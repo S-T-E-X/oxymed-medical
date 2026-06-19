@@ -18,4 +18,11 @@ export interface SliderInput {
   sortOrder?: number;
   isActive?: boolean;
   showCatalogButton?: boolean;
+  overlayEnabled?: boolean;
+  overlayColor?: string;
+  overlayFromOpacity?: number;
+  overlayToOpacity?: number;
+  textColor?: string;
+  ctaPrimaryBg?: string;
+  ctaSecondaryBg?: string;
 }

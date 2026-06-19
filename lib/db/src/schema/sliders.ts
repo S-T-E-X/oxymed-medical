@@ -15,6 +15,13 @@ export const slidersTable = pgTable("sliders", {
   sortOrder: integer("sort_order").notNull().default(0),
   isActive: boolean("is_active").notNull().default(true),
   showCatalogButton: boolean("show_catalog_button").notNull().default(false),
+  overlayEnabled: boolean("overlay_enabled").notNull().default(true),
+  overlayColor: text("overlay_color").default("#021423"),
+  overlayFromOpacity: integer("overlay_from_opacity").notNull().default(92),
+  overlayToOpacity: integer("overlay_to_opacity").notNull().default(12),
+  textColor: text("text_color").default("#ffffff"),
+  ctaPrimaryBg: text("cta_primary_bg").default("#021423"),
+  ctaSecondaryBg: text("cta_secondary_bg").default("rgba(255,255,255,0.06)"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

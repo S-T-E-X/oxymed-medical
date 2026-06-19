@@ -18,6 +18,13 @@ const SliderBody = z.object({
   sortOrder: z.coerce.number().int().optional(),
   isActive: z.boolean().optional(),
   showCatalogButton: z.boolean().optional(),
+  overlayEnabled: z.boolean().optional(),
+  overlayColor: z.string().optional(),
+  overlayFromOpacity: z.coerce.number().int().min(0).max(100).optional(),
+  overlayToOpacity: z.coerce.number().int().min(0).max(100).optional(),
+  textColor: z.string().optional(),
+  ctaPrimaryBg: z.string().optional(),
+  ctaSecondaryBg: z.string().optional(),
 });
 
 const SliderUpdateBody = SliderBody.partial();

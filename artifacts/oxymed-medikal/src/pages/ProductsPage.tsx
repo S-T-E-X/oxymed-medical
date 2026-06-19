@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import CatalogModal from "../components/home/CatalogModal";
 import {
   AlertCircle,
@@ -76,7 +76,9 @@ function ProductsHero() {
 }
 
 function ProductsContent() {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const selectedCategoryId = categoryParam ? parseInt(categoryParam, 10) : undefined;
   const [catalogOpen, setCatalogOpen] = useState(false);
   const { data: categories = [], isLoading: catsLoading, isError: catsError } = useListProductCategories();
   const { data: productsData, isLoading: prodsLoading, isError: prodsError } = useListProducts({
@@ -87,6 +89,16 @@ function ProductsContent() {
   const products = productsData?.items ?? [];
 
   const activeCategory = categories.find((c) => c.id === selectedCategoryId);
+
+  function handleCategorySelect(id: number | undefined) {
+    const next = new URLSearchParams(searchParams);
+    if (id !== undefined) {
+      next.set("category", id.toString());
+    } else {
+      next.delete("category");
+    }
+    setSearchParams(next, { replace: true });
+  }
 
   return (
     <section className="relative pb-16">
@@ -99,7 +111,7 @@ function ProductsContent() {
             isLoading={catsLoading}
             isError={catsError}
             selectedCategoryId={selectedCategoryId}
-            onSelect={setSelectedCategoryId}
+            onSelect={handleCategorySelect}
             onCatalogOpen={() => setCatalogOpen(true)}
           />
 

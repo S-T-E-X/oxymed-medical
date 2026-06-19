@@ -64,6 +64,13 @@ export const ListSlidersResponseItem = zod.object({
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
   "showCatalogButton": zod.boolean().optional(),
+  "overlayEnabled": zod.boolean().optional(),
+  "overlayColor": zod.string().nullish(),
+  "overlayFromOpacity": zod.number().nullish(),
+  "overlayToOpacity": zod.number().nullish(),
+  "textColor": zod.string().nullish(),
+  "ctaPrimaryBg": zod.string().nullish(),
+  "ctaSecondaryBg": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -84,7 +91,14 @@ export const CreateSliderBody = zod.object({
   "ctaSecondaryHref": zod.string().optional(),
   "sortOrder": zod.number().optional(),
   "isActive": zod.boolean().optional(),
-  "showCatalogButton": zod.boolean().optional()
+  "showCatalogButton": zod.boolean().optional(),
+  "overlayEnabled": zod.boolean().optional(),
+  "overlayColor": zod.string().optional(),
+  "overlayFromOpacity": zod.number().optional(),
+  "overlayToOpacity": zod.number().optional(),
+  "textColor": zod.string().optional(),
+  "ctaPrimaryBg": zod.string().optional(),
+  "ctaSecondaryBg": zod.string().optional()
 })
 
 
@@ -108,6 +122,13 @@ export const GetSliderResponse = zod.object({
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
   "showCatalogButton": zod.boolean().optional(),
+  "overlayEnabled": zod.boolean().optional(),
+  "overlayColor": zod.string().nullish(),
+  "overlayFromOpacity": zod.number().nullish(),
+  "overlayToOpacity": zod.number().nullish(),
+  "textColor": zod.string().nullish(),
+  "ctaPrimaryBg": zod.string().nullish(),
+  "ctaSecondaryBg": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -131,7 +152,14 @@ export const UpdateSliderBody = zod.object({
   "ctaSecondaryHref": zod.string().nullish(),
   "sortOrder": zod.number().optional(),
   "isActive": zod.boolean().optional(),
-  "showCatalogButton": zod.boolean().optional()
+  "showCatalogButton": zod.boolean().optional(),
+  "overlayEnabled": zod.boolean().optional(),
+  "overlayColor": zod.string().nullish(),
+  "overlayFromOpacity": zod.number().nullish(),
+  "overlayToOpacity": zod.number().nullish(),
+  "textColor": zod.string().nullish(),
+  "ctaPrimaryBg": zod.string().nullish(),
+  "ctaSecondaryBg": zod.string().nullish()
 })
 
 export const UpdateSliderResponse = zod.object({
@@ -147,6 +175,13 @@ export const UpdateSliderResponse = zod.object({
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
   "showCatalogButton": zod.boolean().optional(),
+  "overlayEnabled": zod.boolean().optional(),
+  "overlayColor": zod.string().nullish(),
+  "overlayFromOpacity": zod.number().nullish(),
+  "overlayToOpacity": zod.number().nullish(),
+  "textColor": zod.string().nullish(),
+  "ctaPrimaryBg": zod.string().nullish(),
+  "ctaSecondaryBg": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

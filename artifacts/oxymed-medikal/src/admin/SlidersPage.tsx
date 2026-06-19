@@ -24,6 +24,13 @@ type SliderFormData = {
   sortOrder: number;
   isActive: boolean;
   showCatalogButton: boolean;
+  overlayEnabled: boolean;
+  overlayColor: string;
+  overlayFromOpacity: number;
+  overlayToOpacity: number;
+  textColor: string;
+  ctaPrimaryBg: string;
+  ctaSecondaryBg: string;
 };
 
 const EMPTY: SliderFormData = {
@@ -38,7 +45,74 @@ const EMPTY: SliderFormData = {
   sortOrder: 0,
   isActive: true,
   showCatalogButton: false,
+  overlayEnabled: true,
+  overlayColor: "#021423",
+  overlayFromOpacity: 92,
+  overlayToOpacity: 12,
+  textColor: "#ffffff",
+  ctaPrimaryBg: "#021423",
+  ctaSecondaryBg: "#ffffff",
 };
+
+function ColorField({
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+}) {
+  return (
+    <div>
+      <label className="label">{label}</label>
+      {hint && <p className="mb-1 text-[11px] text-slate-400">{hint}</p>}
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={value.startsWith("#") ? value : "#021423"}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-9 w-12 cursor-pointer rounded border border-slate-200 p-0.5"
+        />
+        <input
+          className="input flex-1 font-mono text-xs"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="#rrggbb"
+        />
+      </div>
+    </div>
+  );
+}
+
+function RangeField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <label className="label mb-0">{label}</label>
+        <span className="text-xs font-bold text-slate-600">{value}%</span>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value, 10))}
+        className="mt-1 w-full accent-blue-600"
+      />
+    </div>
+  );
+}
 
 function SliderModal({
   initial,
@@ -102,6 +176,7 @@ function SliderModal({
             </div>
             {form.imageUrl && <img src={form.imageUrl} alt="" className="mt-2 h-24 w-full rounded object-cover" />}
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label">Birincil Buton Metni</label>
@@ -120,6 +195,7 @@ function SliderModal({
               <input className="input" value={form.ctaSecondaryHref} onChange={(e) => set("ctaSecondaryHref", e.target.value)} placeholder="/teklif-al" />
             </div>
           </div>
+
           <div className="space-y-2">
             <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
               <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
@@ -129,6 +205,66 @@ function SliderModal({
               <input type="checkbox" checked={form.showCatalogButton} onChange={(e) => set("showCatalogButton", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
               Katalog İndir Butonu Göster
             </label>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-bold text-slate-800">Overlay (Renk Örtüsü)</p>
+              <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={form.overlayEnabled}
+                  onChange={(e) => set("overlayEnabled", e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300"
+                />
+                {form.overlayEnabled ? "Açık" : "Kapalı"}
+              </label>
+            </div>
+            {form.overlayEnabled && (
+              <div className="space-y-4">
+                <ColorField
+                  label="Overlay Rengi"
+                  value={form.overlayColor}
+                  onChange={(v) => set("overlayColor", v)}
+                  hint="Soldan sağa doğru uygulanacak renk"
+                />
+                <RangeField
+                  label="Sol taraf opaklığı (başlangıç)"
+                  value={form.overlayFromOpacity}
+                  onChange={(v) => set("overlayFromOpacity", v)}
+                />
+                <RangeField
+                  label="Sağ taraf opaklığı (bitiş)"
+                  value={form.overlayToOpacity}
+                  onChange={(v) => set("overlayToOpacity", v)}
+                />
+                <div className="h-6 rounded" style={{
+                  background: form.overlayColor.startsWith("#")
+                    ? `linear-gradient(to right, ${form.overlayColor}${Math.round(form.overlayFromOpacity * 2.55).toString(16).padStart(2, "0")}, ${form.overlayColor}${Math.round(form.overlayToOpacity * 2.55).toString(16).padStart(2, "0")})`
+                    : "linear-gradient(to right, #021423ea, #02142320)"
+                }} />
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-lg border border-slate-200 p-4 space-y-4">
+            <p className="text-sm font-bold text-slate-800">Metin &amp; Buton Renkleri</p>
+            <ColorField
+              label="Metin rengi"
+              value={form.textColor}
+              onChange={(v) => set("textColor", v)}
+              hint="Başlık ve açıklama metinlerine uygulanır"
+            />
+            <ColorField
+              label="Birincil buton arka planı"
+              value={form.ctaPrimaryBg}
+              onChange={(v) => set("ctaPrimaryBg", v)}
+            />
+            <ColorField
+              label="İkincil buton arka planı"
+              value={form.ctaSecondaryBg}
+              onChange={(v) => set("ctaSecondaryBg", v)}
+            />
           </div>
         </div>
         <div className="flex justify-end gap-3 border-t border-slate-100 px-6 py-4">
@@ -184,6 +320,13 @@ export default function SlidersPage() {
       ctaSecondaryHref: data.ctaSecondaryHref || undefined,
       isActive: data.isActive,
       showCatalogButton: data.showCatalogButton,
+      overlayEnabled: data.overlayEnabled,
+      overlayColor: data.overlayColor || undefined,
+      overlayFromOpacity: data.overlayFromOpacity,
+      overlayToOpacity: data.overlayToOpacity,
+      textColor: data.textColor || undefined,
+      ctaPrimaryBg: data.ctaPrimaryBg || undefined,
+      ctaSecondaryBg: data.ctaSecondaryBg || undefined,
     };
     if (modal.slider) {
       updateMutEdit.mutate({ id: modal.slider.id, data: payload });
@@ -234,7 +377,6 @@ export default function SlidersPage() {
     const withNewOrder = reordered.map((s, i) => ({ ...s, sortOrder: i }));
     setOrderedSliders(withNewOrder);
 
-    const changed = withNewOrder.filter((s, i) => s.sortOrder !== base[i]?.sortOrder || s.id !== base[i]?.id);
     try {
       await Promise.all(
         withNewOrder.map((s, i) =>
@@ -345,6 +487,13 @@ export default function SlidersPage() {
             sortOrder: modal.slider.sortOrder,
             isActive: modal.slider.isActive,
             showCatalogButton: modal.slider.showCatalogButton ?? false,
+            overlayEnabled: modal.slider.overlayEnabled ?? true,
+            overlayColor: modal.slider.overlayColor ?? "#021423",
+            overlayFromOpacity: modal.slider.overlayFromOpacity ?? 92,
+            overlayToOpacity: modal.slider.overlayToOpacity ?? 12,
+            textColor: modal.slider.textColor ?? "#ffffff",
+            ctaPrimaryBg: modal.slider.ctaPrimaryBg ?? "#021423",
+            ctaSecondaryBg: modal.slider.ctaSecondaryBg ?? "#ffffff",
           } : EMPTY}
           onClose={() => setModal({ open: false, slider: null })}
           onSave={handleSave}
