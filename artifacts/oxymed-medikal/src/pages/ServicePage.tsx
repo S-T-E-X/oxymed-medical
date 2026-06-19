@@ -401,11 +401,7 @@ export default function ServicePage() {
             </div>
 
             <div className="service-query-card__visual">
-              <img src="/assets/images/service-vacuum-system.png" alt="Medikal vakum santrali" />
-              <button type="button">
-                <Info size={16} />
-                Seri numarası nerede bulunur?
-              </button>
+              <img src="/assets/brand/oxymedmanservice.webp" alt="Oxymed Medikal servis uzmanı" className="service-query-man" />
             </div>
           </div>
 

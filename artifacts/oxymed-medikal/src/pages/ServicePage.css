@@ -242,26 +242,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 28px 44px 28px 10px;
+  justify-content: flex-end;
+  padding: 0 16px 0 0;
+  overflow: hidden;
 }
 
-.service-query-card__visual img {
-  width: 286px;
+.service-query-card__visual img.service-query-man {
+  height: 340px;
+  width: auto;
   max-width: 100%;
-  filter: drop-shadow(0 14px 20px rgba(3, 22, 42, 0.12));
-}
-
-.service-query-card__visual button {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  border: 0;
-  background: transparent;
-  color: #071b38;
-  font-size: 13px;
-  font-weight: 900;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(-6px 8px 16px rgba(3, 22, 42, 0.18));
 }
 
 .service-content-grid {
@@ -581,7 +573,7 @@
   }
 
   .service-query-card__visual {
-    padding: 0 52px 34px;
+    display: none;
   }
 
   .service-request-card {
