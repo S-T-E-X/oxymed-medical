@@ -197,10 +197,16 @@ function QuoteForm() {
 
   return (
     <form
-      className="rounded-2xl border border-steel-100 bg-white px-4 py-6 shadow-[0_24px_56px_rgba(2,20,35,0.10)] sm:px-8 sm:py-8"
+      className="relative rounded-2xl border border-steel-100 bg-white px-4 py-6 shadow-[0_24px_56px_rgba(2,20,35,0.10)] sm:px-8 sm:py-8"
       onSubmit={handleSubmit}
       noValidate
     >
+      <img
+        src="/assets/brand/oxymedmanhead.webp"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-10 right-4 h-20 w-auto select-none object-contain lg:hidden"
+      />
       <div className="border-b border-steel-100 pb-5">
         <h2 className="text-[22px] font-extrabold leading-tight text-oxynavy-950">Teklif Talep Formu</h2>
         <p className="mt-1.5 text-[13px] text-steel-600">Aşağıdaki formu doldurarak talebinizi bize iletebilirsiniz.</p>
