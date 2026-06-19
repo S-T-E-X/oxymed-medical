@@ -162,3 +162,10 @@ select.input {
   background: #f8fafc;
 }
 
+/* Mobile-only elements */
+@media (min-width: 1024px) {
+  .quote-manhead-mobile {
+    display: none;
+  }
+}
+
