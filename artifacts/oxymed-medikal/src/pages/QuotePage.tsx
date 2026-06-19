@@ -205,7 +205,7 @@ function QuoteForm() {
         src="/assets/brand/oxymedmanhead.webp"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -top-[108px] right-3 h-28 w-auto select-none object-contain lg:hidden"
+        className="pointer-events-none absolute -top-[98px] right-3 h-28 w-auto select-none object-contain lg:hidden"
       />
       <div className="border-b border-steel-100 pb-5">
         <h2 className="text-[22px] font-extrabold leading-tight text-oxynavy-950">Teklif Talep Formu</h2>
