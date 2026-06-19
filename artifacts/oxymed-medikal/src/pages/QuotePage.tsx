@@ -100,13 +100,14 @@ function QuoteRequestSection() {
           <div className="min-w-0 flex-1">
             <QuoteForm />
           </div>
-          <img
-            src="/assets/brand/oxymedman.webp"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none hidden w-auto flex-shrink-0 select-none self-end lg:block"
-            style={{ height: "calc(100% - 32px)", maxHeight: 520, minHeight: 320, objectFit: "contain", objectPosition: "bottom left" }}
-          />
+          <div className="hidden shrink-0 items-end self-end lg:flex" style={{ height: 500 }}>
+            <img
+              src="/assets/brand/oxymedman.webp"
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none h-full w-auto select-none object-contain object-bottom"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -196,7 +197,7 @@ function QuoteForm() {
 
   return (
     <form
-      className="rounded-2xl border border-steel-100 bg-white px-8 py-8 shadow-[0_24px_56px_rgba(2,20,35,0.10)]"
+      className="rounded-2xl border border-steel-100 bg-white px-4 py-6 shadow-[0_24px_56px_rgba(2,20,35,0.10)] sm:px-8 sm:py-8"
       onSubmit={handleSubmit}
       noValidate
     >
