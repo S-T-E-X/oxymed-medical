@@ -1113,15 +1113,15 @@ function GroupItemRow({
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
       <div
-        className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-3 hover:bg-blue-100"
+        className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-2 hover:bg-blue-100"
         onClick={() => onChange("expanded", !item.expanded)}
       >
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
           {groupNo}
         </span>
         <Layers className="h-4 w-4 shrink-0 text-blue-400" />
         {item.imageUrl && (
-          <img src={item.imageUrl} alt="" className="h-8 w-8 shrink-0 rounded object-contain border border-blue-200 bg-white" />
+          <img src={item.imageUrl} alt="" className="h-14 w-14 shrink-0 rounded-md object-contain border border-blue-200 bg-white p-0.5" />
         )}
         <p className="flex-1 min-w-0 truncate text-sm font-bold text-blue-900">
           {item.title || <span className="italic font-normal text-blue-400">Grup adı giriniz…</span>}
@@ -1424,14 +1424,14 @@ function ItemRow({
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
       <div
-        className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-3 hover:bg-blue-100"
+        className="flex cursor-pointer items-center gap-3 bg-blue-50 px-4 py-2 hover:bg-blue-100"
         onClick={() => onChange("expanded", !item.expanded)}
       >
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
           {index + 1}
         </span>
         {item.imageUrl && (
-          <img src={item.imageUrl} alt="" className="h-8 w-8 shrink-0 rounded object-contain border border-slate-200 bg-white" />
+          <img src={item.imageUrl} alt="" className="h-14 w-14 shrink-0 rounded-md object-contain border border-slate-200 bg-white p-0.5" />
         )}
         <p className="flex-1 min-w-0 truncate text-sm font-semibold text-slate-800">
           {item.title || <span className="italic text-slate-300">Başlıksız kalem</span>}
