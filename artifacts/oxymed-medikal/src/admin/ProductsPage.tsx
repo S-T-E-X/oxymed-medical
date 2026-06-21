@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getListProductCategoriesQueryKey,
@@ -119,10 +119,6 @@ export default function ProductsPage() {
 
       {isLoading ? (
         <div className="space-y-3">{[1,2,3,4].map((i) => <div key={i} className="h-16 animate-pulse rounded-lg bg-slate-100" />)}</div>
-      ) : products.length === 0 ? (
-        <div className="rounded-xl border-2 border-dashed border-slate-200 py-16 text-center">
-          <p className="text-slate-400">Bu kategoride ürün yok</p>
-        </div>
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full">
@@ -177,6 +173,40 @@ export default function ProductsPage() {
                       <button onClick={() => handleDelete(p.id)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-100 text-red-400 hover:bg-red-50">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {([
+                { slug: "amalgam-separator", title: "Amalgam Separatörü", adminPath: "/admin/urunler/amalgam-separator" },
+                { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", adminPath: "/admin/urunler/dental-vakum-pompasi" },
+                { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", adminPath: "/admin/urunler/dental-vakum-sistemi" },
+              ] as const).map((p) => (
+                <tr key={p.slug} className="hover:bg-slate-50">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-[180px] w-[180px] shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                        <ImageIcon className="h-8 w-8 text-slate-300" />
+                      </div>
+                      <p className="font-semibold text-slate-900">{p.title}</p>
+                    </div>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-slate-500 sm:table-cell">Diş Kliniği</td>
+                  <td className="hidden px-4 py-3 md:table-cell">
+                    <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">{p.slug}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">Yayında</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <Link
+                        to={p.adminPath}
+                        className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                      >
+                        <Settings className="h-3.5 w-3.5" />
+                        Ayarlar
+                      </Link>
                     </div>
                   </td>
                 </tr>
