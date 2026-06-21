@@ -27,6 +27,7 @@ import ServisRaporlariPage from "./admin/ServisRaporlariPage";
 import ServisRaporuFormPage from "./admin/ServisRaporuFormPage";
 import AdminEmailLogsPage from "./admin/AdminEmailLogsPage";
 import AdminUsersPage from "./admin/AdminUsersPage";
+import PageBannersPage from "./admin/PageBannersPage";
 import ServisCihazPage from "./pages/ServisCihazPage";
 import ServisRaporDogrulamaPage from "./pages/ServisRaporDogrulamaPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
@@ -106,6 +107,7 @@ export default function App() {
             <Route path="eposta-loglari" element={<AdminEmailLogsPage />} />
             <Route path="email-logs" element={<AdminEmailLogsPage />} />
             <Route path="kullanicilar" element={<AdminUsersPage />} />
+            <Route path="sayfa-bannerlari" element={<PageBannersPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

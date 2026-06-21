@@ -6,22 +6,17 @@ import {
   ArrowDownToLine,
   ArrowRight,
   Boxes,
-  CircuitBoard,
   Factory,
   Headphones,
   Medal,
   Settings,
   ShieldCheck,
   SlidersHorizontal,
-  Stethoscope,
-  Wrench
 } from "lucide-react";
-import { useListProductCategories, useListProducts } from "@workspace/api-client-react";
+import { useListProductCategories, useListProducts, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import { productHero, productPageFeatures } from "../data/products";
-
-const categoryIcons = [Factory, Wrench, Boxes, CircuitBoard, Stethoscope, SlidersHorizontal, Settings, Wrench];
 
 const featureIconMap = {
   production: Factory,
@@ -54,21 +49,28 @@ export default function ProductsPage() {
 }
 
 function ProductsHero() {
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+
+  const title = settings?.["products_banner_title"] || productHero.title;
+  const description = settings?.["products_banner_description"] || productHero.description;
+  const imageUrl = settings?.["products_banner_image_url"] || "/assets/images/hero-medical-suite.png";
+
   return (
     <section className="relative isolate h-[252px] overflow-hidden bg-oxynavy-950 text-white">
       <img
-        src="/assets/images/hero-medical-suite.png"
-        alt="Yatak başı ünitesi ve medikal ekipman"
+        src={imageUrl}
+        alt="Ürünler sayfa banner görseli"
         className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950 via-oxynavy-950/78 to-oxynavy-950/18" />
       <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-[470px]">
           <h1 className="text-[38px] font-extrabold leading-none tracking-tight sm:text-[46px]">
-            {productHero.title}
+            {title}
           </h1>
           <div className="mt-4 h-[2px] w-12 bg-white" />
-          <p className="mt-4 text-sm font-medium leading-7 text-white/90">{productHero.description}</p>
+          <p className="mt-4 text-sm font-medium leading-7 text-white/90">{description}</p>
         </div>
       </div>
     </section>
@@ -153,15 +155,15 @@ function ProductsContent() {
                     <article
                       className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer"
                     >
-                      <div className="aspect-[1.72] overflow-hidden bg-steel-100">
+                      <div className="aspect-[4/3] overflow-hidden bg-steel-100">
                         <img
                           src={product.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
                           alt={product.title}
                           className="h-full w-full object-cover transition group-hover:scale-105"
                         />
                       </div>
-                      <div className="p-5">
-                        <h3 className="text-lg font-extrabold text-oxynavy-950">{product.title}</h3>
+                      <div className="p-3">
+                        <h3 className="text-sm font-bold text-oxynavy-950">{product.title}</h3>
                       </div>
                     </article>
                   );
@@ -219,30 +221,27 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
       <nav className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.05)]">
         <button
           onClick={() => onSelect(undefined)}
-          className={`flex h-14 w-full items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition ${
+          className={`flex h-12 w-full items-center px-5 text-sm font-bold transition border-b border-steel-100 ${
             !selectedCategoryId ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
           }`}
         >
-          <Factory className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
           Tüm Ürünler
         </button>
         {isError ? (
           <div className="px-5 py-3 text-[12px] text-red-600">Kategoriler yüklenemedi.</div>
         ) : isLoading ? (
-          [1, 2, 3].map((i) => <div key={i} className="h-14 animate-pulse bg-steel-50" />)
+          [1, 2, 3].map((i) => <div key={i} className="h-12 animate-pulse bg-steel-50" />)
         ) : (
-          categories.map((category, index) => {
-            const Icon = categoryIcons[index % categoryIcons.length];
+          categories.map((category) => {
             const active = selectedCategoryId === category.id;
             return (
               <button
                 key={category.id}
                 onClick={() => onSelect(active ? undefined : category.id)}
-                className={`flex h-14 w-full items-center gap-4 border-b border-steel-100 px-5 text-sm font-bold transition last:border-b-0 ${
+                className={`flex h-12 w-full items-center border-b border-steel-100 px-5 text-sm font-bold transition last:border-b-0 ${
                   active ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
                 }`}
               >
-                <Icon className="h-5 w-5 shrink-0 stroke-[1.55]" aria-hidden="true" />
                 {category.name}
               </button>
             );

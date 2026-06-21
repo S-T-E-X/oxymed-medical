@@ -25,6 +25,7 @@ import {
   Gauge,
   ClipboardCheck,
   Users,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
@@ -32,6 +33,7 @@ import { useAuth } from "./AuthContext";
 const navItems = [
   { label: "Kontrol Paneli", icon: LayoutDashboard, to: "/admin/dashboard" },
   { label: "Slider Yönetimi", icon: ImageIcon, to: "/admin/sliders" },
+  { label: "Sayfa Bannerları", icon: SlidersHorizontal, to: "/admin/sayfa-bannerlari" },
   { label: "Kataloglar", icon: BookOpen, to: "/admin/kataloglar" },
   { label: "Ürünler", icon: Box, to: "/admin/products" },
   { label: "Haberler", icon: Newspaper, to: "/admin/haberler" },

@@ -40,13 +40,19 @@ export default function CorporatePage() {
 }
 
 function CorporateHero() {
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
+
+  const title = settings?.["corporate_hero_title"] || corporateHero.title;
+  const description = settings?.["corporate_hero_description"] || corporateHero.description;
+  const imageUrl = settings?.["corporate_hero_image_url"] || "/assets/images/corporate-hero-facility.png";
+
   return (
     <section className="relative isolate overflow-hidden bg-oxynavy-950 text-white">
-      <ImageSlot
-        tone="facility"
-        image="/assets/images/corporate-hero-facility.png"
+      <img
+        src={imageUrl}
         alt="Oxymed Medikal üretim tesisi"
-        className="absolute inset-0 h-full w-full opacity-70"
+        className="absolute inset-0 h-full w-full object-cover opacity-70"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950 via-oxynavy-950/84 to-oxynavy-950/28" />
       <div className="relative mx-auto min-h-[300px] max-w-7xl px-4 py-12 sm:px-6 lg:min-h-[360px] lg:px-8 lg:py-16">
@@ -59,10 +65,10 @@ function CorporateHero() {
               </span>
             ))}
           </div>
-          <h1 className="mt-7 text-4xl font-extrabold tracking-tight sm:text-5xl">{corporateHero.title}</h1>
+          <h1 className="mt-7 text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h1>
           <div className="mt-5 h-1 w-14 bg-white" />
           <p className="mt-7 max-w-[470px] text-sm font-medium leading-7 text-white/88 sm:text-base">
-            {corporateHero.description}
+            {description}
           </p>
         </div>
       </div>
@@ -72,6 +78,8 @@ function CorporateHero() {
 
 function CorporateIntro() {
   const { data: sections = [], isLoading, isError } = useListCorporateSections();
+  const { data: rawSettings } = useListSettings();
+  const settings = rawSettings as Record<string, string> | undefined;
 
   const about = sections.find((s) => s.sectionKey === "about");
   const valueSections = sections.filter((s) =>
@@ -120,10 +128,10 @@ function CorporateIntro() {
             }
           </div>
           <a
-            href="#kalite"
+            href={settings?.["corporate_about_button_url"] || "#kalite"}
             className="mt-8 inline-flex items-center gap-3 rounded bg-oxynavy-950 px-6 py-3.5 text-xs font-bold text-white transition hover:bg-oxynavy-800"
           >
-            Daha Fazla Bilgi
+            {settings?.["corporate_about_button_text"] || "Daha Fazla Bilgi"}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </a>
         </div>
