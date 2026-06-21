@@ -136,34 +136,6 @@ function ProductsContent() {
               )}
             </div>
 
-            {!selectedCategoryId && (
-              <div className="mt-6">
-                <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-steel-400">Diş Kliniği Ürünleri</p>
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {([
-                    { slug: "amalgam-separator", title: "Amalgam Separatörü" },
-                    { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası" },
-                    { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi" },
-                  ] as const).map((p) => (
-                    <Link
-                      key={p.slug}
-                      to={`/urunler/${p.slug}`}
-                      className="group block overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)]"
-                    >
-                      <div className="aspect-[4/3] overflow-hidden bg-steel-100" />
-                      <div className="p-3">
-                        <h3 className="text-sm font-bold text-oxynavy-950">{p.title}</h3>
-                        <p className="mt-0.5 text-xs text-steel-500">Ürün detaylarını görüntüle →</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-                <div className="mt-6 border-t border-steel-100 pt-6">
-                  <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-steel-400">Diğer Ürünler</p>
-                </div>
-              </div>
-            )}
-
             {prodsError ? (
               <div className="mt-6">
                 <ErrorMessage message="Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
@@ -171,10 +143,6 @@ function ProductsContent() {
             ) : prodsLoading ? (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => <div key={i} className="h-64 animate-pulse rounded-lg bg-steel-200" />)}
-              </div>
-            ) : products.length === 0 ? (
-              <div className="mt-6 rounded-xl border-2 border-dashed border-steel-200 py-16 text-center">
-                <p className="text-steel-400">Bu kategoride ürün bulunamadı.</p>
               </div>
             ) : (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -203,6 +171,26 @@ function ProductsContent() {
                     <div key={product.id}>{card}</div>
                   );
                 })}
+                {!selectedCategoryId && ([
+                  { slug: "amalgam-separator", title: "Amalgam Separatörü" },
+                  { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası" },
+                  { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi" },
+                ] as const).map((p) => (
+                  <Link key={p.slug} to={`/urunler/${p.slug}`} className="block">
+                    <article className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer">
+                      <div className="aspect-[4/3] overflow-hidden bg-steel-100">
+                        <img
+                          src="/assets/images/product-bed-head-unit.png"
+                          alt={p.title}
+                          className="h-full w-full object-cover transition group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-sm font-bold text-oxynavy-950">{p.title}</h3>
+                      </div>
+                    </article>
+                  </Link>
+                ))}
               </div>
             )}
           </div>
