@@ -28,6 +28,12 @@ import ServisRaporuFormPage from "./admin/ServisRaporuFormPage";
 import AdminEmailLogsPage from "./admin/AdminEmailLogsPage";
 import AdminUsersPage from "./admin/AdminUsersPage";
 import PageBannersPage from "./admin/PageBannersPage";
+import AmalgamSeparatorAdminPage from "./admin/AmalgamSeparatorAdminPage";
+import DentalVacuumPumpAdminPage from "./admin/DentalVacuumPumpAdminPage";
+import DentalVacuumSystemAdminPage from "./admin/DentalVacuumSystemAdminPage";
+import AmalgamSeparatorPage from "./pages/AmalgamSeparatorPage";
+import DentalVacuumPumpPage from "./pages/DentalVacuumPumpPage";
+import DentalVacuumSystemPage from "./pages/DentalVacuumSystemPage";
 import ServisCihazPage from "./pages/ServisCihazPage";
 import ServisRaporDogrulamaPage from "./pages/ServisRaporDogrulamaPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
@@ -67,6 +73,9 @@ export default function App() {
           <Route path="/servis-raporu/:recordId" element={<ServiceReportPage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
           <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
+          <Route path="/urunler/amalgam-separator" element={<AmalgamSeparatorPage />} />
+          <Route path="/urunler/dental-vakum-pompasi" element={<DentalVacuumPumpPage />} />
+          <Route path="/urunler/dental-vakum-sistemi" element={<DentalVacuumSystemPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
           <Route path="/teklif-goruntule/:id" element={<QuotePrintPage />} />
 
@@ -108,6 +117,9 @@ export default function App() {
             <Route path="email-logs" element={<AdminEmailLogsPage />} />
             <Route path="kullanicilar" element={<AdminUsersPage />} />
             <Route path="sayfa-bannerlari" element={<PageBannersPage />} />
+            <Route path="urunler/amalgam-separator" element={<AmalgamSeparatorAdminPage />} />
+            <Route path="urunler/dental-vakum-pompasi" element={<DentalVacuumPumpAdminPage />} />
+            <Route path="urunler/dental-vakum-sistemi" element={<DentalVacuumSystemAdminPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
