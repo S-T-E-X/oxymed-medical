@@ -20,11 +20,13 @@ function ImageField({
   settingKey,
   value,
   onChange,
+  hint,
 }: {
   label: string;
   settingKey: string;
   value: string;
   onChange: (val: string) => void;
+  hint?: string;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadFile, uploading } = useImageUpload();
@@ -45,7 +47,10 @@ function ImageField({
 
   return (
     <div>
-      <label className="label">{label}</label>
+      <div className="flex items-baseline justify-between gap-2">
+        <label className="label">{label}</label>
+        {hint && <span className="text-[10px] font-mono text-slate-400 shrink-0">{hint}</span>}
+      </div>
       {value && (
         <div className="relative mb-2 overflow-hidden rounded-lg border border-slate-200">
           <img
@@ -180,7 +185,7 @@ function HeroSection({ prefix, defaults, settings }: { prefix: string; defaults:
         <label className="label">Açıklama 2. Paragraf</label>
         <textarea className="input min-h-[72px] resize-y" value={form.desc2} onChange={(e) => set("desc2", e.target.value)} />
       </div>
-      <ImageField label="Ana Görsel" settingKey={`${p}_hero_image`} value={form.image} onChange={(v) => { setForm((f) => ({ ...f, image: v })); setDirty(true); }} />
+      <ImageField label="Ana Görsel" settingKey={`${p}_hero_image`} value={form.image} onChange={(v) => { setForm((f) => ({ ...f, image: v })); setDirty(true); }} hint="Önerilen: 1200 × 800 px" />
     </Section>
   );
 }
@@ -215,7 +220,7 @@ function GallerySection({ prefix, count, label, settings }: { prefix: string; co
   return (
     <Section title={label} onSave={handleSave} dirty={dirty} saving={saving}>
       {images.map((url, i) => (
-        <ImageField key={i} label={labels[i] ?? `${i + 1}. Görsel`} settingKey={`${p}_img_${i}`} value={url} onChange={(v) => setImg(i, v)} />
+        <ImageField key={i} label={labels[i] ?? `${i + 1}. Görsel`} settingKey={`${p}_img_${i}`} value={url} onChange={(v) => setImg(i, v)} hint="Önerilen: 800 × 530 px" />
       ))}
     </Section>
   );
@@ -278,7 +283,34 @@ function DrawingSection({ prefix, settings }: { prefix: string; settings: Settin
 
   return (
     <Section title="Teknik Çizim Görseli" onSave={handleSave} dirty={dirty} saving={saving}>
-      <ImageField label="Teknik Çizim / Boyutlar Görseli" settingKey={`${p}_drawing_image`} value={image} onChange={(v) => { setImage(v); setDirty(true); }} />
+      <ImageField label="Teknik Çizim / Boyutlar Görseli" settingKey={`${p}_drawing_image`} value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 1600 × 940 px" />
+    </Section>
+  );
+}
+
+function CardImageSection({ prefix, settings }: { prefix: string; settings: SettingsMap }) {
+  const p = prefix;
+  const [image, setImage] = useState(settings[`${p}_card_image`] ?? "");
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const upsertMut = useUpsertSetting();
+
+  useEffect(() => { setImage(settings[`${p}_card_image`] ?? ""); setDirty(false); }, [settings[`${p}_card_image`]]);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await upsertMut.mutateAsync({ settingKey: `${p}_card_image`, data: { settingValue: image } });
+      toast.success("Kart görseli kaydedildi");
+      setDirty(false);
+    } catch { toast.error("Kayıt başarısız"); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <Section title="Ürünler Sayfası Kart Görseli" onSave={handleSave} dirty={dirty} saving={saving}>
+      <p className="text-[11px] text-slate-500">Bu görsel, <code className="rounded bg-slate-100 px-1">/urunler</code> sayfasındaki ürün kartında ve admin panelinde küçük resim olarak gösterilir.</p>
+      <ImageField label="Kart Görseli" settingKey={`${p}_card_image`} value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 600 × 450 px" />
     </Section>
   );
 }
@@ -303,6 +335,7 @@ export default function DentalProductAdminPage({ config }: { config: DentalProdu
         <p className="mt-1 text-sm text-slate-500">Sayfa içeriğini, görsellerini ve teknik özelliklerini düzenleyin</p>
       </div>
       <div className="space-y-6">
+        <CardImageSection prefix={config.prefix} settings={settings} />
         <HeroSection prefix={config.prefix} defaults={config.defaultHero} settings={settings} />
         <GallerySection prefix={config.prefix} count={config.galleryCount} label={config.galleryLabel} settings={settings} />
         <SpecsSection prefix={config.prefix} defaults={config.defaultSpecs} settings={settings} />

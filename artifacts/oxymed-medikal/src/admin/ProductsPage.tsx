@@ -9,6 +9,7 @@ import {
   useDeleteProductCategory,
   useListProductCategories,
   useListProducts,
+  useListSettings,
   useUpdateProductCategory,
   type ProductCategory,
 } from "@workspace/api-client-react";
@@ -21,6 +22,8 @@ export default function ProductsPage() {
   const { data: categories = [] } = useListProductCategories();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const { data: productsData, isLoading } = useListProducts({ categoryId: selectedCategory, limit: 50 });
+  const { data: rawSettings } = useListSettings();
+  const settingsMap = (rawSettings as Record<string, string> | undefined) ?? {};
   const products = productsData?.items ?? [];
 
   const [catName, setCatName] = useState("");
@@ -178,39 +181,47 @@ export default function ProductsPage() {
                 </tr>
               ))}
               {([
-                { slug: "amalgam-separator", title: "Amalgam Separatörü", adminPath: "/admin/urunler/amalgam-separator" },
-                { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", adminPath: "/admin/urunler/dental-vakum-pompasi" },
-                { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", adminPath: "/admin/urunler/dental-vakum-sistemi" },
-              ] as const).map((p) => (
-                <tr key={p.slug} className="hover:bg-slate-50">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-[180px] w-[180px] shrink-0 items-center justify-center rounded-lg bg-slate-100">
-                        <ImageIcon className="h-8 w-8 text-slate-300" />
+                { slug: "amalgam-separator", title: "Amalgam Separatörü", adminPath: "/admin/urunler/amalgam-separator", category: "Diş Kliniği", imgKey: "ams_card_image" },
+                { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", adminPath: "/admin/urunler/dental-vakum-pompasi", category: "Diş Kliniği", imgKey: "dvp_card_image" },
+                { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", adminPath: "/admin/urunler/dental-vakum-sistemi", category: "Diş Kliniği", imgKey: "dvs_card_image" },
+                { slug: "kat-kontrol-panosu", title: "3 Gazlı Kat Kontrol Panosu", adminPath: "/admin/urunler/kat-kontrol-panosu", category: "Medikal Gaz", imgKey: "gcp_card_image" },
+              ] as const).map((p) => {
+                const cardImg = settingsMap[p.imgKey];
+                return (
+                  <tr key={p.slug} className="hover:bg-slate-50">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        {cardImg ? (
+                          <img src={cardImg} alt={p.title} className="h-[180px] w-[180px] shrink-0 rounded-lg object-cover bg-slate-50" />
+                        ) : (
+                          <div className="flex h-[180px] w-[180px] shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                            <ImageIcon className="h-8 w-8 text-slate-300" />
+                          </div>
+                        )}
+                        <p className="font-semibold text-slate-900">{p.title}</p>
                       </div>
-                      <p className="font-semibold text-slate-900">{p.title}</p>
-                    </div>
-                  </td>
-                  <td className="hidden px-4 py-3 text-sm text-slate-500 sm:table-cell">Diş Kliniği</td>
-                  <td className="hidden px-4 py-3 md:table-cell">
-                    <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">{p.slug}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">Yayında</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-1">
-                      <Link
-                        to={p.adminPath}
-                        className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                      >
-                        <Settings className="h-3.5 w-3.5" />
-                        Ayarlar
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="hidden px-4 py-3 text-sm text-slate-500 sm:table-cell">{p.category}</td>
+                    <td className="hidden px-4 py-3 md:table-cell">
+                      <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">{p.slug}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">Yayında</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-end gap-1">
+                        <Link
+                          to={p.adminPath}
+                          className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                        >
+                          <Settings className="h-3.5 w-3.5" />
+                          Ayarlar
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

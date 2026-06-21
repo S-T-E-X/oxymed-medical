@@ -88,6 +88,8 @@ function ProductsContent() {
     published: true,
     limit: 50,
   });
+  const { data: rawSettings } = useListSettings();
+  const settingsMap = (rawSettings as Record<string, string> | undefined) ?? {};
   const products = productsData?.items ?? [];
 
   const activeCategory = categories.find((c) => c.id === selectedCategoryId);
@@ -172,15 +174,15 @@ function ProductsContent() {
                   );
                 })}
                 {!selectedCategoryId && ([
-                  { slug: "amalgam-separator", title: "Amalgam Separatörü" },
-                  { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası" },
-                  { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi" },
+                  { slug: "amalgam-separator", title: "Amalgam Separatörü", settingKey: "ams_card_image" },
+                  { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", settingKey: "dvp_card_image" },
+                  { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", settingKey: "dvs_card_image" },
                 ] as const).map((p) => (
                   <Link key={p.slug} to={`/urunler/${p.slug}`} className="block">
                     <article className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer">
                       <div className="aspect-[4/3] overflow-hidden bg-steel-100">
                         <img
-                          src="/assets/images/product-bed-head-unit.png"
+                          src={settingsMap[p.settingKey] || "/assets/images/product-bed-head-unit.png"}
                           alt={p.title}
                           className="h-full w-full object-cover transition group-hover:scale-105"
                         />
