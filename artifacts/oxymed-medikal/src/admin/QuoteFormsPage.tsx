@@ -7,6 +7,40 @@ import { toast } from "sonner";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
+type EmailTemplate = {
+  id: string;
+  label: string;
+  konuSuffix: string;
+  body: string;
+};
+
+const EMAIL_TEMPLATES: EmailTemplate[] = [
+  {
+    id: "yeni",
+    label: "Yeni Teklif",
+    konuSuffix: "",
+    body: "Tarafınıza sunmakta olduğumuz teklif aşağıda yer almaktadır. Herhangi bir sorunuz için bizimle iletişime geçebilirsiniz.",
+  },
+  {
+    id: "revize",
+    label: "Revize Teklif",
+    konuSuffix: " – Revize",
+    body: "Talebiniz doğrultusunda hazırlanan revize teklifimiz ekte sunulmuştur. Güncellenmiş fiyat ve koşulları incelemenizi rica eder, her türlü sorunuz için bizimle iletişime geçmenizi bekleriz.",
+  },
+  {
+    id: "hatirlatma",
+    label: "Hatırlatma",
+    konuSuffix: " – Hatırlatma",
+    body: "Daha önce iletmiş olduğumuz teklifimizin değerlendirilip değerlendirilmediğini öğrenmek amacıyla iletişime geçmek istedik. Teklifle ilgili herhangi bir sorunuz veya değişiklik talebiniz varsa yardımcı olmaktan memnuniyet duyarız.",
+  },
+  {
+    id: "ozel",
+    label: "Özel",
+    konuSuffix: "",
+    body: "",
+  },
+];
+
 type QuoteForm = {
   id: number;
   quoteNo: string;
@@ -206,8 +240,10 @@ export default function QuoteFormsPage() {
   const [emailFormId, setEmailFormId] = useState<number | null>(null);
   const [emailFormNo, setEmailFormNo] = useState("");
   const [emailFirmaAdi, setEmailFirmaAdi] = useState("");
+  const [emailBaseKonu, setEmailBaseKonu] = useState("");
   const [emailKonu, setEmailKonu] = useState("");
   const [emailBodyText, setEmailBodyText] = useState("");
+  const [emailSelectedTemplate, setEmailSelectedTemplate] = useState<string>("yeni");
   const [emailTab, setEmailTab] = useState<"form" | "preview">("form");
   const [sendingEmail, setSendingEmail] = useState(false);
 
@@ -231,10 +267,22 @@ export default function QuoteFormsPage() {
     const defaultEmail = form.firmaEmail ?? "";
     setEmailDefaultAddress(defaultEmail);
     setEmailTarget(defaultEmail);
-    setEmailKonu(`Teklif - ${form.quoteNo}${form.firmaAdi ? ` | ${form.firmaAdi}` : ""}`);
-    setEmailBodyText("Tarafınıza sunmakta olduğumuz teklif aşağıda yer almaktadır. Herhangi bir sorunuz için bizimle iletişime geçebilirsiniz.");
+    const base = `Teklif - ${form.quoteNo}${form.firmaAdi ? ` | ${form.firmaAdi}` : ""}`;
+    setEmailBaseKonu(base);
+    const firstTpl = EMAIL_TEMPLATES[0]!;
+    setEmailSelectedTemplate(firstTpl.id);
+    setEmailKonu(`${base}${firstTpl.konuSuffix}`);
+    setEmailBodyText(firstTpl.body);
     setEmailTab("form");
     setShowEmailDialog(true);
+  }
+
+  function applyTemplate(tplId: string) {
+    const tpl = EMAIL_TEMPLATES.find((t) => t.id === tplId);
+    if (!tpl) return;
+    setEmailSelectedTemplate(tplId);
+    setEmailKonu(`${emailBaseKonu}${tpl.konuSuffix}`);
+    setEmailBodyText(tpl.body);
   }
 
   async function handleSendEmail() {
@@ -508,6 +556,30 @@ export default function QuoteFormsPage() {
                     />
                   </div>
                   <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide">
+                        Mail Şablonu
+                      </label>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {EMAIL_TEMPLATES.map((tpl) => (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => applyTemplate(tpl.id)}
+                          className={`rounded-full px-3 py-1 text-xs font-semibold border transition-colors ${
+                            emailSelectedTemplate === tpl.id
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
+                          }`}
+                        >
+                          {tpl.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-slate-400">Şablon seçince konu ve metin otomatik dolar; dilediğiniz gibi düzenleyebilirsiniz.</p>
+                  </div>
+                  <div>
                     <label className="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-1.5">
                       Konu
                     </label>
@@ -526,9 +598,9 @@ export default function QuoteFormsPage() {
                     <textarea
                       value={emailBodyText}
                       onChange={(e) => setEmailBodyText(e.target.value)}
-                      rows={4}
+                      rows={5}
                       placeholder="E-posta mesajı..."
-                      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                     />
                   </div>
                   <p className="text-xs text-slate-400">PDF teklif formu otomatik olarak eke eklenir.</p>
