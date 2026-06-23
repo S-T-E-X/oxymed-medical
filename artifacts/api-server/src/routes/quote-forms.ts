@@ -235,6 +235,59 @@ router.delete("/quote-forms/:id", requireAuth, async (req, res): Promise<void> =
   res.sendStatus(204);
 });
 
+// Duplicate quote form — copies all fields and items, generates new quoteNo and timestamp
+router.post("/quote-forms/:id/duplicate", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+
+  const [original] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
+  if (!original) {
+    res.status(404).json({ error: "Quote form not found" });
+    return;
+  }
+
+  const originalItems = await db
+    .select()
+    .from(quoteFormItems)
+    .where(eq(quoteFormItems.formId, id))
+    .orderBy(quoteFormItems.sortOrder);
+
+  const quoteNo = await generateQuoteNo();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id: _id, quoteNo: _qn, createdAt: _ca, updatedAt: _ua, ...formFields } = original;
+  const [newForm] = await db
+    .insert(quoteForms)
+    .values({ ...formFields, quoteNo, status: "draft" })
+    .returning();
+
+  // Insert items: parents first, then children with remapped parentItemId
+  const idMap = new Map<number, number>(); // oldId → newId
+
+  const parents = originalItems.filter((it) => it.itemType !== "child");
+  const children = originalItems.filter((it) => it.itemType === "child");
+
+  for (const item of parents) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _iid, formId: _fid, ...itemFields } = item;
+    const [inserted] = await db
+      .insert(quoteFormItems)
+      .values({ ...itemFields, formId: newForm!.id, parentItemId: null })
+      .returning();
+    idMap.set(item.id, inserted!.id);
+  }
+
+  for (const item of children) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _iid, formId: _fid, ...itemFields } = item;
+    const newParentId = item.parentItemId ? (idMap.get(item.parentItemId) ?? null) : null;
+    await db
+      .insert(quoteFormItems)
+      .values({ ...itemFields, formId: newForm!.id, parentItemId: newParentId });
+  }
+
+  res.status(201).json(newForm);
+});
+
 // List items for a form
 router.get("/quote-forms/:id/items", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);

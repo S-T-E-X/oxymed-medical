@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { FilePlus, Pencil, Trash2, Eye, Loader2, Mail, X } from "lucide-react";
+import { FilePlus, Pencil, Trash2, Eye, Loader2, Mail, X, Copy } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -168,12 +168,32 @@ function useDeleteQuoteForm() {
   });
 }
 
+function useDuplicateQuoteForm() {
+  const { authFetch } = useAuth();
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const r = await authFetch(`/api/quote-forms/${id}/duplicate`, { method: "POST" });
+      if (!r.ok) throw new Error("Çoğaltılamadı");
+      return r.json() as Promise<QuoteForm>;
+    },
+    onSuccess: (form) => {
+      qc.invalidateQueries({ queryKey: ["quote-forms"] });
+      toast.success(`Kopyalandı → ${form.quoteNo}`);
+      navigate(`/admin/teklif-formlari/${form.id}`);
+    },
+    onError: () => toast.error("Çoğaltma başarısız"),
+  });
+}
+
 export default function QuoteFormsPage() {
   const navigate = useNavigate();
   const { authFetch } = useAuth();
   const { data, isLoading } = useQuoteForms();
   const createMut = useCreateQuoteForm();
   const deleteMut = useDeleteQuoteForm();
+  const duplicateMut = useDuplicateQuoteForm();
   const updateStatusMut = useUpdateQuoteFormStatus();
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
@@ -366,6 +386,16 @@ export default function QuoteFormsPage() {
                         title="Düzenle"
                       >
                         <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => duplicateMut.mutate(f.id)}
+                        disabled={duplicateMut.isPending}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-violet-100 text-violet-500 hover:bg-violet-50 disabled:opacity-50"
+                        title="Çoğalt (yeni form kodu ile kopyala)"
+                      >
+                        {duplicateMut.isPending && duplicateMut.variables === f.id
+                          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          : <Copy className="h-3.5 w-3.5" />}
                       </button>
                       <button
                         onClick={() => setConfirmDelete(f.id)}
