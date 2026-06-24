@@ -456,34 +456,23 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
     arr.reduce((s, it) => s + itemVisualWeight(it), 0);
   const lastRaw = rawPages[rawPages.length - 1] ?? [];
 
-  // Weight-based fallback plan. The heuristic over/under-estimates real row
-  // heights, so it is only used before the measured pass completes (first paint)
-  // and for single-page documents. For multi-page documents, the measured plan
-  // below replaces it using the true rendered pixel heights.
+  // Weight-based fallback plan. Used as the first-render estimate (before the
+  // measured pass completes) and as the final answer for single-page documents.
   // 1 budget unit ≈ 9mm; footer ≈ 70mm, continuation rows ≈ 219mm → items that
   // can share a page with the footer: continuation (219-70)/9 ≈ 16,
   // first page rows ≈ 165mm → (165-70)/9 ≈ 10
+  //
+  // Strategy: either the items fit with the footer on the same page, or the
+  // footer stands alone. We never split items between pages in the fallback —
+  // that is left to the pixel-accurate measurement pass (multi-page only).
   const fallbackPlan = useMemo<{
     itemPages: QuoteViewItem[][];
     footerOwnItems: QuoteViewItem[] | null;
   }>(() => {
     const attachBudget = rawPages.length > 1 ? 16 : 10;
-    let itemPages = rawPages;
-    let footerOwnItems: QuoteViewItem[] | null = null; // null => attach under last item page
-    if (weightOf(lastRaw) > attachBudget) {
-      let start = lastRaw.length - 1;
-      if (lastRaw[start]?.itemType === "child") {
-        while (start > 0 && lastRaw[start]?.itemType === "child") start--;
-      }
-      const unit = lastRaw.slice(start);
-      if (start > 0 && weightOf(unit) <= 16) {
-        itemPages = [...rawPages.slice(0, -1), lastRaw.slice(0, start)];
-        footerOwnItems = unit;
-      } else {
-        footerOwnItems = [];
-      }
-    }
-    return { itemPages, footerOwnItems };
+    const footerOwnItems: QuoteViewItem[] | null =
+      weightOf(lastRaw) > attachBudget ? [] : null;
+    return { itemPages: rawPages, footerOwnItems };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawPages]);
 
