@@ -457,21 +457,20 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
   const lastRaw = rawPages[rawPages.length - 1] ?? [];
 
   // Weight-based fallback plan. Used as the first-render estimate (before the
-  // measured pass completes) and as the final answer for single-page documents.
-  // 1 budget unit ≈ 9mm; footer ≈ 70mm, continuation rows ≈ 219mm → items that
-  // can share a page with the footer: continuation (219-70)/9 ≈ 16,
-  // first page rows ≈ 165mm → (165-70)/9 ≈ 10
-  //
-  // Strategy: either the items fit with the footer on the same page, or the
-  // footer stands alone. We never split items between pages in the fallback —
-  // that is left to the pixel-accurate measurement pass (multi-page only).
+  // measured pass completes) and as the final answer for multi-page documents.
+  // For single-page documents the footer is always attached — the shrink-to-fit
+  // pass (below) zooms the content down so everything fits on one page.
   const fallbackPlan = useMemo<{
     itemPages: QuoteViewItem[][];
     footerOwnItems: QuoteViewItem[] | null;
   }>(() => {
-    const attachBudget = rawPages.length > 1 ? 16 : 10;
+    if (rawPages.length <= 1) {
+      // Single-page: always attach footer. Shrink-to-fit handles overflow.
+      return { itemPages: rawPages, footerOwnItems: null };
+    }
+    // Multi-page: heuristic — footer attaches unless last page is too heavy.
     const footerOwnItems: QuoteViewItem[] | null =
-      weightOf(lastRaw) > attachBudget ? [] : null;
+      weightOf(lastRaw) > 16 ? [] : null;
     return { itemPages: rawPages, footerOwnItems };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawPages]);
@@ -488,9 +487,20 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
     footerOwnItems: QuoteViewItem[] | null;
   } | null>(null);
 
+  // Shrink-to-fit state (single-page only). pageScale < 1 means content is
+  // zoomed down so the full first page fits within the 297mm page height.
+  const shrinkRef = useRef<HTMLDivElement>(null);
+  const firstPageRef = useRef<HTMLElement>(null);
+  const [pageScale, setPageScale] = useState<number>(1);
+  const [pageScaleReady, setPageScaleReady] = useState<boolean>(
+    rawPages.length !== 1,
+  );
+
   useLayoutEffect(() => {
     setMeasuredPlan(null);
-  }, [data]);
+    setPageScale(1);
+    setPageScaleReady(rawPages.length !== 1);
+  }, [data, rawPages.length]);
 
   useEffect(() => {
     if (rawPages.length <= 1) return;
@@ -579,12 +589,62 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
     };
   }, [data, rawPages, lastRaw]);
 
+  // Shrink-to-fit measurement (single-page only).
+  // Renders a hidden clone of the full first page with height:auto, measures
+  // its natural height, and sets a CSS zoom factor so content fits in 297mm.
+  useEffect(() => {
+    if (rawPages.length !== 1) return;
+    const shrinkEl = shrinkRef.current;
+    if (!shrinkEl) return;
+    let cancelled = false;
+
+    const compute = () => {
+      if (cancelled) return;
+      const cloneArticle = shrinkEl.querySelector<HTMLElement>(".qt-page");
+      const realPage = firstPageRef.current;
+      if (!cloneArticle || !realPage) return;
+      const naturalH = cloneArticle.offsetHeight;
+      const pageH = realPage.clientHeight;
+      const scale = naturalH > pageH ? pageH / naturalH : 1;
+      if (!cancelled) {
+        setPageScale(scale);
+        setPageScaleReady(true);
+      }
+    };
+
+    const imgs = [...shrinkEl.querySelectorAll<HTMLImageElement>("img")];
+    const pending = imgs.filter((img) => !img.complete);
+    if (pending.length === 0) {
+      compute();
+      return () => {
+        cancelled = true;
+      };
+    }
+    let left = pending.length;
+    const done = () => {
+      if (--left <= 0) compute();
+    };
+    pending.forEach((img) => {
+      img.addEventListener("load", done);
+      img.addEventListener("error", done);
+    });
+    const timer = window.setTimeout(compute, 1500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      pending.forEach((img) => {
+        img.removeEventListener("load", done);
+        img.removeEventListener("error", done);
+      });
+    };
+  }, [data, rawPages]);
+
   const plan = rawPages.length > 1 && measuredPlan ? measuredPlan : fallbackPlan;
   const itemPages = plan.itemPages;
   const footerOwnItems = plan.footerOwnItems;
   const attachToLast = footerOwnItems === null;
   const totalPages = itemPages.length + (attachToLast ? 0 : 1);
-  const ready = rawPages.length <= 1 || measuredPlan !== null;
+  const ready = rawPages.length <= 1 ? pageScaleReady : measuredPlan !== null;
 
   if (data.items.length === 0) {
     const totalPages0 = 1;
@@ -605,27 +665,47 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
         {itemPages.map((items, index) => {
           const isFirst = index === 0;
           const isLastItemPage = index === itemPages.length - 1;
+          // Single-page shrink: wrap inner content in a zoom div so everything
+          // fits within the 297mm page height without overflowing.
+          const isSinglePageShrink =
+            isFirst && rawPages.length === 1 && pageScale < 1;
           return (
             <article
+              ref={isFirst ? firstPageRef : undefined}
               className={`qt-page ${isFirst ? "first" : "continuation"} ${attachToLast && isLastItemPage ? "with-footer" : ""}`}
               key={index}
             >
-              {isFirst ? (
-                <QuoteTopInfo data={data} />
+              {isSinglePageShrink ? (
+                <div style={{ zoom: pageScale }}>
+                  <QuoteTopInfo data={data} />
+                  <ItemsTable
+                    items={items}
+                    pageIndex={index}
+                    totalPages={totalPages}
+                    currency={data.paraBirimi}
+                  />
+                  <FooterBlocks data={data} />
+                </div>
               ) : (
-                <header className="qt-repeat-header">
-                  <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
-                  <strong>Teklif Formu</strong>
-                  <span>{data.quoteNo}</span>
-                </header>
+                <>
+                  {isFirst ? (
+                    <QuoteTopInfo data={data} />
+                  ) : (
+                    <header className="qt-repeat-header">
+                      <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
+                      <strong>Teklif Formu</strong>
+                      <span>{data.quoteNo}</span>
+                    </header>
+                  )}
+                  <ItemsTable
+                    items={items}
+                    pageIndex={index}
+                    totalPages={totalPages}
+                    currency={data.paraBirimi}
+                  />
+                  {attachToLast && isLastItemPage ? <FooterBlocks data={data} /> : null}
+                </>
               )}
-              <ItemsTable
-                items={items}
-                pageIndex={index}
-                totalPages={totalPages}
-                currency={data.paraBirimi}
-              />
-              {attachToLast && isLastItemPage ? <FooterBlocks data={data} /> : null}
             </article>
           );
         })}
@@ -672,6 +752,38 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
               <strong>Teklif Formu</strong>
               <span>{data.quoteNo}</span>
             </header>
+            <ItemsTable
+              items={lastRaw}
+              pageIndex={0}
+              totalPages={1}
+              currency={data.paraBirimi}
+            />
+            <FooterBlocks data={data} />
+          </article>
+        </div>
+      ) : null}
+
+      {/* Hidden shrink-measure container: full first page with height:auto so
+          we can measure the natural content height and compute a zoom factor.
+          Only needed for single-page documents. Excluded from print. */}
+      {rawPages.length === 1 ? (
+        <div
+          ref={shrinkRef}
+          aria-hidden="true"
+          className="qt-measure-host"
+          style={{
+            position: "absolute",
+            left: "-99999px",
+            top: 0,
+            visibility: "hidden",
+            pointerEvents: "none",
+          }}
+        >
+          <article
+            className="qt-page first with-footer"
+            style={{ height: "auto", overflow: "visible" }}
+          >
+            <QuoteTopInfo data={data} />
             <ItemsTable
               items={lastRaw}
               pageIndex={0}
