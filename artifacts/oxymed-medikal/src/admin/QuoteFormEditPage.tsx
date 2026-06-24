@@ -2279,7 +2279,12 @@ export default function QuoteFormEditPage() {
                 </div>
                 <div>
                   <label className="label">Ödeme Şekli</label>
-                  <input value={form.odemeSekli} onChange={setField("odemeSekli")} className="input w-full text-sm" />
+                  <textarea
+                    value={form.odemeSekli}
+                    onChange={setField("odemeSekli")}
+                    className="input w-full text-sm resize-y"
+                    rows={3}
+                  />
                 </div>
               </div>
             </section>

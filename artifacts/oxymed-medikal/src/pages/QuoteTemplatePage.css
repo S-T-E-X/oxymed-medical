@@ -212,7 +212,7 @@
 .qt-info-card-body p {
   display: grid;
   grid-template-columns: 31mm 5mm 1fr;
-  align-items: center;
+  align-items: start;
   min-height: 6.2mm;
   margin: 0;
   border-bottom: 0.2mm solid #dbe3ee;
@@ -239,6 +239,9 @@
   font-style: normal;
   font-weight: 800;
   line-height: 1.12;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 0.8mm 0;
 }
 
 .qt-info-card-body label {
