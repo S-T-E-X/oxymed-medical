@@ -205,6 +205,43 @@ export default function QuotePrintPage() {
               })
         )
       );
+
+      // Wait for shrink-to-fit / measurement pass to finish
+      const preview = document.querySelector(".qt-preview");
+      if (preview && !preview.hasAttribute("data-quote-ready")) {
+        await new Promise((r) => setTimeout(r, 800));
+      }
+      await new Promise((r) => setTimeout(r, 300));
+
+      const [{ jsPDF }, html2canvas] = await Promise.all([
+        import("jspdf"),
+        import("html2canvas").then((m) => m.default),
+      ]);
+
+      const pageEls = document.querySelectorAll<HTMLElement>(".qt-page");
+      if (pageEls.length === 0) throw new Error("Sayfa bulunamadı");
+
+      const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      const a4W = 210;
+      const a4H = 297;
+
+      for (let i = 0; i < pageEls.length; i++) {
+        if (i > 0) doc.addPage();
+        const canvas = await html2canvas(pageEls[i], {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+        });
+        const imgData = canvas.toDataURL("image/jpeg", 0.92);
+        doc.addImage(imgData, "JPEG", 0, 0, a4W, a4H);
+      }
+
+      doc.save(`${form.quoteNo || "teklif"}.pdf`);
+    } catch (err) {
+      // Fallback to browser print dialog on failure
+      console.error("PDF oluşturma hatası:", err);
       const originalTitle = document.title;
       document.title = form.quoteNo || "teklif-formu";
       await new Promise((r) => setTimeout(r, 100));
