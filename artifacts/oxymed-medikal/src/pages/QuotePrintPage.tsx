@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Loader2, Download } from "lucide-react";
+import { toast } from "sonner";
 import QuoteTemplateView, { type QuoteViewData } from "./QuoteTemplateView";
 import { useAuth } from "../admin/AuthContext";
 
@@ -192,61 +193,36 @@ export default function QuotePrintPage() {
   const handleDownloadPdf = async () => {
     if (!form) return;
     setDownloading(true);
+    toast.info("PDF hazırlanıyor...");
+
     try {
-      await document.fonts.ready;
-      const imgs = Array.from(document.querySelectorAll<HTMLImageElement>("img"));
-      await Promise.all(
-        imgs.map((img) =>
-          img.complete
-            ? Promise.resolve()
-            : new Promise<void>((resolve) => {
-                img.addEventListener("load", () => resolve(), { once: true });
-                img.addEventListener("error", () => resolve(), { once: true });
-              })
-        )
-      );
-
-      // Wait for shrink-to-fit / measurement pass to finish
-      const preview = document.querySelector(".qt-preview");
-      if (preview && !preview.hasAttribute("data-quote-ready")) {
-        await new Promise((r) => setTimeout(r, 800));
+      const res = await authFetch(`/api/quote-forms/${form.id}/pdf`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
+        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
       }
-      await new Promise((r) => setTimeout(r, 300));
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${form.quoteNo || "teklif"}.pdf`;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
 
-      const [{ jsPDF }, html2canvas] = await Promise.all([
-        import("jspdf"),
-        import("html2canvas").then((m) => m.default),
-      ]);
-
-      const pageEls = document.querySelectorAll<HTMLElement>(".qt-page");
-      if (pageEls.length === 0) throw new Error("Sayfa bulunamadı");
-
-      const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-      const a4W = 210;
-      const a4H = 297;
-
-      for (let i = 0; i < pageEls.length; i++) {
-        if (i > 0) doc.addPage();
-        const canvas = await html2canvas(pageEls[i], {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-          logging: false,
-        });
-        const imgData = canvas.toDataURL("image/jpeg", 0.92);
-        doc.addImage(imgData, "JPEG", 0, 0, a4W, a4H);
-      }
-
-      doc.save(`${form.quoteNo || "teklif"}.pdf`);
+      toast.success("PDF indirildi");
     } catch (err) {
-      // Fallback to browser print dialog on failure
-      console.error("PDF oluşturma hatası:", err);
+      console.error("PDF indirme hatası:", err);
+      toast.error("PDF oluşturulamadı. Tarayıcı yazdırma penceresi açılıyor...");
       const originalTitle = document.title;
       document.title = form.quoteNo || "teklif-formu";
       await new Promise((r) => setTimeout(r, 100));
       window.print();
-      setTimeout(() => { document.title = originalTitle; }, 1000);
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 1000);
     } finally {
       setDownloading(false);
     }
