@@ -6,6 +6,7 @@
   "scripts": {
     "hello": "tsx ./src/hello.ts",
     "seed": "tsx ./src/seed.ts",
+    "cleanup-visitor-events": "tsx ./src/cleanup-visitor-events.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
@@ -15,6 +16,7 @@
   "dependencies": {
     "@types/bcryptjs": "^3.0.0",
     "@workspace/db": "workspace:*",
-    "bcryptjs": "^3.0.3"
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "catalog:"
   }
 }
