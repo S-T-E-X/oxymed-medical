@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Loader2, Download } from "lucide-react";
-import { toast } from "sonner";
 import QuoteTemplateView, { type QuoteViewData } from "./QuoteTemplateView";
 import { useAuth } from "../admin/AuthContext";
 
@@ -193,36 +192,24 @@ export default function QuotePrintPage() {
   const handleDownloadPdf = async () => {
     if (!form) return;
     setDownloading(true);
-    toast.info("PDF hazırlanıyor...");
-
     try {
-      const res = await authFetch(`/api/quote-forms/${form.id}/pdf`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
-        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${form.quoteNo || "teklif"}.pdf`;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
-
-      toast.success("PDF indirildi");
-    } catch (err) {
-      console.error("PDF indirme hatası:", err);
-      toast.error("PDF oluşturulamadı. Tarayıcı yazdırma penceresi açılıyor...");
+      await document.fonts.ready;
+      const imgs = Array.from(document.querySelectorAll<HTMLImageElement>("img"));
+      await Promise.all(
+        imgs.map((img) =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise<void>((resolve) => {
+                img.addEventListener("load", () => resolve(), { once: true });
+                img.addEventListener("error", () => resolve(), { once: true });
+              })
+        )
+      );
       const originalTitle = document.title;
       document.title = form.quoteNo || "teklif-formu";
       await new Promise((r) => setTimeout(r, 100));
       window.print();
-      setTimeout(() => {
-        document.title = originalTitle;
-      }, 1000);
+      setTimeout(() => { document.title = originalTitle; }, 1000);
     } finally {
       setDownloading(false);
     }

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { FilePlus, Pencil, Trash2, Eye, Loader2, Mail, X, Copy, Download } from "lucide-react";
+import { FilePlus, Pencil, Trash2, Eye, Loader2, Mail, X, Copy } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -246,7 +246,6 @@ export default function QuoteFormsPage() {
   const [emailSelectedTemplate, setEmailSelectedTemplate] = useState<string>("yeni");
   const [emailTab, setEmailTab] = useState<"form" | "preview">("form");
   const [sendingEmail, setSendingEmail] = useState(false);
-  const [downloadingPdfId, setDownloadingPdfId] = useState<number | null>(null);
 
   const forms = useMemo(() => {
     const all = data?.items ?? [];
@@ -308,34 +307,6 @@ export default function QuoteFormsPage() {
       toast.error(`Gönderilemedi: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setSendingEmail(false);
-    }
-  }
-
-  async function handleDownloadPdf(formId: number, quoteNo: string) {
-    setDownloadingPdfId(formId);
-    toast.info("PDF hazırlanıyor...");
-    try {
-      const res = await authFetch(`${BASE}/api/quote-forms/${formId}/pdf`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
-        throw new Error(body.detail ?? body.error ?? `HTTP ${res.status}`);
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${quoteNo || "teklif"}.pdf`;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
-      toast.success("PDF indirildi");
-    } catch (err) {
-      console.error("PDF indirme hatası:", err);
-      toast.error(`PDF indirilemedi: ${err instanceof Error ? err.message : String(err)}`);
-    } finally {
-      setDownloadingPdfId(null);
     }
   }
 
@@ -448,16 +419,6 @@ export default function QuoteFormsPage() {
                           <Mail className="h-3.5 w-3.5" />
                         </button>
                       )}
-                      <button
-                        onClick={() => handleDownloadPdf(f.id, f.quoteNo)}
-                        disabled={downloadingPdfId === f.id}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-100 text-emerald-500 hover:bg-emerald-50 disabled:opacity-50"
-                        title="PDF İndir"
-                      >
-                        {downloadingPdfId === f.id
-                          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          : <Download className="h-3.5 w-3.5" />}
-                      </button>
                       <a
                         href={`/teklif-goruntule/${f.id}`}
                         target="_blank"
