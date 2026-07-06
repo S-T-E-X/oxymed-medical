@@ -5,6 +5,7 @@ import {
   Eye,
   FileText,
   MonitorSmartphone,
+  MousePointerClick,
   Newspaper,
   Package,
   TrendingDown,
@@ -199,6 +200,8 @@ export default function DashboardPage() {
 
   const referrerData = analytics?.referrerBreakdown ?? [];
 
+  const topInteractions = analytics?.topInteractions ?? [];
+
   return (
     <section className="flex-1 px-4 py-7 sm:px-6 lg:px-8">
       <div className="mb-6">
@@ -369,6 +372,36 @@ export default function DashboardPage() {
               return (
                 <div key={i} className="flex items-center gap-3">
                   <span className="w-28 shrink-0 truncate text-xs font-semibold text-slate-600">{label}</span>
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${pct}%`, background: PIE_COLORS[i % PIE_COLORS.length] }}
+                    />
+                  </div>
+                  <span className="w-10 shrink-0 text-right text-xs font-bold text-slate-900">
+                    {r.count.toLocaleString("tr-TR")}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </ChartCard>
+      </div>
+
+      {/* Top interactions (CTA / product clicks) */}
+      <div className="mt-6">
+        <ChartCard
+          title="En Çok Tıklanan Öğeler"
+          icon={MousePointerClick}
+          isEmpty={!analyticsLoading && topInteractions.length === 0}
+        >
+          <div className="space-y-3">
+            {topInteractions.map((r, i) => {
+              const max = Math.max(...topInteractions.map((x) => x.count), 1);
+              const pct = Math.round((r.count / max) * 100);
+              return (
+                <div key={i} className="flex items-center gap-3">
+                  <span className="w-44 shrink-0 truncate text-xs font-semibold text-slate-600">{r.label}</span>
                   <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
                     <div
                       className="h-full rounded-full"

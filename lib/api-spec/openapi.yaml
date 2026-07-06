@@ -3767,6 +3767,11 @@ components:
         visitorId: { type: string }
         sessionId: { type: string }
         path: { type: string }
+        eventType:
+          type: string
+          enum: [pageview, click]
+          nullable: true
+        label: { type: string, nullable: true }
         referrerSource: { type: string, nullable: true }
         deviceType:
           type: string
@@ -3800,6 +3805,7 @@ components:
         - topPages
         - deviceBreakdown
         - referrerBreakdown
+        - topInteractions
       properties:
         totalVisitors: { type: integer }
         totalPageViews: { type: integer }
@@ -3819,6 +3825,10 @@ components:
           items:
             $ref: "#/components/schemas/AnalyticsLabelCount"
         referrerBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsLabelCount"
+        topInteractions:
           type: array
           items:
             $ref: "#/components/schemas/AnalyticsLabelCount"

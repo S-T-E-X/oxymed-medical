@@ -71,6 +71,30 @@ function isTrackablePath(path: string): boolean {
   );
 }
 
+/**
+ * Records an anonymous interaction (e.g. a CTA or product card click).
+ * Consent-gated identically to page-view tracking: nothing is sent unless the
+ * visitor has accepted cookies. Best-effort — failures are swallowed.
+ */
+export function trackInteraction(label: string): void {
+  if (typeof window === "undefined") return;
+  if (localStorage.getItem(CONSENT_KEY) !== "accepted") return;
+  const path = window.location.pathname;
+  if (!isTrackablePath(path)) return;
+
+  trackVisitorEvent({
+    visitorId: getVisitorId(),
+    sessionId: getSessionId(),
+    path,
+    eventType: "click",
+    label,
+    referrerSource: getReferrerSource(),
+    deviceType: getDeviceType(),
+  }).catch(() => {
+    /* tracking is best-effort; ignore failures */
+  });
+}
+
 export default function VisitorTracker() {
   const location = useLocation();
   const lastPath = useRef<string | null>(null);
@@ -85,6 +109,7 @@ export default function VisitorTracker() {
       visitorId: getVisitorId(),
       sessionId: getSessionId(),
       path,
+      eventType: "pageview",
       referrerSource: getReferrerSource(),
       deviceType: getDeviceType(),
     }).catch(() => {

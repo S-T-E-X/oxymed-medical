@@ -121,6 +121,7 @@ export * from './smtpTestResult';
 export * from './startProductionOrder200';
 export * from './visitorEventInput';
 export * from './visitorEventInputDeviceType';
+export * from './visitorEventInputEventType';
 export * from './warrantyAlertItem';
 export * from './warrantyAlertListResult';
 export * from './warrantyClaimDecision';

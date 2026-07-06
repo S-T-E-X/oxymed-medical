@@ -16,6 +16,7 @@ import {
 import { useListProductCategories, useListProducts, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import { trackInteraction } from "../components/common/VisitorTracker";
 import { productHero, productPageFeatures } from "../data/products";
 
 const featureIconMap = {
@@ -166,7 +167,12 @@ function ProductsContent() {
                     </article>
                   );
                   return product.pageSlug ? (
-                    <Link key={product.id} to={`/urunler/${product.pageSlug}`} className="block">
+                    <Link
+                      key={product.id}
+                      to={`/urunler/${product.pageSlug}`}
+                      className="block"
+                      onClick={() => trackInteraction(`Ürün: ${product.title}`)}
+                    >
                       {card}
                     </Link>
                   ) : (
@@ -178,7 +184,12 @@ function ProductsContent() {
                   { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", settingKey: "dvp_card_image" },
                   { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", settingKey: "dvs_card_image" },
                 ] as const).map((p) => (
-                  <Link key={p.slug} to={`/urunler/${p.slug}`} className="block">
+                  <Link
+                    key={p.slug}
+                    to={`/urunler/${p.slug}`}
+                    className="block"
+                    onClick={() => trackInteraction(`Ürün: ${p.title}`)}
+                  >
                     <article className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer">
                       <div className="aspect-[4/3] overflow-hidden bg-steel-100">
                         <img

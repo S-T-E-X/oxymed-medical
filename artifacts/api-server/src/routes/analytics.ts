@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, visitorEventsTable } from "@workspace/db";
-import { sql, gte, desc, count, countDistinct } from "drizzle-orm";
+import { sql, gte, desc, count, countDistinct, and, eq, isNotNull } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
 
@@ -10,6 +10,8 @@ const TrackBody = z.object({
   visitorId: z.string().min(1).max(64),
   sessionId: z.string().min(1).max(64),
   path: z.string().min(1).max(512),
+  eventType: z.enum(["pageview", "click"]).optional().nullable(),
+  label: z.string().max(256).optional().nullable(),
   referrerSource: z.string().max(128).optional().nullable(),
   deviceType: z.enum(["desktop", "mobile", "tablet"]).optional().nullable(),
 });
@@ -47,11 +49,13 @@ router.post("/analytics/track", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { visitorId, sessionId, path, referrerSource, deviceType } = parsed.data;
+  const { visitorId, sessionId, path, eventType, label, referrerSource, deviceType } = parsed.data;
   await db.insert(visitorEventsTable).values({
     visitorId,
     sessionId,
     path,
+    eventType: eventType ?? "pageview",
+    label: label ?? null,
     referrerSource: referrerSource ?? "direct",
     deviceType: deviceType ?? "desktop",
   });
@@ -74,6 +78,7 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
   prevRangeStart.setDate(prevRangeStart.getDate() - days);
 
   const dayExpr = sql<string>`to_char(${visitorEventsTable.createdAt}, 'YYYY-MM-DD')`;
+  const isPageView = eq(visitorEventsTable.eventType, "pageview");
 
   const [
     totalsRow,
@@ -83,6 +88,7 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
     topPagesRows,
     deviceRows,
     referrerRows,
+    topInteractionsRows,
   ] = await Promise.all([
     db
       .select({
@@ -90,19 +96,22 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
         pageViews: count(),
       })
       .from(visitorEventsTable)
-      .where(gte(visitorEventsTable.createdAt, rangeStart)),
+      .where(and(gte(visitorEventsTable.createdAt, rangeStart), isPageView)),
     db
       .select({
         visitors: countDistinct(visitorEventsTable.visitorId),
         pageViews: count(),
       })
       .from(visitorEventsTable)
-      .where(gte(visitorEventsTable.createdAt, todayStart)),
+      .where(and(gte(visitorEventsTable.createdAt, todayStart), isPageView)),
     db
       .select({ visitors: countDistinct(visitorEventsTable.visitorId) })
       .from(visitorEventsTable)
       .where(
-        sql`${visitorEventsTable.createdAt} >= ${prevRangeStart} AND ${visitorEventsTable.createdAt} < ${rangeStart}`,
+        and(
+          sql`${visitorEventsTable.createdAt} >= ${prevRangeStart} AND ${visitorEventsTable.createdAt} < ${rangeStart}`,
+          isPageView,
+        ),
       ),
     db
       .select({
@@ -111,27 +120,40 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
         pageViews: count(),
       })
       .from(visitorEventsTable)
-      .where(gte(visitorEventsTable.createdAt, rangeStart))
+      .where(and(gte(visitorEventsTable.createdAt, rangeStart), isPageView))
       .groupBy(dayExpr),
     db
       .select({ label: visitorEventsTable.path, count: count() })
       .from(visitorEventsTable)
-      .where(gte(visitorEventsTable.createdAt, rangeStart))
+      .where(and(gte(visitorEventsTable.createdAt, rangeStart), isPageView))
       .groupBy(visitorEventsTable.path)
       .orderBy(desc(count()))
       .limit(8),
     db
       .select({ label: visitorEventsTable.deviceType, count: count() })
       .from(visitorEventsTable)
-      .where(gte(visitorEventsTable.createdAt, rangeStart))
+      .where(and(gte(visitorEventsTable.createdAt, rangeStart), isPageView))
       .groupBy(visitorEventsTable.deviceType)
       .orderBy(desc(count())),
     db
       .select({ label: visitorEventsTable.referrerSource, count: count() })
       .from(visitorEventsTable)
-      .where(gte(visitorEventsTable.createdAt, rangeStart))
+      .where(and(gte(visitorEventsTable.createdAt, rangeStart), isPageView))
       .groupBy(visitorEventsTable.referrerSource)
       .orderBy(desc(count())),
+    db
+      .select({ label: visitorEventsTable.label, count: count() })
+      .from(visitorEventsTable)
+      .where(
+        and(
+          gte(visitorEventsTable.createdAt, rangeStart),
+          eq(visitorEventsTable.eventType, "click"),
+          isNotNull(visitorEventsTable.label),
+        ),
+      )
+      .groupBy(visitorEventsTable.label)
+      .orderBy(desc(count()))
+      .limit(8),
   ]);
 
   const seriesMap = new Map(seriesRows.map((r) => [r.date, r]));
@@ -167,6 +189,7 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
     topPages: topPagesRows.map((r) => ({ label: r.label, count: r.count })),
     deviceBreakdown: deviceRows.map((r) => ({ label: r.label, count: r.count })),
     referrerBreakdown: referrerRows.map((r) => ({ label: r.label, count: r.count })),
+    topInteractions: topInteractionsRows.map((r) => ({ label: r.label ?? "", count: r.count })),
   });
 });
 

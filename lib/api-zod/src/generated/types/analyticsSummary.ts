@@ -18,4 +18,5 @@ export interface AnalyticsSummary {
   topPages: AnalyticsLabelCount[];
   deviceBreakdown: AnalyticsLabelCount[];
   referrerBreakdown: AnalyticsLabelCount[];
+  topInteractions: AnalyticsLabelCount[];
 }

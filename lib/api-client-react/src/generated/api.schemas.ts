@@ -1038,6 +1038,14 @@ export interface EmailLogListResponse {
   items: EmailLogEntry[];
 }
 
+export type VisitorEventInputEventType = typeof VisitorEventInputEventType[keyof typeof VisitorEventInputEventType] | null;
+
+
+export const VisitorEventInputEventType = {
+  pageview: 'pageview',
+  click: 'click',
+} as const;
+
 export type VisitorEventInputDeviceType = typeof VisitorEventInputDeviceType[keyof typeof VisitorEventInputDeviceType] | null;
 
 
@@ -1051,6 +1059,8 @@ export interface VisitorEventInput {
   visitorId: string;
   sessionId: string;
   path: string;
+  eventType?: VisitorEventInputEventType;
+  label?: string | null;
   referrerSource?: string | null;
   deviceType?: VisitorEventInputDeviceType;
 }
@@ -1076,6 +1086,7 @@ export interface AnalyticsSummary {
   topPages: AnalyticsLabelCount[];
   deviceBreakdown: AnalyticsLabelCount[];
   referrerBreakdown: AnalyticsLabelCount[];
+  topInteractions: AnalyticsLabelCount[];
 }
 
 export type ListSlidersParams = {

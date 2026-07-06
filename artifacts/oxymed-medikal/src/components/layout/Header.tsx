@@ -3,6 +3,7 @@ import { ChevronDown, Instagram, Linkedin, Mail, Menu, Phone, X, Youtube } from 
 import { Link, useLocation } from "react-router-dom";
 import { useListSettings, useListProductCategories } from "@workspace/api-client-react";
 import Logo from "./Logo";
+import { trackInteraction } from "../common/VisitorTracker";
 import { languages, navItems } from "../../data/home";
 
 const socialIconMap = {
@@ -162,6 +163,7 @@ export default function Header() {
           <Link
             to="/teklif-al"
             className="rounded bg-oxynavy-950 px-7 py-4 text-[12px] font-bold text-white transition hover:bg-oxynavy-800"
+            onClick={() => trackInteraction("Teklif Al (Üst Menü)")}
           >
             TEKLİF AL
           </Link>
@@ -195,7 +197,10 @@ export default function Header() {
             <Link
               to="/teklif-al"
               className="mt-5 inline-flex justify-center rounded bg-oxynavy-950 px-6 py-3.5 text-xs font-bold text-white"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                trackInteraction("Teklif Al (Mobil Menü)");
+                setIsOpen(false);
+              }}
             >
               TEKLİF AL
             </Link>

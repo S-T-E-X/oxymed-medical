@@ -2208,6 +2208,8 @@ export const TrackVisitorEventBody = zod.object({
   "visitorId": zod.string(),
   "sessionId": zod.string(),
   "path": zod.string(),
+  "eventType": zod.enum(['pageview', 'click']).nullish(),
+  "label": zod.string().nullish(),
   "referrerSource": zod.string().nullish(),
   "deviceType": zod.enum(['desktop', 'mobile', 'tablet']).nullish()
 })
@@ -2240,6 +2242,10 @@ export const GetAnalyticsSummaryResponse = zod.object({
   "count": zod.number()
 })),
   "referrerBreakdown": zod.array(zod.object({
+  "label": zod.string(),
+  "count": zod.number()
+})),
+  "topInteractions": zod.array(zod.object({
   "label": zod.string(),
   "count": zod.number()
 }))

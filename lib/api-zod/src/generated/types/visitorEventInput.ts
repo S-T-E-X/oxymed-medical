@@ -6,11 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { VisitorEventInputDeviceType } from './visitorEventInputDeviceType';
+import type { VisitorEventInputEventType } from './visitorEventInputEventType';
 
 export interface VisitorEventInput {
   visitorId: string;
   sessionId: string;
   path: string;
+  eventType?: VisitorEventInputEventType;
+  label?: string | null;
   referrerSource?: string | null;
   deviceType?: VisitorEventInputDeviceType;
 }
