@@ -24,6 +24,8 @@ export default function CookieBanner() {
   const accept = () => {
     localStorage.setItem(STORAGE_KEY, "accepted");
     setVisible(false);
+    // Notify the visitor tracker so the current (landing) page view is captured immediately.
+    window.dispatchEvent(new Event("oxymed-consent-accepted"));
   };
 
   const decline = () => {

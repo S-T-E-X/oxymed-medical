@@ -1973,6 +1973,42 @@ paths:
               schema:
                 $ref: "#/components/schemas/EmailLogListResponse"
 
+  # ANALYTICS
+  /analytics/track:
+    post:
+      operationId: trackVisitorEvent
+      tags: [analytics]
+      summary: Record an anonymous visitor page view
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisitorEventInput"
+      responses:
+        "204":
+          description: Recorded
+
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Aggregated visitor analytics for the admin dashboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3723,3 +3759,66 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EmailLogEntry"
+
+    VisitorEventInput:
+      type: object
+      required: [visitorId, sessionId, path]
+      properties:
+        visitorId: { type: string }
+        sessionId: { type: string }
+        path: { type: string }
+        referrerSource: { type: string, nullable: true }
+        deviceType:
+          type: string
+          enum: [desktop, mobile, tablet]
+          nullable: true
+
+    AnalyticsTimePoint:
+      type: object
+      required: [date, visitors, pageViews]
+      properties:
+        date: { type: string }
+        visitors: { type: integer }
+        pageViews: { type: integer }
+
+    AnalyticsLabelCount:
+      type: object
+      required: [label, count]
+      properties:
+        label: { type: string }
+        count: { type: integer }
+
+    AnalyticsSummary:
+      type: object
+      required:
+        - totalVisitors
+        - totalPageViews
+        - todayVisitors
+        - todayPageViews
+        - visitorChangePct
+        - timeSeries
+        - topPages
+        - deviceBreakdown
+        - referrerBreakdown
+      properties:
+        totalVisitors: { type: integer }
+        totalPageViews: { type: integer }
+        todayVisitors: { type: integer }
+        todayPageViews: { type: integer }
+        visitorChangePct: { type: number }
+        timeSeries:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsTimePoint"
+        topPages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsLabelCount"
+        deviceBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsLabelCount"
+        referrerBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsLabelCount"

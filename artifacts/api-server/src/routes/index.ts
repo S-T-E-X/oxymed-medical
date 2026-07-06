@@ -18,6 +18,7 @@ import productionRouter from "./production";
 import serviceReportsRouter from "./service-reports";
 import emailLogsRouter from "./email-logs";
 import smtpRouter from "./smtp";
+import analyticsRouter from "./analytics";
 
 const router: IRouter = Router();
 
@@ -40,5 +41,6 @@ router.use(productionRouter);
 router.use(serviceReportsRouter);
 router.use(emailLogsRouter);
 router.use(smtpRouter);
+router.use(analyticsRouter);
 
 export default router;

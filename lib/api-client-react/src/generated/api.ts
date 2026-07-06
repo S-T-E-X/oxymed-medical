@@ -22,6 +22,7 @@ import type {
 import type {
   AdminLoginInput,
   AdminUser,
+  AnalyticsSummary,
   AuthTokenResult,
   BomItem,
   BomItemInput,
@@ -36,6 +37,7 @@ import type {
   EmailLogListResponse,
   EmailSentResult,
   ErrorResponse,
+  GetAnalyticsSummaryParams,
   HealthStatus,
   ListCatalogsParams,
   ListEmailLogsParams,
@@ -101,6 +103,7 @@ import type {
   SmtpTestInput,
   SmtpTestResult,
   StartProductionOrder200,
+  VisitorEventInput,
   WarrantyAlertListResult,
   WarrantyClaimDecision,
   WarrantyClaimInput,
@@ -6468,6 +6471,161 @@ export function useListEmailLogs<TData = Awaited<ReturnType<typeof listEmailLogs
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListEmailLogsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getTrackVisitorEventUrl = () => {
+
+
+
+
+  return `/api/analytics/track`
+}
+
+/**
+ * @summary Record an anonymous visitor page view
+ */
+export const trackVisitorEvent = async (visitorEventInput: VisitorEventInput, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getTrackVisitorEventUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      visitorEventInput,)
+  }
+);}
+
+
+
+
+export const getTrackVisitorEventMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof trackVisitorEvent>>, TError,{data: BodyType<VisitorEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof trackVisitorEvent>>, TError,{data: BodyType<VisitorEventInput>}, TContext> => {
+
+const mutationKey = ['trackVisitorEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof trackVisitorEvent>>, {data: BodyType<VisitorEventInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  trackVisitorEvent(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TrackVisitorEventMutationResult = NonNullable<Awaited<ReturnType<typeof trackVisitorEvent>>>
+    export type TrackVisitorEventMutationBody = BodyType<VisitorEventInput>
+    export type TrackVisitorEventMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Record an anonymous visitor page view
+ */
+export const useTrackVisitorEvent = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof trackVisitorEvent>>, TError,{data: BodyType<VisitorEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof trackVisitorEvent>>,
+        TError,
+        {data: BodyType<VisitorEventInput>},
+        TContext
+      > => {
+      return useMutation(getTrackVisitorEventMutationOptions(options));
+    }
+
+export const getGetAnalyticsSummaryUrl = (params?: GetAnalyticsSummaryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/analytics/summary?${stringifiedParams}` : `/api/analytics/summary`
+}
+
+/**
+ * @summary Aggregated visitor analytics for the admin dashboard
+ */
+export const getAnalyticsSummary = async (params?: GetAnalyticsSummaryParams, options?: RequestInit): Promise<AnalyticsSummary> => {
+
+  return customFetch<AnalyticsSummary>(getGetAnalyticsSummaryUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAnalyticsSummaryQueryKey = (params?: GetAnalyticsSummaryParams,) => {
+    return [
+    `/api/analytics/summary`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetAnalyticsSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getAnalyticsSummary>>, TError = ErrorType<unknown>>(params?: GetAnalyticsSummaryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAnalyticsSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAnalyticsSummaryQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAnalyticsSummary>>> = ({ signal }) => getAnalyticsSummary(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAnalyticsSummary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAnalyticsSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getAnalyticsSummary>>>
+export type GetAnalyticsSummaryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Aggregated visitor analytics for the admin dashboard
+ */
+
+export function useGetAnalyticsSummary<TData = Awaited<ReturnType<typeof getAnalyticsSummary>>, TError = ErrorType<unknown>>(
+ params?: GetAnalyticsSummaryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAnalyticsSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAnalyticsSummaryQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

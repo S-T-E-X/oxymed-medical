@@ -27,3 +27,4 @@ export * from "./serviceReportSignatures";
 export * from "./serviceReportParts";
 export * from "./serviceReportEmailLogs";
 export * from "./emailLogs";
+export * from "./visitorEvents";

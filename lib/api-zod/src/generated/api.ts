@@ -2201,3 +2201,48 @@ export const ListEmailLogsResponse = zod.object({
 })
 
 
+/**
+ * @summary Record an anonymous visitor page view
+ */
+export const TrackVisitorEventBody = zod.object({
+  "visitorId": zod.string(),
+  "sessionId": zod.string(),
+  "path": zod.string(),
+  "referrerSource": zod.string().nullish(),
+  "deviceType": zod.enum(['desktop', 'mobile', 'tablet']).nullish()
+})
+
+
+/**
+ * @summary Aggregated visitor analytics for the admin dashboard
+ */
+export const GetAnalyticsSummaryQueryParams = zod.object({
+  "days": zod.coerce.number().optional()
+})
+
+export const GetAnalyticsSummaryResponse = zod.object({
+  "totalVisitors": zod.number(),
+  "totalPageViews": zod.number(),
+  "todayVisitors": zod.number(),
+  "todayPageViews": zod.number(),
+  "visitorChangePct": zod.number(),
+  "timeSeries": zod.array(zod.object({
+  "date": zod.string(),
+  "visitors": zod.number(),
+  "pageViews": zod.number()
+})),
+  "topPages": zod.array(zod.object({
+  "label": zod.string(),
+  "count": zod.number()
+})),
+  "deviceBreakdown": zod.array(zod.object({
+  "label": zod.string(),
+  "count": zod.number()
+})),
+  "referrerBreakdown": zod.array(zod.object({
+  "label": zod.string(),
+  "count": zod.number()
+}))
+})
+
+

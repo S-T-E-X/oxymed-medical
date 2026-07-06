@@ -1038,6 +1038,46 @@ export interface EmailLogListResponse {
   items: EmailLogEntry[];
 }
 
+export type VisitorEventInputDeviceType = typeof VisitorEventInputDeviceType[keyof typeof VisitorEventInputDeviceType] | null;
+
+
+export const VisitorEventInputDeviceType = {
+  desktop: 'desktop',
+  mobile: 'mobile',
+  tablet: 'tablet',
+} as const;
+
+export interface VisitorEventInput {
+  visitorId: string;
+  sessionId: string;
+  path: string;
+  referrerSource?: string | null;
+  deviceType?: VisitorEventInputDeviceType;
+}
+
+export interface AnalyticsTimePoint {
+  date: string;
+  visitors: number;
+  pageViews: number;
+}
+
+export interface AnalyticsLabelCount {
+  label: string;
+  count: number;
+}
+
+export interface AnalyticsSummary {
+  totalVisitors: number;
+  totalPageViews: number;
+  todayVisitors: number;
+  todayPageViews: number;
+  visitorChangePct: number;
+  timeSeries: AnalyticsTimePoint[];
+  topPages: AnalyticsLabelCount[];
+  deviceBreakdown: AnalyticsLabelCount[];
+  referrerBreakdown: AnalyticsLabelCount[];
+}
+
 export type ListSlidersParams = {
 activeOnly?: boolean;
 };
@@ -1125,5 +1165,9 @@ emailType?: string;
 search?: string;
 limit?: number;
 offset?: number;
+};
+
+export type GetAnalyticsSummaryParams = {
+days?: number;
 };
 

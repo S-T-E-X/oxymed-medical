@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./admin/AuthContext";
 import CookieBanner from "./components/common/CookieBanner";
+import VisitorTracker from "./components/common/VisitorTracker";
 import AdminLayout, { ProtectedRoute } from "./admin/AdminLayout";
 import LoginPage from "./admin/LoginPage";
 import DashboardPage from "./admin/DashboardPage";
@@ -57,6 +58,7 @@ export default function App() {
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <Toaster richColors position="top-right" />
+        <VisitorTracker />
         <CookieBanner />
         <Routes>
           <Route path="/" element={<HomePage />} />

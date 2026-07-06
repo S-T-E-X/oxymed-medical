@@ -1,4 +1,5 @@
 - [Chromium / Puppeteer PDF](chromium-puppeteer.md) — @sparticuz/chromium-min bin/ doesn't exist in Replit; use system `chromium` nix package + puppeteer-core instead.
 - [Quote form item schema](quote-form-schema.md) — quote-item fields live in inline Zod + ItemDraft, not openapi.yaml; no codegen needed, wire DB+API+editor+view in lockstep.
 - [API server schema reload](api-server-schema-reload.md) — after lib/db schema change + push, MUST restart api-server workflow or new columns silently drop on insert (tsx watch ignores linked deps).
+- [Visitor analytics](visitor-analytics.md) — consent-gated (localStorage "accepted") anonymous tracking; CookieBanner fires "oxymed-consent-accepted" event for first-hit; no IP/PII stored.
 - [Quote PDF pagination](quote-pdf-pagination.md) — 3 mutually-exclusive page-control flags (all push-down except keepWithPrevious); footer peels trailing unit instead of leaving a lonely footer page.

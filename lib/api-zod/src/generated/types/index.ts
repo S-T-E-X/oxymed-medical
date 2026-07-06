@@ -8,6 +8,9 @@
 
 export * from './adminLoginInput';
 export * from './adminUser';
+export * from './analyticsLabelCount';
+export * from './analyticsSummary';
+export * from './analyticsTimePoint';
 export * from './authTokenResult';
 export * from './bomItem';
 export * from './bomItemInput';
@@ -25,6 +28,7 @@ export * from './emailLogEntry';
 export * from './emailLogListResponse';
 export * from './emailSentResult';
 export * from './errorResponse';
+export * from './getAnalyticsSummaryParams';
 export * from './healthStatus';
 export * from './listCatalogsParams';
 export * from './listEmailLogsParams';
@@ -115,6 +119,8 @@ export * from './smtpStatusResult';
 export * from './smtpTestInput';
 export * from './smtpTestResult';
 export * from './startProductionOrder200';
+export * from './visitorEventInput';
+export * from './visitorEventInputDeviceType';
 export * from './warrantyAlertItem';
 export * from './warrantyAlertListResult';
 export * from './warrantyClaimDecision';
