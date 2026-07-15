@@ -14,6 +14,9 @@ export interface AnalyticsSummary {
   todayVisitors: number;
   todayPageViews: number;
   visitorChangePct: number;
+  quoteCtaClicks: number;
+  quoteConversions: number;
+  quoteConversionRate: number;
   timeSeries: AnalyticsTimePoint[];
   topPages: AnalyticsLabelCount[];
   deviceBreakdown: AnalyticsLabelCount[];

@@ -1,10 +1,16 @@
 import { Router, type IRouter } from "express";
 import { db, visitorEventsTable } from "@workspace/db";
-import { sql, gte, desc, count, countDistinct, and, eq, isNotNull } from "drizzle-orm";
+import { sql, gte, desc, count, countDistinct, and, eq, ne, isNotNull, like } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
+
+// Label recorded when a quote form is successfully submitted (conversion).
+// Kept in sync with the client (VisitorTracker / QuotePage).
+const QUOTE_CONVERSION_LABEL = "Teklif Formu Gönderildi";
+// Prefix of the "Teklif Al" CTA click labels (e.g. top/mobile menu variants).
+const QUOTE_CTA_LABEL_PREFIX = "Teklif Al";
 
 const TrackBody = z.object({
   visitorId: z.string().min(1).max(64),
@@ -89,6 +95,8 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
     deviceRows,
     referrerRows,
     topInteractionsRows,
+    quoteCtaClicksRow,
+    quoteConversionsRow,
   ] = await Promise.all([
     db
       .select({
@@ -149,11 +157,32 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
           gte(visitorEventsTable.createdAt, rangeStart),
           eq(visitorEventsTable.eventType, "click"),
           isNotNull(visitorEventsTable.label),
+          ne(visitorEventsTable.label, QUOTE_CONVERSION_LABEL),
         ),
       )
       .groupBy(visitorEventsTable.label)
       .orderBy(desc(count()))
       .limit(8),
+    db
+      .select({ total: count() })
+      .from(visitorEventsTable)
+      .where(
+        and(
+          gte(visitorEventsTable.createdAt, rangeStart),
+          eq(visitorEventsTable.eventType, "click"),
+          like(visitorEventsTable.label, `${QUOTE_CTA_LABEL_PREFIX}%`),
+        ),
+      ),
+    db
+      .select({ total: count() })
+      .from(visitorEventsTable)
+      .where(
+        and(
+          gte(visitorEventsTable.createdAt, rangeStart),
+          eq(visitorEventsTable.eventType, "click"),
+          eq(visitorEventsTable.label, QUOTE_CONVERSION_LABEL),
+        ),
+      ),
   ]);
 
   const seriesMap = new Map(seriesRows.map((r) => [r.date, r]));
@@ -179,12 +208,20 @@ router.get("/analytics/summary", requireAuth, async (req, res): Promise<void> =>
         : 0
       : Math.round(((totalVisitors - prevVisitors) / prevVisitors) * 100);
 
+  const quoteCtaClicks = quoteCtaClicksRow?.[0]?.total ?? 0;
+  const quoteConversions = quoteConversionsRow?.[0]?.total ?? 0;
+  const quoteConversionRate =
+    quoteCtaClicks > 0 ? Math.round((quoteConversions / quoteCtaClicks) * 100) : 0;
+
   res.json({
     totalVisitors,
     totalPageViews: totalsRow?.[0]?.pageViews ?? 0,
     todayVisitors: todayRow?.[0]?.visitors ?? 0,
     todayPageViews: todayRow?.[0]?.pageViews ?? 0,
     visitorChangePct,
+    quoteCtaClicks,
+    quoteConversions,
+    quoteConversionRate,
     timeSeries,
     topPages: topPagesRows.map((r) => ({ label: r.label, count: r.count })),
     deviceBreakdown: deviceRows.map((r) => ({ label: r.label, count: r.count })),

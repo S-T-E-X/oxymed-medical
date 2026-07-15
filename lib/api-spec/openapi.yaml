@@ -3806,12 +3806,18 @@ components:
         - deviceBreakdown
         - referrerBreakdown
         - topInteractions
+        - quoteCtaClicks
+        - quoteConversions
+        - quoteConversionRate
       properties:
         totalVisitors: { type: integer }
         totalPageViews: { type: integer }
         todayVisitors: { type: integer }
         todayPageViews: { type: integer }
         visitorChangePct: { type: number }
+        quoteCtaClicks: { type: integer }
+        quoteConversions: { type: integer }
+        quoteConversionRate: { type: number }
         timeSeries:
           type: array
           items:

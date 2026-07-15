@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle, Clock3, Headphones, Lock, Paperclip, ShieldCheck } from "lucide-react";
 import { useCreateQuote } from "@workspace/api-client-react";
 import ImageSlot from "../components/common/ImageSlot";
+import { trackInteraction } from "../components/common/VisitorTracker";
 import FeatureBar from "../components/home/FeatureBar";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
@@ -131,6 +132,7 @@ function QuoteForm() {
   const createMut = useCreateQuote({
     mutation: {
       onSuccess: () => {
+        trackInteraction("Teklif Formu Gönderildi");
         setSubmitted(true);
         setForm(EMPTY);
         setFieldErrors({});

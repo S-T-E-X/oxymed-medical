@@ -8,6 +8,7 @@ import {
   MousePointerClick,
   Newspaper,
   Package,
+  Target,
   TrendingDown,
   TrendingUp,
   Users,
@@ -273,6 +274,56 @@ export default function DashboardPage() {
           color="bg-teal-600"
           hint="Toplam sayfa görüntüleme"
         />
+      </div>
+
+      {/* Quote conversion */}
+      <div className="mt-6">
+        <ChartCard title="Teklif Dönüşümü" icon={Target} isEmpty={false}>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center gap-2">
+                <MousePointerClick className="h-4 w-4 text-blue-600" />
+                <p className="text-xs font-semibold text-slate-600">"Teklif Al" Tıklaması</p>
+              </div>
+              <p className="mt-3 text-2xl font-bold text-slate-950">
+                {analyticsLoading ? (
+                  <span className="inline-block h-7 w-10 animate-pulse rounded bg-slate-200" />
+                ) : (
+                  (analytics?.quoteCtaClicks ?? 0).toLocaleString("tr-TR")
+                )}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-emerald-600" />
+                <p className="text-xs font-semibold text-slate-600">Form Gönderimi</p>
+              </div>
+              <p className="mt-3 text-2xl font-bold text-slate-950">
+                {analyticsLoading ? (
+                  <span className="inline-block h-7 w-10 animate-pulse rounded bg-slate-200" />
+                ) : (
+                  (analytics?.quoteConversions ?? 0).toLocaleString("tr-TR")
+                )}
+              </p>
+            </div>
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-blue-600" />
+                <p className="text-xs font-semibold text-blue-700">Dönüşüm Oranı</p>
+              </div>
+              <p className="mt-3 text-2xl font-bold text-blue-900">
+                {analyticsLoading ? (
+                  <span className="inline-block h-7 w-10 animate-pulse rounded bg-blue-200" />
+                ) : (
+                  `%${(analytics?.quoteConversionRate ?? 0).toLocaleString("tr-TR")}`
+                )}
+              </p>
+              <p className="mt-1 text-xs font-medium text-blue-700/70">
+                Tıklamaların form gönderimine dönüşme oranı
+              </p>
+            </div>
+          </div>
+        </ChartCard>
       </div>
 
       {/* Traffic trend */}

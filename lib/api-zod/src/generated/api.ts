@@ -2228,6 +2228,9 @@ export const GetAnalyticsSummaryResponse = zod.object({
   "todayVisitors": zod.number(),
   "todayPageViews": zod.number(),
   "visitorChangePct": zod.number(),
+  "quoteCtaClicks": zod.number(),
+  "quoteConversions": zod.number(),
+  "quoteConversionRate": zod.number(),
   "timeSeries": zod.array(zod.object({
   "date": zod.string(),
   "visitors": zod.number(),
