@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useListSettings } from "@workspace/api-client-react";
 import Logo from "./Logo";
 import { footerColumns } from "../../data/home";
+import { trackInteraction } from "../common/VisitorTracker";
 
 const socialIconMap = {
   LinkedIn: Linkedin,
@@ -75,13 +76,21 @@ export default function Footer({ compact = false }: FooterProps) {
                 <span>{address}</span>
               </li>
               <li>
-                <a href={`tel:${phone}`} className="flex gap-2.5 transition hover:text-white">
+                <a
+                  href={`tel:${phone}`}
+                  className="flex gap-2.5 transition hover:text-white"
+                  onClick={() => trackInteraction("Telefon (Alt Bilgi)")}
+                >
                   <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-white" aria-hidden="true" />
                   {phone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${email}`} className="flex gap-2.5 transition hover:text-white">
+                <a
+                  href={`mailto:${email}`}
+                  className="flex gap-2.5 transition hover:text-white"
+                  onClick={() => trackInteraction("E-posta (Alt Bilgi)")}
+                >
                   <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-white" aria-hidden="true" />
                   {email}
                 </a>

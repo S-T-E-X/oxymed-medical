@@ -51,11 +51,19 @@ export default function Header() {
       <div className="bg-oxynavy-950 text-white">
         <div className="mx-auto flex min-h-9 max-w-7xl items-center justify-between gap-4 px-4 text-[11px] font-medium sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-white/82">
-            <a className="inline-flex items-center gap-2 transition hover:text-white" href={`tel:${phone}`}>
+            <a
+              className="inline-flex items-center gap-2 transition hover:text-white"
+              href={`tel:${phone}`}
+              onClick={() => trackInteraction("Telefon (Üst Menü)")}
+            >
               <Phone className="h-3.5 w-3.5" aria-hidden="true" />
               {phone}
             </a>
-            <a className="inline-flex items-center gap-2 transition hover:text-white" href={`mailto:${email}`}>
+            <a
+              className="inline-flex items-center gap-2 transition hover:text-white"
+              href={`mailto:${email}`}
+              onClick={() => trackInteraction("E-posta (Üst Menü)")}
+            >
               <Mail className="h-3.5 w-3.5" aria-hidden="true" />
               {email}
             </a>

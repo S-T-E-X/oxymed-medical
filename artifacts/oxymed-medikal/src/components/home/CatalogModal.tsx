@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useListCatalogs } from "@workspace/api-client-react";
 import { BookOpen, ExternalLink, X } from "lucide-react";
+import { trackInteraction } from "../common/VisitorTracker";
 
 const LANG_LABELS: Record<string, string> = {
   TR: "Türkçe",
@@ -75,6 +76,7 @@ export default function CatalogModal({ onClose }: { onClose: () => void }) {
                           href={catalog.pdfUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => trackInteraction(`Katalog İndir: ${catalog.title}`)}
                           className="flex items-center gap-3 rounded-xl border border-steel-100 bg-steel-50 px-4 py-3 transition hover:border-oxynavy-200 hover:bg-oxynavy-50 group"
                         >
                           <BookOpen className="h-5 w-5 shrink-0 text-oxynavy-700" />
