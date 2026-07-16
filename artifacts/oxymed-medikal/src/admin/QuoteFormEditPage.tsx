@@ -428,6 +428,123 @@ function ProductSelectorModal({
   );
 }
 
+// ── Single Item Template Edit Modal ──────────────────────────────────────────
+
+function SingleItemTemplateEditModal({
+  template,
+  authFetch,
+  onUpdated,
+  onClose,
+}: {
+  template: GroupTemplate;
+  authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  onUpdated: (t: GroupTemplate) => void;
+  onClose: () => void;
+}) {
+  const src = template.children[0] ?? {};
+  const [name, setName] = useState(template.name);
+  const [title, setTitle] = useState(src.title ?? "");
+  const [modelCode, setModelCode] = useState(src.modelCode ?? "");
+  const [imageUrl, setImageUrl] = useState(src.imageUrl ?? template.imageUrl ?? "");
+  const [bulletsText, setBulletsText] = useState((src.bullets ?? []).join("\n"));
+  const [unit, setUnit] = useState(src.unit ?? "ADET");
+  const [unitPrice, setUnitPrice] = useState(src.unitPrice ?? "0");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!name.trim()) { toast.error("Şablon adı boş olamaz"); return; }
+    setSaving(true);
+    try {
+      const bullets = bulletsText.split("\n").map((s) => s.trim()).filter(Boolean);
+      const r = await authFetch(`/api/quote-group-templates/${template.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          description: "__single_item_template",
+          imageUrl: imageUrl || undefined,
+          children: [{
+            title: title || name.trim(),
+            modelCode: modelCode || undefined,
+            unit,
+            quantity: src.quantity ?? 0,
+            unitPrice,
+            bullets: bullets.length ? bullets : undefined,
+            imageUrl: imageUrl || undefined,
+          }],
+        }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => null) as { error?: string } | null;
+        throw new Error(e?.error ?? `Sunucu hatası (${r.status})`);
+      }
+      const updated = await r.json() as GroupTemplate;
+      toast.success("Şablon güncellendi");
+      onUpdated(updated);
+      onClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Güncellenemedi");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+      <div className="flex h-[80vh] w-full max-w-lg flex-col rounded-xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <h2 className="text-base font-bold text-slate-900">Tekli Şablonu Düzenle</h2>
+          <button onClick={onClose}><X className="h-5 w-5 text-slate-400" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          <div>
+            <label className="label">Şablon Adı *</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} className="input w-full text-sm" placeholder="Şablon adı" />
+          </div>
+          <div>
+            <label className="label">Kalem Açıklaması</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="input w-full text-sm" placeholder="Boş bırakılırsa şablon adı kullanılır" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Model/Kod</label>
+              <input value={modelCode} onChange={(e) => setModelCode(e.target.value)} className="input w-full text-sm" placeholder="Model kodu" />
+            </div>
+            <div>
+              <label className="label">Birim</label>
+              <select value={unit} onChange={(e) => setUnit(e.target.value)} className="input w-full text-sm">
+                {UNITS.map((u) => <option key={u}>{u}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label">Birim Fiyat</label>
+              <input value={unitPrice} onChange={(e) => setUnitPrice(e.target.value)} className="input w-full text-sm" placeholder="0" />
+            </div>
+            <div>
+              <label className="label">Görsel URL</label>
+              <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="input w-full text-sm" placeholder="https://..." />
+            </div>
+          </div>
+          {imageUrl && (
+            <img src={imageUrl} alt="" className="h-20 w-20 rounded-lg border border-slate-200 object-contain" />
+          )}
+          <div>
+            <label className="label">Maddeler (her satır ayrı madde)</label>
+            <textarea value={bulletsText} onChange={(e) => setBulletsText(e.target.value)} rows={4} className="input w-full text-sm resize-none" placeholder="Her satır ayrı bir madde olur" />
+          </div>
+        </div>
+        <div className="flex gap-3 border-t border-slate-100 px-5 py-4">
+          <button onClick={onClose} className="flex-1 rounded-lg border border-slate-200 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">İptal</button>
+          <button onClick={handleSave} disabled={saving || !name.trim()} className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Güncelle
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Single Item Template Picker Modal ────────────────────────────────────────
 
 function SingleItemTemplatePickerModal({
@@ -442,6 +559,7 @@ function SingleItemTemplatePickerModal({
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<GroupTemplate | null>(null);
 
   useEffect(() => {
     authFetch("/api/quote-group-templates")
@@ -473,7 +591,7 @@ function SingleItemTemplatePickerModal({
       title: src?.title ?? t.name,
       bulletsText: (src?.bullets ?? []).join("\n"),
       modelCode: src?.modelCode ?? "",
-      imageUrl: src?.imageUrl ?? "",
+      imageUrl: src?.imageUrl ?? t.imageUrl ?? "",
       quantity: 0,
       unit: src?.unit ?? "ADET",
       unitPrice: src?.unitPrice ?? "0",
@@ -505,8 +623,12 @@ function SingleItemTemplatePickerModal({
             <div className="space-y-2">
               {templates.map((t) => {
                 const src = t.children[0];
+                const img = src?.imageUrl ?? t.imageUrl;
                 return (
                   <div key={t.id} className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-3">
+                    {img && (
+                      <img src={img} alt="" className="h-10 w-10 shrink-0 rounded object-contain" />
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-slate-800 truncate">{t.name}</p>
                       {src && (
@@ -521,6 +643,13 @@ function SingleItemTemplatePickerModal({
                       className="shrink-0 rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-slate-800"
                     >
                       Ekle
+                    </button>
+                    <button
+                      onClick={() => setEditingTemplate(t)}
+                      title="Şablonu düzenle"
+                      className="shrink-0 flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(t.id)}
@@ -541,6 +670,18 @@ function SingleItemTemplatePickerModal({
           </p>
         </div>
       </div>
+
+      {editingTemplate && (
+        <SingleItemTemplateEditModal
+          template={editingTemplate}
+          authFetch={authFetch}
+          onUpdated={(updated) => {
+            setTemplates((prev) => prev.map((t) => t.id === updated.id ? updated : t));
+            setEditingTemplate(null);
+          }}
+          onClose={() => setEditingTemplate(null)}
+        />
+      )}
     </div>
   );
 }
