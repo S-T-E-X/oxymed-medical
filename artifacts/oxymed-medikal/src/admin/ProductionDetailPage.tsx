@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Factory, CheckCircle2, AlertCircle, Package,
   Play, Box, ClipboardCheck, QrCode, ShieldCheck, RefreshCw,
-  Copy, ExternalLink, Trash2, Printer, Plus, X,
+  Copy, ExternalLink, Trash2, Printer, Plus, X, Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "./AuthContext";
@@ -162,6 +162,21 @@ export default function ProductionDetailPage() {
   const [newBomQty, setNewBomQty] = useState(1);
   const [bomSaving, setBomSaving] = useState(false);
 
+  // Consolidated materials (all orders for the same quote)
+  type ConsolidatedItem = {
+    materialId: number;
+    materialName: string;
+    productCode: string | null;
+    unit: string;
+    inStock: number;
+    price: string | null;
+    totalRequired: number;
+    breakdown: Array<{ productTitle: string; orderQty: number; bomQty: number; lineQty: number }>;
+  };
+  const [consolidatedMaterials, setConsolidatedMaterials] = useState<ConsolidatedItem[] | null>(null);
+  const [consolidatedLoading, setConsolidatedLoading] = useState(false);
+  const [consolidatedExpanded, setConsolidatedExpanded] = useState<number | null>(null);
+
   const load = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -234,7 +249,15 @@ export default function ProductionDetailPage() {
       if (bom === null) loadBom();
       if (bomMaterials.length === 0) loadMaterials();
     }
-  }, [activeTab, order?.productId]);
+    if (activeTab === "siparis-malzeme" && order?.quoteFormId && consolidatedMaterials === null) {
+      setConsolidatedLoading(true);
+      authFetch(`/api/production/consolidated-materials?quoteFormId=${order.quoteFormId}`)
+        .then((r) => r.json())
+        .then((d: { items: ConsolidatedItem[] }) => setConsolidatedMaterials(d.items ?? []))
+        .catch(() => toast.error("Konsolide malzeme listesi yüklenemedi"))
+        .finally(() => setConsolidatedLoading(false));
+    }
+  }, [activeTab, order?.productId, order?.quoteFormId]);
 
   async function checkStock() {
     setActionLoading("stock");
@@ -433,7 +456,12 @@ export default function ProductionDetailPage() {
 
       {/* Tabs */}
       <div className="mb-6 flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1">
-        {TABS.map((tab) => {
+        {[
+          ...TABS,
+          ...(order.quoteFormId
+            ? [{ id: "siparis-malzeme", label: "Sipariş Malzemeleri", icon: Layers }]
+            : []),
+        ].map((tab) => {
           const Icon = tab.icon;
           return (
             <button
@@ -952,6 +980,125 @@ export default function ProductionDetailPage() {
                 })}
               </div>
             </>
+          )}
+        </div>
+      )}
+
+      {/* ── Tab: Sipariş Malzemeleri ──────────────────────────────────────── */}
+      {activeTab === "siparis-malzeme" && (
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="border-b border-slate-200 px-6 py-4">
+            <h2 className="text-base font-bold text-slate-900">Konsolide Malzeme Listesi</h2>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Teklif #{order.quoteFormId} kapsamındaki tüm üretim emirlerinin toplam malzeme ihtiyacı
+            </p>
+          </div>
+          {consolidatedLoading ? (
+            <div className="flex h-40 items-center justify-center">
+              <RefreshCw className="h-6 w-6 animate-spin text-slate-300" />
+            </div>
+          ) : !consolidatedMaterials || consolidatedMaterials.length === 0 ? (
+            <div className="py-16 text-center text-sm text-slate-400">
+              Bu teklife bağlı ürünlerde BOM tanımlı değil veya malzeme bulunamadı.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50">
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-200">
+                    <th className="px-5 py-3">Malzeme</th>
+                    <th className="px-3 py-3">Kod</th>
+                    <th className="px-3 py-3 text-center">Birim</th>
+                    <th className="px-3 py-3 text-center">Stokta</th>
+                    <th className="px-3 py-3 text-center">Toplam İhtiyaç</th>
+                    <th className="px-3 py-3 text-center">Eksik</th>
+                    <th className="px-3 py-3 text-right">Birim Fiyat</th>
+                    <th className="px-3 py-3 text-right">Toplam Maliyet</th>
+                    <th className="px-3 py-3 w-8"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {consolidatedMaterials.map((mat) => {
+                    const shortage = Math.max(0, mat.totalRequired - mat.inStock);
+                    const price = parseFloat(mat.price ?? "0") || 0;
+                    const totalCost = price * mat.totalRequired;
+                    const isExpanded = consolidatedExpanded === mat.materialId;
+                    return (
+                      <>
+                        <tr
+                          key={mat.materialId}
+                          className={`hover:bg-slate-50 cursor-pointer ${shortage > 0 ? "bg-red-50/40" : ""}`}
+                          onClick={() =>
+                            setConsolidatedExpanded(isExpanded ? null : mat.materialId)
+                          }
+                        >
+                          <td className="px-5 py-3 font-semibold text-slate-900">
+                            {mat.materialName}
+                          </td>
+                          <td className="px-3 py-3 font-mono text-xs text-slate-400">
+                            {mat.productCode ?? "—"}
+                          </td>
+                          <td className="px-3 py-3 text-center text-slate-600">{mat.unit}</td>
+                          <td className="px-3 py-3 text-center">
+                            <span className={mat.inStock < mat.totalRequired ? "text-red-600 font-bold" : "text-emerald-600 font-bold"}>
+                              {mat.inStock}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 text-center font-bold text-slate-900">
+                            {mat.totalRequired % 1 === 0 ? mat.totalRequired : mat.totalRequired.toFixed(3)}
+                          </td>
+                          <td className="px-3 py-3 text-center">
+                            {shortage > 0 ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                                <AlertCircle className="h-3 w-3" /> {shortage % 1 === 0 ? shortage : shortage.toFixed(3)} eksik
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700">
+                                <CheckCircle2 className="h-3 w-3" /> Yeterli
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 text-right text-slate-600">
+                            {price > 0 ? price.toLocaleString("tr-TR", { minimumFractionDigits: 2 }) + " ₺" : "—"}
+                          </td>
+                          <td className="px-3 py-3 text-right font-bold text-slate-900">
+                            {totalCost > 0 ? totalCost.toLocaleString("tr-TR", { minimumFractionDigits: 2 }) + " ₺" : "—"}
+                          </td>
+                          <td className="px-3 py-3 text-slate-400 text-xs">
+                            {isExpanded ? "▲" : "▼"}
+                          </td>
+                        </tr>
+                        {isExpanded && mat.breakdown.map((b, i) => (
+                          <tr key={i} className="bg-blue-50/60">
+                            <td className="pl-10 pr-3 py-2 text-xs text-slate-600 italic" colSpan={3}>
+                              {b.productTitle}
+                            </td>
+                            <td />
+                            <td className="py-2 text-center text-xs text-slate-600">
+                              {b.bomQty} × {b.orderQty} = {b.lineQty % 1 === 0 ? b.lineQty : b.lineQty.toFixed(3)}
+                            </td>
+                            <td colSpan={4} />
+                          </tr>
+                        ))}
+                      </>
+                    );
+                  })}
+                </tbody>
+                <tfoot className="bg-slate-50 border-t-2 border-slate-200">
+                  <tr>
+                    <td colSpan={7} className="px-5 py-3 text-right text-sm font-bold text-slate-600">
+                      Toplam Malzeme Maliyeti
+                    </td>
+                    <td className="px-3 py-3 text-right text-base font-bold text-emerald-700">
+                      {consolidatedMaterials
+                        .reduce((sum, m) => sum + (parseFloat(m.price ?? "0") || 0) * m.totalRequired, 0)
+                        .toLocaleString("tr-TR", { minimumFractionDigits: 2 })}{" "}₺
+                    </td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           )}
         </div>
       )}

@@ -25,6 +25,7 @@ import WarrantyPage from "./admin/WarrantyPage";
 import WarrantyDeviceDetailPage from "./admin/WarrantyDeviceDetailPage";
 import ProductionPage from "./admin/ProductionPage";
 import ProductionDetailPage from "./admin/ProductionDetailPage";
+import RecetePage from "./admin/RecetePage";
 import ServisRaporlariPage from "./admin/ServisRaporlariPage";
 import ServisRaporuFormPage from "./admin/ServisRaporuFormPage";
 import AdminEmailLogsPage from "./admin/AdminEmailLogsPage";
@@ -114,6 +115,7 @@ export default function App() {
             <Route path="garanti/:id" element={<WarrantyDeviceDetailPage />} />
             <Route path="uretim" element={<ProductionPage />} />
             <Route path="uretim/:id" element={<ProductionDetailPage />} />
+            <Route path="recete" element={<RecetePage />} />
             <Route path="servis-raporlari" element={<ServisRaporlariPage />} />
             <Route path="servis-raporlari/yeni" element={<ServisRaporuFormPage />} />
             <Route path="servis-raporlari/:id" element={<ServisRaporuFormPage />} />

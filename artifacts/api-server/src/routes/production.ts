@@ -13,8 +13,9 @@ import {
   quoteForms,
   quoteFormItems,
   DEFAULT_QUALITY_CHECKLIST,
+  templateBomItemsTable,
 } from "@workspace/db";
-import { eq, and, desc, asc, sql, like, inArray } from "drizzle-orm";
+import { eq, and, desc, asc, sql, like, inArray, isNotNull } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
@@ -532,7 +533,153 @@ router.patch("/production/orders/:id/items/:itemId/status", requireAuth, async (
   res.json(updated);
 });
 
-// ── BOM: Get ──────────────────────────────────────────────────────────────────
+// ── Template BOM: Get ────────────────────────────────────────────────────────
+
+router.get("/template-bom/:templateId", requireAuth, async (req, res): Promise<void> => {
+  const templateId = parseId(req.params["templateId"]!);
+  const bom = await db
+    .select({
+      id: templateBomItemsTable.id,
+      materialId: templateBomItemsTable.materialId,
+      requiredQty: templateBomItemsTable.requiredQty,
+      materialName: materialStock.name,
+      unit: materialStock.unit,
+      price: materialStock.price,
+      inStock: materialStock.quantity,
+      productCode: materialStock.productCode,
+    })
+    .from(templateBomItemsTable)
+    .leftJoin(materialStock, eq(templateBomItemsTable.materialId, materialStock.id))
+    .where(eq(templateBomItemsTable.templateId, templateId))
+    .orderBy(asc(templateBomItemsTable.id));
+  res.json(bom);
+});
+
+// ── Template BOM: Set (replace all) ──────────────────────────────────────────
+
+const TemplateBomItemBody = z.object({
+  materialId: z.coerce.number().int(),
+  requiredQty: z.coerce.number().positive(),
+});
+
+router.put("/template-bom/:templateId", requireAuth, async (req, res): Promise<void> => {
+  const templateId = parseId(req.params["templateId"]!);
+  const parsed = z.array(TemplateBomItemBody).safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+
+  await db.delete(templateBomItemsTable).where(eq(templateBomItemsTable.templateId, templateId));
+
+  if (parsed.data.length === 0) { res.json([]); return; }
+
+  const rows = await db
+    .insert(templateBomItemsTable)
+    .values(parsed.data.map((item) => ({
+      templateId,
+      materialId: item.materialId,
+      requiredQty: String(item.requiredQty),
+    })))
+    .returning();
+  res.json(rows);
+});
+
+// ── Consolidated materials for all production orders in a quote ───────────────
+
+router.get("/production/consolidated-materials", requireAuth, async (req, res): Promise<void> => {
+  const rawId = req.query["quoteFormId"];
+  if (!rawId) { res.status(400).json({ error: "quoteFormId zorunludur" }); return; }
+  const quoteFormId = parseId(String(rawId));
+
+  const orders = await db
+    .select({
+      id: productionOrdersTable.id,
+      productId: productionOrdersTable.productId,
+      productTitle: productionOrdersTable.productTitle,
+      quantity: productionOrdersTable.quantity,
+      status: productionOrdersTable.status,
+    })
+    .from(productionOrdersTable)
+    .where(and(
+      eq(productionOrdersTable.quoteFormId, quoteFormId),
+      isNotNull(productionOrdersTable.productId),
+    ));
+
+  if (orders.length === 0) {
+    res.json({ items: [], orders: [] });
+    return;
+  }
+
+  const productIds = [...new Set(orders.map((o) => o.productId!))] as number[];
+
+  const bom = await db
+    .select({
+      productId: productBomItemsTable.productId,
+      materialId: productBomItemsTable.materialId,
+      requiredQty: productBomItemsTable.requiredQty,
+      materialName: materialStock.name,
+      productCode: materialStock.productCode,
+      unit: materialStock.unit,
+      inStock: materialStock.quantity,
+      price: materialStock.price,
+    })
+    .from(productBomItemsTable)
+    .leftJoin(materialStock, eq(productBomItemsTable.materialId, materialStock.id))
+    .where(inArray(productBomItemsTable.productId, productIds));
+
+  type MaterialEntry = {
+    materialId: number;
+    materialName: string;
+    productCode: string | null;
+    unit: string;
+    inStock: number;
+    price: string | null;
+    totalRequired: number;
+    breakdown: Array<{ productTitle: string; orderQty: number; bomQty: number; lineQty: number }>;
+  };
+  const materialMap = new Map<number, MaterialEntry>();
+
+  for (const bomItem of bom) {
+    for (const order of orders) {
+      if (order.productId !== bomItem.productId) continue;
+      const lineQty = bomItem.requiredQty * order.quantity;
+      const existing = materialMap.get(bomItem.materialId);
+      if (existing) {
+        existing.totalRequired += lineQty;
+        existing.breakdown.push({
+          productTitle: order.productTitle,
+          orderQty: order.quantity,
+          bomQty: bomItem.requiredQty,
+          lineQty,
+        });
+      } else {
+        materialMap.set(bomItem.materialId, {
+          materialId: bomItem.materialId,
+          materialName: bomItem.materialName ?? "Bilinmeyen",
+          productCode: bomItem.productCode ?? null,
+          unit: bomItem.unit ?? "adet",
+          inStock: bomItem.inStock ?? 0,
+          price: bomItem.price ?? null,
+          totalRequired: lineQty,
+          breakdown: [{
+            productTitle: order.productTitle,
+            orderQty: order.quantity,
+            bomQty: bomItem.requiredQty,
+            lineQty,
+          }],
+        });
+      }
+    }
+  }
+
+  const items = [...materialMap.values()].sort((a, b) =>
+    a.materialName.localeCompare(b.materialName, "tr"),
+  );
+  res.json({
+    items,
+    orders: orders.map((o) => ({ id: o.id, productTitle: o.productTitle, quantity: o.quantity, status: o.status })),
+  });
+});
+
+// ── Product BOM: Get ──────────────────────────────────────────────────────────
 
 router.get("/production/bom/:productId", requireAuth, async (req, res): Promise<void> => {
   const productId = parseId(req.params["productId"]!);

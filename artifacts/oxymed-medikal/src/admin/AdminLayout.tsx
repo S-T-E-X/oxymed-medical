@@ -26,6 +26,7 @@ import {
   ClipboardCheck,
   Users,
   SlidersHorizontal,
+  FlaskConical,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
@@ -59,6 +60,7 @@ const stockNavItems = [
 
 const productionNavItems = [
   { label: "Üretim Emirleri", icon: Factory, to: "/admin/uretim" },
+  { label: "Reçete Yönetimi", icon: FlaskConical, to: "/admin/recete" },
 ];
 
 const quoteNavItems = [

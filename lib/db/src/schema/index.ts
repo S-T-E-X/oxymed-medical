@@ -28,3 +28,4 @@ export * from "./serviceReportParts";
 export * from "./serviceReportEmailLogs";
 export * from "./emailLogs";
 export * from "./visitorEvents";
+export * from "./templateBomItems";
