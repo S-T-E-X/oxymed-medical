@@ -17,13 +17,9 @@ import { useAuth } from "./AuthContext";
 type Template = {
   id: number;
   name: string;
+  description?: string | null;
   modelCode?: string | null;
   imageUrl?: string | null;
-  children: Array<{
-    title?: string;
-    modelCode?: string;
-    imageUrl?: string;
-  }>;
 };
 
 type Material = {
@@ -67,11 +63,13 @@ export default function RecetePage() {
   useEffect(() => {
     Promise.all([
       authFetch("/api/quote-group-templates").then((r) => r.json()),
-      authFetch("/stock/materials").then((r) => r.json()),
+      authFetch("/api/stock/materials").then((r) => r.json()),
     ])
       .then(([tmplData, matData]: [Template[], Material[]]) => {
         setTemplates(
-          (tmplData ?? []).filter((t) => t.children !== undefined).sort((a, b) => a.name.localeCompare(b.name, "tr")),
+          (tmplData ?? [])
+            .filter((t) => t.description === "__single_item_template")
+            .sort((a, b) => a.name.localeCompare(b.name, "tr")),
         );
         setMaterials(matData ?? []);
       })
@@ -169,8 +167,10 @@ export default function RecetePage() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Kayıt hatası");
-      const updated = (await res.json()) as BomRow[];
-      setBomMap((prev) => ({ ...prev, [templateId]: updated.length > 0 ? updated : rows }));
+      // Re-fetch to get joined material info (name, unit, price)
+      const fresh = await authFetch(`/api/template-bom/${templateId}`);
+      const freshData = (await fresh.json()) as BomRow[];
+      setBomMap((prev) => ({ ...prev, [templateId]: freshData }));
       toast.success("Reçete kaydedildi");
     } catch {
       toast.error("Kaydedilemedi");
@@ -245,8 +245,7 @@ export default function RecetePage() {
             const isOpen = expandedId === t.id;
             const rows = bomMap[t.id] ?? [];
             const totalCost = calcCost(rows);
-            const src = t.children[0];
-            const img = src?.imageUrl ?? t.imageUrl;
+            const img = t.imageUrl;
 
             return (
               <div

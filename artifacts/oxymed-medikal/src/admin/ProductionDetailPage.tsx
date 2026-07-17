@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Factory, CheckCircle2, AlertCircle, Package,
@@ -1024,9 +1024,8 @@ export default function ProductionDetailPage() {
                     const totalCost = price * mat.totalRequired;
                     const isExpanded = consolidatedExpanded === mat.materialId;
                     return (
-                      <>
+                      <React.Fragment key={mat.materialId}>
                         <tr
-                          key={mat.materialId}
                           className={`hover:bg-slate-50 cursor-pointer ${shortage > 0 ? "bg-red-50/40" : ""}`}
                           onClick={() =>
                             setConsolidatedExpanded(isExpanded ? null : mat.materialId)
@@ -1080,7 +1079,7 @@ export default function ProductionDetailPage() {
                             <td colSpan={4} />
                           </tr>
                         ))}
-                      </>
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
