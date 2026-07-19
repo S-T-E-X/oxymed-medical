@@ -171,21 +171,33 @@
   font-weight: 700;
 }
 
-.gcp-hero-photo {
+.gcp-hero-photo-note {
   justify-self: stretch;
   align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   min-height: 430px;
-  overflow: hidden;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  pointer-events: none;
 }
 
-.gcp-hero-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
+.gcp-hero-photo-note span,
+.gcp-hero-photo-note strong {
+  display: block;
+}
+
+.gcp-hero-photo-note span {
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.gcp-hero-photo-note strong {
+  margin-top: 9px;
+  color: #e0a052;
+  font-size: 18px;
+  font-weight: 900;
 }
 
 .gcp-card-row {
