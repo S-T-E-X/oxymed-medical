@@ -26,7 +26,7 @@ export const navItems: NavItem[] = [
   { label: "REFERANSLAR", href: "/referanslar" },
   { label: "HABERLER", href: "/haberler" },
   { label: "SERVİS", href: "/servis" },
-  { label: "İLETİŞİM", href: "/#iletisim" }
+  { label: "İLETİŞİM", href: "/teklif-al" }
 ];
 
 export const features: FeatureItem[] = [
