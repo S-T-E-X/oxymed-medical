@@ -222,9 +222,12 @@ export default function GasControlPanelPage() {
               </div>
             </div>
 
-            <div className="gcp-hero-photo-note" aria-hidden="true">
-              <span>Hero ürün fotoğraf alanı</span>
-              <strong>1920 x 720 px WEBP</strong>
+            <div className="gcp-hero-photo">
+              <img
+                src="/assets/images/gazalarmpanosu.webp"
+                alt="3 Gazlı Kat Kontrol Panosu"
+                loading="eager"
+              />
             </div>
           </div>
         </section>
