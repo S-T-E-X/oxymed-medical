@@ -51,6 +51,10 @@
   height: auto;
 }
 
+[dir="rtl"] .qt-top-main h1 {
+  transform: translateX(5mm);
+}
+
 .qt-top-main h1 {
   transform: translateX(-5mm);
   margin: 0;
@@ -271,7 +275,7 @@
 
 .qt-card-watermark {
   position: absolute;
-  right: 7mm;
+  inset-inline-end: 7mm;
   bottom: 8mm;
   color: #10234b;
   opacity: 0.07;
@@ -387,6 +391,10 @@
   text-align: left !important;
 }
 
+[dir="rtl"] .qt-description {
+  text-align: right !important;
+}
+
 .qt-description strong {
   display: block;
   margin-bottom: 1.25mm;
@@ -399,7 +407,7 @@
 
 .qt-description ul {
   margin: 0;
-  padding-left: 3.5mm;
+  padding-inline-start: 3.5mm;
 }
 
 .qt-description li {
@@ -591,7 +599,7 @@
 
 .qt-dot-list {
   gap: 0.55mm;
-  padding-left: 5mm;
+  padding-inline-start: 5mm;
   list-style: disc;
 }
 
@@ -632,7 +640,7 @@
 
 .qt-total-box dd {
   justify-content: flex-end;
-  border-left: 0.22mm solid #d3dce7;
+  border-inline-start: 0.22mm solid #d3dce7;
 }
 
 .qt-total-box .grand {
@@ -740,7 +748,7 @@
 .qt-sign-watermark {
   position: absolute;
   z-index: 1;
-  right: 8mm;
+  inset-inline-end: 8mm;
   top: 11mm;
   width: 35mm;
   opacity: 0.18;
@@ -760,11 +768,11 @@
   align-items: center;
   min-height: 18mm;
   padding: 0 3.5mm;
-  border-right: 0.22mm solid #c8d3e2;
+  border-inline-end: 0.22mm solid #c8d3e2;
 }
 
 .qt-trust-row > div:last-child {
-  border-right: 0;
+  border-inline-end: 0;
 }
 
 .qt-trust-row svg {

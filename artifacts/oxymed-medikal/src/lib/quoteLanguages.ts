@@ -29,3 +29,12 @@ export function isQuoteLanguage(value: string | null | undefined): value is Quot
 export function quoteLanguageLabel(code: string): string {
   return QUOTE_LANGUAGES.find((l) => l.code === code)?.label ?? code.toUpperCase();
 }
+
+// Right-to-left script languages — the quote template/print view switches its
+// whole page to dir="rtl" for these so the document reads right-to-left, not
+// just the glyph shaping.
+const RTL_LANGUAGES: ReadonlySet<string> = new Set(["ar", "fa"]);
+
+export function isRtlLanguage(code: string | null | undefined): boolean {
+  return !!code && RTL_LANGUAGES.has(code);
+}

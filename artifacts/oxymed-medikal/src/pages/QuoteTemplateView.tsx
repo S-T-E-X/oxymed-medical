@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { type QuoteLanguage } from "../lib/quoteLanguages";
+import { isRtlLanguage, type QuoteLanguage } from "../lib/quoteLanguages";
 import "./QuoteTemplatePage.css";
 
 export type { QuoteLanguage };
@@ -1452,10 +1452,12 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
   const totalPages = itemPages.length + (attachToLast ? 0 : 1);
   const ready = rawPages.length <= 1 ? pageScaleReady : measuredPlan !== null;
 
+  const dir = isRtlLanguage(data.language) ? "rtl" : "ltr";
+
   if (data.items.length === 0) {
     const totalPages0 = 1;
     return (
-      <main className="qt-preview">
+      <main className="qt-preview" dir={dir}>
         <article className="qt-page first with-footer">
           <QuoteTopInfo data={data} />
           <ItemsTable items={[]} pageIndex={0} totalPages={totalPages0} currency={data.paraBirimi} language={data.language} />
@@ -1467,7 +1469,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
 
   return (
     <>
-      <main className="qt-preview" data-quote-ready={ready ? "1" : undefined}>
+      <main className="qt-preview" dir={dir} data-quote-ready={ready ? "1" : undefined}>
         {itemPages.map((items, index) => {
           const isFirst = index === 0;
           const isLastItemPage = index === itemPages.length - 1;
@@ -1547,6 +1549,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
           ref={measureRef}
           aria-hidden="true"
           className="qt-measure-host"
+          dir={dir}
           style={{
             position: "absolute",
             left: "-99999px",
@@ -1581,6 +1584,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
           ref={shrinkRef}
           aria-hidden="true"
           className="qt-measure-host"
+          dir={dir}
           style={{
             position: "absolute",
             left: "-99999px",

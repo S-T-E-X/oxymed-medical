@@ -327,7 +327,7 @@ type TranslatableManifest = {
   onaytayanGorev: string;
   hizmetler: string[];
   sartlar: string[];
-  items: Record<string, { title: string; bullets: string[] }>;
+  items: Record<string, { title: string; bullets: string[]; modelCode: string }>;
 };
 
 async function translateManifest(
@@ -349,7 +349,11 @@ async function translateManifest(
           `You are a professional B2B translator for a medical equipment manufacturer's sales quotations. ` +
           `Translate every string value in the given JSON from ${sourceName} to ${targetName}. ` +
           `Keep the exact same JSON keys and structure — only translate the string VALUES. ` +
-          `Preserve numbers, percentages, currency codes, model codes, and placeholders unchanged. ` +
+          `Preserve numbers, percentages, and currency codes unchanged. ` +
+          `Each item has a "modelCode" field: if it is a genuine product/part code (short alphanumeric string with no ` +
+          `natural-language words, e.g. "OXM-1234"), leave it completely unchanged; if it is instead a natural-language ` +
+          `descriptive phrase (e.g. a variant label like "1 Gaz İçin" meaning "For 1 gas outlet"), translate it like any ` +
+          `other text. ` +
           `Use natural, professional, native-sounding business language appropriate for a formal price quotation. ` +
           `If a value is an empty string, keep it as an empty string. ` +
           `Respond with ONLY a JSON object matching the input shape, no commentary.`,
@@ -418,7 +422,7 @@ router.post("/quote-forms/:id/translate", requireAuth, async (req, res): Promise
       items: Object.fromEntries(
         originalItems.map((it) => [
           String(idMap.get(it.id) ?? it.id),
-          { title: it.title ?? "", bullets: it.bullets ?? [] },
+          { title: it.title ?? "", bullets: it.bullets ?? [], modelCode: it.modelCode ?? "" },
         ]),
       ),
     };
@@ -446,6 +450,7 @@ router.post("/quote-forms/:id/translate", requireAuth, async (req, res): Promise
         .set({
           title: t.title || item.title,
           bullets: Array.isArray(t.bullets) ? t.bullets : item.bullets,
+          modelCode: t.modelCode || item.modelCode,
         })
         .where(eq(quoteFormItems.id, item.id));
     }

@@ -39,8 +39,21 @@ item titles/bullets) as a flat JSON manifest keyed by item id. Proper nouns —
 company name/address, preparer's name, signature — are intentionally excluded
 and just copied over unchanged by the duplicate.
 
-**Known limitation (flagged, not solved):** no RTL layout for Arabic/Farsi —
-content renders correctly in-script but LTR box direction is unchanged.
+**RTL support (ar/fa):** the print/template view (`QuoteTemplateView.tsx`) sets
+`dir="rtl"` on its root `<main>` (via `isRtlLanguage()` in `quoteLanguages.ts`)
+and the CSS (`QuoteTemplatePage.css`) uses logical properties
+(`padding-inline-start`, `border-inline-start/end`, `inset-inline-end`) instead
+of physical `left`/`right` wherever a rule is a directional divider/indent —
+this makes grids, the HTML item table, and flex rows auto-mirror under
+`dir="rtl"` with zero JS. Only a few things need an explicit `[dir="rtl"]`
+override because they have no logical equivalent: the `transform: translateX`
+title nudge, and forced `text-align: left !important` on item descriptions.
+**Why:** logical properties are the only way to keep one CSS source of truth
+correct for both directions on a fixed-size A4 print layout — hand-writing a
+mirrored stylesheet doubles maintenance and drifts. Verified visually via a
+puppeteer screenshot (reusing the existing PDF-export's `localStorage
+admin_token` injection trick) against a translated ar and fa quote with
+grouped items — table/columns/watermarks/dividers all mirrored correctly.
 
 **Group/single-item templates** (`quote_group_templates` table) only ever
 have `tr`/`titleEn`-style TR/EN mirror fields, not all 14 languages. Template
