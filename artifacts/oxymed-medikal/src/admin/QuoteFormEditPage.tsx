@@ -21,9 +21,11 @@ import {
   Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useListSettings } from "@workspace/api-client-react";
 import { useAuth } from "./AuthContext";
 import { useImageUpload } from "./useImageUpload";
+import { QUOTE_LANGUAGES, type QuoteLanguage } from "../lib/quoteLanguages";
 
 const UNITS = ["ADET", "SET", "METRE", "MT", "M2", "KG", "PAKET", "KUTU", "TAKIM"] as const;
 
@@ -118,7 +120,7 @@ type GroupTemplate = {
 
 // Picks the language-appropriate text for a template's content, falling back
 // to the Turkish original when no English translation was saved.
-function pickTemplateText(tr: string, en: string | null | undefined, lang: "tr" | "en"): string {
+function pickTemplateText(tr: string, en: string | null | undefined, lang: QuoteLanguage): string {
   if (lang === "en" && en && en.trim()) return en;
   return tr;
 }
@@ -145,7 +147,7 @@ type FormDraft = {
   teslimatSuresi: string;
   odemeSekli: string;
   paraBirimi: string;
-  language: "tr" | "en";
+  language: QuoteLanguage;
   iskonto: string;
   iskontoTipi: "yuzde" | "tutar";
   kdv: string;
@@ -581,7 +583,7 @@ function SingleItemTemplatePickerModal({
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onApply: (draft: Omit<ItemDraft, "sortOrder" | "expanded" | "children" | "id" | "productId">) => void;
   onClose: () => void;
-  language: "tr" | "en";
+  language: QuoteLanguage;
 }) {
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -724,7 +726,7 @@ function TemplatePickerModal({
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onApply: (children: ChildItemDraft[]) => void;
   onClose: () => void;
-  language: "tr" | "en";
+  language: QuoteLanguage;
 }) {
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -975,7 +977,7 @@ function GroupTemplateAddModal({
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onApply: (draft: ItemDraft) => void;
   onClose: () => void;
-  language: "tr" | "en";
+  language: QuoteLanguage;
 }) {
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1251,7 +1253,7 @@ function GroupItemRow({
   isFirst: boolean;
   isLast: boolean;
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
-  language: "tr" | "en";
+  language: QuoteLanguage;
 }) {
   const groupTotal = item.children.reduce(
     (s, c) => s + c.quantity * parseFloat(c.unitPrice || "0"),
@@ -1840,6 +1842,36 @@ function ItemRow({
   );
 }
 
+// ── AI Translation ───────────────────────────────────────────────────────────
+
+type ApiQuoteForm = { id: number; quoteNo: string; language?: string | null };
+
+function useTranslateQuoteForm() {
+  const { authFetch } = useAuth();
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: async ({ id, targetLanguage }: { id: number; targetLanguage: QuoteLanguage }) => {
+      const r = await authFetch(`/api/quote-forms/${id}/translate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetLanguage }),
+      });
+      if (!r.ok) {
+        const body = await r.json().catch(() => null);
+        throw new Error(body?.error ?? "Çeviri başarısız");
+      }
+      return r.json() as Promise<ApiQuoteForm>;
+    },
+    onSuccess: (form) => {
+      qc.invalidateQueries({ queryKey: ["quote-forms"] });
+      toast.success(`Çevrildi → ${form.quoteNo}`);
+      navigate(`/admin/teklif-formlari/${form.id}`);
+    },
+    onError: (err: Error) => toast.error(err.message || "Çeviri başarısız"),
+  });
+}
+
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function QuoteFormEditPage() {
@@ -1850,6 +1882,7 @@ export default function QuoteFormEditPage() {
   const imzaInputRef = useRef<HTMLInputElement>(null);
   const { data: settings } = useListSettings();
   const preparers = parsePreparers((settings as Record<string, string> | undefined)?.["hazirlayan_kisiler"]);
+  const translateMut = useTranslateQuoteForm();
 
   const [quoteNo, setQuoteNo] = useState("");
   const [tab, setTab] = useState<"items" | "info">("items");
@@ -1924,7 +1957,7 @@ export default function QuoteFormEditPage() {
           teslimatSuresi: data.teslimatSuresi ?? prev.teslimatSuresi,
           odemeSekli: data.odemeSekli ?? prev.odemeSekli,
           paraBirimi: data.paraBirimi ?? "EUR",
-          language: data.language === "en" ? "en" : "tr",
+          language: (QUOTE_LANGUAGES.some((l) => l.code === data.language) ? data.language : "tr") as QuoteLanguage,
           iskonto: data.iskonto ?? "0",
           iskontoTipi: (data.iskontoTipi === "tutar" ? "tutar" : "yuzde") as "yuzde" | "tutar",
           kdv: data.kdv ?? "20",
@@ -2248,21 +2281,33 @@ export default function QuoteFormEditPage() {
           <p className="text-sm font-bold text-slate-700">{quoteNo}</p>
           <p className="text-xs text-slate-400">Teklif Formu Düzenle</p>
         </div>
-        <div className="flex items-center rounded-full bg-slate-100 p-0.5 ring-1 ring-slate-200">
-          {(["tr", "en"] as const).map((lang) => (
-            <button
-              key={lang}
-              type="button"
-              onClick={() => setForm((prev) => ({ ...prev, language: lang }))}
-              title={lang === "tr" ? "Türkçe teklif formu" : "İngilizce teklif formu (English quote form)"}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase transition ${
-                form.language === lang ? "bg-blue-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              {lang}
-            </button>
+        <select
+          value={form.language}
+          onChange={(e) => setForm((prev) => ({ ...prev, language: e.target.value as QuoteLanguage }))}
+          title="Teklif formu dili"
+          className="rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-bold uppercase text-slate-600 ring-1 ring-slate-200 outline-none"
+        >
+          {QUOTE_LANGUAGES.map((l) => (
+            <option key={l.code} value={l.code}>{l.code} · {l.label}</option>
           ))}
-        </div>
+        </select>
+        <select
+          value=""
+          disabled={translateMut.isPending || !id}
+          onChange={(e) => {
+            const target = e.target.value as QuoteLanguage;
+            if (!target || !id) return;
+            translateMut.mutate({ id: Number(id), targetLanguage: target });
+            e.target.value = "";
+          }}
+          title="Bu teklifi başka bir dile AI ile çevir (yeni bir taslak oluşturur)"
+          className="rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 ring-1 ring-emerald-200 outline-none disabled:opacity-60"
+        >
+          <option value="">{translateMut.isPending ? "Çevriliyor…" : "AI ile Çevir"}</option>
+          {QUOTE_LANGUAGES.filter((l) => l.code !== form.language).map((l) => (
+            <option key={l.code} value={l.code}>{l.label}'ye çevir</option>
+          ))}
+        </select>
         <select
           value={form.status}
           onChange={setField("status")}

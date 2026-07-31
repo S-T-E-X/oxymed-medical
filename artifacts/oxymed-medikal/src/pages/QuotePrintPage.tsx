@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Loader2, Download } from "lucide-react";
 import QuoteTemplateView, { type QuoteViewData } from "./QuoteTemplateView";
 import { useAuth } from "../admin/AuthContext";
+import { isQuoteLanguage, type QuoteLanguage } from "../lib/quoteLanguages";
 
 type ApiForm = {
   id: number;
@@ -17,7 +18,7 @@ type ApiForm = {
   teslimatSuresi?: string | null;
   odemeSekli?: string | null;
   paraBirimi: string;
-  language?: "tr" | "en" | null;
+  language?: QuoteLanguage | string | null;
   hizmetler?: string[];
   sartlar?: string[];
   notlar?: string | null;
@@ -139,7 +140,7 @@ function toViewData(form: ApiForm): QuoteViewData {
     teslimatSuresi: form.teslimatSuresi ?? "",
     odemeSekli: form.odemeSekli ?? "",
     paraBirimi: form.paraBirimi ?? "EUR",
-    language: form.language === "en" ? "en" : "tr",
+    language: isQuoteLanguage(form.language) ? form.language : "tr",
     hizmetler: form.hizmetler ?? [],
     sartlar: form.sartlar ?? [],
     notlar: form.notlar ?? "",

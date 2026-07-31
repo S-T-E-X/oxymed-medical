@@ -3,9 +3,11 @@ import { db, quoteForms, quoteFormItems, quoteGroupTemplates, productionOrdersTa
 import { eq, desc, like } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { sendQuoteFormEmail } from "../lib/mailer";
+import { openai } from "@workspace/integrations-openai-ai-server";
 import { z } from "zod/v4";
 import path from "path";
 import { readFile } from "fs/promises";
+import { QUOTE_LANGUAGE_CODES, quoteLanguageEnglishName } from "../lib/quoteLanguages";
 
 const router: IRouter = Router();
 
@@ -49,7 +51,7 @@ const QuoteFormBody = z.object({
   odemeSekli: z.string().optional().nullable(),
   status: z.string().optional(),
   paraBirimi: z.string().optional(),
-  language: z.enum(["tr", "en"]).optional(),
+  language: z.enum(QUOTE_LANGUAGE_CODES).optional(),
   hizmetler: z.array(z.string()).optional(),
   sartlar: z.array(z.string()).optional(),
   notlar: z.string().optional().nullable(),
@@ -236,29 +238,22 @@ router.delete("/quote-forms/:id", requireAuth, async (req, res): Promise<void> =
   res.sendStatus(204);
 });
 
-// Duplicate quote form — copies all fields and items, generates new quoteNo and timestamp
-router.post("/quote-forms/:id/duplicate", requireAuth, async (req, res): Promise<void> => {
-  const id = parseId(req.params["id"]!);
-
-  const [original] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
-  if (!original) {
-    res.status(404).json({ error: "Quote form not found" });
-    return;
-  }
-
-  const originalItems = await db
-    .select()
-    .from(quoteFormItems)
-    .where(eq(quoteFormItems.formId, id))
-    .orderBy(quoteFormItems.sortOrder);
-
+// Copies a form's fields and items into a brand-new draft (new quoteNo,
+// status reset). Shared by /duplicate and /translate. Returns the new form,
+// the new items, and an oldItemId → newItemId map for follow-up updates
+// (e.g. writing translated text back onto the copy).
+async function copyQuoteFormWithItems(
+  original: typeof quoteForms.$inferSelect,
+  originalItems: (typeof quoteFormItems.$inferSelect)[],
+  overrides: Partial<typeof quoteForms.$inferInsert> = {},
+) {
   const quoteNo = await generateQuoteNo();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id: _id, quoteNo: _qn, createdAt: _ca, updatedAt: _ua, ...formFields } = original;
   const [newForm] = await db
     .insert(quoteForms)
-    .values({ ...formFields, quoteNo, status: "draft" })
+    .values({ ...formFields, quoteNo, status: "draft", ...overrides })
     .returning();
 
   // Insert items: parents first, then children with remapped parentItemId
@@ -281,12 +276,191 @@ router.post("/quote-forms/:id/duplicate", requireAuth, async (req, res): Promise
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _iid, formId: _fid, ...itemFields } = item;
     const newParentId = item.parentItemId ? (idMap.get(item.parentItemId) ?? null) : null;
-    await db
+    const [inserted] = await db
       .insert(quoteFormItems)
-      .values({ ...itemFields, formId: newForm!.id, parentItemId: newParentId });
+      .values({ ...itemFields, formId: newForm!.id, parentItemId: newParentId })
+      .returning();
+    idMap.set(item.id, inserted!.id);
   }
 
+  const newItems = await db
+    .select()
+    .from(quoteFormItems)
+    .where(eq(quoteFormItems.formId, newForm!.id))
+    .orderBy(quoteFormItems.sortOrder);
+
+  return { newForm: newForm!, newItems, idMap };
+}
+
+// Duplicate quote form — copies all fields and items, generates new quoteNo and timestamp
+router.post("/quote-forms/:id/duplicate", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+
+  const [original] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
+  if (!original) {
+    res.status(404).json({ error: "Quote form not found" });
+    return;
+  }
+
+  const originalItems = await db
+    .select()
+    .from(quoteFormItems)
+    .where(eq(quoteFormItems.formId, id))
+    .orderBy(quoteFormItems.sortOrder);
+
+  const { newForm } = await copyQuoteFormWithItems(original, originalItems);
   res.status(201).json(newForm);
+});
+
+// Translate a quote form into another language — duplicates the form (new
+// quoteNo, draft status, source form untouched) and uses OpenAI to translate
+// the free-text fields (delivery/payment terms, notes, services, terms,
+// approver title, item titles/bullets) into the target language.
+const TranslateBody = z.object({
+  targetLanguage: z.enum(QUOTE_LANGUAGE_CODES),
+});
+
+type TranslatableManifest = {
+  teslimatSuresi: string;
+  odemeSekli: string;
+  notlar: string;
+  onaytayanGorev: string;
+  hizmetler: string[];
+  sartlar: string[];
+  items: Record<string, { title: string; bullets: string[] }>;
+};
+
+async function translateManifest(
+  manifest: TranslatableManifest,
+  sourceLanguage: string,
+  targetLanguage: string,
+): Promise<TranslatableManifest> {
+  const sourceName = quoteLanguageEnglishName(sourceLanguage);
+  const targetName = quoteLanguageEnglishName(targetLanguage);
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-5.6-terra",
+    max_completion_tokens: 8192,
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content:
+          `You are a professional B2B translator for a medical equipment manufacturer's sales quotations. ` +
+          `Translate every string value in the given JSON from ${sourceName} to ${targetName}. ` +
+          `Keep the exact same JSON keys and structure — only translate the string VALUES. ` +
+          `Preserve numbers, percentages, currency codes, model codes, and placeholders unchanged. ` +
+          `Use natural, professional, native-sounding business language appropriate for a formal price quotation. ` +
+          `If a value is an empty string, keep it as an empty string. ` +
+          `Respond with ONLY a JSON object matching the input shape, no commentary.`,
+      },
+      {
+        role: "user",
+        content: JSON.stringify(manifest),
+      },
+    ],
+  });
+
+  const raw = completion.choices[0]?.message?.content;
+  if (!raw) throw new Error("Çeviri servisinden yanıt alınamadı");
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error("Çeviri servisi geçersiz bir yanıt döndürdü");
+  }
+  return parsed as TranslatableManifest;
+}
+
+router.post("/quote-forms/:id/translate", requireAuth, async (req, res): Promise<void> => {
+  const id = parseId(req.params["id"]!);
+  const parsedBody = TranslateBody.safeParse(req.body);
+  if (!parsedBody.success) {
+    res.status(400).json({ error: parsedBody.error.issues[0]?.message ?? "Geçersiz istek" });
+    return;
+  }
+  const { targetLanguage } = parsedBody.data;
+
+  const [original] = await db.select().from(quoteForms).where(eq(quoteForms.id, id));
+  if (!original) {
+    res.status(404).json({ error: "Teklif formu bulunamadı" });
+    return;
+  }
+
+  const sourceLanguage = (QUOTE_LANGUAGE_CODES as readonly string[]).includes(original.language ?? "")
+    ? (original.language as string)
+    : "tr";
+
+  if (sourceLanguage === targetLanguage) {
+    res.status(400).json({ error: "Kaynak dil ile hedef dil aynı olamaz" });
+    return;
+  }
+
+  const originalItems = await db
+    .select()
+    .from(quoteFormItems)
+    .where(eq(quoteFormItems.formId, id))
+    .orderBy(quoteFormItems.sortOrder);
+
+  const { newForm, newItems, idMap } = await copyQuoteFormWithItems(original, originalItems, {
+    language: targetLanguage,
+  });
+
+  try {
+    const manifest: TranslatableManifest = {
+      teslimatSuresi: original.teslimatSuresi ?? "",
+      odemeSekli: original.odemeSekli ?? "",
+      notlar: original.notlar ?? "",
+      onaytayanGorev: original.onaytayanGorev ?? "",
+      hizmetler: original.hizmetler ?? [],
+      sartlar: original.sartlar ?? [],
+      items: Object.fromEntries(
+        originalItems.map((it) => [
+          String(idMap.get(it.id) ?? it.id),
+          { title: it.title ?? "", bullets: it.bullets ?? [] },
+        ]),
+      ),
+    };
+
+    const translated = await translateManifest(manifest, sourceLanguage, targetLanguage);
+
+    await db
+      .update(quoteForms)
+      .set({
+        teslimatSuresi: translated.teslimatSuresi ?? original.teslimatSuresi,
+        odemeSekli: translated.odemeSekli ?? original.odemeSekli,
+        notlar: translated.notlar ?? original.notlar,
+        onaytayanGorev: translated.onaytayanGorev ?? original.onaytayanGorev,
+        hizmetler: Array.isArray(translated.hizmetler) ? translated.hizmetler : original.hizmetler,
+        sartlar: Array.isArray(translated.sartlar) ? translated.sartlar : original.sartlar,
+        updatedAt: new Date(),
+      })
+      .where(eq(quoteForms.id, newForm.id));
+
+    for (const item of newItems) {
+      const t = translated.items?.[String(item.id)];
+      if (!t) continue;
+      await db
+        .update(quoteFormItems)
+        .set({
+          title: t.title || item.title,
+          bullets: Array.isArray(t.bullets) ? t.bullets : item.bullets,
+        })
+        .where(eq(quoteFormItems.id, item.id));
+    }
+
+    const [finalForm] = await db.select().from(quoteForms).where(eq(quoteForms.id, newForm.id));
+    res.status(201).json(finalForm);
+  } catch (err) {
+    // Roll back the partially-created duplicate so a failed translation
+    // doesn't leave an untranslated orphan draft behind.
+    await db.delete(quoteFormItems).where(eq(quoteFormItems.formId, newForm.id)).catch(() => { /* best-effort */ });
+    await db.delete(quoteForms).where(eq(quoteForms.id, newForm.id)).catch(() => { /* best-effort */ });
+    const msg = err instanceof Error ? err.message : String(err);
+    req.log.error({ err, formId: id, targetLanguage }, "Quote form translation failed");
+    res.status(500).json({ error: "Çeviri başarısız", detail: msg });
+  }
 });
 
 // List items for a form
