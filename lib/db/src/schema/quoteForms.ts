@@ -14,6 +14,7 @@ export const quoteForms = pgTable("quote_forms", {
   teslimatSuresi: text("teslimat_suresi"),
   odemeSekli: text("odeme_sekli"),
   paraBirimi: text("para_birimi").notNull().default("EUR"),
+  language: text("language").notNull().default("tr"),
   hizmetler: jsonb("hizmetler").$type<string[]>().default([]),
   sartlar: jsonb("sartlar").$type<string[]>().default([]),
   notlar: text("notlar"),
@@ -56,16 +57,20 @@ export const quoteFormItems = pgTable("quote_form_items", {
 export const quoteGroupTemplates = pgTable("quote_group_templates", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  nameEn: text("name_en"),
   description: text("description"),
+  descriptionEn: text("description_en"),
   modelCode: text("model_code"),
   imageUrl: text("image_url"),
   children: jsonb("children").$type<Array<{
     title: string;
+    titleEn?: string;
     modelCode?: string;
     unit?: string;
     quantity?: number;
     unitPrice?: string;
     bullets?: string[];
+    bulletsEn?: string[];
     imageUrl?: string;
   }>>().default([]),
   sortOrder: integer("sort_order").notNull().default(0),

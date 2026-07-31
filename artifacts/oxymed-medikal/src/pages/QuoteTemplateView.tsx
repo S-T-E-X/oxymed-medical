@@ -30,9 +30,12 @@ export type QuoteViewItem = {
   keepWithNext?: boolean;
 };
 
+export type QuoteLanguage = "tr" | "en";
+
 export type QuoteViewData = {
   quoteNo: string;
   quoteDate: string;
+  language?: QuoteLanguage;
   firmaAdi: string;
   firmaAdres: string;
   firmaTelefon: string;
@@ -61,15 +64,128 @@ export type QuoteViewData = {
   items: QuoteViewItem[];
 };
 
-const trustItems = [
-  { icon: ShieldCheck, title: "Yerli Üretim", text: "Yerli Üretim Güçlü Altyapı" },
-  { icon: BadgeCheck, title: "Kalite Güvencesi", text: "Yüksek Kalite Sertifikalı Ürünler" },
-  { icon: Headphones, title: "7/24 Teknik Destek", text: "Kesintisiz Destek Hızlı Çözüm" },
-  { icon: Users, title: "Müşteri Odaklı", text: "Güvenilir Hizmet Uzun Vadeli Çözümler" },
-];
+const trustItemsByLang = {
+  tr: [
+    { icon: ShieldCheck, title: "Yerli Üretim", text: "Yerli Üretim Güçlü Altyapı" },
+    { icon: BadgeCheck, title: "Kalite Güvencesi", text: "Yüksek Kalite Sertifikalı Ürünler" },
+    { icon: Headphones, title: "7/24 Teknik Destek", text: "Kesintisiz Destek Hızlı Çözüm" },
+    { icon: Users, title: "Müşteri Odaklı", text: "Güvenilir Hizmet Uzun Vadeli Çözümler" },
+  ],
+  en: [
+    { icon: ShieldCheck, title: "Local Manufacturing", text: "Local Manufacturing Strong Infrastructure" },
+    { icon: BadgeCheck, title: "Quality Assurance", text: "High Quality Certified Products" },
+    { icon: Headphones, title: "24/7 Technical Support", text: "Uninterrupted Support Fast Solutions" },
+    { icon: Users, title: "Customer Focused", text: "Reliable Service Long-term Solutions" },
+  ],
+} as const;
 
-function fmtPrice(num: number, currency: string): string {
-  return num.toLocaleString("tr-TR", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " " + currency;
+// ── Static UI chrome translations. Item content (title/bullets) is stored as
+// typed by the admin and passes through unchanged; only the fixed document
+// labels are translated here based on the form's language.
+const STRINGS = {
+  tr: {
+    docTitle: "Teklif Formu",
+    topInfoLabel: "Teklif üst bilgileri",
+    offerCardLabel: "Teklif bilgileri",
+    quoteNo: "Teklif No",
+    quoteDate: "Teklif Tarihi",
+    validity: "Geçerlilik Süresi",
+    validityValue: "30 Gün",
+    companyInfoTitle: "Teklif Verilen Kurum / Firma Bilgileri",
+    companyName: "Kurum / Firma Adı",
+    address: "Adres",
+    phone: "Telefon",
+    email: "E-posta",
+    taxOffice: "Vergi Dairesi",
+    taxNo: "Vergi No",
+    deliveryInfoTitle: "Teslimat ve Ödeme Bilgileri",
+    deliveryAddress: "Teslimat Adresi",
+    deliveryTime: "Teslimat Süresi",
+    paymentTerms: "Ödeme Şekli",
+    currency: "Para Birimi",
+    itemsTitle: "Teklif Kalemleri",
+    colNo: "No",
+    colImage: "Ürün Görseli",
+    colModel: "Model / Kod",
+    colDescription: "Ürün / Hizmet Açıklaması",
+    colQty: "Miktar",
+    colUnit: "Birim",
+    colUnitPrice: "Birim Fiyat",
+    colTotalPrice: "Toplam Fiyat",
+    tableNote: "Ürün görselleri temsilidir. Teknik özelliklerde değişiklik yapma hakkımız saklıdır.",
+    page: (i: number, total: number) => `Sayfa ${i} / ${total}`,
+    servicesTitle: "Teklif Kapsamına Dahil Olan Hizmetler",
+    termsTitle: "Genel Şartlar",
+    totalTitle: "Toplam",
+    subtotal: "Ara Toplam",
+    discount: "İskonto",
+    discountPct: (pct: string | number) => `İskonto (%${pct})`,
+    vatPct: (pct: string | number) => `KDV (%${pct})`,
+    grandTotal: "Genel Toplam",
+    notes: "Açıklamalar / Notlar",
+    preparedBy: "Teklifi Hazırlayan",
+    nameSurname: "Ad Soyad",
+    signature: "İmza / Kaşe",
+    approvedBy: "Teklifi Onaylayan",
+    position: "Görev",
+    approvalDate: "Onay Tarihi",
+  },
+  en: {
+    docTitle: "Quotation",
+    topInfoLabel: "Quotation header information",
+    offerCardLabel: "Quotation details",
+    quoteNo: "Quote No",
+    quoteDate: "Quote Date",
+    validity: "Validity Period",
+    validityValue: "30 Days",
+    companyInfoTitle: "Client / Company Information",
+    companyName: "Company Name",
+    address: "Address",
+    phone: "Phone",
+    email: "Email",
+    taxOffice: "Tax Office",
+    taxNo: "Tax No",
+    deliveryInfoTitle: "Delivery and Payment Information",
+    deliveryAddress: "Delivery Address",
+    deliveryTime: "Delivery Time",
+    paymentTerms: "Payment Terms",
+    currency: "Currency",
+    itemsTitle: "Quotation Items",
+    colNo: "No",
+    colImage: "Product Image",
+    colModel: "Model / Code",
+    colDescription: "Product / Service Description",
+    colQty: "Quantity",
+    colUnit: "Unit",
+    colUnitPrice: "Unit Price",
+    colTotalPrice: "Total Price",
+    tableNote: "Product images are for illustration purposes only. We reserve the right to make changes to technical specifications.",
+    page: (i: number, total: number) => `Page ${i} / ${total}`,
+    servicesTitle: "Services Included in This Quotation",
+    termsTitle: "General Terms",
+    totalTitle: "Total",
+    subtotal: "Subtotal",
+    discount: "Discount",
+    discountPct: (pct: string | number) => `Discount (%${pct})`,
+    vatPct: (pct: string | number) => `VAT (%${pct})`,
+    grandTotal: "Grand Total",
+    notes: "Remarks / Notes",
+    preparedBy: "Prepared By",
+    nameSurname: "Name Surname",
+    signature: "Signature / Stamp",
+    approvedBy: "Approved By",
+    position: "Position",
+    approvalDate: "Approval Date",
+  },
+} as const;
+
+function getStrings(lang?: QuoteLanguage) {
+  return STRINGS[lang === "en" ? "en" : "tr"];
+}
+
+function fmtPrice(num: number, currency: string, lang?: QuoteLanguage): string {
+  const locale = lang === "en" ? "en-US" : "tr-TR";
+  return num.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " " + currency;
 }
 
 function itemVisualWeight(it: QuoteViewItem): number {
@@ -162,48 +278,49 @@ function chunkItems(items: QuoteViewItem[], firstBudget = 19, nextBudget = 25): 
 }
 
 function QuoteTopInfo({ data }: { data: QuoteViewData }) {
+  const t = getStrings(data.language);
   const companyInfo = [
-    ["Kurum / Firma Adı", data.firmaAdi],
-    ["Adres", data.firmaAdres],
-    ["Telefon", data.firmaTelefon],
-    ["E-posta", data.firmaEmail],
-    ["Vergi Dairesi", data.firmaVergiDairesi],
-    ["Vergi No", data.firmaVergiNo],
+    [t.companyName, data.firmaAdi],
+    [t.address, data.firmaAdres],
+    [t.phone, data.firmaTelefon],
+    [t.email, data.firmaEmail],
+    [t.taxOffice, data.firmaVergiDairesi],
+    [t.taxNo, data.firmaVergiNo],
   ].filter(([, v]) => v);
 
   const deliveryInfo = [
-    ["Teslimat Adresi", data.teslimatAdresi],
-    ["Teslimat Süresi", data.teslimatSuresi],
-    ["Ödeme Şekli", data.odemeSekli],
+    [t.deliveryAddress, data.teslimatAdresi],
+    [t.deliveryTime, data.teslimatSuresi],
+    [t.paymentTerms, data.odemeSekli],
   ].filter(([, v]) => v);
 
   return (
-    <section className="qt-top-info" aria-label="Teklif üst bilgileri">
+    <section className="qt-top-info" aria-label={t.topInfoLabel}>
       <div className="qt-top-main">
         <img
           className="qt-logo-main"
           src="/assets/quote/oxymed-logoyesilmavi.webp"
           alt="Oxymed Medikal Gaz Sistemleri"
         />
-        <h1>Teklif Formu</h1>
+        <h1>{t.docTitle}</h1>
         <img
           className="qt-logo-client"
           src="/assets/brand/baskent-medikal-logo-125x90-1.webp"
           alt="Başkent Medikal"
         />
-        <aside className="qt-offer-card" aria-label="Teklif bilgileri">
+        <aside className="qt-offer-card" aria-label={t.offerCardLabel}>
           <div>
-            <strong>Teklif No</strong>
+            <strong>{t.quoteNo}</strong>
             <span>{data.quoteNo}</span>
           </div>
           <dl>
             <div>
-              <dt><CalendarDays size={15} /> Teklif Tarihi</dt>
+              <dt><CalendarDays size={15} /> {t.quoteDate}</dt>
               <dd>{data.quoteDate}</dd>
             </div>
             <div>
-              <dt>Geçerlilik Süresi</dt>
-              <dd>30 Gün</dd>
+              <dt>{t.validity}</dt>
+              <dd>{t.validityValue}</dd>
             </div>
           </dl>
         </aside>
@@ -218,7 +335,7 @@ function QuoteTopInfo({ data }: { data: QuoteViewData }) {
 
       <div className="qt-info-cards">
         <article className="qt-company-card">
-          <h2>Teklif Verilen Kurum / Firma Bilgileri</h2>
+          <h2>{t.companyInfoTitle}</h2>
           <div className="qt-info-card-body">
             {companyInfo.map(([label, value]) => (
               <p key={label}><span>{label}</span><b>:</b><em>{value}</em></p>
@@ -228,12 +345,12 @@ function QuoteTopInfo({ data }: { data: QuoteViewData }) {
         </article>
 
         <article className="qt-delivery-card">
-          <h2>Teslimat ve Ödeme Bilgileri</h2>
+          <h2>{t.deliveryInfoTitle}</h2>
           <div className="qt-info-card-body">
             {deliveryInfo.map(([label, value]) => (
               <p key={label}><span>{label}</span><b>:</b><em>{value}</em></p>
             ))}
-            <p><span>Para Birimi</span><b>:</b><strong>{data.paraBirimi}</strong></p>
+            <p><span>{t.currency}</span><b>:</b><strong>{data.paraBirimi}</strong></p>
           </div>
         </article>
       </div>
@@ -246,26 +363,29 @@ function ItemsTable({
   pageIndex,
   totalPages,
   currency,
+  language,
 }: {
   items: QuoteViewItem[];
   pageIndex: number;
   totalPages: number;
   currency: string;
+  language?: QuoteLanguage;
 }) {
+  const t = getStrings(language);
   return (
     <section className="qt-items">
-      <h2>Teklif Kalemleri</h2>
+      <h2>{t.itemsTitle}</h2>
       <table>
         <thead>
           <tr>
-            <th>No</th>
-            <th>Ürün Görseli</th>
-            <th>Model / Kod</th>
-            <th>Ürün / Hizmet Açıklaması</th>
-            <th>Miktar</th>
-            <th>Birim</th>
-            <th>Birim Fiyat</th>
-            <th>Toplam Fiyat</th>
+            <th>{t.colNo}</th>
+            <th>{t.colImage}</th>
+            <th>{t.colModel}</th>
+            <th>{t.colDescription}</th>
+            <th>{t.colQty}</th>
+            <th>{t.colUnit}</th>
+            <th>{t.colUnitPrice}</th>
+            <th>{t.colTotalPrice}</th>
           </tr>
         </thead>
         <tbody>
@@ -324,8 +444,8 @@ function ItemsTable({
                 </td>
                 <td>{item.quantity > 0 ? item.quantity : ""}</td>
                 <td>{item.unit}</td>
-                <td>{item.quantity > 0 ? fmtPrice(item.unitPrice, currency) : ""}</td>
-                <td>{item.quantity > 0 ? fmtPrice(total, currency) : ""}</td>
+                <td>{item.quantity > 0 ? fmtPrice(item.unitPrice, currency, language) : ""}</td>
+                <td>{item.quantity > 0 ? fmtPrice(total, currency, language) : ""}</td>
               </tr>
             );
           })}
@@ -333,14 +453,16 @@ function ItemsTable({
       </table>
 
       <div className="qt-table-note">
-        <span><Info size={13} /> Ürün görselleri temsilidir. Teknik özelliklerde değişiklik yapma hakkımız saklıdır.</span>
-        <b>Sayfa {pageIndex + 1} / {totalPages}</b>
+        <span><Info size={13} /> {t.tableNote}</span>
+        <b>{t.page(pageIndex + 1, totalPages)}</b>
       </div>
     </section>
   );
 }
 
 function FooterBlocks({ data }: { data: QuoteViewData }) {
+  const t = getStrings(data.language);
+  const trustItems = trustItemsByLang[data.language === "en" ? "en" : "tr"];
   // Group items have quantity=0 and unitPrice=0, so they don't affect totals
   const araTopam = data.items.reduce((s, it) => s + it.quantity * it.unitPrice, 0);
   const iskontoAmount = data.iskontoTipi === "tutar"
@@ -351,8 +473,8 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
   const genelTopam = kdvBase + kdvAmount;
   const cur = data.paraBirimi;
   const iskontoLabel = data.iskontoTipi === "tutar"
-    ? "İskonto"
-    : `İskonto (%${data.iskonto})`;
+    ? t.discount
+    : t.discountPct(data.iskonto);
   const showKdvRow = data.showKdv && data.kdv > 0;
   const showGenelToplamRow = data.showGenelToplam;
 
@@ -360,7 +482,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
     <section className="qt-footer-blocks">
       <div className="qt-summary-row">
         <article>
-          <h2>Teklif Kapsamına Dahil Olan Hizmetler</h2>
+          <h2>{t.servicesTitle}</h2>
           <ul className="qt-check-list">
             {data.hizmetler.map((item, i) => (
               <li key={i}><CheckCircle2 size={14} /> {item}</li>
@@ -369,7 +491,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
         </article>
 
         <article>
-          <h2>Genel Şartlar</h2>
+          <h2>{t.termsTitle}</h2>
           <ul className="qt-dot-list">
             {data.sartlar.map((item, i) => (
               <li key={i}>{item}</li>
@@ -378,17 +500,17 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
         </article>
 
         <article className="qt-total-box">
-          <h2>Toplam</h2>
+          <h2>{t.totalTitle}</h2>
           <dl>
-            <div><dt>Ara Toplam</dt><dd>{fmtPrice(araTopam, cur)}</dd></div>
+            <div><dt>{t.subtotal}</dt><dd>{fmtPrice(araTopam, cur, data.language)}</dd></div>
             {iskontoAmount > 0 && (
-              <div><dt>{iskontoLabel}</dt><dd>-{fmtPrice(iskontoAmount, cur)}</dd></div>
+              <div><dt>{iskontoLabel}</dt><dd>-{fmtPrice(iskontoAmount, cur, data.language)}</dd></div>
             )}
             {showKdvRow && (
-              <div><dt>KDV (%{data.kdv})</dt><dd>{fmtPrice(kdvAmount, cur)}</dd></div>
+              <div><dt>{t.vatPct(data.kdv)}</dt><dd>{fmtPrice(kdvAmount, cur, data.language)}</dd></div>
             )}
             {showGenelToplamRow && (
-              <div className="grand"><dt>Genel Toplam</dt><dd>{fmtPrice(genelTopam, cur)}</dd></div>
+              <div className="grand"><dt>{t.grandTotal}</dt><dd>{fmtPrice(genelTopam, cur, data.language)}</dd></div>
             )}
           </dl>
         </article>
@@ -396,26 +518,26 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
 
       {data.notlar && (
         <article className="qt-notes filled">
-          <h2>Açıklamalar / Notlar</h2>
+          <h2>{t.notes}</h2>
           <p>{data.notlar}</p>
         </article>
       )}
 
       <div className="qt-sign-row">
         <article>
-          <h2>Teklifi Hazırlayan</h2>
+          <h2>{t.preparedBy}</h2>
           <div className="qt-sign-grid">
-            <span>Ad Soyad</span><b>:</b><em>{data.hazirlayan}</em>
-            <span>Telefon</span><b>:</b><em>{data.hazirlayanTelefon}</em>
-            <span>E-posta</span><b>:</b><em>{data.hazirlayanEmail}</em>
+            <span>{t.nameSurname}</span><b>:</b><em>{data.hazirlayan}</em>
+            <span>{t.phone}</span><b>:</b><em>{data.hazirlayanTelefon}</em>
+            <span>{t.email}</span><b>:</b><em>{data.hazirlayanEmail}</em>
           </div>
           {data.hazirlayanImzaUrl ? (
             <>
-              <strong>İmza / Kaşe</strong>
+              <strong>{t.signature}</strong>
               <div className="qt-signature-image-slot" style={{ background: "none", border: "none", padding: "1.5mm" }}>
                 <img
                   src={data.hazirlayanImzaUrl}
-                  alt="İmza / Kaşe"
+                  alt={t.signature}
                   style={{ display: "block", width: "auto", height: "auto", maxWidth: "100%", maxHeight: "20mm", objectFit: "contain" }}
                 />
               </div>
@@ -425,13 +547,13 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
         </article>
 
         <article>
-          <h2>Teklifi Onaylayan</h2>
+          <h2>{t.approvedBy}</h2>
           <div className="qt-sign-grid">
-            <span>Ad Soyad</span><b>:</b><em>{data.onaylayan}</em>
-            <span>Görev</span><b>:</b><em>{data.onaytayanGorev}</em>
-            <span>Onay Tarihi</span><b>:</b><em>{data.onayTarihi}</em>
+            <span>{t.nameSurname}</span><b>:</b><em>{data.onaylayan}</em>
+            <span>{t.position}</span><b>:</b><em>{data.onaytayanGorev}</em>
+            <span>{t.approvalDate}</span><b>:</b><em>{data.onayTarihi}</em>
           </div>
-          <strong>İmza / Kaşe</strong>
+          <strong>{t.signature}</strong>
         </article>
       </div>
 
@@ -451,6 +573,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
 }
 
 export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
+  const repeatT = getStrings(data.language);
   const rawPages = useMemo(() => chunkItems(data.items), [data.items]);
   const weightOf = (arr: QuoteViewItem[]) =>
     arr.reduce((s, it) => s + itemVisualWeight(it), 0);
@@ -652,7 +775,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
       <main className="qt-preview">
         <article className="qt-page first with-footer">
           <QuoteTopInfo data={data} />
-          <ItemsTable items={[]} pageIndex={0} totalPages={totalPages0} currency={data.paraBirimi} />
+          <ItemsTable items={[]} pageIndex={0} totalPages={totalPages0} currency={data.paraBirimi} language={data.language} />
           <FooterBlocks data={data} />
         </article>
       </main>
@@ -683,6 +806,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
                     pageIndex={index}
                     totalPages={totalPages}
                     currency={data.paraBirimi}
+                    language={data.language}
                   />
                   <FooterBlocks data={data} />
                 </div>
@@ -693,7 +817,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
                   ) : (
                     <header className="qt-repeat-header">
                       <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
-                      <strong>Teklif Formu</strong>
+                      <strong>{repeatT.docTitle}</strong>
                       <span>{data.quoteNo}</span>
                     </header>
                   )}
@@ -702,6 +826,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
                     pageIndex={index}
                     totalPages={totalPages}
                     currency={data.paraBirimi}
+                    language={data.language}
                   />
                   {attachToLast && isLastItemPage ? <FooterBlocks data={data} /> : null}
                 </>
@@ -714,7 +839,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
           <article className="qt-page continuation with-footer qt-footer-page">
             <header className="qt-repeat-header">
               <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
-              <strong>Teklif Formu</strong>
+              <strong>{repeatT.docTitle}</strong>
               <span>{data.quoteNo}</span>
             </header>
             {footerOwnItems && footerOwnItems.length > 0 ? (
@@ -723,6 +848,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
                 pageIndex={itemPages.length}
                 totalPages={totalPages}
                 currency={data.paraBirimi}
+                language={data.language}
               />
             ) : null}
             <FooterBlocks data={data} />
@@ -749,7 +875,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
           <article className="qt-page continuation">
             <header className="qt-repeat-header">
               <img src="/assets/quote/oxymed-logoyesilmavi.webp" alt="Oxymed Medikal" />
-              <strong>Teklif Formu</strong>
+              <strong>{repeatT.docTitle}</strong>
               <span>{data.quoteNo}</span>
             </header>
             <ItemsTable
@@ -757,6 +883,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
               pageIndex={0}
               totalPages={1}
               currency={data.paraBirimi}
+              language={data.language}
             />
             <FooterBlocks data={data} />
           </article>
@@ -789,6 +916,7 @@ export default function QuoteTemplateView({ data }: { data: QuoteViewData }) {
               pageIndex={0}
               totalPages={1}
               currency={data.paraBirimi}
+              language={data.language}
             />
             <FooterBlocks data={data} />
           </article>

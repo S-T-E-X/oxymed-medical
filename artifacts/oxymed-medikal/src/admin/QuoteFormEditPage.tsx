@@ -98,19 +98,30 @@ type ItemDraft = {
 type GroupTemplate = {
   id: number;
   name: string;
+  nameEn?: string | null;
   description?: string | null;
+  descriptionEn?: string | null;
   modelCode?: string | null;
   imageUrl?: string | null;
   children: Array<{
     title: string;
+    titleEn?: string;
     modelCode?: string;
     unit?: string;
     bullets?: string[];
+    bulletsEn?: string[];
     unitPrice?: string;
     quantity?: number;
     imageUrl?: string;
   }>;
 };
+
+// Picks the language-appropriate text for a template's content, falling back
+// to the Turkish original when no English translation was saved.
+function pickTemplateText(tr: string, en: string | null | undefined, lang: "tr" | "en"): string {
+  if (lang === "en" && en && en.trim()) return en;
+  return tr;
+}
 
 type InfoTemplate = {
   id: string;
@@ -134,6 +145,7 @@ type FormDraft = {
   teslimatSuresi: string;
   odemeSekli: string;
   paraBirimi: string;
+  language: "tr" | "en";
   iskonto: string;
   iskontoTipi: "yuzde" | "tutar";
   kdv: string;
@@ -444,9 +456,11 @@ function SingleItemTemplateEditModal({
   const src = template.children[0] ?? {};
   const [name, setName] = useState(template.name);
   const [title, setTitle] = useState(src.title ?? "");
+  const [titleEn, setTitleEn] = useState(src.titleEn ?? "");
   const [modelCode, setModelCode] = useState(src.modelCode ?? "");
   const [imageUrl, setImageUrl] = useState(src.imageUrl ?? template.imageUrl ?? "");
   const [bulletsText, setBulletsText] = useState((src.bullets ?? []).join("\n"));
+  const [bulletsTextEn, setBulletsTextEn] = useState((src.bulletsEn ?? []).join("\n"));
   const [unit, setUnit] = useState(src.unit ?? "ADET");
   const [unitPrice, setUnitPrice] = useState(src.unitPrice ?? "0");
   const [saving, setSaving] = useState(false);
@@ -456,6 +470,7 @@ function SingleItemTemplateEditModal({
     setSaving(true);
     try {
       const bullets = bulletsText.split("\n").map((s) => s.trim()).filter(Boolean);
+      const bulletsEn = bulletsTextEn.split("\n").map((s) => s.trim()).filter(Boolean);
       const r = await authFetch(`/api/quote-group-templates/${template.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -465,11 +480,13 @@ function SingleItemTemplateEditModal({
           imageUrl: imageUrl || undefined,
           children: [{
             title: title || name.trim(),
+            titleEn: titleEn || undefined,
             modelCode: modelCode || undefined,
             unit,
             quantity: src.quantity ?? 0,
             unitPrice,
             bullets: bullets.length ? bullets : undefined,
+            bulletsEn: bulletsEn.length ? bulletsEn : undefined,
             imageUrl: imageUrl || undefined,
           }],
         }),
@@ -502,8 +519,12 @@ function SingleItemTemplateEditModal({
             <input value={name} onChange={(e) => setName(e.target.value)} className="input w-full text-sm" placeholder="Şablon adı" />
           </div>
           <div>
-            <label className="label">Kalem Açıklaması</label>
+            <label className="label">Kalem Açıklaması (TR)</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} className="input w-full text-sm" placeholder="Boş bırakılırsa şablon adı kullanılır" />
+          </div>
+          <div>
+            <label className="label">Kalem Açıklaması (EN)</label>
+            <input value={titleEn} onChange={(e) => setTitleEn(e.target.value)} className="input w-full text-sm" placeholder="English description (optional)" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -529,8 +550,12 @@ function SingleItemTemplateEditModal({
             <img src={imageUrl} alt="" className="h-20 w-20 rounded-lg border border-slate-200 object-contain" />
           )}
           <div>
-            <label className="label">Maddeler (her satır ayrı madde)</label>
+            <label className="label">Maddeler (TR, her satır ayrı madde)</label>
             <textarea value={bulletsText} onChange={(e) => setBulletsText(e.target.value)} rows={4} className="input w-full text-sm resize-none" placeholder="Her satır ayrı bir madde olur" />
+          </div>
+          <div>
+            <label className="label">Maddeler (EN, her satır ayrı madde)</label>
+            <textarea value={bulletsTextEn} onChange={(e) => setBulletsTextEn(e.target.value)} rows={4} className="input w-full text-sm resize-none" placeholder="One bullet per line (optional)" />
           </div>
         </div>
         <div className="flex gap-3 border-t border-slate-100 px-5 py-4">
@@ -551,10 +576,12 @@ function SingleItemTemplatePickerModal({
   authFetch,
   onApply,
   onClose,
+  language,
 }: {
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onApply: (draft: Omit<ItemDraft, "sortOrder" | "expanded" | "children" | "id" | "productId">) => void;
   onClose: () => void;
+  language: "tr" | "en";
 }) {
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -588,8 +615,8 @@ function SingleItemTemplatePickerModal({
     const src = t.children[0];
     onApply({
       itemType: "single",
-      title: src?.title ?? t.name,
-      bulletsText: (src?.bullets ?? []).join("\n"),
+      title: pickTemplateText(src?.title ?? t.name, src?.titleEn, language),
+      bulletsText: pickTemplateText((src?.bullets ?? []).join("\n"), (src?.bulletsEn ?? []).join("\n"), language),
       modelCode: src?.modelCode ?? "",
       imageUrl: src?.imageUrl ?? t.imageUrl ?? "",
       quantity: 0,
@@ -692,10 +719,12 @@ function TemplatePickerModal({
   authFetch,
   onApply,
   onClose,
+  language,
 }: {
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onApply: (children: ChildItemDraft[]) => void;
   onClose: () => void;
+  language: "tr" | "en";
 }) {
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -723,7 +752,7 @@ function TemplatePickerModal({
 
   const handleApply = (t: GroupTemplate) => {
     const children: ChildItemDraft[] = (t.children ?? []).map((c) => ({
-      title: c.title,
+      title: pickTemplateText(c.title, c.titleEn, language),
       modelCode: c.modelCode ?? "",
       quantity: 0,
       unit: c.unit ?? "ADET",
@@ -809,8 +838,10 @@ function GroupTemplateEditModal({
   onClose: () => void;
 }) {
   const [name, setName] = useState(template.name);
+  const [nameEn, setNameEn] = useState(template.nameEn ?? "");
   const [modelCode, setModelCode] = useState(template.modelCode ?? "");
   const [description, setDescription] = useState(template.description ?? "");
+  const [descriptionEn, setDescriptionEn] = useState(template.descriptionEn ?? "");
   const [imageUrl, setImageUrl] = useState(template.imageUrl ?? "");
   const [children, setChildren] = useState<NonNullable<GroupTemplate["children"]>>(template.children ?? []);
   const [saving, setSaving] = useState(false);
@@ -829,11 +860,14 @@ function GroupTemplateEditModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
+          nameEn: nameEn || undefined,
           modelCode: modelCode || undefined,
           description: description || undefined,
+          descriptionEn: descriptionEn || undefined,
           imageUrl: imageUrl || undefined,
           children: children.map((c) => ({
             title: c.title || "—",
+            titleEn: c.titleEn || undefined,
             modelCode: c.modelCode || undefined,
             unit: c.unit,
             quantity: c.quantity,
@@ -866,8 +900,12 @@ function GroupTemplateEditModal({
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
-              <label className="label">Şablon Adı *</label>
+              <label className="label">Şablon Adı (TR) *</label>
               <input value={name} onChange={(e) => setName(e.target.value)} className="input w-full text-sm" placeholder="Şablon adı" />
+            </div>
+            <div className="col-span-2">
+              <label className="label">Şablon Adı (EN)</label>
+              <input value={nameEn} onChange={(e) => setNameEn(e.target.value)} className="input w-full text-sm" placeholder="Template name (English, optional)" />
             </div>
             <div>
               <label className="label">Model/Kod</label>
@@ -878,8 +916,12 @@ function GroupTemplateEditModal({
               <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="input w-full text-sm" placeholder="https://..." />
             </div>
             <div className="col-span-2">
-              <label className="label">Açıklama</label>
+              <label className="label">Açıklama (TR)</label>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="input w-full text-sm resize-none" placeholder="Her satır ayrı bir madde olur" />
+            </div>
+            <div className="col-span-2">
+              <label className="label">Açıklama (EN)</label>
+              <textarea value={descriptionEn} onChange={(e) => setDescriptionEn(e.target.value)} rows={3} className="input w-full text-sm resize-none" placeholder="English description (optional)" />
             </div>
           </div>
 
@@ -896,7 +938,8 @@ function GroupTemplateEditModal({
               ) : children.map((c, i) => (
                 <div key={i} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                   <div className="flex-1 grid grid-cols-3 gap-2">
-                    <input value={c.title} onChange={(e) => updateChild(i, "title", e.target.value)} className="input col-span-3 text-xs" placeholder="Kalem açıklaması *" />
+                    <input value={c.title} onChange={(e) => updateChild(i, "title", e.target.value)} className="input col-span-3 text-xs" placeholder="Kalem açıklaması * (TR)" />
+                    <input value={c.titleEn ?? ""} onChange={(e) => updateChild(i, "titleEn", e.target.value)} className="input col-span-3 text-xs" placeholder="Item description (EN, optional)" />
                     <input value={c.modelCode ?? ""} onChange={(e) => updateChild(i, "modelCode", e.target.value)} className="input text-xs" placeholder="Model/Kod" />
                     <select value={c.unit ?? "ADET"} onChange={(e) => updateChild(i, "unit", e.target.value)} className="input text-xs">
                       {["ADET", "SET", "METRE", "MT", "M2", "KG", "PAKET", "KUTU", "TAKIM"].map((u) => <option key={u}>{u}</option>)}
@@ -927,10 +970,12 @@ function GroupTemplateAddModal({
   authFetch,
   onApply,
   onClose,
+  language,
 }: {
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onApply: (draft: ItemDraft) => void;
   onClose: () => void;
+  language: "tr" | "en";
 }) {
   const [templates, setTemplates] = useState<GroupTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -963,8 +1008,8 @@ function GroupTemplateAddModal({
   const handleApply = (t: GroupTemplate) => {
     const draft: ItemDraft = {
       itemType: "group",
-      title: t.name,
-      bulletsText: t.description ?? "",
+      title: pickTemplateText(t.name, t.nameEn, language),
+      bulletsText: pickTemplateText(t.description ?? "", t.descriptionEn, language),
       modelCode: t.modelCode ?? "",
       imageUrl: t.imageUrl ?? "",
       quantity: 0,
@@ -976,7 +1021,7 @@ function GroupTemplateAddModal({
       keepWithPrevious: false,
       keepWithNext: false,
       children: (t.children ?? []).map((c) => ({
-        title: c.title,
+        title: pickTemplateText(c.title, c.titleEn, language),
         modelCode: c.modelCode ?? "",
         quantity: 0,
         unit: c.unit ?? "ADET",
@@ -1191,6 +1236,7 @@ function GroupItemRow({
   isFirst,
   isLast,
   authFetch,
+  language,
 }: {
   item: ItemDraft;
   groupNo: number;
@@ -1205,6 +1251,7 @@ function GroupItemRow({
   isFirst: boolean;
   isLast: boolean;
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  language: "tr" | "en";
 }) {
   const groupTotal = item.children.reduce(
     (s, c) => s + c.quantity * parseFloat(c.unitPrice || "0"),
@@ -1492,6 +1539,7 @@ function GroupItemRow({
           authFetch={authFetch}
           onApply={(children) => onChange("children", children)}
           onClose={() => setShowTemplatePicker(false)}
+          language={language}
         />
       )}
     </div>
@@ -1827,6 +1875,7 @@ export default function QuoteFormEditPage() {
     teslimatSuresi: "Sipariş onayından sonra 21 iş günü",
     odemeSekli: "%40 sipariş, %60 teslimat öncesi",
     paraBirimi: "EUR",
+    language: "tr",
     iskonto: "0",
     iskontoTipi: "yuzde",
     kdv: "20",
@@ -1875,6 +1924,7 @@ export default function QuoteFormEditPage() {
           teslimatSuresi: data.teslimatSuresi ?? prev.teslimatSuresi,
           odemeSekli: data.odemeSekli ?? prev.odemeSekli,
           paraBirimi: data.paraBirimi ?? "EUR",
+          language: data.language === "en" ? "en" : "tr",
           iskonto: data.iskonto ?? "0",
           iskontoTipi: (data.iskontoTipi === "tutar" ? "tutar" : "yuzde") as "yuzde" | "tutar",
           kdv: data.kdv ?? "20",
@@ -2119,6 +2169,7 @@ export default function QuoteFormEditPage() {
         teslimatSuresi: form.teslimatSuresi || null,
         odemeSekli: form.odemeSekli || null,
         paraBirimi: form.paraBirimi,
+        language: form.language,
         iskonto: form.iskonto,
         iskontoTipi: form.iskontoTipi,
         kdv: form.kdv,
@@ -2196,6 +2247,21 @@ export default function QuoteFormEditPage() {
         <div className="flex-1">
           <p className="text-sm font-bold text-slate-700">{quoteNo}</p>
           <p className="text-xs text-slate-400">Teklif Formu Düzenle</p>
+        </div>
+        <div className="flex items-center rounded-full bg-slate-100 p-0.5 ring-1 ring-slate-200">
+          {(["tr", "en"] as const).map((lang) => (
+            <button
+              key={lang}
+              type="button"
+              onClick={() => setForm((prev) => ({ ...prev, language: lang }))}
+              title={lang === "tr" ? "Türkçe teklif formu" : "İngilizce teklif formu (English quote form)"}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase transition ${
+                form.language === lang ? "bg-blue-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {lang}
+            </button>
+          ))}
         </div>
         <select
           value={form.status}
@@ -2337,6 +2403,7 @@ export default function QuoteFormEditPage() {
                         isFirst={i === 0}
                         isLast={i === items.length - 1}
                         authFetch={authFetch}
+                        language={form.language}
                       />
                     </div>
                   );
@@ -2800,6 +2867,7 @@ export default function QuoteFormEditPage() {
           authFetch={authFetch}
           onApply={addFromSingleTemplate}
           onClose={() => setShowSingleTemplatePicker(false)}
+          language={form.language}
         />
       )}
       {showGroupTemplatePicker && (
@@ -2807,6 +2875,7 @@ export default function QuoteFormEditPage() {
           authFetch={authFetch}
           onApply={addFromGroupTemplate}
           onClose={() => setShowGroupTemplatePicker(false)}
+          language={form.language}
         />
       )}
     </div>

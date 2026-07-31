@@ -17,6 +17,7 @@ type ApiForm = {
   teslimatSuresi?: string | null;
   odemeSekli?: string | null;
   paraBirimi: string;
+  language?: "tr" | "en" | null;
   hizmetler?: string[];
   sartlar?: string[];
   notlar?: string | null;
@@ -138,6 +139,7 @@ function toViewData(form: ApiForm): QuoteViewData {
     teslimatSuresi: form.teslimatSuresi ?? "",
     odemeSekli: form.odemeSekli ?? "",
     paraBirimi: form.paraBirimi ?? "EUR",
+    language: form.language === "en" ? "en" : "tr",
     hizmetler: form.hizmetler ?? [],
     sartlar: form.sartlar ?? [],
     notlar: form.notlar ?? "",
