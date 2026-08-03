@@ -49,10 +49,7 @@
 }
 
 .dvs-hero__grid {
-  display: grid;
-  grid-template-columns: minmax(360px, 0.47fr) minmax(420px, 0.53fr);
-  gap: clamp(30px, 4.4vw, 62px);
-  align-items: center;
+  display: block;
   min-height: 770px;
   padding: 52px 0 62px;
 }
@@ -60,6 +57,7 @@
 .dvs-hero__content {
   position: relative;
   z-index: 2;
+  max-width: 610px;
 }
 
 .dvs-eyebrow {
@@ -144,37 +142,6 @@
   font-size: 13px;
   font-weight: 600;
   line-height: 1.5;
-}
-
-.dvs-hero__visual {
-  position: relative;
-  min-height: min(58vw, 640px);
-}
-
-.dvs-hero__visual::before {
-  position: absolute;
-  right: 0;
-  bottom: 13px;
-  left: 2%;
-  height: 22%;
-  border: 1px solid rgba(8, 38, 83, 0.1);
-  border-radius: 50%;
-  background:
-    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(238, 242, 247, 0.92) 62%, rgba(207, 215, 224, 0.75) 100%);
-  box-shadow:
-    0 20px 34px rgba(8, 38, 83, 0.12),
-    inset 0 -10px 22px rgba(8, 38, 83, 0.08);
-  content: "";
-}
-
-.dvs-hero-image-slot {
-  position: absolute;
-  inset: 10px 0 118px 4%;
-  border: 1px dashed rgba(11, 50, 106, 0.22);
-  border-radius: 14px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0)),
-    repeating-linear-gradient(-45deg, rgba(11, 50, 106, 0.025) 0 16px, transparent 16px 32px);
 }
 
 .dvs-image-strip {
@@ -367,16 +334,7 @@
   }
 
   .dvs-hero__grid {
-    grid-template-columns: 1fr;
     min-height: auto;
-  }
-
-  .dvs-hero__visual {
-    min-height: 420px;
-  }
-
-  .dvs-hero-image-slot {
-    inset: 0 0 92px;
   }
 
   .dvs-technical-grid {
@@ -428,8 +386,8 @@
     margin-top: 34px;
   }
 
-  .dvs-hero__visual {
-    min-height: 315px;
+  .dvs-hero__content {
+    max-width: none;
   }
 
   .dvs-image-strip {

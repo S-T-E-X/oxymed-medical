@@ -107,7 +107,18 @@ export default function DentalVacuumSystemPage() {
       <Header />
 
       <main className="dvs-main">
-        <section className="dvs-hero">
+        <section
+          className="dvs-hero"
+          style={
+            heroImage
+              ? {
+                  backgroundImage: `linear-gradient(90deg, rgba(247,249,252,0.97) 0%, rgba(247,249,252,0.94) 30%, rgba(247,249,252,0.62) 55%, rgba(247,249,252,0.18) 78%, rgba(247,249,252,0) 100%), url(${heroImage})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : undefined
+          }
+        >
           <div className="dvs-container dvs-hero__grid">
             <div className="dvs-hero__content">
               <div className="dvs-eyebrow">{eyebrow}</div>
@@ -132,10 +143,6 @@ export default function DentalVacuumSystemPage() {
                   );
                 })}
               </div>
-            </div>
-
-            <div className="dvs-hero__visual" aria-label="Ana dental vakum sistemi WEBP görsel alanı">
-              <div className="dvs-hero-image-slot" style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined} />
             </div>
           </div>
         </section>
