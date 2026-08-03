@@ -540,10 +540,8 @@
   color: #ffffff;
 }
 
-@media (min-width: 1025px) {
-  .gcp-hero-photo-slot {
-    margin-bottom: -48px;
-  }
+.gcp-hero-photo-slot {
+  margin-bottom: -48px;
 }
 
 @media (max-width: 1024px) {
@@ -582,6 +580,10 @@
   .gcp-hero__grid {
     min-height: auto;
     padding: 28px 0 36px;
+  }
+
+  .gcp-hero-photo-slot {
+    margin-bottom: -36px;
   }
 
   .gcp-hero-features,
