@@ -191,11 +191,6 @@ export default function DentalVacuumSystemPage() {
                 style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
               />
             </div>
-            <div className="dvs-dimensions" aria-hidden="true">
-              <span>1300 mm</span>
-              <span>1200 mm</span>
-              <span>600 mm</span>
-            </div>
           </article>
 
           <article className="dvs-usage">
