@@ -30,23 +30,6 @@
   background-color: #f7f9fc;
 }
 
-.dvs-hero::before {
-  position: absolute;
-  inset: 0 0 0 auto;
-  z-index: -1;
-  width: min(330px, 30vw);
-  background:
-    repeating-linear-gradient(
-      90deg,
-      rgba(8, 38, 83, 0.08) 0,
-      rgba(8, 38, 83, 0.08) 2px,
-      transparent 2px,
-      transparent 12px
-    );
-  opacity: 0.45;
-  content: "";
-}
-
 .dvs-hero__grid {
   display: block;
   min-height: 770px;
@@ -57,6 +40,10 @@
   position: relative;
   z-index: 2;
   max-width: 610px;
+}
+
+.dvs-hero__mobile-image {
+  display: none;
 }
 
 .dvs-eyebrow {
@@ -335,10 +322,27 @@
   .dvs-hero {
     height: auto;
     min-height: auto;
+    background-image: none !important;
+    background-color: #ffffff;
   }
 
   .dvs-hero__grid {
     min-height: auto;
+  }
+
+  .dvs-hero__mobile-image {
+    display: block;
+    margin-top: 36px;
+  }
+
+  .dvs-hero__mobile-image img {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border-radius: 12px;
+    object-fit: contain;
   }
 
   .dvs-technical-grid {

@@ -130,6 +130,7 @@ function HeroSection({ prefix, defaults, settings }: { prefix: string; defaults:
     desc1: settings[`${p}_hero_desc1`] ?? defaults.desc1,
     desc2: settings[`${p}_hero_desc2`] ?? defaults.desc2,
     image: settings[`${p}_hero_image`] ?? "",
+    mobileImage: settings[`${p}_hero_mobile_image`] ?? "",
   });
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -142,9 +143,10 @@ function HeroSection({ prefix, defaults, settings }: { prefix: string; defaults:
       desc1: settings[`${p}_hero_desc1`] ?? defaults.desc1,
       desc2: settings[`${p}_hero_desc2`] ?? defaults.desc2,
       image: settings[`${p}_hero_image`] ?? "",
+      mobileImage: settings[`${p}_hero_mobile_image`] ?? "",
     });
     setDirty(false);
-  }, [settings[`${p}_hero_eyebrow`], settings[`${p}_hero_title`], settings[`${p}_hero_desc1`], settings[`${p}_hero_desc2`], settings[`${p}_hero_image`]]);
+  }, [settings[`${p}_hero_eyebrow`], settings[`${p}_hero_title`], settings[`${p}_hero_desc1`], settings[`${p}_hero_desc2`], settings[`${p}_hero_image`], settings[`${p}_hero_mobile_image`]]);
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -160,6 +162,7 @@ function HeroSection({ prefix, defaults, settings }: { prefix: string; defaults:
         upsertMut.mutateAsync({ settingKey: `${p}_hero_desc1`, data: { settingValue: form.desc1 } }),
         upsertMut.mutateAsync({ settingKey: `${p}_hero_desc2`, data: { settingValue: form.desc2 } }),
         upsertMut.mutateAsync({ settingKey: `${p}_hero_image`, data: { settingValue: form.image } }),
+        upsertMut.mutateAsync({ settingKey: `${p}_hero_mobile_image`, data: { settingValue: form.mobileImage } }),
       ]);
       toast.success("Hero bölümü kaydedildi");
       setDirty(false);
@@ -185,7 +188,9 @@ function HeroSection({ prefix, defaults, settings }: { prefix: string; defaults:
         <label className="label">Açıklama 2. Paragraf</label>
         <textarea className="input min-h-[72px] resize-y" value={form.desc2} onChange={(e) => set("desc2", e.target.value)} />
       </div>
-      <ImageField label="Ana Görsel" settingKey={`${p}_hero_image`} value={form.image} onChange={(v) => { setForm((f) => ({ ...f, image: v })); setDirty(true); }} hint="Önerilen: 1200 × 800 px" />
+      <ImageField label="Ana Görsel (Masaüstü Arkaplan)" settingKey={`${p}_hero_image`} value={form.image} onChange={(v) => { setForm((f) => ({ ...f, image: v })); setDirty(true); }} hint="Önerilen: 1280 × 770 px" />
+      <ImageField label="Mobil Ürün Görseli (Kare)" settingKey={`${p}_hero_mobile_image`} value={form.mobileImage} onChange={(v) => { setForm((f) => ({ ...f, mobileImage: v })); setDirty(true); }} hint="Önerilen: kare, 800 × 800 px, sadece ürün" />
+      <p className="text-[11px] text-slate-500">Küçük ekranlarda arkaplan görseli yazıların altına kaydığı için, dar ekranlarda bu kare ürün görseli metnin altında ayrı olarak gösterilir; arkaplan o genişliklerde düz beyaz olur.</p>
     </Section>
   );
 }

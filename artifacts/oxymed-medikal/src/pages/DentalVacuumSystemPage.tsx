@@ -98,6 +98,7 @@ export default function DentalVacuumSystemPage() {
   const desc1 = s["dvs_hero_desc1"] || "Dental kliniklerin merkezi vakum ihtiyacını karşılamak için tasarlanmış, yüksek performanslı ve güvenilir sistem çözümü.";
   const desc2 = s["dvs_hero_desc2"] || "Kesintisiz vakum gücü, sessiz çalışma ve uzun ömürlü yapı ile sağlık tesislerinde maksimum verimlilik sağlar.";
   const heroImage = s["dvs_hero_image"];
+  const heroMobileImage = s["dvs_hero_mobile_image"];
   const imageCards_imgs = [0, 1, 2].map((i) => s[`dvs_img_${i}`]);
   const displaySpecs: [string, string][] = s["dvs_specs_text"] ? parseDvsSpecsText(s["dvs_specs_text"]) : (specs as [string, string][]);
   const drawingImage = s["dvs_drawing_image"];
@@ -144,6 +145,12 @@ export default function DentalVacuumSystemPage() {
                   );
                 })}
               </div>
+
+              {heroMobileImage && (
+                <div className="dvs-hero__mobile-image">
+                  <img src={heroMobileImage} alt={heroTitle || "Dental Vakum Sistemi"} />
+                </div>
+              )}
             </div>
           </div>
         </section>
