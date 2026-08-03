@@ -312,7 +312,7 @@
 
 .dvp-drawing-slot {
   width: 100%;
-  aspect-ratio: 1.58;
+  aspect-ratio: 1.42;
   border: 1px dashed rgba(8, 36, 77, 0.34);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(235, 241, 248, 0.78)),

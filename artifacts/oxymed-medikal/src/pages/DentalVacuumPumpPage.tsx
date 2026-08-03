@@ -185,11 +185,6 @@ export default function DentalVacuumPumpPage() {
                 style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
               />
             </div>
-            <div className="dvp-dimensions" aria-hidden="true">
-              <span>1150 mm</span>
-              <span>1200 mm</span>
-              <span>700 mm</span>
-            </div>
             <p>Boyutlar yaklaşık değerlerdir.</p>
           </article>
 
