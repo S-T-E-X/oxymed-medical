@@ -112,7 +112,7 @@ export default function DentalVacuumSystemPage() {
           style={
             heroImage
               ? {
-                  backgroundImage: `linear-gradient(90deg, rgba(247,249,252,0.97) 0%, rgba(247,249,252,0.94) 30%, rgba(247,249,252,0.62) 55%, rgba(247,249,252,0.18) 78%, rgba(247,249,252,0) 100%), url(${heroImage})`,
+                  backgroundImage: `url(${heroImage})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }

@@ -25,10 +25,9 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  height: 770px;
   min-height: 770px;
-  background:
-    radial-gradient(circle at 72% 33%, rgba(10, 42, 86, 0.08), transparent 28%),
-    linear-gradient(100deg, #ffffff 0%, #f9fbfe 47%, #eef2f6 100%);
+  background-color: #f7f9fc;
 }
 
 .dvs-hero::before {
@@ -330,6 +329,7 @@
 
 @media (max-width: 1080px) {
   .dvs-hero {
+    height: auto;
     min-height: auto;
   }
 
