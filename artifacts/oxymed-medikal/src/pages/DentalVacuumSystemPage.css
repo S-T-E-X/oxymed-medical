@@ -160,6 +160,10 @@
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(235, 241, 248, 0.74)),
     repeating-linear-gradient(45deg, rgba(8, 38, 83, 0.035) 0 11px, transparent 11px 22px);
+  background-color: #f8fafc;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
   box-shadow: 0 12px 28px rgba(8, 38, 83, 0.07);
 }
 
