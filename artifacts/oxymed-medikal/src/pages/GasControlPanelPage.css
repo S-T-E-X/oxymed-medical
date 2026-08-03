@@ -179,7 +179,7 @@
 .gcp-hero-photo-slot {
   position: relative;
   justify-self: stretch;
-  align-self: center;
+  align-self: end;
   display: grid;
   place-items: center;
   aspect-ratio: 9 / 8;
@@ -538,6 +538,12 @@
 .gcp-cta-secondary {
   border: 1px solid rgba(255, 255, 255, 0.52);
   color: #ffffff;
+}
+
+@media (min-width: 1025px) {
+  .gcp-hero-photo-slot {
+    margin-bottom: -48px;
+  }
 }
 
 @media (max-width: 1024px) {
