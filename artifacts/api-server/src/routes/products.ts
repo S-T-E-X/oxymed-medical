@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request } from "express";
 import { db, productsTable, productCategoriesTable } from "@workspace/db";
-import { eq, asc, count } from "drizzle-orm";
+import { eq, asc, count, and } from "drizzle-orm";
 import { requireAuth, verifyToken } from "../lib/auth";
 import { z } from "zod/v4";
 
@@ -120,19 +120,23 @@ router.get("/products", async (req, res): Promise<void> => {
   const categoryIdStr = req.query["categoryId"] as string | undefined;
   const publishedStr = req.query["published"] as string | undefined;
 
+  const conditions = [];
+  if (categoryIdStr) {
+    const catId = parseInt(categoryIdStr, 10);
+    conditions.push(eq(productsTable.categoryId, catId));
+  }
+  if (publishedStr !== undefined) {
+    const pub = publishedStr === "true";
+    conditions.push(eq(productsTable.published, pub));
+  }
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
   let query = db.select().from(productsTable).orderBy(asc(productsTable.sortOrder)).$dynamic();
   let countQuery = db.select({ count: count() }).from(productsTable).$dynamic();
 
-  if (categoryIdStr) {
-    const catId = parseInt(categoryIdStr, 10);
-    query = query.where(eq(productsTable.categoryId, catId));
-    countQuery = countQuery.where(eq(productsTable.categoryId, catId));
-  }
-
-  if (publishedStr !== undefined) {
-    const pub = publishedStr === "true";
-    query = query.where(eq(productsTable.published, pub));
-    countQuery = countQuery.where(eq(productsTable.published, pub));
+  if (whereClause) {
+    query = query.where(whereClause);
+    countQuery = countQuery.where(whereClause);
   }
 
   const [rows, [totalRow]] = await Promise.all([

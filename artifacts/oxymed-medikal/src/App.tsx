@@ -53,6 +53,7 @@ import DeviceQrPage from "./pages/DeviceQrPage";
 import ServiceReportPage from "./pages/ServiceReportPage";
 import GasControlPanelPage from "./pages/GasControlPanelPage";
 import QuoteTemplatePage from "./pages/QuoteTemplatePage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 export default function App() {
   return (
@@ -81,6 +82,7 @@ export default function App() {
           <Route path="/urunler/amalgam-separator" element={<AmalgamSeparatorPage />} />
           <Route path="/urunler/dental-vakum-pompasi" element={<DentalVacuumPumpPage />} />
           <Route path="/urunler/dental-vakum-sistemi" element={<DentalVacuumSystemPage />} />
+          <Route path="/urunler/:slug" element={<ProductDetailPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
           <Route path="/teklif-goruntule/:id" element={<QuotePrintPage />} />
 
