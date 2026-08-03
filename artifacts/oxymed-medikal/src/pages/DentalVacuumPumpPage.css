@@ -36,9 +36,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.32), transparent 62%),
-    repeating-linear-gradient(132deg, transparent 0 18px, rgba(94, 168, 255, 0.08) 18px 20px);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.32), transparent 62%);
   content: "";
 }
 
@@ -119,16 +117,13 @@
 .dvp-hero-photo-slot {
   position: absolute;
   inset: 6px 0 48px;
-  border: 1px dashed rgba(159, 210, 255, 0.24);
-  border-radius: 14px;
   background:
     var(--dvp-hero-image),
     radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.11), transparent 28%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0)),
-    repeating-linear-gradient(-38deg, rgba(99, 183, 255, 0.045) 0 15px, transparent 15px 30px);
-  background-position: center, center, center, center;
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0));
+  background-position: center, center, center;
   background-repeat: no-repeat;
-  background-size: contain, auto, auto, auto;
+  background-size: contain, auto, auto;
 }
 
 .dvp-hero-floor {
@@ -464,8 +459,7 @@
     background-image:
       var(--dvp-hero-mobile-image),
       radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.11), transparent 28%),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0)),
-      repeating-linear-gradient(-38deg, rgba(99, 183, 255, 0.045) 0 15px, transparent 15px 30px);
+      linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0));
   }
 
   .dvp-technical-panel {
@@ -495,7 +489,13 @@
   }
 
   .dvp-hero__grid {
+    grid-template-columns: 1fr;
     padding: 40px 0 8px;
+  }
+
+  .dvp-hero__visual {
+    min-height: 320px;
+    margin-top: 28px;
   }
 
   .dvp-hero h1 {
