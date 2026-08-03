@@ -173,6 +173,15 @@
   content: "";
 }
 
+.ams-hero-photo-slot--has-image {
+  border: 0;
+  border-radius: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  box-shadow: none;
+}
+
 .ams-detail-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

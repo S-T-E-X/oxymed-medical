@@ -181,7 +181,10 @@ export default function AmalgamSeparatorPage() {
             </div>
 
             <div className="ams-hero__visual" aria-label="Amalgam separatörü ana WEBP görsel alanı">
-              <div className="ams-hero-photo-slot" style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined} />
+              <div
+                className={`ams-hero-photo-slot${heroImage ? " ams-hero-photo-slot--has-image" : ""}`}
+                style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+              />
             </div>
           </div>
         </section>
