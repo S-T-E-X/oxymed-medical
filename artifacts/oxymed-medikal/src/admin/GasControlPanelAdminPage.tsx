@@ -369,7 +369,7 @@ function HeroImageSection({ raw }: { raw: string }) {
   return (
     <SectionCard title="Hero Ürün Görseli" dirty={dirty} onSave={() => mut.mutate({ settingKey: "gcp_hero_image", data: { settingValue: image } })} saving={mut.isPending}>
       <p className="mb-3 text-[11px] text-slate-500">Görsel eklendiğinde, sayfa başındaki kesikli çerçeveli görsel alanı kaybolur ve ürün fotoğrafı gösterilir.</p>
-      <ImageField label="Hero Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 1920 × 720 px" />
+      <ImageField label="Hero Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 1080 × 960 px" />
     </SectionCard>
   );
 }
@@ -401,7 +401,7 @@ function DetailImagesSection({ raw0, raw1, raw2 }: { raw0: string; raw1: string;
     <SectionCard title="Detay Kart Görselleri (3 Adet)" dirty={dirty} onSave={handleSave} saving={saving}>
       <div className="space-y-4">
         {images.map((url, i) => (
-          <ImageField key={i} label={`${i + 1}. Kart Görseli`} value={url} onChange={(v) => setImg(i, v)} hint="Önerilen: 420 × 240 px" />
+          <ImageField key={i} label={`${i + 1}. Kart Görseli`} value={url} onChange={(v) => setImg(i, v)} hint="Önerilen: 800 × 450 px" />
         ))}
       </div>
     </SectionCard>
@@ -417,7 +417,7 @@ function DrawingImageSection({ raw }: { raw: string }) {
 
   return (
     <SectionCard title="Teknik Çizim Görseli" dirty={dirty} onSave={() => mut.mutate({ settingKey: "gcp_drawing_image", data: { settingValue: image } })} saving={mut.isPending}>
-      <ImageField label="Teknik Çizim / Boyutlar Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 520 × 360 px" />
+      <ImageField label="Teknik Çizim / Boyutlar Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 700 × 600 px" />
     </SectionCard>
   );
 }

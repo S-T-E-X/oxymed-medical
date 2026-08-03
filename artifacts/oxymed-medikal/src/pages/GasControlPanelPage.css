@@ -179,9 +179,10 @@
 .gcp-hero-photo-slot {
   position: relative;
   justify-self: stretch;
-  align-self: stretch;
+  align-self: center;
   display: grid;
   place-items: center;
+  aspect-ratio: 9 / 8;
   min-height: 430px;
   border: 1px dashed rgba(255, 255, 255, 0.3);
   border-radius: 8px;
@@ -230,6 +231,7 @@
 }
 
 .gcp-detail-card .gcp-image-slot {
+  aspect-ratio: 16 / 9;
   min-height: 205px;
   border: 0;
   border-bottom: 1px solid #dbe3ed;
@@ -309,6 +311,7 @@
 }
 
 .gcp-drawing .gcp-image-slot {
+  aspect-ratio: 7 / 6;
   min-height: 298px;
   margin-top: 22px;
 }
@@ -549,7 +552,7 @@
     grid-template-columns: 1fr;
   }
 
-  .gcp-hero-photo-note {
+  .gcp-hero-photo-slot {
     min-height: 180px;
   }
 

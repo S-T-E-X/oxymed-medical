@@ -240,7 +240,7 @@ export default function GasControlPanelPage() {
               {!heroImage && (
                 <>
                   <span>Hero ürün fotoğraf alanı</span>
-                  <strong>1920 x 720 px WEBP</strong>
+                  <strong>1080 x 960 px WEBP</strong>
                 </>
               )}
             </div>
@@ -250,7 +250,7 @@ export default function GasControlPanelPage() {
         <section className="gcp-container gcp-card-row">
           {detailCards.map((card, i) => (
             <article className="gcp-detail-card" key={card.title}>
-              <ImageSlot label={card.title} size="420 x 240 px" image={imgs[i]} />
+              <ImageSlot label={card.title} size="800 x 450 px" image={imgs[i]} />
               <div>
                 <h2>{card.title}</h2>
                 <p>{card.text}</p>
@@ -274,7 +274,7 @@ export default function GasControlPanelPage() {
 
           <article className="gcp-drawing">
             <h2>Ölçüler / Teknik Çizim</h2>
-            <ImageSlot label="Teknik çizim görseli" size="520 x 360 px" image={drawingImage} />
+            <ImageSlot label="Teknik çizim görseli" size="700 x 600 px" image={drawingImage} />
           </article>
 
           <article className="gcp-uses">
