@@ -224,7 +224,11 @@ export default function AmalgamSeparatorPage() {
               <Ruler aria-hidden="true" />
               <h2>TEKNİK ÇİZİM VE ÖLÇÜLER</h2>
             </header>
-            <div className="ams-drawing-slot" aria-label="Teknik çizim ve ölçüler WEBP görsel alanı" style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined} />
+            <div
+              className={`ams-drawing-slot${drawingImage ? " ams-drawing-slot--has-image" : ""}`}
+              aria-label="Teknik çizim ve ölçüler WEBP görsel alanı"
+              style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
+            />
             <p>Tüm ölçüler mm cinsindendir.</p>
           </article>
         </section>

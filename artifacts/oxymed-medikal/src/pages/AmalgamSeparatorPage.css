@@ -316,6 +316,14 @@
   background-size: auto, 22px 22px, 22px 22px;
 }
 
+.ams-drawing-slot--has-image {
+  border: 1px solid #d6e0ec;
+  background-color: #eef3f9;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .ams-drawing p {
   margin-top: 14px;
   color: #344960;
