@@ -27,10 +27,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  background:
-    radial-gradient(circle at 72% 52%, rgba(255, 255, 255, 0.22), transparent 18%),
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.045) 0 12px, rgba(255, 255, 255, 0.02) 12px 24px);
+  background: radial-gradient(circle at 72% 52%, rgba(255, 255, 255, 0.22), transparent 18%);
   content: "";
   pointer-events: none;
 }
@@ -171,33 +168,50 @@
   font-weight: 700;
 }
 
-.gcp-hero-photo-note {
+.gcp-image-slot--has-image {
+  border: 0;
+  background: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.gcp-hero-photo-slot {
+  position: relative;
   justify-self: stretch;
   align-self: stretch;
   display: grid;
   place-items: center;
   min-height: 430px;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.72);
   text-align: center;
-  pointer-events: none;
 }
 
-.gcp-hero-photo-note span,
-.gcp-hero-photo-note strong {
+.gcp-hero-photo-slot span,
+.gcp-hero-photo-slot strong {
   display: block;
 }
 
-.gcp-hero-photo-note span {
+.gcp-hero-photo-slot span {
   font-size: 13px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.gcp-hero-photo-note strong {
+.gcp-hero-photo-slot strong {
   margin-top: 9px;
   color: #e0a052;
   font-size: 18px;
   font-weight: 900;
+}
+
+.gcp-hero-photo-slot--has-image {
+  border: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .gcp-card-row {
@@ -220,6 +234,10 @@
   border: 0;
   border-bottom: 1px solid #dbe3ed;
   border-radius: 0;
+}
+
+.gcp-detail-card .gcp-image-slot--has-image {
+  border-bottom: 0;
 }
 
 .gcp-detail-card > div:last-child {

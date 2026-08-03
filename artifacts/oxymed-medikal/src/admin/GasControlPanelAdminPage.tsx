@@ -1,8 +1,72 @@
 import { useState, useEffect, useRef } from "react";
-import { useListSettings, useUpsertSetting } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useListSettings,
+  useUpsertSetting,
+  useGetProductBySlug,
+  useUpdateProduct,
+  getListProductsQueryKey,
+  getGetProductBySlugQueryKey,
+} from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { Save, Plus, Trash2, Loader2, ExternalLink, Upload, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+
+const GCP_PRODUCT_SLUG = "kat-kontrol-panosu";
+
+function ImageField({
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  hint?: string;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadFile, uploading } = useImageUpload();
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const result = await uploadFile(file);
+      onChange(result.publicUrl);
+      toast.success("Görsel yüklendi");
+    } catch {
+      toast.error("Görsel yüklenemedi");
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  return (
+    <div>
+      <div className="mb-1 flex items-baseline justify-between gap-2">
+        <label className="label">{label}</label>
+        {hint && <span className="text-[10px] font-mono text-slate-400 shrink-0">{hint}</span>}
+      </div>
+      {value && (
+        <div className="relative mb-2 overflow-hidden rounded-lg border border-slate-200">
+          <img src={value} alt={label} className="h-32 w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <button type="button" onClick={() => onChange("")} className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+      <div className="flex gap-2">
+        <input className="input flex-1" value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://... veya /assets/..." />
+        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50">
+          <Upload className="h-3.5 w-3.5" />
+          {uploading ? "…" : "Yükle"}
+        </button>
+      </div>
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+    </div>
+  );
+}
 
 type Spec = { k: string; v: string };
 type Faq = { q: string; a: string };
@@ -253,53 +317,107 @@ function DetailCardsSection({ raw }: { raw: string }) {
   );
 }
 
-function CardImageSection({ raw }: { raw: string }) {
+function CardImageSection() {
+  const qc = useQueryClient();
+  const { data: product, isLoading: productLoading } = useGetProductBySlug(GCP_PRODUCT_SLUG);
+  const [image, setImage] = useState("");
+  const [dirty, setDirty] = useState(false);
+  const updateMut = useUpdateProduct({
+    mutation: {
+      onSuccess: () => {
+        toast.success("Kaydedildi");
+        setDirty(false);
+        qc.invalidateQueries({ queryKey: getListProductsQueryKey() });
+        qc.invalidateQueries({ queryKey: getGetProductBySlugQueryKey(GCP_PRODUCT_SLUG) });
+      },
+      onError: () => toast.error("Kayıt başarısız"),
+    },
+  });
+
+  useEffect(() => {
+    setImage(product?.imageUrl ?? "");
+    setDirty(false);
+  }, [product?.imageUrl]);
+
+  return (
+    <SectionCard
+      title="Ürünler Sayfası Kart Görseli"
+      dirty={dirty}
+      saving={updateMut.isPending}
+      onSave={() => {
+        if (!product) return;
+        updateMut.mutate({ id: product.id, data: { imageUrl: image || undefined } });
+      }}
+    >
+      <p className="mb-3 text-[11px] text-slate-500">Bu görsel, <code className="rounded bg-slate-100 px-1">/urunler</code> sayfasındaki ürün kartında gösterilir.</p>
+      {productLoading ? (
+        <div className="h-32 animate-pulse rounded-lg bg-slate-100" />
+      ) : (
+        <ImageField label="Kart Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 600 × 450 px" />
+      )}
+    </SectionCard>
+  );
+}
+
+function HeroImageSection({ raw }: { raw: string }) {
   const [image, setImage] = useState(raw);
   const [dirty, setDirty] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { uploadFile, uploading } = useImageUpload();
-  const mut = useSave("gcp_card_image", () => setDirty(false));
+  const mut = useSave("gcp_hero_image", () => setDirty(false));
 
   useEffect(() => { setImage(raw); setDirty(false); }, [raw]);
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  return (
+    <SectionCard title="Hero Ürün Görseli" dirty={dirty} onSave={() => mut.mutate({ settingKey: "gcp_hero_image", data: { settingValue: image } })} saving={mut.isPending}>
+      <p className="mb-3 text-[11px] text-slate-500">Görsel eklendiğinde, sayfa başındaki kesikli çerçeveli görsel alanı kaybolur ve ürün fotoğrafı gösterilir.</p>
+      <ImageField label="Hero Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 1920 × 720 px" />
+    </SectionCard>
+  );
+}
+
+function DetailImagesSection({ raw0, raw1, raw2 }: { raw0: string; raw1: string; raw2: string }) {
+  const [images, setImages] = useState<string[]>([raw0, raw1, raw2]);
+  const [dirty, setDirty] = useState(false);
+  const upsertMut = useUpsertSetting();
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setImages([raw0, raw1, raw2]); setDirty(false); }, [raw0, raw1, raw2]);
+
+  function setImg(i: number, v: string) {
+    setImages((arr) => arr.map((a, idx) => (idx === i ? v : a)));
+    setDirty(true);
+  }
+
+  async function handleSave() {
+    setSaving(true);
     try {
-      const result = await uploadFile(file);
-      setImage(result.publicUrl);
-      setDirty(true);
-      toast.success("Görsel yüklendi");
-    } catch {
-      toast.error("Görsel yüklenemedi");
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
+      await Promise.all(images.map((url, i) => upsertMut.mutateAsync({ settingKey: `gcp_img_${i}`, data: { settingValue: url } })));
+      toast.success("Detay kart görselleri kaydedildi");
+      setDirty(false);
+    } catch { toast.error("Kayıt başarısız"); }
+    finally { setSaving(false); }
   }
 
   return (
-    <SectionCard title="Ürünler Sayfası Kart Görseli" dirty={dirty} onSave={() => mut.mutate({ settingKey: "gcp_card_image", data: { settingValue: image } })} saving={mut.isPending}>
-      <p className="mb-3 text-[11px] text-slate-500">Bu görsel, <code className="rounded bg-slate-100 px-1">/urunler</code> sayfasındaki ürün kartında ve admin panelinde küçük resim olarak gösterilir.</p>
-      <div className="flex items-baseline justify-between gap-2 mb-1">
-        <label className="label">Kart Görseli</label>
-        <span className="text-[10px] font-mono text-slate-400 shrink-0">Önerilen: 600 × 450 px</span>
+    <SectionCard title="Detay Kart Görselleri (3 Adet)" dirty={dirty} onSave={handleSave} saving={saving}>
+      <div className="space-y-4">
+        {images.map((url, i) => (
+          <ImageField key={i} label={`${i + 1}. Kart Görseli`} value={url} onChange={(v) => setImg(i, v)} hint="Önerilen: 420 × 240 px" />
+        ))}
       </div>
-      {image && (
-        <div className="relative mb-2 overflow-hidden rounded-lg border border-slate-200">
-          <img src={image} alt="Kart görseli" className="h-32 w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-          <button type="button" onClick={() => { setImage(""); setDirty(true); }} className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80">
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
-      <div className="flex gap-2">
-        <input className="input flex-1" value={image} onChange={(e) => { setImage(e.target.value); setDirty(true); }} placeholder="https://... veya /assets/..." />
-        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50">
-          <Upload className="h-3.5 w-3.5" />
-          {uploading ? "…" : "Yükle"}
-        </button>
-      </div>
-      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+    </SectionCard>
+  );
+}
+
+function DrawingImageSection({ raw }: { raw: string }) {
+  const [image, setImage] = useState(raw);
+  const [dirty, setDirty] = useState(false);
+  const mut = useSave("gcp_drawing_image", () => setDirty(false));
+
+  useEffect(() => { setImage(raw); setDirty(false); }, [raw]);
+
+  return (
+    <SectionCard title="Teknik Çizim Görseli" dirty={dirty} onSave={() => mut.mutate({ settingKey: "gcp_drawing_image", data: { settingValue: image } })} saving={mut.isPending}>
+      <ImageField label="Teknik Çizim / Boyutlar Görseli" value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 520 × 360 px" />
     </SectionCard>
   );
 }
@@ -332,12 +450,15 @@ export default function GasControlPanelAdminPage() {
         <div className="space-y-4">{[1,2,3,4,5].map((i) => <div key={i} className="h-40 animate-pulse rounded-xl bg-slate-100" />)}</div>
       ) : (
         <div className="space-y-6">
-          <CardImageSection raw={s["gcp_card_image"] ?? ""} />
+          <CardImageSection />
           <HeroSection raw={s["gcp_hero"] ?? ""} />
+          <HeroImageSection raw={s["gcp_hero_image"] ?? ""} />
           <SpecsSection raw={s["gcp_specs"] ?? ""} />
           <FaqsSection raw={s["gcp_faqs"] ?? ""} />
           <AdvantagesSection raw={s["gcp_advantages"] ?? ""} />
           <DetailCardsSection raw={s["gcp_detail_cards"] ?? ""} />
+          <DetailImagesSection raw0={s["gcp_img_0"] ?? ""} raw1={s["gcp_img_1"] ?? ""} raw2={s["gcp_img_2"] ?? ""} />
+          <DrawingImageSection raw={s["gcp_drawing_image"] ?? ""} />
         </div>
       )}
     </section>

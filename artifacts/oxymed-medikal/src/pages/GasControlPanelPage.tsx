@@ -44,6 +44,9 @@ function useGCPContent() {
       title: "3 Gazlı Kat Kontrol Panosu",
       description: "Medikal gaz sistemleriniz için güvenli, akıllı ve kesintisiz kontrol. 3 farklı medikal gazın merkezi yönetimi tek panelde.",
     }),
+    heroImage: s["gcp_hero_image"] ?? "",
+    drawingImage: s["gcp_drawing_image"] ?? "",
+    imgs: [s["gcp_img_0"] ?? "", s["gcp_img_1"] ?? "", s["gcp_img_2"] ?? ""],
     specs: parse<Array<{ k: string; v: string }>>("gcp_specs", [
       { k: "Ürün Adı", v: "3 Gazlı Kat Kontrol Panosu" },
       { k: "Desteklenen Gazlar", v: "O2 (Oksijen) - VAC (Vakum) - AIR (Hava)" },
@@ -166,18 +169,25 @@ const faqs = [
   ["Güç kesintisi durumunda sistem çalışır mı?", "Proje ihtiyacına göre yedek güç ve alarm senaryoları uygulanabilir."],
 ];
 
-function ImageSlot({ label, size, className = "" }: { label: string; size: string; className?: string }) {
+function ImageSlot({ label, size, className = "", image }: { label: string; size: string; className?: string; image?: string }) {
   return (
-    <div className={`gcp-image-slot ${className}`}>
-      <span>{label}</span>
-      <strong>{size}</strong>
-      <small>WEBP görsel alanı</small>
+    <div
+      className={`gcp-image-slot ${image ? "gcp-image-slot--has-image" : ""} ${className}`}
+      style={image ? { backgroundImage: `url(${image})` } : undefined}
+    >
+      {!image && (
+        <>
+          <span>{label}</span>
+          <strong>{size}</strong>
+          <small>WEBP görsel alanı</small>
+        </>
+      )}
     </div>
   );
 }
 
 export default function GasControlPanelPage() {
-  const { hero, specs, faqs, advantages, detailCards } = useGCPContent();
+  const { hero, specs, faqs, advantages, detailCards, heroImage, drawingImage, imgs } = useGCPContent();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -222,17 +232,25 @@ export default function GasControlPanelPage() {
               </div>
             </div>
 
-            <div className="gcp-hero-photo-note" aria-hidden="true">
-              <span>Hero ürün fotoğraf alanı</span>
-              <strong>1920 x 720 px WEBP</strong>
+            <div
+              className={`gcp-hero-photo-slot${heroImage ? " gcp-hero-photo-slot--has-image" : ""}`}
+              style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+              aria-hidden="true"
+            >
+              {!heroImage && (
+                <>
+                  <span>Hero ürün fotoğraf alanı</span>
+                  <strong>1920 x 720 px WEBP</strong>
+                </>
+              )}
             </div>
           </div>
         </section>
 
         <section className="gcp-container gcp-card-row">
-          {detailCards.map((card) => (
+          {detailCards.map((card, i) => (
             <article className="gcp-detail-card" key={card.title}>
-              <ImageSlot label={card.title} size="420 x 240 px" />
+              <ImageSlot label={card.title} size="420 x 240 px" image={imgs[i]} />
               <div>
                 <h2>{card.title}</h2>
                 <p>{card.text}</p>
@@ -256,7 +274,7 @@ export default function GasControlPanelPage() {
 
           <article className="gcp-drawing">
             <h2>Ölçüler / Teknik Çizim</h2>
-            <ImageSlot label="Teknik çizim görseli" size="520 x 360 px" />
+            <ImageSlot label="Teknik çizim görseli" size="520 x 360 px" image={drawingImage} />
           </article>
 
           <article className="gcp-uses">
