@@ -5,3 +5,4 @@
 - [Quote PDF pagination](quote-pdf-pagination.md) — 3 mutually-exclusive page-control flags (all push-down except keepWithPrevious); footer peels trailing unit instead of leaving a lonely footer page.
 - [Quote form multi-language + AI translation](quote-form-multilingual.md) — 14-lang static chrome vs live-translated free text; translate = duplicate-then-translate, never mutates source quote.
 - [Generic product page template](generic-product-page-template.md) — new admin-manageable product pages should use the DB-driven `pageData`+`/urunler/:slug` system, not hand-rolled hardcoded pages.
+- [Dental pump hero layout](dvp-hero-layout.md) — preserve the legacy dark hero/text layout; add uploaded product imagery only inside the existing visual area.

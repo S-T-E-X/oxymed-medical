@@ -122,9 +122,13 @@
   border: 1px dashed rgba(159, 210, 255, 0.24);
   border-radius: 14px;
   background:
+    var(--dvp-hero-image),
     radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.11), transparent 28%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0)),
     repeating-linear-gradient(-38deg, rgba(99, 183, 255, 0.045) 0 15px, transparent 15px 30px);
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-size: contain, auto, auto, auto;
 }
 
 .dvp-hero-floor {
@@ -136,6 +140,11 @@
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(163, 203, 244, 0.34), rgba(1, 12, 24, 0) 66%);
   filter: blur(2px);
+}
+
+.dvp-hero__content {
+  position: relative;
+  z-index: 2;
 }
 
 .dvp-feature-row {
@@ -207,6 +216,14 @@
     linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(232, 238, 247, 0.78)),
     repeating-linear-gradient(45deg, rgba(8, 36, 77, 0.04) 0 12px, transparent 12px 24px);
   box-shadow: 0 12px 28px rgba(8, 36, 77, 0.08);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.dvp-image-slot--has-image {
+  border: 0;
+  background-image: none;
 }
 
 .dvp-gallery h2 {
@@ -310,6 +327,14 @@
     linear-gradient(90deg, rgba(8, 36, 77, 0.06) 1px, transparent 1px),
     linear-gradient(180deg, rgba(8, 36, 77, 0.06) 1px, transparent 1px);
   background-size: auto, 20px 20px, 20px 20px;
+}
+
+.dvp-drawing-slot--has-image {
+  border: 0;
+  background-image: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .dvp-dimensions {
@@ -431,17 +456,20 @@
     min-height: auto;
   }
 
-  .dvp-hero__grid,
-  .dvp-technical-panel {
-    grid-template-columns: 1fr;
-  }
-
   .dvp-hero__grid {
     min-height: auto;
   }
 
-  .dvp-hero__visual {
-    min-height: 390px;
+  .dvp-hero-photo-slot {
+    background-image:
+      var(--dvp-hero-mobile-image),
+      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.11), transparent 28%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0)),
+      repeating-linear-gradient(-38deg, rgba(99, 183, 255, 0.045) 0 15px, transparent 15px 30px);
+  }
+
+  .dvp-technical-panel {
+    grid-template-columns: 1fr;
   }
 
   .dvp-feature-row {
@@ -478,10 +506,6 @@
   .dvp-hero p {
     max-width: none;
     font-size: 15px;
-  }
-
-  .dvp-hero__visual {
-    min-height: 300px;
   }
 
   .dvp-feature-row,

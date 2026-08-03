@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type CSSProperties } from "react";
 import { useListSettings } from "@workspace/api-client-react";
 import {
   BadgeCheck,
@@ -95,9 +95,14 @@ export default function DentalVacuumPumpPage() {
   const desc1 = s["dvp_hero_desc1"] || "Oxymed Dental Vakum Pompası, diş klinikleri ve sağlık kuruluşlarında güvenilir, sessiz ve kesintisiz vakum çözümü sunar.";
   const desc2 = s["dvp_hero_desc2"] || "Yüksek performanslı motor yapısı ve dayanıklı tasarımıyla uzun ömürlü, ekonomik ve hijyenik bir kullanım sağlar.";
   const heroImage = s["dvp_hero_image"];
+  const heroMobileImage = s["dvp_hero_mobile_image"];
   const galleryImages = [0, 1, 2].map((i) => s[`dvp_img_${i}`]);
   const displaySpecs: [string, string][] = s["dvp_specs_text"] ? parseDvpSpecsText(s["dvp_specs_text"]) : (specs as [string, string][]);
   const drawingImage = s["dvp_drawing_image"];
+  const heroVisualStyle = {
+    "--dvp-hero-image": heroImage ? `url(${heroImage})` : "none",
+    "--dvp-hero-mobile-image": `url(${heroMobileImage || heroImage || ""})`,
+  } as CSSProperties;
 
   return (
     <div className="dvp-page">
@@ -116,8 +121,8 @@ export default function DentalVacuumPumpPage() {
               <p>{desc2}</p>
             </div>
 
-            <div className="dvp-hero__visual" aria-label="Dental vakum pompası ana WEBP görsel alanı">
-              <div className="dvp-hero-photo-slot" style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined} />
+            <div className="dvp-hero__visual" aria-label="Dental vakum pompası ana WEBP görsel alanı" style={heroVisualStyle}>
+              <div className="dvp-hero-photo-slot" />
               <div className="dvp-hero-floor" aria-hidden="true" />
             </div>
           </div>
@@ -140,7 +145,11 @@ export default function DentalVacuumPumpPage() {
           <div className="dvp-container dvp-gallery__grid">
             {imageCards.map((card, i) => (
               <article key={card.title}>
-                <div className="dvp-image-slot" aria-label={`${card.title} WEBP görsel alanı`} style={galleryImages[i] ? { backgroundImage: `url(${galleryImages[i]})` } : undefined} />
+                <div
+                  className={`dvp-image-slot${galleryImages[i] ? " dvp-image-slot--has-image" : ""}`}
+                  aria-label={`${card.title} WEBP görsel alanı`}
+                  style={galleryImages[i] ? { backgroundImage: `url(${galleryImages[i]})` } : undefined}
+                />
                 <h2>{card.title}</h2>
                 <p>{card.text}</p>
               </article>
@@ -170,7 +179,11 @@ export default function DentalVacuumPumpPage() {
               <h2>TEKNİK ÇİZİM & BOYUTLAR</h2>
             </header>
             <div className="dvp-drawing-grid">
-              <div className="dvp-drawing-slot" aria-label="Teknik çizim ve boyutlar WEBP görsel alanı" style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined} />
+              <div
+                className={`dvp-drawing-slot${drawingImage ? " dvp-drawing-slot--has-image" : ""}`}
+                aria-label="Teknik çizim ve boyutlar WEBP görsel alanı"
+                style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
+              />
             </div>
             <div className="dvp-dimensions" aria-hidden="true">
               <span>1150 mm</span>
