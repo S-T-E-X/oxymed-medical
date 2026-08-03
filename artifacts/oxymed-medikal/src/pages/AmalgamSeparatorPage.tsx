@@ -192,7 +192,11 @@ export default function AmalgamSeparatorPage() {
         <section className="ams-container ams-detail-grid" aria-label="Ürün detay görsel alanları">
           {detailCards.map((card, i) => (
             <article key={card.title}>
-              <div className="ams-image-slot" aria-label={`${card.title} WEBP görsel alanı`} style={detailImages[i] ? { backgroundImage: `url(${detailImages[i]})` } : undefined} />
+              <div
+                className={`ams-image-slot${detailImages[i] ? " ams-image-slot--has-image" : ""}`}
+                aria-label={`${card.title} WEBP görsel alanı`}
+                style={detailImages[i] ? { backgroundImage: `url(${detailImages[i]})` } : undefined}
+              />
               <h2>{card.title}</h2>
               <p>{card.text}</p>
             </article>

@@ -209,6 +209,14 @@
     repeating-linear-gradient(45deg, rgba(8, 38, 83, 0.035) 0 12px, transparent 12px 24px);
 }
 
+.ams-image-slot--has-image {
+  border: 1px solid #d6e0ec;
+  background-color: #eef3f9;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .ams-detail-grid h2 {
   margin-top: 13px;
   color: #082653;
