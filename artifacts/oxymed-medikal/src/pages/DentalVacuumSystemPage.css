@@ -154,6 +154,11 @@
   box-shadow: 0 12px 28px rgba(8, 38, 83, 0.07);
 }
 
+.dvs-image-slot--has-image {
+  border: 0;
+  background-image: none;
+}
+
 .dvs-image-card h2 {
   margin-top: 12px;
   color: #0b326a;
@@ -239,6 +244,16 @@
     linear-gradient(90deg, rgba(8, 38, 83, 0.05) 1px, transparent 1px),
     linear-gradient(180deg, rgba(8, 38, 83, 0.05) 1px, transparent 1px);
   background-size: auto, 22px 22px, 22px 22px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dvs-drawing-slot--has-image {
+  border: 0;
+  background-image: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .dvs-dimensions {

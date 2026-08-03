@@ -158,7 +158,11 @@ export default function DentalVacuumSystemPage() {
         <section className="dvs-container dvs-image-strip" aria-label="Ürün detay görsel alanları">
           {imageCards.map((card, i) => (
             <article key={card.title} className="dvs-image-card">
-              <div className="dvs-image-slot" aria-label={`${card.title} WEBP görsel alanı`} style={imageCards_imgs[i] ? { backgroundImage: `url(${imageCards_imgs[i]})` } : undefined} />
+              <div
+                className={`dvs-image-slot${imageCards_imgs[i] ? " dvs-image-slot--has-image" : ""}`}
+                aria-label={`${card.title} WEBP görsel alanı`}
+                style={imageCards_imgs[i] ? { backgroundImage: `url(${imageCards_imgs[i]})` } : undefined}
+              />
               <h2>{card.title}</h2>
               <p>{card.text}</p>
             </article>
@@ -181,7 +185,11 @@ export default function DentalVacuumSystemPage() {
           <article className="dvs-drawing">
             <h2>TEKNİK ÇİZİM / BOYUTLAR</h2>
             <div className="dvs-drawing-grid">
-              <div className="dvs-drawing-slot" aria-label="Teknik çizim ve boyutlar WEBP görsel alanı" style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined} />
+              <div
+                className={`dvs-drawing-slot${drawingImage ? " dvs-drawing-slot--has-image" : ""}`}
+                aria-label="Teknik çizim ve boyutlar WEBP görsel alanı"
+                style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
+              />
             </div>
             <div className="dvs-dimensions" aria-hidden="true">
               <span>1300 mm</span>
