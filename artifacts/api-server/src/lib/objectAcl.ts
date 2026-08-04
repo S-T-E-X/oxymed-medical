@@ -87,6 +87,16 @@ export async function getObjectAclPolicy(
   objectFile: File,
 ): Promise<ObjectAclPolicy | null> {
   const [metadata] = await objectFile.getMetadata();
+  return getObjectAclPolicyFromMetadata(metadata);
+}
+
+/**
+ * Same as getObjectAclPolicy but works off metadata already fetched by the
+ * caller, avoiding a duplicate round-trip to object storage.
+ */
+export function getObjectAclPolicyFromMetadata(
+  metadata: { metadata?: Record<string, unknown> } | undefined | null,
+): ObjectAclPolicy | null {
   const aclPolicy = metadata?.metadata?.[ACL_POLICY_METADATA_KEY];
   if (!aclPolicy) {
     return null;

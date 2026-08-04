@@ -5,7 +5,7 @@ import {
   ObjectAclPolicy,
   ObjectPermission,
   canAccessObject,
-  getObjectAclPolicy,
+  getObjectAclPolicyFromMetadata,
   setObjectAclPolicy,
 } from "./objectAcl";
 
@@ -87,17 +87,36 @@ export class ObjectStorageService {
     return null;
   }
 
-  async downloadObject(file: File, cacheTtlSec: number = 3600): Promise<Response> {
+  async downloadObject(
+    file: File,
+    cacheTtlSec: number = 3600,
+    options: { forcePublic?: boolean } = {},
+  ): Promise<Response> {
     const [metadata] = await file.getMetadata();
-    const aclPolicy = await getObjectAclPolicy(file);
-    const isPublic = aclPolicy?.visibility === "public";
+    // Derive ACL from the metadata we already fetched instead of calling
+    // getObjectAclPolicy (which would re-fetch metadata with a second
+    // round-trip to object storage on every single image request).
+    const aclPolicy = getObjectAclPolicyFromMetadata(metadata);
+    // The /storage/public-objects/* route serves files unconditionally
+    // without any ACL check, so anything reaching downloadObject() through it
+    // is public by construction — callers pass forcePublic instead of
+    // relying on ACL metadata, which uploaded site content never sets.
+    const isPublic = options.forcePublic || aclPolicy?.visibility === "public";
 
     const nodeStream = file.createReadStream();
     const webStream = Readable.toWeb(nodeStream) as ReadableStream;
 
+    // Uploaded objects are content-addressed by a fresh UUID per upload, so a
+    // given URL's content never changes — safe to cache aggressively for
+    // public assets (site images) and avoid repeat round-trips entirely on
+    // return visits. Private objects keep the shorter, non-immutable TTL.
+    const cacheControl = isPublic
+      ? `public, max-age=${Math.max(cacheTtlSec, 31536000)}, immutable`
+      : `private, max-age=${cacheTtlSec}`;
+
     const headers: Record<string, string> = {
       "Content-Type": (metadata.contentType as string) || "application/octet-stream",
-      "Cache-Control": `${isPublic ? "public" : "private"}, max-age=${cacheTtlSec}`,
+      "Cache-Control": cacheControl,
     };
     if (metadata.size) {
       headers["Content-Length"] = String(metadata.size);
