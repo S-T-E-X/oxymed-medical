@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "./admin/AuthContext";
 import CookieBanner from "./components/common/CookieBanner";
 import VisitorTracker from "./components/common/VisitorTracker";
+import RouteTransitionLoader from "./components/common/RouteTransitionLoader";
 import AdminLayout, { ProtectedRoute } from "./admin/AdminLayout";
 import LoginPage from "./admin/LoginPage";
 import DashboardPage from "./admin/DashboardPage";
@@ -62,6 +63,7 @@ export default function App() {
         <Toaster richColors position="top-right" />
         <VisitorTracker />
         <CookieBanner />
+        <RouteTransitionLoader />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/kurumsal" element={<CorporatePage />} />

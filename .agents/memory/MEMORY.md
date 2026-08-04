@@ -6,3 +6,4 @@
 - [Quote form multi-language + AI translation](quote-form-multilingual.md) — 14-lang static chrome vs live-translated free text; translate = duplicate-then-translate, never mutates source quote.
 - [Generic product page template](generic-product-page-template.md) — new admin-manageable product pages should use the DB-driven `pageData`+`/urunler/:slug` system, not hand-rolled hardcoded pages.
 - [Dental pump hero layout](dvp-hero-layout.md) — preserve the legacy dark hero/text layout; add uploaded product imagery only inside the existing visual area.
+- [Route transition loader](route-transition-loader.md) — global nav loading overlay gated on eager <img> loads; loading="lazy" images opt out.

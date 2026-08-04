@@ -173,6 +173,8 @@ function ProjectsSection() {
                   <img
                     src={project.imageUrl ?? "/assets/images/corporate-hero-facility.png"}
                     alt={project.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
                   />
                 </div>
@@ -210,6 +212,8 @@ function MapSection() {
           <img
             src="/assets/turkiyeharitasi.webp"
             alt="Türkiye Referans Haritası"
+            loading="lazy"
+            decoding="async"
             className="block h-auto w-auto max-h-[260px] max-w-[260px] shrink-0 object-contain opacity-90"
           />
         </div>
