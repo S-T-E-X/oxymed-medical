@@ -2104,6 +2104,106 @@ components:
           type: ["string", "null"]
         ctaSecondaryBg:
           type: ["string", "null"]
+        titleEn:
+          type: ["string", "null"]
+        titleDe:
+          type: ["string", "null"]
+        titleFr:
+          type: ["string", "null"]
+        titleIt:
+          type: ["string", "null"]
+        titleAr:
+          type: ["string", "null"]
+        titleRu:
+          type: ["string", "null"]
+        titleFa:
+          type: ["string", "null"]
+        titleKa:
+          type: ["string", "null"]
+        titleBg:
+          type: ["string", "null"]
+        titleAz:
+          type: ["string", "null"]
+        subtitleEn:
+          type: ["string", "null"]
+        subtitleDe:
+          type: ["string", "null"]
+        subtitleFr:
+          type: ["string", "null"]
+        subtitleIt:
+          type: ["string", "null"]
+        subtitleAr:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleFa:
+          type: ["string", "null"]
+        subtitleKa:
+          type: ["string", "null"]
+        subtitleBg:
+          type: ["string", "null"]
+        subtitleAz:
+          type: ["string", "null"]
+        descriptionEn:
+          type: ["string", "null"]
+        descriptionDe:
+          type: ["string", "null"]
+        descriptionFr:
+          type: ["string", "null"]
+        descriptionIt:
+          type: ["string", "null"]
+        descriptionAr:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionFa:
+          type: ["string", "null"]
+        descriptionKa:
+          type: ["string", "null"]
+        descriptionBg:
+          type: ["string", "null"]
+        descriptionAz:
+          type: ["string", "null"]
+        ctaPrimaryTextEn:
+          type: ["string", "null"]
+        ctaPrimaryTextDe:
+          type: ["string", "null"]
+        ctaPrimaryTextFr:
+          type: ["string", "null"]
+        ctaPrimaryTextIt:
+          type: ["string", "null"]
+        ctaPrimaryTextAr:
+          type: ["string", "null"]
+        ctaPrimaryTextRu:
+          type: ["string", "null"]
+        ctaPrimaryTextFa:
+          type: ["string", "null"]
+        ctaPrimaryTextKa:
+          type: ["string", "null"]
+        ctaPrimaryTextBg:
+          type: ["string", "null"]
+        ctaPrimaryTextAz:
+          type: ["string", "null"]
+        ctaSecondaryTextEn:
+          type: ["string", "null"]
+        ctaSecondaryTextDe:
+          type: ["string", "null"]
+        ctaSecondaryTextFr:
+          type: ["string", "null"]
+        ctaSecondaryTextIt:
+          type: ["string", "null"]
+        ctaSecondaryTextAr:
+          type: ["string", "null"]
+        ctaSecondaryTextRu:
+          type: ["string", "null"]
+        ctaSecondaryTextFa:
+          type: ["string", "null"]
+        ctaSecondaryTextKa:
+          type: ["string", "null"]
+        ctaSecondaryTextBg:
+          type: ["string", "null"]
+        ctaSecondaryTextAz:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -2149,6 +2249,106 @@ components:
           type: string
         ctaSecondaryBg:
           type: string
+        titleEn:
+          type: string
+        titleDe:
+          type: string
+        titleFr:
+          type: string
+        titleIt:
+          type: string
+        titleAr:
+          type: string
+        titleRu:
+          type: string
+        titleFa:
+          type: string
+        titleKa:
+          type: string
+        titleBg:
+          type: string
+        titleAz:
+          type: string
+        subtitleEn:
+          type: string
+        subtitleDe:
+          type: string
+        subtitleFr:
+          type: string
+        subtitleIt:
+          type: string
+        subtitleAr:
+          type: string
+        subtitleRu:
+          type: string
+        subtitleFa:
+          type: string
+        subtitleKa:
+          type: string
+        subtitleBg:
+          type: string
+        subtitleAz:
+          type: string
+        descriptionEn:
+          type: string
+        descriptionDe:
+          type: string
+        descriptionFr:
+          type: string
+        descriptionIt:
+          type: string
+        descriptionAr:
+          type: string
+        descriptionRu:
+          type: string
+        descriptionFa:
+          type: string
+        descriptionKa:
+          type: string
+        descriptionBg:
+          type: string
+        descriptionAz:
+          type: string
+        ctaPrimaryTextEn:
+          type: string
+        ctaPrimaryTextDe:
+          type: string
+        ctaPrimaryTextFr:
+          type: string
+        ctaPrimaryTextIt:
+          type: string
+        ctaPrimaryTextAr:
+          type: string
+        ctaPrimaryTextRu:
+          type: string
+        ctaPrimaryTextFa:
+          type: string
+        ctaPrimaryTextKa:
+          type: string
+        ctaPrimaryTextBg:
+          type: string
+        ctaPrimaryTextAz:
+          type: string
+        ctaSecondaryTextEn:
+          type: string
+        ctaSecondaryTextDe:
+          type: string
+        ctaSecondaryTextFr:
+          type: string
+        ctaSecondaryTextIt:
+          type: string
+        ctaSecondaryTextAr:
+          type: string
+        ctaSecondaryTextRu:
+          type: string
+        ctaSecondaryTextFa:
+          type: string
+        ctaSecondaryTextKa:
+          type: string
+        ctaSecondaryTextBg:
+          type: string
+        ctaSecondaryTextAz:
+          type: string
 
     SliderUpdate:
       type: object
@@ -2188,6 +2388,106 @@ components:
         ctaPrimaryBg:
           type: ["string", "null"]
         ctaSecondaryBg:
+          type: ["string", "null"]
+        titleEn:
+          type: ["string", "null"]
+        titleDe:
+          type: ["string", "null"]
+        titleFr:
+          type: ["string", "null"]
+        titleIt:
+          type: ["string", "null"]
+        titleAr:
+          type: ["string", "null"]
+        titleRu:
+          type: ["string", "null"]
+        titleFa:
+          type: ["string", "null"]
+        titleKa:
+          type: ["string", "null"]
+        titleBg:
+          type: ["string", "null"]
+        titleAz:
+          type: ["string", "null"]
+        subtitleEn:
+          type: ["string", "null"]
+        subtitleDe:
+          type: ["string", "null"]
+        subtitleFr:
+          type: ["string", "null"]
+        subtitleIt:
+          type: ["string", "null"]
+        subtitleAr:
+          type: ["string", "null"]
+        subtitleRu:
+          type: ["string", "null"]
+        subtitleFa:
+          type: ["string", "null"]
+        subtitleKa:
+          type: ["string", "null"]
+        subtitleBg:
+          type: ["string", "null"]
+        subtitleAz:
+          type: ["string", "null"]
+        descriptionEn:
+          type: ["string", "null"]
+        descriptionDe:
+          type: ["string", "null"]
+        descriptionFr:
+          type: ["string", "null"]
+        descriptionIt:
+          type: ["string", "null"]
+        descriptionAr:
+          type: ["string", "null"]
+        descriptionRu:
+          type: ["string", "null"]
+        descriptionFa:
+          type: ["string", "null"]
+        descriptionKa:
+          type: ["string", "null"]
+        descriptionBg:
+          type: ["string", "null"]
+        descriptionAz:
+          type: ["string", "null"]
+        ctaPrimaryTextEn:
+          type: ["string", "null"]
+        ctaPrimaryTextDe:
+          type: ["string", "null"]
+        ctaPrimaryTextFr:
+          type: ["string", "null"]
+        ctaPrimaryTextIt:
+          type: ["string", "null"]
+        ctaPrimaryTextAr:
+          type: ["string", "null"]
+        ctaPrimaryTextRu:
+          type: ["string", "null"]
+        ctaPrimaryTextFa:
+          type: ["string", "null"]
+        ctaPrimaryTextKa:
+          type: ["string", "null"]
+        ctaPrimaryTextBg:
+          type: ["string", "null"]
+        ctaPrimaryTextAz:
+          type: ["string", "null"]
+        ctaSecondaryTextEn:
+          type: ["string", "null"]
+        ctaSecondaryTextDe:
+          type: ["string", "null"]
+        ctaSecondaryTextFr:
+          type: ["string", "null"]
+        ctaSecondaryTextIt:
+          type: ["string", "null"]
+        ctaSecondaryTextAr:
+          type: ["string", "null"]
+        ctaSecondaryTextRu:
+          type: ["string", "null"]
+        ctaSecondaryTextFa:
+          type: ["string", "null"]
+        ctaSecondaryTextKa:
+          type: ["string", "null"]
+        ctaSecondaryTextBg:
+          type: ["string", "null"]
+        ctaSecondaryTextAz:
           type: ["string", "null"]
 
     # CATALOGS

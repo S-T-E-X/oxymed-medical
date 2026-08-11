@@ -5,6 +5,7 @@ import CatalogModal from "./CatalogModal";
 import type { Slider } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
 import { useLocalizedPath } from "../../i18n/useLocalizedPath";
+import type { Locale } from "../../i18n/config";
 
 function hexToRgba(hex: string, pct: number): string {
   try {
@@ -29,8 +30,28 @@ function buildOverlayStyle(hero: Slider): React.CSSProperties {
   };
 }
 
+/**
+ * Pick the locale-specific value for a translatable slider field,
+ * falling back to Turkish (the base field) when the locale value is absent.
+ */
+function pickSliderText(
+  slider: Slider,
+  baseField: "title" | "subtitle" | "description" | "ctaPrimaryText" | "ctaSecondaryText",
+  locale: Locale,
+): string | null | undefined {
+  if (locale === "tr") return slider[baseField] as string | null | undefined;
+
+  const suffix = (locale.charAt(0).toUpperCase() + locale.slice(1)) as Capitalize<string>;
+  const localeKey = (baseField + suffix) as keyof Slider;
+  const localeVal = slider[localeKey] as string | null | undefined;
+
+  // Fall back to Turkish if locale value is missing/empty
+  if (localeVal && localeVal.trim()) return localeVal;
+  return slider[baseField] as string | null | undefined;
+}
+
 export default function Hero() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const path = useLocalizedPath();
   const { data: allSliders, isLoading, isError } = useListSliders();
   const sliders = (allSliders ?? [])
@@ -79,6 +100,13 @@ export default function Hero() {
   const primaryBg = hero?.ctaPrimaryBg ?? "#021423";
   const secondaryBg = hero?.ctaSecondaryBg || "rgba(255,255,255,0.06)";
 
+  // Localized text (with TR fallback)
+  const heroTitle = hero ? pickSliderText(hero, "title", locale) : null;
+  const heroSubtitle = hero ? pickSliderText(hero, "subtitle", locale) : null;
+  const heroDescription = hero ? pickSliderText(hero, "description", locale) : null;
+  const heroPrimaryText = hero ? pickSliderText(hero, "ctaPrimaryText", locale) : null;
+  const heroSecondaryText = hero ? pickSliderText(hero, "ctaSecondaryText", locale) : null;
+
   return (
     <>
       <section className="relative isolate h-[620px] overflow-hidden bg-oxynavy-950 sm:h-[600px] lg:h-[570px]">
@@ -86,7 +114,7 @@ export default function Hero() {
           <img
             key={hero.id}
             src={hero.imageUrl}
-            alt={hero.title}
+            alt={heroTitle ?? hero.title}
             className="absolute inset-0 h-full w-full object-cover object-[63%_center] transition-opacity duration-700"
           />
         ) : (
@@ -107,13 +135,13 @@ export default function Hero() {
         <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
           {!showFallback && hero ? (
             <div className="max-w-[590px] pt-6" style={{ color: heroTextColor }}>
-              {hero.subtitle && (
+              {heroSubtitle && (
                 <p className="text-sm font-bold uppercase tracking-widest" style={{ opacity: 0.78 }}>
-                  {hero.subtitle}
+                  {heroSubtitle}
                 </p>
               )}
               <h1 className="mt-3 text-[44px] font-extrabold leading-[1.08] sm:text-6xl lg:text-[68px]">
-                {hero.title.split(" ").map((word, i, arr) =>
+                {(heroTitle ?? "").split(" ").map((word, i, arr) =>
                   i === Math.floor(arr.length / 2) ? (
                     <span key={i} className="block">{word}</span>
                   ) : (
@@ -122,29 +150,29 @@ export default function Hero() {
                 )}
               </h1>
               <div className="mt-8 h-1 w-16" style={{ background: heroTextColor }} />
-              {hero.description && (
+              {heroDescription && (
                 <p className="mt-8 max-w-[420px] text-base font-medium leading-8 sm:text-lg" style={{ opacity: 0.88 }}>
-                  {hero.description}
+                  {heroDescription}
                 </p>
               )}
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                {hero.ctaPrimaryText && hero.ctaPrimaryHref && (
+                {heroPrimaryText && hero.ctaPrimaryHref && (
                   <a
                     href={hero.ctaPrimaryHref}
                     style={{ backgroundColor: primaryBg }}
                     className="inline-flex items-center justify-center gap-2 rounded px-7 py-4 text-xs font-extrabold text-white shadow-[0_10px_30px_rgba(2,20,35,0.22)] transition hover:opacity-90"
                   >
-                    {hero.ctaPrimaryText}
+                    {heroPrimaryText}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </a>
                 )}
-                {hero.ctaSecondaryText && hero.ctaSecondaryHref && (
+                {heroSecondaryText && hero.ctaSecondaryHref && (
                   <a
                     href={hero.ctaSecondaryHref}
                     style={{ backgroundColor: secondaryBg }}
                     className="inline-flex items-center justify-center gap-2 rounded border border-white/72 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:opacity-90"
                   >
-                    {hero.ctaSecondaryText}
+                    {heroSecondaryText}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </a>
                 )}

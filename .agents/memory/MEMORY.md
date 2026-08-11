@@ -8,4 +8,5 @@
 - [Dental pump hero layout](dvp-hero-layout.md) — preserve the legacy dark hero/text layout; add uploaded product imagery only inside the existing visual area.
 - [Route transition loader](route-transition-loader.md) — global nav loading overlay gated on eager <img> loads; loading="lazy" images opt out.
 - [Locale resolution](i18n-locale-resolution.md) — URL is source of truth; stored language may only redirect the bare default URL, never a locale-prefixed one.
-- [Translation dictionaries](i18n-dictionaries.md) — TR is hand-authored source, others generated; DB-sourced copy (sliders/categories/products) is NOT covered.
+- [Translation dictionaries](i18n-dictionaries.md) — TR is hand-authored source, others generated; DB-sourced copy (sliders/categories/products) is NOT covered by static dicts.
+- [Slider i18n columns](slider-i18n.md) — slider text fields are now per-locale columns (title_en, subtitle_de, etc.); 50 columns added; Hero picks locale col with TR fallback via pickSliderText().

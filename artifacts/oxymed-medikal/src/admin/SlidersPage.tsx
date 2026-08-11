@@ -12,6 +12,37 @@ import { toast } from "sonner";
 import { Edit2, GripVertical, ImageIcon, Plus, ToggleLeft, ToggleRight, Trash2, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 
+// Locales supported for slider text (TR is the base/fallback)
+const SLIDER_LOCALES = [
+  { code: "tr", label: "TR" },
+  { code: "en", label: "EN" },
+  { code: "de", label: "DE" },
+  { code: "fr", label: "FR" },
+  { code: "it", label: "IT" },
+  { code: "ar", label: "AR" },
+  { code: "ru", label: "RU" },
+  { code: "fa", label: "FA" },
+  { code: "ka", label: "KA" },
+  { code: "bg", label: "BG" },
+  { code: "az", label: "AZ" },
+] as const;
+
+type SliderLocale = (typeof SLIDER_LOCALES)[number]["code"];
+
+// Locale-specific text fields (excluding TR which uses the base fields)
+type LocaleFields = {
+  titleEn: string; titleDe: string; titleFr: string; titleIt: string; titleAr: string;
+  titleRu: string; titleFa: string; titleKa: string; titleBg: string; titleAz: string;
+  subtitleEn: string; subtitleDe: string; subtitleFr: string; subtitleIt: string; subtitleAr: string;
+  subtitleRu: string; subtitleFa: string; subtitleKa: string; subtitleBg: string; subtitleAz: string;
+  descriptionEn: string; descriptionDe: string; descriptionFr: string; descriptionIt: string; descriptionAr: string;
+  descriptionRu: string; descriptionFa: string; descriptionKa: string; descriptionBg: string; descriptionAz: string;
+  ctaPrimaryTextEn: string; ctaPrimaryTextDe: string; ctaPrimaryTextFr: string; ctaPrimaryTextIt: string; ctaPrimaryTextAr: string;
+  ctaPrimaryTextRu: string; ctaPrimaryTextFa: string; ctaPrimaryTextKa: string; ctaPrimaryTextBg: string; ctaPrimaryTextAz: string;
+  ctaSecondaryTextEn: string; ctaSecondaryTextDe: string; ctaSecondaryTextFr: string; ctaSecondaryTextIt: string; ctaSecondaryTextAr: string;
+  ctaSecondaryTextRu: string; ctaSecondaryTextFa: string; ctaSecondaryTextKa: string; ctaSecondaryTextBg: string; ctaSecondaryTextAz: string;
+};
+
 type SliderFormData = {
   title: string;
   subtitle: string;
@@ -31,6 +62,19 @@ type SliderFormData = {
   textColor: string;
   ctaPrimaryBg: string;
   ctaSecondaryBg: string;
+} & LocaleFields;
+
+const EMPTY_LOCALE_FIELDS: LocaleFields = {
+  titleEn: "", titleDe: "", titleFr: "", titleIt: "", titleAr: "",
+  titleRu: "", titleFa: "", titleKa: "", titleBg: "", titleAz: "",
+  subtitleEn: "", subtitleDe: "", subtitleFr: "", subtitleIt: "", subtitleAr: "",
+  subtitleRu: "", subtitleFa: "", subtitleKa: "", subtitleBg: "", subtitleAz: "",
+  descriptionEn: "", descriptionDe: "", descriptionFr: "", descriptionIt: "", descriptionAr: "",
+  descriptionRu: "", descriptionFa: "", descriptionKa: "", descriptionBg: "", descriptionAz: "",
+  ctaPrimaryTextEn: "", ctaPrimaryTextDe: "", ctaPrimaryTextFr: "", ctaPrimaryTextIt: "", ctaPrimaryTextAr: "",
+  ctaPrimaryTextRu: "", ctaPrimaryTextFa: "", ctaPrimaryTextKa: "", ctaPrimaryTextBg: "", ctaPrimaryTextAz: "",
+  ctaSecondaryTextEn: "", ctaSecondaryTextDe: "", ctaSecondaryTextFr: "", ctaSecondaryTextIt: "", ctaSecondaryTextAr: "",
+  ctaSecondaryTextRu: "", ctaSecondaryTextFa: "", ctaSecondaryTextKa: "", ctaSecondaryTextBg: "", ctaSecondaryTextAz: "",
 };
 
 const EMPTY: SliderFormData = {
@@ -52,7 +96,15 @@ const EMPTY: SliderFormData = {
   textColor: "#ffffff",
   ctaPrimaryBg: "#021423",
   ctaSecondaryBg: "#ffffff",
+  ...EMPTY_LOCALE_FIELDS,
 };
+
+/** Build locale-keyed field name, e.g. localeField("title", "en") => "titleEn" */
+function localeField(base: string, locale: SliderLocale): keyof SliderFormData {
+  if (locale === "tr") return base as keyof SliderFormData;
+  const suffix = locale.charAt(0).toUpperCase() + locale.slice(1);
+  return (base + suffix) as keyof SliderFormData;
+}
 
 function ColorField({
   label,
@@ -126,6 +178,7 @@ function SliderModal({
   saving: boolean;
 }) {
   const [form, setForm] = useState<SliderFormData>(initial);
+  const [activeLang, setActiveLang] = useState<SliderLocale>("tr");
   const { uploadFile, uploading } = useImageUpload();
 
   function set(field: keyof SliderFormData, value: string | boolean | number) {
@@ -144,6 +197,12 @@ function SliderModal({
     }
   }
 
+  const titleKey = localeField("title", activeLang);
+  const subtitleKey = localeField("subtitle", activeLang);
+  const descriptionKey = localeField("description", activeLang);
+  const ctaPrimaryTextKey = localeField("ctaPrimaryText", activeLang);
+  const ctaSecondaryTextKey = localeField("ctaSecondaryText", activeLang);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-2xl max-h-[90vh]">
@@ -152,120 +211,188 @@ function SliderModal({
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-4 p-6">
+          {/* Language tabs */}
           <div>
-            <label className="label">Başlık *</label>
-            <input className="input" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Slider başlığı" />
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">Dil / Language</p>
+            <div className="flex flex-wrap gap-1">
+              {SLIDER_LOCALES.map(({ code, label }) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setActiveLang(code)}
+                  className={`rounded px-2.5 py-1 text-xs font-bold transition ${
+                    activeLang === code
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {activeLang !== "tr" && (
+              <p className="mt-1.5 text-[11px] text-slate-400">
+                Boş bırakılan alanlar Türkçe içeriğe düşer.
+              </p>
+            )}
+          </div>
+
+          {/* Translatable text fields */}
+          <div>
+            <label className="label">
+              {activeLang === "tr" ? "Başlık *" : "Başlık"}
+            </label>
+            <input
+              className="input"
+              value={(form[titleKey] as string) ?? ""}
+              onChange={(e) => set(titleKey, e.target.value)}
+              placeholder={activeLang === "tr" ? "Slider başlığı" : `Başlık (${activeLang.toUpperCase()}) — boş = TR`}
+            />
           </div>
           <div>
             <label className="label">Alt Başlık</label>
-            <input className="input" value={form.subtitle} onChange={(e) => set("subtitle", e.target.value)} placeholder="Alt başlık" />
+            <input
+              className="input"
+              value={(form[subtitleKey] as string) ?? ""}
+              onChange={(e) => set(subtitleKey, e.target.value)}
+              placeholder={activeLang === "tr" ? "Alt başlık" : `Alt başlık (${activeLang.toUpperCase()}) — boş = TR`}
+            />
           </div>
           <div>
             <label className="label">Açıklama</label>
-            <textarea className="input min-h-[80px] resize-y" value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Açıklama metni" />
-          </div>
-          <div>
-            <label className="label">Görsel URL</label>
-            <div className="flex gap-2">
-              <input className="input flex-1" value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://... veya dosya yükle" />
-              <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-                <ImageIcon className="h-4 w-4" />
-                {uploading ? "…" : "Yükle"}
-                <input type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
-              </label>
-            </div>
-            {form.imageUrl && <img src={form.imageUrl} alt="" className="mt-2 h-24 w-full rounded object-cover" />}
+            <textarea
+              className="input min-h-[80px] resize-y"
+              value={(form[descriptionKey] as string) ?? ""}
+              onChange={(e) => set(descriptionKey, e.target.value)}
+              placeholder={activeLang === "tr" ? "Açıklama metni" : `Açıklama (${activeLang.toUpperCase()}) — boş = TR`}
+            />
           </div>
 
+          {/* Image URL — only on TR tab */}
+          {activeLang === "tr" && (
+            <div>
+              <label className="label">Görsel URL</label>
+              <div className="flex gap-2">
+                <input className="input flex-1" value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://... veya dosya yükle" />
+                <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                  <ImageIcon className="h-4 w-4" />
+                  {uploading ? "…" : "Yükle"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
+                </label>
+              </div>
+              {form.imageUrl && <img src={form.imageUrl} alt="" className="mt-2 h-24 w-full rounded object-cover" />}
+            </div>
+          )}
+
+          {/* CTA buttons */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label">Birincil Buton Metni</label>
-              <input className="input" value={form.ctaPrimaryText} onChange={(e) => set("ctaPrimaryText", e.target.value)} placeholder="Detaylar" />
+              <input
+                className="input"
+                value={(form[ctaPrimaryTextKey] as string) ?? ""}
+                onChange={(e) => set(ctaPrimaryTextKey, e.target.value)}
+                placeholder={activeLang === "tr" ? "Detaylar" : `(${activeLang.toUpperCase()}) — boş = TR`}
+              />
             </div>
-            <div>
-              <label className="label">Birincil Buton Linki</label>
-              <input className="input" value={form.ctaPrimaryHref} onChange={(e) => set("ctaPrimaryHref", e.target.value)} placeholder="/urunler" />
-            </div>
+            {activeLang === "tr" && (
+              <div>
+                <label className="label">Birincil Buton Linki</label>
+                <input className="input" value={form.ctaPrimaryHref} onChange={(e) => set("ctaPrimaryHref", e.target.value)} placeholder="/urunler" />
+              </div>
+            )}
             <div>
               <label className="label">İkincil Buton Metni</label>
-              <input className="input" value={form.ctaSecondaryText} onChange={(e) => set("ctaSecondaryText", e.target.value)} placeholder="İletişim" />
+              <input
+                className="input"
+                value={(form[ctaSecondaryTextKey] as string) ?? ""}
+                onChange={(e) => set(ctaSecondaryTextKey, e.target.value)}
+                placeholder={activeLang === "tr" ? "İletişim" : `(${activeLang.toUpperCase()}) — boş = TR`}
+              />
             </div>
-            <div>
-              <label className="label">İkincil Buton Linki</label>
-              <input className="input" value={form.ctaSecondaryHref} onChange={(e) => set("ctaSecondaryHref", e.target.value)} placeholder="/teklif-al" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
-              <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
-              Aktif
-            </label>
-            <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
-              <input type="checkbox" checked={form.showCatalogButton} onChange={(e) => set("showCatalogButton", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
-              Katalog İndir Butonu Göster
-            </label>
-          </div>
-
-          <div className="rounded-lg border border-slate-200 p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-slate-800">Overlay (Renk Örtüsü)</p>
-              <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-600">
-                <input
-                  type="checkbox"
-                  checked={form.overlayEnabled}
-                  onChange={(e) => set("overlayEnabled", e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300"
-                />
-                {form.overlayEnabled ? "Açık" : "Kapalı"}
-              </label>
-            </div>
-            {form.overlayEnabled && (
-              <div className="space-y-4">
-                <ColorField
-                  label="Overlay Rengi"
-                  value={form.overlayColor}
-                  onChange={(v) => set("overlayColor", v)}
-                  hint="Soldan sağa doğru uygulanacak renk"
-                />
-                <RangeField
-                  label="Sol taraf opaklığı (başlangıç)"
-                  value={form.overlayFromOpacity}
-                  onChange={(v) => set("overlayFromOpacity", v)}
-                />
-                <RangeField
-                  label="Sağ taraf opaklığı (bitiş)"
-                  value={form.overlayToOpacity}
-                  onChange={(v) => set("overlayToOpacity", v)}
-                />
-                <div className="h-6 rounded" style={{
-                  background: form.overlayColor.startsWith("#")
-                    ? `linear-gradient(to right, ${form.overlayColor}${Math.round(form.overlayFromOpacity * 2.55).toString(16).padStart(2, "0")}, ${form.overlayColor}${Math.round(form.overlayToOpacity * 2.55).toString(16).padStart(2, "0")})`
-                    : "linear-gradient(to right, #021423ea, #02142320)"
-                }} />
+            {activeLang === "tr" && (
+              <div>
+                <label className="label">İkincil Buton Linki</label>
+                <input className="input" value={form.ctaSecondaryHref} onChange={(e) => set("ctaSecondaryHref", e.target.value)} placeholder="/teklif-al" />
               </div>
             )}
           </div>
 
-          <div className="rounded-lg border border-slate-200 p-4 space-y-4">
-            <p className="text-sm font-bold text-slate-800">Metin &amp; Buton Renkleri</p>
-            <ColorField
-              label="Metin rengi"
-              value={form.textColor}
-              onChange={(v) => set("textColor", v)}
-              hint="Başlık ve açıklama metinlerine uygulanır"
-            />
-            <ColorField
-              label="Birincil buton arka planı"
-              value={form.ctaPrimaryBg}
-              onChange={(v) => set("ctaPrimaryBg", v)}
-            />
-            <ColorField
-              label="İkincil buton arka planı"
-              value={form.ctaSecondaryBg}
-              onChange={(v) => set("ctaSecondaryBg", v)}
-            />
-          </div>
+          {/* Settings (only on TR tab) */}
+          {activeLang === "tr" && (
+            <>
+              <div className="space-y-2">
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={form.isActive} onChange={(e) => set("isActive", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
+                  Aktif
+                </label>
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={form.showCatalogButton} onChange={(e) => set("showCatalogButton", e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
+                  Katalog İndir Butonu Göster
+                </label>
+              </div>
+
+              <div className="rounded-lg border border-slate-200 p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-bold text-slate-800">Overlay (Renk Örtüsü)</p>
+                  <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-600">
+                    <input
+                      type="checkbox"
+                      checked={form.overlayEnabled}
+                      onChange={(e) => set("overlayEnabled", e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300"
+                    />
+                    {form.overlayEnabled ? "Açık" : "Kapalı"}
+                  </label>
+                </div>
+                {form.overlayEnabled && (
+                  <div className="space-y-4">
+                    <ColorField
+                      label="Overlay Rengi"
+                      value={form.overlayColor}
+                      onChange={(v) => set("overlayColor", v)}
+                      hint="Soldan sağa doğru uygulanacak renk"
+                    />
+                    <RangeField
+                      label="Sol taraf opaklığı (başlangıç)"
+                      value={form.overlayFromOpacity}
+                      onChange={(v) => set("overlayFromOpacity", v)}
+                    />
+                    <RangeField
+                      label="Sağ taraf opaklığı (bitiş)"
+                      value={form.overlayToOpacity}
+                      onChange={(v) => set("overlayToOpacity", v)}
+                    />
+                    <div className="h-6 rounded" style={{
+                      background: form.overlayColor.startsWith("#")
+                        ? `linear-gradient(to right, ${form.overlayColor}${Math.round(form.overlayFromOpacity * 2.55).toString(16).padStart(2, "0")}, ${form.overlayColor}${Math.round(form.overlayToOpacity * 2.55).toString(16).padStart(2, "0")})`
+                        : "linear-gradient(to right, #021423ea, #02142320)"
+                    }} />
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-lg border border-slate-200 p-4 space-y-4">
+                <p className="text-sm font-bold text-slate-800">Metin &amp; Buton Renkleri</p>
+                <ColorField
+                  label="Metin rengi"
+                  value={form.textColor}
+                  onChange={(v) => set("textColor", v)}
+                  hint="Başlık ve açıklama metinlerine uygulanır"
+                />
+                <ColorField
+                  label="Birincil buton arka planı"
+                  value={form.ctaPrimaryBg}
+                  onChange={(v) => set("ctaPrimaryBg", v)}
+                />
+                <ColorField
+                  label="İkincil buton arka planı"
+                  value={form.ctaSecondaryBg}
+                  onChange={(v) => set("ctaSecondaryBg", v)}
+                />
+              </div>
+            </>
+          )}
         </div>
         <div className="flex justify-end gap-3 border-t border-slate-100 px-6 py-4">
           <button onClick={onClose} className="btn-secondary">İptal</button>
@@ -308,7 +435,51 @@ export default function SlidersPage() {
   function openNew() { setModal({ open: true, slider: null }); }
   function openEdit(s: Slider) { setModal({ open: true, slider: s }); }
 
+  function sliderToForm(s: Slider): SliderFormData {
+    return {
+      title: s.title,
+      subtitle: s.subtitle ?? "",
+      description: s.description ?? "",
+      imageUrl: s.imageUrl ?? "",
+      ctaPrimaryText: s.ctaPrimaryText ?? "",
+      ctaPrimaryHref: s.ctaPrimaryHref ?? "",
+      ctaSecondaryText: s.ctaSecondaryText ?? "",
+      ctaSecondaryHref: s.ctaSecondaryHref ?? "",
+      sortOrder: s.sortOrder,
+      isActive: s.isActive,
+      showCatalogButton: s.showCatalogButton ?? false,
+      overlayEnabled: s.overlayEnabled ?? true,
+      overlayColor: s.overlayColor ?? "#021423",
+      overlayFromOpacity: s.overlayFromOpacity ?? 92,
+      overlayToOpacity: s.overlayToOpacity ?? 12,
+      textColor: s.textColor ?? "#ffffff",
+      ctaPrimaryBg: s.ctaPrimaryBg ?? "#021423",
+      ctaSecondaryBg: s.ctaSecondaryBg ?? "#ffffff",
+      titleEn: s.titleEn ?? "", titleDe: s.titleDe ?? "", titleFr: s.titleFr ?? "", titleIt: s.titleIt ?? "", titleAr: s.titleAr ?? "",
+      titleRu: s.titleRu ?? "", titleFa: s.titleFa ?? "", titleKa: s.titleKa ?? "", titleBg: s.titleBg ?? "", titleAz: s.titleAz ?? "",
+      subtitleEn: s.subtitleEn ?? "", subtitleDe: s.subtitleDe ?? "", subtitleFr: s.subtitleFr ?? "", subtitleIt: s.subtitleIt ?? "", subtitleAr: s.subtitleAr ?? "",
+      subtitleRu: s.subtitleRu ?? "", subtitleFa: s.subtitleFa ?? "", subtitleKa: s.subtitleKa ?? "", subtitleBg: s.subtitleBg ?? "", subtitleAz: s.subtitleAz ?? "",
+      descriptionEn: s.descriptionEn ?? "", descriptionDe: s.descriptionDe ?? "", descriptionFr: s.descriptionFr ?? "", descriptionIt: s.descriptionIt ?? "", descriptionAr: s.descriptionAr ?? "",
+      descriptionRu: s.descriptionRu ?? "", descriptionFa: s.descriptionFa ?? "", descriptionKa: s.descriptionKa ?? "", descriptionBg: s.descriptionBg ?? "", descriptionAz: s.descriptionAz ?? "",
+      ctaPrimaryTextEn: s.ctaPrimaryTextEn ?? "", ctaPrimaryTextDe: s.ctaPrimaryTextDe ?? "", ctaPrimaryTextFr: s.ctaPrimaryTextFr ?? "", ctaPrimaryTextIt: s.ctaPrimaryTextIt ?? "", ctaPrimaryTextAr: s.ctaPrimaryTextAr ?? "",
+      ctaPrimaryTextRu: s.ctaPrimaryTextRu ?? "", ctaPrimaryTextFa: s.ctaPrimaryTextFa ?? "", ctaPrimaryTextKa: s.ctaPrimaryTextKa ?? "", ctaPrimaryTextBg: s.ctaPrimaryTextBg ?? "", ctaPrimaryTextAz: s.ctaPrimaryTextAz ?? "",
+      ctaSecondaryTextEn: s.ctaSecondaryTextEn ?? "", ctaSecondaryTextDe: s.ctaSecondaryTextDe ?? "", ctaSecondaryTextFr: s.ctaSecondaryTextFr ?? "", ctaSecondaryTextIt: s.ctaSecondaryTextIt ?? "", ctaSecondaryTextAr: s.ctaSecondaryTextAr ?? "",
+      ctaSecondaryTextRu: s.ctaSecondaryTextRu ?? "", ctaSecondaryTextFa: s.ctaSecondaryTextFa ?? "", ctaSecondaryTextKa: s.ctaSecondaryTextKa ?? "", ctaSecondaryTextBg: s.ctaSecondaryTextBg ?? "", ctaSecondaryTextAz: s.ctaSecondaryTextAz ?? "",
+    };
+  }
+
   function handleSave(data: SliderFormData) {
+    // Build payload converting empty strings to undefined for optional locale fields
+    const localePayload: Record<string, string | undefined> = {};
+    for (const { code } of SLIDER_LOCALES) {
+      if (code === "tr") continue;
+      for (const base of ["title", "subtitle", "description", "ctaPrimaryText", "ctaSecondaryText"]) {
+        const key = localeField(base, code);
+        const val = (data[key] as string) || undefined;
+        localePayload[key] = val;
+      }
+    }
+
     const payload = {
       title: data.title,
       subtitle: data.subtitle || undefined,
@@ -327,6 +498,7 @@ export default function SlidersPage() {
       textColor: data.textColor || undefined,
       ctaPrimaryBg: data.ctaPrimaryBg || undefined,
       ctaSecondaryBg: data.ctaSecondaryBg || undefined,
+      ...localePayload,
     };
     if (modal.slider) {
       updateMutEdit.mutate({ id: modal.slider.id, data: payload });
@@ -475,26 +647,7 @@ export default function SlidersPage() {
 
       {modal.open && (
         <SliderModal
-          initial={modal.slider ? {
-            title: modal.slider.title,
-            subtitle: modal.slider.subtitle ?? "",
-            description: modal.slider.description ?? "",
-            imageUrl: modal.slider.imageUrl ?? "",
-            ctaPrimaryText: modal.slider.ctaPrimaryText ?? "",
-            ctaPrimaryHref: modal.slider.ctaPrimaryHref ?? "",
-            ctaSecondaryText: modal.slider.ctaSecondaryText ?? "",
-            ctaSecondaryHref: modal.slider.ctaSecondaryHref ?? "",
-            sortOrder: modal.slider.sortOrder,
-            isActive: modal.slider.isActive,
-            showCatalogButton: modal.slider.showCatalogButton ?? false,
-            overlayEnabled: modal.slider.overlayEnabled ?? true,
-            overlayColor: modal.slider.overlayColor ?? "#021423",
-            overlayFromOpacity: modal.slider.overlayFromOpacity ?? 92,
-            overlayToOpacity: modal.slider.overlayToOpacity ?? 12,
-            textColor: modal.slider.textColor ?? "#ffffff",
-            ctaPrimaryBg: modal.slider.ctaPrimaryBg ?? "#021423",
-            ctaSecondaryBg: modal.slider.ctaSecondaryBg ?? "#ffffff",
-          } : EMPTY}
+          initial={modal.slider ? sliderToForm(modal.slider) : EMPTY}
           onClose={() => setModal({ open: false, slider: null })}
           onSave={handleSave}
           saving={saving}

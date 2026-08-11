@@ -38,4 +38,104 @@ export interface SliderUpdate {
   ctaPrimaryBg?: string | null;
   /** @nullable */
   ctaSecondaryBg?: string | null;
+  /** @nullable */
+  titleEn?: string | null;
+  /** @nullable */
+  titleDe?: string | null;
+  /** @nullable */
+  titleFr?: string | null;
+  /** @nullable */
+  titleIt?: string | null;
+  /** @nullable */
+  titleAr?: string | null;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleFa?: string | null;
+  /** @nullable */
+  titleKa?: string | null;
+  /** @nullable */
+  titleBg?: string | null;
+  /** @nullable */
+  titleAz?: string | null;
+  /** @nullable */
+  subtitleEn?: string | null;
+  /** @nullable */
+  subtitleDe?: string | null;
+  /** @nullable */
+  subtitleFr?: string | null;
+  /** @nullable */
+  subtitleIt?: string | null;
+  /** @nullable */
+  subtitleAr?: string | null;
+  /** @nullable */
+  subtitleRu?: string | null;
+  /** @nullable */
+  subtitleFa?: string | null;
+  /** @nullable */
+  subtitleKa?: string | null;
+  /** @nullable */
+  subtitleBg?: string | null;
+  /** @nullable */
+  subtitleAz?: string | null;
+  /** @nullable */
+  descriptionEn?: string | null;
+  /** @nullable */
+  descriptionDe?: string | null;
+  /** @nullable */
+  descriptionFr?: string | null;
+  /** @nullable */
+  descriptionIt?: string | null;
+  /** @nullable */
+  descriptionAr?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionFa?: string | null;
+  /** @nullable */
+  descriptionKa?: string | null;
+  /** @nullable */
+  descriptionBg?: string | null;
+  /** @nullable */
+  descriptionAz?: string | null;
+  /** @nullable */
+  ctaPrimaryTextEn?: string | null;
+  /** @nullable */
+  ctaPrimaryTextDe?: string | null;
+  /** @nullable */
+  ctaPrimaryTextFr?: string | null;
+  /** @nullable */
+  ctaPrimaryTextIt?: string | null;
+  /** @nullable */
+  ctaPrimaryTextAr?: string | null;
+  /** @nullable */
+  ctaPrimaryTextRu?: string | null;
+  /** @nullable */
+  ctaPrimaryTextFa?: string | null;
+  /** @nullable */
+  ctaPrimaryTextKa?: string | null;
+  /** @nullable */
+  ctaPrimaryTextBg?: string | null;
+  /** @nullable */
+  ctaPrimaryTextAz?: string | null;
+  /** @nullable */
+  ctaSecondaryTextEn?: string | null;
+  /** @nullable */
+  ctaSecondaryTextDe?: string | null;
+  /** @nullable */
+  ctaSecondaryTextFr?: string | null;
+  /** @nullable */
+  ctaSecondaryTextIt?: string | null;
+  /** @nullable */
+  ctaSecondaryTextAr?: string | null;
+  /** @nullable */
+  ctaSecondaryTextRu?: string | null;
+  /** @nullable */
+  ctaSecondaryTextFa?: string | null;
+  /** @nullable */
+  ctaSecondaryTextKa?: string | null;
+  /** @nullable */
+  ctaSecondaryTextBg?: string | null;
+  /** @nullable */
+  ctaSecondaryTextAz?: string | null;
 }
