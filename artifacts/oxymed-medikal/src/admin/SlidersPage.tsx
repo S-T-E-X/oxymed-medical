@@ -100,6 +100,15 @@ const EMPTY: SliderFormData = {
   ...EMPTY_LOCALE_FIELDS,
 };
 
+/** Returns how many non-TR locales have a non-empty title on a saved Slider record. */
+function countTranslatedLocales(s: Slider): number {
+  const titleKeys: Record<string, string | null | undefined> = {
+    en: s.titleEn, de: s.titleDe, fr: s.titleFr, it: s.titleIt, ar: s.titleAr,
+    ru: s.titleRu, fa: s.titleFa, ka: s.titleKa, bg: s.titleBg, az: s.titleAz,
+  };
+  return Object.values(titleKeys).filter((v) => v && v.trim()).length;
+}
+
 /** Build locale-keyed field name, e.g. localeField("title", "en") => "titleEn" */
 function localeField(base: string, locale: SliderLocale): keyof SliderFormData {
   if (locale === "tr") return base as keyof SliderFormData;
@@ -275,20 +284,27 @@ function SliderModal({
           <div>
             <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">Dil / Language</p>
             <div className="flex flex-wrap gap-1">
-              {SLIDER_LOCALES.map(({ code, label }) => (
-                <button
-                  key={code}
-                  type="button"
-                  onClick={() => setActiveLang(code)}
-                  className={`rounded px-2.5 py-1 text-xs font-bold transition ${
-                    activeLang === code
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+              {SLIDER_LOCALES.map(({ code, label }) => {
+                const isMissing = code !== "tr" && !(form[localeField("title", code)] as string)?.trim();
+                return (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setActiveLang(code)}
+                    className={`relative rounded px-2.5 py-1 text-xs font-bold transition ${
+                      activeLang === code
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                    title={isMissing ? `${label} çevirisi eksik` : undefined}
+                  >
+                    {label}
+                    {isMissing && (
+                      <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-amber-400 ring-1 ring-white" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
             {activeLang !== "tr" && (
               <p className="mt-1.5 text-[11px] text-slate-400">
@@ -699,6 +715,22 @@ export default function SlidersPage() {
                     {s.isActive ? "Aktif" : "Pasif"}
                   </span>
                 </div>
+                {/* Translation coverage badge */}
+                {(() => {
+                  const total = SLIDER_LOCALES.length - 1; // exclude TR
+                  const done = countTranslatedLocales(s);
+                  const allDone = done === total;
+                  return (
+                    <div className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      allDone
+                        ? "bg-emerald-50 text-emerald-600"
+                        : "bg-amber-50 text-amber-700"
+                    }`}>
+                      {!allDone && <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />}
+                      {done}/{total} dil
+                    </div>
+                  );
+                })()}
                 <div className="mt-3 flex items-center gap-2">
                   <button onClick={() => handleToggleActive(s)} className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">
                     {s.isActive ? <ToggleRight className="h-4 w-4 text-emerald-500" /> : <ToggleLeft className="h-4 w-4" />}
