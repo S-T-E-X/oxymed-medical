@@ -230,7 +230,26 @@ router.post("/sliders/translate-fields", requireAuth, async (req, res): Promise<
     return;
   }
 
-  res.json({ translations });
+  // Fields that have non-empty source values (only these can "fail")
+  const sourceFields = (["title", "subtitle", "description", "ctaPrimaryText", "ctaSecondaryText"] as const)
+    .filter((f) => manifest[f] !== "");
+
+  // For each target locale, report which expected fields are missing/empty in the response
+  const failedFieldsByLocale: Record<string, string[]> = {};
+  for (const locale of SLIDER_TARGET_LOCALES) {
+    const t = translations[locale.code];
+    const missing: string[] = [];
+    for (const field of sourceFields) {
+      if (!t || typeof t[field] !== "string" || t[field].trim() === "") {
+        missing.push(field);
+      }
+    }
+    if (missing.length > 0) {
+      failedFieldsByLocale[locale.code] = missing;
+    }
+  }
+
+  res.json({ translations, failedFieldsByLocale });
 });
 
 export default router;

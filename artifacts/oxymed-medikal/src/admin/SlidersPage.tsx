@@ -100,6 +100,15 @@ const EMPTY: SliderFormData = {
   ...EMPTY_LOCALE_FIELDS,
 };
 
+/** Human-readable Turkish labels for each translatable field key */
+const FIELD_LABELS: Record<string, string> = {
+  title: "Başlık",
+  subtitle: "Alt Başlık",
+  description: "Açıklama",
+  ctaPrimaryText: "1. Buton Metni",
+  ctaSecondaryText: "2. Buton Metni",
+};
+
 /** Returns how many non-TR locales have a non-empty title on a saved Slider record. */
 function countTranslatedLocales(s: Slider): number {
   const titleKeys: Record<string, string | null | undefined> = {
@@ -190,6 +199,7 @@ function SliderModal({
   const [form, setForm] = useState<SliderFormData>(initial);
   const [activeLang, setActiveLang] = useState<SliderLocale>("tr");
   const [translating, setTranslating] = useState(false);
+  const [failedFieldsByLocale, setFailedFieldsByLocale] = useState<Record<string, string[]>>({});
   const { uploadFile, uploading } = useImageUpload();
   const { authFetch } = useAuth();
 
@@ -219,7 +229,7 @@ function SliderModal({
         const body = await r.json().catch(() => null) as { error?: string } | null;
         throw new Error(body?.error ?? "Çeviri başarısız");
       }
-      const { translations } = await r.json() as {
+      const { translations, failedFieldsByLocale: failed = {} } = await r.json() as {
         translations: Record<string, {
           title: string;
           subtitle: string;
@@ -227,7 +237,10 @@ function SliderModal({
           ctaPrimaryText: string;
           ctaSecondaryText: string;
         }>;
+        failedFieldsByLocale?: Record<string, string[]>;
       };
+
+      setFailedFieldsByLocale(failed);
 
       // Fill only empty locale fields; don't overwrite existing content
       setForm((prev) => {
@@ -246,7 +259,23 @@ function SliderModal({
         return { ...prev, ...updates };
       });
 
-      toast.success("Çeviriler alanlara yazıldı");
+      const failedLocaleCount = Object.keys(failed).length;
+      if (failedLocaleCount === 0) {
+        toast.success("Tüm diller başarıyla çevrildi");
+      } else {
+        const succeededCodes = SLIDER_LOCALES
+          .filter(({ code }) => code !== "tr" && !(code in failed))
+          .map(({ code }) => code.toUpperCase());
+        const failedCodes = Object.keys(failed).map((c) => c.toUpperCase());
+        if (succeededCodes.length > 0) {
+          toast.warning(
+            `Kısmi çeviri: ${succeededCodes.join(", ")} çevrildi — ${failedCodes.join(", ")} eksik alan içeriyor`,
+            { duration: 8000 }
+          );
+        } else {
+          toast.error(`Çeviri başarısız: ${failedCodes.join(", ")} alınamadı`, { duration: 8000 });
+        }
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Çeviri başarısız");
     } finally {
@@ -280,26 +309,57 @@ function SliderModal({
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-4 p-6">
+          {/* Failed locales warning banner */}
+          {Object.keys(failedFieldsByLocale).length > 0 && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 space-y-1">
+              <p className="text-xs font-bold text-red-700">
+                ⚠ Çeviri kısmen başarısız oldu
+              </p>
+              {Object.entries(failedFieldsByLocale).map(([locale, fields]) => (
+                <p key={locale} className="text-xs text-red-600">
+                  <span className="font-semibold">{locale.toUpperCase()}:</span>{" "}
+                  {fields.map((f) => FIELD_LABELS[f] ?? f).join(", ")} alınamadı — lütfen elle doldurun.
+                </p>
+              ))}
+            </div>
+          )}
+
           {/* Language tabs */}
           <div>
             <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">Dil / Language</p>
             <div className="flex flex-wrap gap-1">
               {SLIDER_LOCALES.map(({ code, label }) => {
                 const isMissing = code !== "tr" && !(form[localeField("title", code)] as string)?.trim();
+                const failedFields = failedFieldsByLocale[code] ?? [];
+                const isFailed = failedFields.length > 0;
+                const isActive = activeLang === code;
                 return (
                   <button
                     key={code}
                     type="button"
                     onClick={() => setActiveLang(code)}
                     className={`relative rounded px-2.5 py-1 text-xs font-bold transition ${
-                      activeLang === code
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      isActive
+                        ? isFailed
+                          ? "bg-red-600 text-white"
+                          : "bg-blue-600 text-white"
+                        : isFailed
+                          ? "bg-red-50 text-red-700 ring-1 ring-red-300 hover:bg-red-100"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
-                    title={isMissing ? `${label} çevirisi eksik` : undefined}
+                    title={
+                      isFailed
+                        ? `${label}: ${failedFields.map((f) => FIELD_LABELS[f] ?? f).join(", ")} alınamadı`
+                        : isMissing
+                          ? `${label} çevirisi eksik`
+                          : undefined
+                    }
                   >
                     {label}
-                    {isMissing && (
+                    {isFailed && !isActive && (
+                      <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
+                    )}
+                    {!isFailed && isMissing && (
                       <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-amber-400 ring-1 ring-white" />
                     )}
                   </button>
