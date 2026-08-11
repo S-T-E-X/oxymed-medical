@@ -9,8 +9,9 @@ import {
   type Slider,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Edit2, GripVertical, ImageIcon, Plus, ToggleLeft, ToggleRight, Trash2, X } from "lucide-react";
+import { Edit2, GripVertical, ImageIcon, Plus, Sparkles, ToggleLeft, ToggleRight, Trash2, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+import { useAuth } from "./AuthContext";
 
 // Locales supported for slider text (TR is the base/fallback)
 const SLIDER_LOCALES = [
@@ -179,10 +180,69 @@ function SliderModal({
 }) {
   const [form, setForm] = useState<SliderFormData>(initial);
   const [activeLang, setActiveLang] = useState<SliderLocale>("tr");
+  const [translating, setTranslating] = useState(false);
   const { uploadFile, uploading } = useImageUpload();
+  const { authFetch } = useAuth();
 
   function set(field: keyof SliderFormData, value: string | boolean | number) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  async function handleAiTranslate() {
+    if (!form.title.trim()) {
+      toast.error("Çeviri için önce Türkçe başlık girilmeli");
+      return;
+    }
+    setTranslating(true);
+    try {
+      const r = await authFetch("/api/sliders/translate-fields", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: form.title,
+          subtitle: form.subtitle,
+          description: form.description,
+          ctaPrimaryText: form.ctaPrimaryText,
+          ctaSecondaryText: form.ctaSecondaryText,
+        }),
+      });
+      if (!r.ok) {
+        const body = await r.json().catch(() => null) as { error?: string } | null;
+        throw new Error(body?.error ?? "Çeviri başarısız");
+      }
+      const { translations } = await r.json() as {
+        translations: Record<string, {
+          title: string;
+          subtitle: string;
+          description: string;
+          ctaPrimaryText: string;
+          ctaSecondaryText: string;
+        }>;
+      };
+
+      // Fill only empty locale fields; don't overwrite existing content
+      setForm((prev) => {
+        const updates: Partial<SliderFormData> = {};
+        for (const { code } of SLIDER_LOCALES) {
+          if (code === "tr") continue;
+          const t = translations[code];
+          if (!t) continue;
+          for (const base of ["title", "subtitle", "description", "ctaPrimaryText", "ctaSecondaryText"] as const) {
+            const key = localeField(base, code);
+            if (!(prev[key] as string)) {
+              (updates as Record<string, string>)[key] = (t as Record<string, string>)[base] ?? "";
+            }
+          }
+        }
+        return { ...prev, ...updates };
+      });
+
+      toast.success("Çeviriler alanlara yazıldı");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Çeviri başarısız");
+    } finally {
+      setTranslating(false);
+    }
   }
 
   async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
@@ -394,11 +454,23 @@ function SliderModal({
             </>
           )}
         </div>
-        <div className="flex justify-end gap-3 border-t border-slate-100 px-6 py-4">
-          <button onClick={onClose} className="btn-secondary">İptal</button>
-          <button onClick={() => onSave(form)} disabled={saving || !form.title} className="btn-primary">
-            {saving ? "Kaydediliyor…" : "Kaydet"}
+        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-4">
+          <button
+            type="button"
+            onClick={handleAiTranslate}
+            disabled={translating || !form.title}
+            className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+            title="Türkçe içeriği yapay zeka ile 10 dile çevir (boş alanlar doldurulur)"
+          >
+            <Sparkles className="h-4 w-4" />
+            {translating ? "Çevriliyor…" : "AI ile Çevir"}
           </button>
+          <div className="flex gap-3">
+            <button onClick={onClose} className="btn-secondary">İptal</button>
+            <button onClick={() => onSave(form)} disabled={saving || !form.title} className="btn-primary">
+              {saving ? "Kaydediliyor…" : "Kaydet"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

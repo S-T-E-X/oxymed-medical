@@ -3,6 +3,7 @@ import { db, slidersTable } from "@workspace/db";
 import { eq, asc } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
+import { openai } from "@workspace/integrations-openai-ai-server";
 
 const router: IRouter = Router();
 
@@ -140,6 +141,96 @@ router.delete("/sliders/:id", requireAuth, async (req, res): Promise<void> => {
     return;
   }
   res.sendStatus(204);
+});
+
+// ── AI Translation ────────────────────────────────────────────────────────────
+
+const SLIDER_TARGET_LOCALES = [
+  { code: "en", name: "English" },
+  { code: "de", name: "German" },
+  { code: "fr", name: "French" },
+  { code: "it", name: "Italian" },
+  { code: "ar", name: "Arabic" },
+  { code: "ru", name: "Russian" },
+  { code: "fa", name: "Persian (Farsi)" },
+  { code: "ka", name: "Georgian" },
+  { code: "bg", name: "Bulgarian" },
+  { code: "az", name: "Azerbaijani" },
+] as const;
+
+const TranslateFieldsBody = z.object({
+  title: z.string(),
+  subtitle: z.string().optional(),
+  description: z.string().optional(),
+  ctaPrimaryText: z.string().optional(),
+  ctaSecondaryText: z.string().optional(),
+});
+
+type TranslatedLocales = Record<string, {
+  title: string;
+  subtitle: string;
+  description: string;
+  ctaPrimaryText: string;
+  ctaSecondaryText: string;
+}>;
+
+router.post("/sliders/translate-fields", requireAuth, async (req, res): Promise<void> => {
+  const parsed = TranslateFieldsBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const source = parsed.data;
+
+  const manifest = {
+    title: source.title,
+    subtitle: source.subtitle ?? "",
+    description: source.description ?? "",
+    ctaPrimaryText: source.ctaPrimaryText ?? "",
+    ctaSecondaryText: source.ctaSecondaryText ?? "",
+  };
+
+  const targetList = SLIDER_TARGET_LOCALES.map((l) => `"${l.code}" (${l.name})`).join(", ");
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4.1-mini",
+    max_completion_tokens: 8192,
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content:
+          `You are a professional translator for a medical equipment company's website hero sliders. ` +
+          `Translate the given Turkish text fields into all of the following languages: ${targetList}. ` +
+          `Return a JSON object where each key is the language code and the value is an object with the same fields as the input: ` +
+          `"title", "subtitle", "description", "ctaPrimaryText", "ctaSecondaryText". ` +
+          `Keep the exact same JSON keys and structure — only translate the string VALUES. ` +
+          `If a value is an empty string, keep it as an empty string. ` +
+          `Use natural, professional language appropriate for a medical equipment company's marketing website. ` +
+          `Respond with ONLY a JSON object, no commentary.`,
+      },
+      {
+        role: "user",
+        content: JSON.stringify(manifest),
+      },
+    ],
+  });
+
+  const raw = completion.choices[0]?.message?.content;
+  if (!raw) {
+    res.status(502).json({ error: "Çeviri servisinden yanıt alınamadı" });
+    return;
+  }
+
+  let translations: TranslatedLocales;
+  try {
+    translations = JSON.parse(raw) as TranslatedLocales;
+  } catch {
+    res.status(502).json({ error: "Çeviri servisi geçersiz bir yanıt döndürdü" });
+    return;
+  }
+
+  res.json({ translations });
 });
 
 export default router;
