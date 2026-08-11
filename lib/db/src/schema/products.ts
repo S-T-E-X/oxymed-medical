@@ -41,6 +41,17 @@ export const productsTable = pgTable("products", {
   quoteImageUrl: text("quote_image_url"),
   quoteUnit: text("quote_unit"),
   quoteUnitPrice: text("quote_unit_price"),
+  // Locale-specific title fields (tr = default/base above)
+  titleEn: text("title_en"),
+  titleDe: text("title_de"),
+  titleFr: text("title_fr"),
+  titleIt: text("title_it"),
+  titleAr: text("title_ar"),
+  titleRu: text("title_ru"),
+  titleFa: text("title_fa"),
+  titleKa: text("title_ka"),
+  titleBg: text("title_bg"),
+  titleAz: text("title_az"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

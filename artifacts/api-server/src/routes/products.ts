@@ -46,6 +46,17 @@ const ProductCategoryBody = z.object({
   slug: z.string().min(1),
   description: z.string().optional(),
   sortOrder: z.coerce.number().int().optional(),
+  // Locale-specific names
+  nameEn: z.string().optional().nullable(),
+  nameDe: z.string().optional().nullable(),
+  nameFr: z.string().optional().nullable(),
+  nameIt: z.string().optional().nullable(),
+  nameAr: z.string().optional().nullable(),
+  nameRu: z.string().optional().nullable(),
+  nameFa: z.string().optional().nullable(),
+  nameKa: z.string().optional().nullable(),
+  nameBg: z.string().optional().nullable(),
+  nameAz: z.string().optional().nullable(),
 });
 
 const ProductBody = z.object({
@@ -65,6 +76,17 @@ const ProductBody = z.object({
   quoteImageUrl: z.string().optional().nullable(),
   quoteUnit: z.string().optional().nullable(),
   quoteUnitPrice: z.string().optional().nullable(),
+  // Locale-specific titles
+  titleEn: z.string().optional().nullable(),
+  titleDe: z.string().optional().nullable(),
+  titleFr: z.string().optional().nullable(),
+  titleIt: z.string().optional().nullable(),
+  titleAr: z.string().optional().nullable(),
+  titleRu: z.string().optional().nullable(),
+  titleFa: z.string().optional().nullable(),
+  titleKa: z.string().optional().nullable(),
+  titleBg: z.string().optional().nullable(),
+  titleAz: z.string().optional().nullable(),
 });
 
 function parseId(raw: string | string[]): number {

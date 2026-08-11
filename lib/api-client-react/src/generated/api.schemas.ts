@@ -410,6 +410,26 @@ export interface ProductCategory {
   /** @nullable */
   description?: string | null;
   sortOrder: number;
+  /** @nullable */
+  nameEn?: string | null;
+  /** @nullable */
+  nameDe?: string | null;
+  /** @nullable */
+  nameFr?: string | null;
+  /** @nullable */
+  nameIt?: string | null;
+  /** @nullable */
+  nameAr?: string | null;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameFa?: string | null;
+  /** @nullable */
+  nameKa?: string | null;
+  /** @nullable */
+  nameBg?: string | null;
+  /** @nullable */
+  nameAz?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -419,6 +439,16 @@ export interface ProductCategoryInput {
   slug: string;
   description?: string;
   sortOrder?: number;
+  nameEn?: string;
+  nameDe?: string;
+  nameFr?: string;
+  nameIt?: string;
+  nameAr?: string;
+  nameRu?: string;
+  nameFa?: string;
+  nameKa?: string;
+  nameBg?: string;
+  nameAz?: string;
 }
 
 export interface ProductCategoryUpdate {
@@ -427,6 +457,26 @@ export interface ProductCategoryUpdate {
   /** @nullable */
   description?: string | null;
   sortOrder?: number;
+  /** @nullable */
+  nameEn?: string | null;
+  /** @nullable */
+  nameDe?: string | null;
+  /** @nullable */
+  nameFr?: string | null;
+  /** @nullable */
+  nameIt?: string | null;
+  /** @nullable */
+  nameAr?: string | null;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameFa?: string | null;
+  /** @nullable */
+  nameKa?: string | null;
+  /** @nullable */
+  nameBg?: string | null;
+  /** @nullable */
+  nameAz?: string | null;
 }
 
 export interface ProductSpec {
@@ -499,6 +549,26 @@ export interface Product {
   quoteUnit?: string | null;
   /** @nullable */
   quoteUnitPrice?: string | null;
+  /** @nullable */
+  titleEn?: string | null;
+  /** @nullable */
+  titleDe?: string | null;
+  /** @nullable */
+  titleFr?: string | null;
+  /** @nullable */
+  titleIt?: string | null;
+  /** @nullable */
+  titleAr?: string | null;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleFa?: string | null;
+  /** @nullable */
+  titleKa?: string | null;
+  /** @nullable */
+  titleBg?: string | null;
+  /** @nullable */
+  titleAz?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -520,6 +590,26 @@ export interface ProductInput {
   quoteImageUrl?: string;
   quoteUnit?: string;
   quoteUnitPrice?: string;
+  /** @nullable */
+  titleEn?: string | null;
+  /** @nullable */
+  titleDe?: string | null;
+  /** @nullable */
+  titleFr?: string | null;
+  /** @nullable */
+  titleIt?: string | null;
+  /** @nullable */
+  titleAr?: string | null;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleFa?: string | null;
+  /** @nullable */
+  titleKa?: string | null;
+  /** @nullable */
+  titleBg?: string | null;
+  /** @nullable */
+  titleAz?: string | null;
 }
 
 export interface ProductUpdate {
@@ -548,6 +638,26 @@ export interface ProductUpdate {
   quoteUnit?: string | null;
   /** @nullable */
   quoteUnitPrice?: string | null;
+  /** @nullable */
+  titleEn?: string | null;
+  /** @nullable */
+  titleDe?: string | null;
+  /** @nullable */
+  titleFr?: string | null;
+  /** @nullable */
+  titleIt?: string | null;
+  /** @nullable */
+  titleAr?: string | null;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleFa?: string | null;
+  /** @nullable */
+  titleKa?: string | null;
+  /** @nullable */
+  titleBg?: string | null;
+  /** @nullable */
+  titleAz?: string | null;
 }
 
 export interface ProductListResponse {

@@ -19,8 +19,33 @@ type FeatureRow = { title: string; text: string };
 type DetailCard = { title: string; text: string; imageUrl: string };
 type FaqRow = { question: string; answer: string };
 
+const TITLE_LOCALES = [
+  { code: "en", label: "English", field: "titleEn" },
+  { code: "de", label: "Deutsch", field: "titleDe" },
+  { code: "fr", label: "Français", field: "titleFr" },
+  { code: "it", label: "Italiano", field: "titleIt" },
+  { code: "ar", label: "العربية", field: "titleAr" },
+  { code: "ru", label: "Русский", field: "titleRu" },
+  { code: "fa", label: "فارسی", field: "titleFa" },
+  { code: "ka", label: "ქართული", field: "titleKa" },
+  { code: "bg", label: "Български", field: "titleBg" },
+  { code: "az", label: "Azərbaycan", field: "titleAz" },
+] as const;
+
+type TitleLocaleField = typeof TITLE_LOCALES[number]["field"];
+
 type ProductEditForm = {
   title: string;
+  titleEn: string;
+  titleDe: string;
+  titleFr: string;
+  titleIt: string;
+  titleAr: string;
+  titleRu: string;
+  titleFa: string;
+  titleKa: string;
+  titleBg: string;
+  titleAz: string;
   description: string;
   imageUrl: string;
   categoryId: number | null;
@@ -49,6 +74,16 @@ type ProductEditForm = {
 
 const EMPTY_FORM: ProductEditForm = {
   title: "",
+  titleEn: "",
+  titleDe: "",
+  titleFr: "",
+  titleIt: "",
+  titleAr: "",
+  titleRu: "",
+  titleFa: "",
+  titleKa: "",
+  titleBg: "",
+  titleAz: "",
   description: "",
   imageUrl: "",
   categoryId: null,
@@ -80,6 +115,16 @@ function productToForm(p: Product): ProductEditForm {
   const priv = p.privateData ?? {};
   return {
     title: p.title,
+    titleEn: p.titleEn ?? "",
+    titleDe: p.titleDe ?? "",
+    titleFr: p.titleFr ?? "",
+    titleIt: p.titleIt ?? "",
+    titleAr: p.titleAr ?? "",
+    titleRu: p.titleRu ?? "",
+    titleFa: p.titleFa ?? "",
+    titleKa: p.titleKa ?? "",
+    titleBg: p.titleBg ?? "",
+    titleAz: p.titleAz ?? "",
     description: p.description ?? "",
     imageUrl: p.imageUrl ?? "",
     categoryId: p.categoryId ?? null,
@@ -306,6 +351,16 @@ export default function ProductEditPage() {
     if (!form.title.trim()) { toast.error("Ürün adı zorunlu"); return; }
     const payload = {
       title: form.title,
+      titleEn: form.titleEn.trim() || null,
+      titleDe: form.titleDe.trim() || null,
+      titleFr: form.titleFr.trim() || null,
+      titleIt: form.titleIt.trim() || null,
+      titleAr: form.titleAr.trim() || null,
+      titleRu: form.titleRu.trim() || null,
+      titleFa: form.titleFa.trim() || null,
+      titleKa: form.titleKa.trim() || null,
+      titleBg: form.titleBg.trim() || null,
+      titleAz: form.titleAz.trim() || null,
       description: form.description || undefined,
       imageUrl: form.imageUrl || undefined,
       categoryId: form.categoryId ?? undefined,
@@ -414,8 +469,24 @@ export default function ProductEditPage() {
         {tab === "temel" && (
           <div className="space-y-5">
             <div>
-              <label className="label">Ürün Adı *</label>
+              <label className="label">Ürün Adı (Türkçe) *</label>
               <input className="input" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Ürün adı" />
+            </div>
+            <div className="rounded-lg border border-slate-100 bg-slate-50 p-4 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Ürün Adı — Diğer Diller <span className="font-normal normal-case text-slate-400">(boş bırakılırsa Türkçe gösterilir)</span></p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {TITLE_LOCALES.map((lc) => (
+                  <div key={lc.code}>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1">{lc.label}</label>
+                    <input
+                      className="input text-sm"
+                      value={form[lc.field as TitleLocaleField]}
+                      onChange={(e) => set(lc.field as TitleLocaleField, e.target.value)}
+                      placeholder={`${lc.label} adı`}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <label className="label">Sayfa URL Slug</label>

@@ -8,6 +8,7 @@ import { trackInteraction } from "../common/VisitorTracker";
 import { navItems, type NavItemDef } from "../../data/home";
 import { useI18n } from "../../i18n/I18nProvider";
 import { useLocalizedPath } from "../../i18n/useLocalizedPath";
+import { pickLocalizedName } from "../../i18n/pickLocalizedName";
 
 const socialIconMap = {
   LinkedIn: Linkedin,
@@ -31,7 +32,7 @@ export default function Header() {
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
   const { data: categories = [] } = useListProductCategories();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const path = useLocalizedPath();
 
   const phone = settings?.["phone"] ?? "+90 232 870 0 222";
@@ -152,7 +153,7 @@ export default function Header() {
                           className="flex items-center gap-2 px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950"
                           onClick={() => setUrunlerOpen(false)}
                         >
-                          {cat.name}
+                          {pickLocalizedName(cat, "name", locale)}
                         </Link>
                       ))}
                     </div>

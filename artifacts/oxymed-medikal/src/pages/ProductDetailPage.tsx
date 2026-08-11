@@ -13,6 +13,8 @@ import {
 import { useGetProductBySlug, useListProductCategories } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import { useI18n } from "../i18n/I18nProvider";
+import { pickLocalizedName } from "../i18n/pickLocalizedName";
 import "./ProductDetailPage.css";
 
 export default function ProductDetailPage() {
@@ -22,6 +24,7 @@ export default function ProductDetailPage() {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  const { locale } = useI18n();
   const { data: product, isLoading, isError } = useGetProductBySlug(slug ?? "");
   const { data: categories = [] } = useListProductCategories();
 
@@ -57,7 +60,8 @@ export default function ProductDetailPage() {
 
   const pd = product.pageData ?? {};
   const category = categories.find((c) => c.id === product.categoryId);
-  const eyebrow = category?.name ?? "OXYMED MEDİKAL";
+  const localizedTitle = pickLocalizedName(product, "title", locale);
+  const eyebrow = category ? pickLocalizedName(category, "name", locale) : "OXYMED MEDİKAL";
   const features = (pd.features ?? []).slice(0, 4);
   const detailCards = pd.detailCards ?? [];
   const specs = product.specs ?? [];
@@ -75,7 +79,7 @@ export default function ProductDetailPage() {
           <div className="pdp-container pdp-hero__grid">
             <div className="pdp-hero__content">
               <div className="pdp-eyebrow">{eyebrow}</div>
-              <h1>{product.title}</h1>
+              <h1>{localizedTitle}</h1>
               {pd.heroSubtitle && <p className="pdp-hero__subtitle">{pd.heroSubtitle}</p>}
               <div className="pdp-title-line" />
               {(pd.heroDescription || product.description) && (
@@ -97,9 +101,9 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <div className="pdp-hero__visual" aria-label={`${product.title} ürün görseli`}>
+            <div className="pdp-hero__visual" aria-label={`${localizedTitle} ürün görseli`}>
               {product.imageUrl ? (
-                <img src={product.imageUrl} alt={product.title} />
+                <img src={product.imageUrl} alt={localizedTitle} />
               ) : (
                 <div className="pdp-hero-photo-slot" />
               )}

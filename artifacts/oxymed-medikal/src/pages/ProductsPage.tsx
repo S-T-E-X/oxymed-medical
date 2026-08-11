@@ -11,7 +11,7 @@ import {
   Medal,
   ShieldCheck,
 } from "lucide-react";
-import { useListProductCategories, useListProducts, useListSettings } from "@workspace/api-client-react";
+import { useListProductCategories, useListProducts, useListSettings, type ProductCategory } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
@@ -20,6 +20,7 @@ import { productPageFeatures } from "../data/products";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { routeKeyForTurkishSlug } from "../i18n/routes";
+import { pickLocalizedName } from "../i18n/pickLocalizedName";
 
 const featureIconMap = {
   production: Factory,
@@ -83,7 +84,7 @@ function ProductsHero() {
 }
 
 function ProductsContent() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const path = useLocalizedPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
@@ -108,6 +109,7 @@ function ProductsContent() {
   }
 
   const activeCategory = categories.find((c) => c.id === selectedCategoryId);
+  const activeCategoryName = activeCategory ? pickLocalizedName(activeCategory, "name", locale) : undefined;
 
   function handleCategorySelect(id: number | undefined) {
     const next = new URLSearchParams(searchParams);
@@ -138,11 +140,11 @@ function ProductsContent() {
             <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-[27px] font-extrabold leading-tight text-oxynavy-950">
-                  {activeCategory?.name ?? t("products.results.allTitle")}
+                  {activeCategoryName ?? t("products.results.allTitle")}
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-steel-700">
                   {activeCategory
-                    ? t("products.results.categoryDescription").replace("{{category}}", activeCategory.name)
+                    ? t("products.results.categoryDescription").replace("{{category}}", activeCategoryName ?? "")
                     : t("products.results.allDescription")}
                 </p>
               </div>
@@ -164,6 +166,7 @@ function ProductsContent() {
             ) : (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((product) => {
+                  const localizedTitle = pickLocalizedName(product, "title", locale);
                   const card = (
                     <article
                       className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer"
@@ -171,12 +174,12 @@ function ProductsContent() {
                       <div className="aspect-[4/3] overflow-hidden bg-steel-100">
                         <img
                           src={product.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
-                          alt={product.title}
+                          alt={localizedTitle}
                           className="h-full w-full object-cover transition group-hover:scale-105"
                         />
                       </div>
                       <div className="p-3">
-                        <h3 className="text-sm font-bold text-oxynavy-950">{product.title}</h3>
+                        <h3 className="text-sm font-bold text-oxynavy-950">{localizedTitle}</h3>
                       </div>
                     </article>
                   );
@@ -259,7 +262,7 @@ function ProductFeatureStrip() {
 }
 
 type SidebarProps = {
-  categories: { id: number; name: string; slug: string }[];
+  categories: ProductCategory[];
   isLoading: boolean;
   isError: boolean;
   selectedCategoryId: number | undefined;
@@ -268,7 +271,7 @@ type SidebarProps = {
 };
 
 function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, onSelect, onCatalogOpen }: SidebarProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   return (
     <aside className="space-y-5">
       <nav className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.05)]">
@@ -287,6 +290,7 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
         ) : (
           categories.map((category) => {
             const active = selectedCategoryId === category.id;
+            const catName = pickLocalizedName(category, "name", locale);
             return (
               <button
                 key={category.id}
@@ -295,7 +299,7 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
                   active ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
                 }`}
               >
-                {category.name}
+                {catName}
               </button>
             );
           })

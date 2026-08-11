@@ -16,6 +16,100 @@ import {
 import { toast } from "sonner";
 import { Edit2, ImageIcon, Plus, Settings, Trash2, X } from "lucide-react";
 
+const LOCALE_LABELS: { code: string; label: string; field: string }[] = [
+  { code: "en", label: "English", field: "nameEn" },
+  { code: "de", label: "Deutsch", field: "nameDe" },
+  { code: "fr", label: "Français", field: "nameFr" },
+  { code: "it", label: "Italiano", field: "nameIt" },
+  { code: "ar", label: "العربية", field: "nameAr" },
+  { code: "ru", label: "Русский", field: "nameRu" },
+  { code: "fa", label: "فارسی", field: "nameFa" },
+  { code: "ka", label: "ქართული", field: "nameKa" },
+  { code: "bg", label: "Български", field: "nameBg" },
+  { code: "az", label: "Azərbaycan", field: "nameAz" },
+];
+
+type LocaleNames = Record<string, string>;
+
+interface CategoryEditModalProps {
+  category: ProductCategory;
+  onClose: () => void;
+  onSave: (data: { name: string; slug: string } & LocaleNames) => void;
+  isPending: boolean;
+}
+
+function CategoryEditModal({ category, onClose, onSave, isPending }: CategoryEditModalProps) {
+  const [name, setName] = useState(category.name);
+  const [localeNames, setLocaleNames] = useState<LocaleNames>(() => {
+    const init: LocaleNames = {};
+    for (const lc of LOCALE_LABELS) {
+      init[lc.field] = ((category as unknown as Record<string, string | null>)[lc.field] ?? "") as string;
+    }
+    return init;
+  });
+
+  function handleSave() {
+    if (!name.trim()) return;
+    const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const localeData: LocaleNames = {};
+    for (const lc of LOCALE_LABELS) {
+      const val = localeNames[lc.field]?.trim();
+      localeData[lc.field] = val || null as unknown as string;
+    }
+    onSave({ name: name.trim(), slug, ...localeData });
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-bold text-slate-900">Kategori Düzenle</h3>
+          <button onClick={onClose} className="flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-100">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 mb-1">Türkçe (zorunlu)</label>
+            <input
+              className="input w-full"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Kategori adı"
+              autoFocus
+            />
+          </div>
+          <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Diğer Diller (boş bırakılırsa Türkçe gösterilir)</p>
+            {LOCALE_LABELS.map((lc) => (
+              <div key={lc.code}>
+                <label className="block text-xs font-semibold text-slate-500 mb-0.5">{lc.label}</label>
+                <input
+                  className="input w-full text-sm"
+                  value={localeNames[lc.field] ?? ""}
+                  onChange={(e) => setLocaleNames((prev) => ({ ...prev, [lc.field]: e.target.value }))}
+                  placeholder={`${lc.label} adı`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4 flex justify-end gap-2">
+          <button onClick={onClose} className="btn-secondary px-4 py-2 text-sm">İptal</button>
+          <button onClick={handleSave} disabled={isPending || !name.trim()} className="btn-primary px-4 py-2 text-sm">
+            {isPending ? "Kaydediliyor…" : "Kaydet"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProductsPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -27,7 +121,7 @@ export default function ProductsPage() {
   const products = productsData?.items ?? [];
 
   const [catName, setCatName] = useState("");
-  const [editCat, setEditCat] = useState<{ id: number; name: string } | null>(null);
+  const [editCat, setEditCat] = useState<ProductCategory | null>(null);
 
   const invalidateProd = () => qc.invalidateQueries({ queryKey: getListProductsQueryKey() });
   const invalidateCat = () => qc.invalidateQueries({ queryKey: getListProductCategoriesQueryKey() });
@@ -37,10 +131,9 @@ export default function ProductsPage() {
   const deleteCatMut = useDeleteProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori silindi"); invalidateCat(); }, onError: () => toast.error("Silme başarısız") } });
   const updateCatMut = useUpdateProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori güncellendi"); invalidateCat(); setEditCat(null); }, onError: () => toast.error("Güncelleme başarısız") } });
 
-  function handleSaveCat() {
-    if (!editCat || !editCat.name.trim()) return;
-    const slug = editCat.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    updateCatMut.mutate({ id: editCat.id, data: { name: editCat.name.trim(), slug } });
+  function handleSaveCat(data: { name: string; slug: string } & LocaleNames) {
+    if (!editCat) return;
+    updateCatMut.mutate({ id: editCat.id, data });
   }
 
   function handleDelete(id: number) {
@@ -59,6 +152,15 @@ export default function ProductsPage() {
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
+      {editCat && (
+        <CategoryEditModal
+          category={editCat}
+          onClose={() => setEditCat(null)}
+          onSave={handleSaveCat}
+          isPending={updateCatMut.isPending}
+        />
+      )}
+
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-950">Ürün Yönetimi</h1>
@@ -72,33 +174,17 @@ export default function ProductsPage() {
       <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-sm font-bold text-slate-900">Kategoriler</h2>
         <div className="flex flex-wrap gap-2">
-          {categories.map((c: ProductCategory) =>
-            editCat?.id === c.id ? (
-              <div key={c.id} className="flex items-center gap-1">
-                <input
-                  className="input h-8 w-40 text-sm"
-                  value={editCat.name}
-                  onChange={(e) => setEditCat({ ...editCat, name: e.target.value })}
-                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveCat(); if (e.key === "Escape") setEditCat(null); }}
-                  autoFocus
-                />
-                <button onClick={handleSaveCat} disabled={updateCatMut.isPending} className="btn-primary h-8 px-2.5 text-xs">
-                  {updateCatMut.isPending ? "…" : "Kaydet"}
-                </button>
-                <button onClick={() => setEditCat(null)} className="btn-secondary h-8 px-2.5 text-xs">İptal</button>
-              </div>
-            ) : (
-              <div key={c.id} className="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-3 pr-1.5 py-1 text-sm font-semibold text-slate-700">
-                {c.name}
-                <button onClick={() => setEditCat({ id: c.id, name: c.name })} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-blue-100 hover:text-blue-500">
-                  <Edit2 className="h-2.5 w-2.5" />
-                </button>
-                <button onClick={() => handleDeleteCat(c.id)} className="flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-red-100 hover:text-red-500">
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            )
-          )}
+          {categories.map((c: ProductCategory) => (
+            <div key={c.id} className="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-3 pr-1.5 py-1 text-sm font-semibold text-slate-700">
+              {c.name}
+              <button onClick={() => setEditCat(c)} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-blue-100 hover:text-blue-500" title="Çeviri dahil düzenle">
+                <Edit2 className="h-2.5 w-2.5" />
+              </button>
+              <button onClick={() => handleDeleteCat(c.id)} className="flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-red-100 hover:text-red-500">
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
           <div className="flex gap-1">
             <input
               className="input h-8 w-36 text-sm"

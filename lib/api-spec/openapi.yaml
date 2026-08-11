@@ -2562,6 +2562,26 @@ components:
           type: ["string", "null"]
         sortOrder:
           type: integer
+        nameEn:
+          type: ["string", "null"]
+        nameDe:
+          type: ["string", "null"]
+        nameFr:
+          type: ["string", "null"]
+        nameIt:
+          type: ["string", "null"]
+        nameAr:
+          type: ["string", "null"]
+        nameRu:
+          type: ["string", "null"]
+        nameFa:
+          type: ["string", "null"]
+        nameKa:
+          type: ["string", "null"]
+        nameBg:
+          type: ["string", "null"]
+        nameAz:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -2579,6 +2599,26 @@ components:
           type: string
         sortOrder:
           type: integer
+        nameEn:
+          type: string
+        nameDe:
+          type: string
+        nameFr:
+          type: string
+        nameIt:
+          type: string
+        nameAr:
+          type: string
+        nameRu:
+          type: string
+        nameFa:
+          type: string
+        nameKa:
+          type: string
+        nameBg:
+          type: string
+        nameAz:
+          type: string
 
     ProductCategoryUpdate:
       type: object
@@ -2591,6 +2631,26 @@ components:
           type: ["string", "null"]
         sortOrder:
           type: integer
+        nameEn:
+          type: ["string", "null"]
+        nameDe:
+          type: ["string", "null"]
+        nameFr:
+          type: ["string", "null"]
+        nameIt:
+          type: ["string", "null"]
+        nameAr:
+          type: ["string", "null"]
+        nameRu:
+          type: ["string", "null"]
+        nameFa:
+          type: ["string", "null"]
+        nameKa:
+          type: ["string", "null"]
+        nameBg:
+          type: ["string", "null"]
+        nameAz:
+          type: ["string", "null"]
 
     # PRODUCTS
     ProductSpec:
@@ -2710,6 +2770,26 @@ components:
           type: ["string", "null"]
         quoteUnitPrice:
           type: ["string", "null"]
+        titleEn:
+          type: ["string", "null"]
+        titleDe:
+          type: ["string", "null"]
+        titleFr:
+          type: ["string", "null"]
+        titleIt:
+          type: ["string", "null"]
+        titleAr:
+          type: ["string", "null"]
+        titleRu:
+          type: ["string", "null"]
+        titleFa:
+          type: ["string", "null"]
+        titleKa:
+          type: ["string", "null"]
+        titleBg:
+          type: ["string", "null"]
+        titleAz:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -2755,6 +2835,26 @@ components:
           type: string
         quoteUnitPrice:
           type: string
+        titleEn:
+          type: string
+        titleDe:
+          type: string
+        titleFr:
+          type: string
+        titleIt:
+          type: string
+        titleAr:
+          type: string
+        titleRu:
+          type: string
+        titleFa:
+          type: string
+        titleKa:
+          type: string
+        titleBg:
+          type: string
+        titleAz:
+          type: string
 
     ProductUpdate:
       type: object
@@ -2794,6 +2894,26 @@ components:
         quoteUnit:
           type: ["string", "null"]
         quoteUnitPrice:
+          type: ["string", "null"]
+        titleEn:
+          type: ["string", "null"]
+        titleDe:
+          type: ["string", "null"]
+        titleFr:
+          type: ["string", "null"]
+        titleIt:
+          type: ["string", "null"]
+        titleAr:
+          type: ["string", "null"]
+        titleRu:
+          type: ["string", "null"]
+        titleFa:
+          type: ["string", "null"]
+        titleKa:
+          type: ["string", "null"]
+        titleBg:
+          type: ["string", "null"]
+        titleAz:
           type: ["string", "null"]
 
     ProductListResponse:

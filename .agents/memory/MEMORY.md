@@ -10,3 +10,4 @@
 - [Locale resolution](i18n-locale-resolution.md) — URL is source of truth; stored language may only redirect the bare default URL, never a locale-prefixed one.
 - [Translation dictionaries](i18n-dictionaries.md) — TR is hand-authored source, others generated; DB-sourced copy (sliders/categories/products) is NOT covered by static dicts.
 - [Slider i18n columns](slider-i18n.md) — slider text fields are now per-locale columns (title_en, subtitle_de, etc.); 50 columns added; Hero picks locale col with TR fallback via pickSliderText().
+- [Product i18n columns](product-i18n.md) — product title and category name now have per-locale cols; pickLocalizedName() helper; admin modal/grid for editing; openapi.yaml + api.schemas.ts both updated manually.

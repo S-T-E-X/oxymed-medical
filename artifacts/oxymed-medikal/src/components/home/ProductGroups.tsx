@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useListProductCategories } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
 import { useLocalizedPath } from "../../i18n/useLocalizedPath";
+import { pickLocalizedName } from "../../i18n/pickLocalizedName";
 
 const CATEGORY_IMAGES = [
   "/assets/images/product-bed-head-unit.png",
@@ -14,7 +15,7 @@ const CATEGORY_IMAGES = [
 export default function ProductGroups() {
   const { data: categories = [], isLoading, isError } = useListProductCategories();
   const displayed = categories.slice(0, 4);
-  const { t, tv } = useI18n();
+  const { t, tv, locale } = useI18n();
   const path = useLocalizedPath();
   const productsHref = path("products");
 
@@ -54,12 +55,12 @@ export default function ProductGroups() {
                     <div className="aspect-[1.35] overflow-hidden bg-steel-100">
                       <img
                         src={CATEGORY_IMAGES[i] ?? CATEGORY_IMAGES[0]}
-                        alt={cat.name}
+                        alt={pickLocalizedName(cat, "name", locale)}
                         className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="text-base font-extrabold text-oxynavy-950">{cat.name.toUpperCase()}</h3>
+                      <h3 className="text-base font-extrabold text-oxynavy-950">{pickLocalizedName(cat, "name", locale).toUpperCase()}</h3>
                       <p className="mt-4 min-h-[72px] text-sm leading-6 text-steel-700">
                         {descriptions[i] ?? t("home.productGroups.fallbackDescription")}
                       </p>
