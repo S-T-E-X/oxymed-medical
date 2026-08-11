@@ -1,0 +1,100 @@
+{
+  "hero": {
+    "title": "Servis & Destek",
+    "subtitle": "Cihazınıza ait servis geçmişini görüntüleyin, hızlı servis randevusu oluşturun.",
+    "breadcrumbHome": "Anasayfa",
+    "breadcrumbCurrent": "Servis & Destek"
+  },
+  "benefits": [
+    { "title": "Uzman Destek",        "text": "Deneyimli teknik ekibimiz her zaman yanınızda." },
+    { "title": "Hızlı Müdahale",      "text": "Talebiniz sonrası en kısa sürede müdahale ediyoruz." },
+    { "title": "Orijinal Yedek Parça", "text": "Tüm müdahalelerde orijinal parça kullanıyoruz." },
+    { "title": "Güvenli & Garantili", "text": "İşlemler garanti kapsamında güvence altındadır." }
+  ],
+  "query": {
+    "title": "Cihaz Sorgulama",
+    "subtitle": "Cihazınızın seri numarası veya servis kodu ile sorgulama yapın.",
+    "tabsAriaLabel": "Sorgulama yöntemi",
+    "tabSerial": "Seri Numarası ile Sorgula",
+    "tabServiceCode": "Servis Kodu ile Sorgula",
+    "labelSerial": "Seri Numarası",
+    "labelServiceCode": "Servis Kodu (QR)",
+    "placeholderSerial": "Örn: OXM-VAC-250-0148",
+    "placeholderServiceCode": "Örn: abc123xyz",
+    "searchButton": "Sorgula",
+    "hint": "Seri numaranızı cihaz üzerindeki etiketten görebilirsiniz.",
+    "techSupportImageAlt": "Oxymed Medikal servis uzmanı"
+  },
+  "faultTypes": [
+    "Arıza / Çalışmıyor",
+    "Bakım Talebi",
+    "Yedek Parça Talebi",
+    "Performans Düşüklüğü",
+    "Garanti Talebi",
+    "Diğer"
+  ],
+  "statusLabels": {
+    "aktif_garanti":     "Aktif Garanti",
+    "yakin_bitis":       "Yakında Bitecek",
+    "garanti_disi":      "Garanti Dışı",
+    "bakim_riskli":      "Bakım Gerekiyor",
+    "yetkisiz_askida":   "Askıda",
+    "uzatilmis_garanti": "Uzatılmış Garanti",
+    "bakim_anlasmasi":   "Bakım Anlaşması",
+    "talep_incelemede":  "Talep İncelemede",
+    "talep_onaylandi":   "Talep Onaylandı",
+    "talep_reddedildi":  "Talep Reddedildi"
+  },
+  "device": {
+    "notFoundTitle": "Cihaz bulunamadı",
+    "notFoundBody": "Bu seri numarasına ait kayıtlı cihaz bilgisi bulunamadı. Lütfen seri numarasını kontrol edin veya teknik destek hattımızı arayın.",
+    "cardTitle": "Cihaz Bilgileri",
+    "imageAlt": "Cihaz görseli",
+    "labels": {
+      "productName": "Cihaz Türü",
+      "model": "Model",
+      "serialNumber": "Seri Numarası",
+      "installDate": "Kurulum Tarihi",
+      "customerFirm": "Müşteri / Kurum",
+      "warrantyStatus": "Garanti Durumu",
+      "warrantyEndDate": "Garanti Bitiş",
+      "lastMaintenanceDate": "Son Bakım",
+      "nextMaintenanceDate": "Sonraki Bakım"
+    },
+    "historyTitle": "Yapılan İşlemler & Servis Geçmişi",
+    "historyEmpty": "Henüz servis kaydı bulunmuyor.",
+    "tableDate": "Tarih",
+    "tableServiceType": "İşlem Türü",
+    "tablePersonnel": "Servis Personeli",
+    "tableReport": "Rapor",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Hızlı Servis Talep Formu",
+    "subtitle": "Servis talebinizi hızlıca oluşturun, ekibimiz en kısa sürede sizinle iletişime geçsin.",
+    "labelName": "Ad Soyad *",
+    "placeholderName": "Adınız Soyadınız",
+    "labelPhone": "Telefon",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "E-posta",
+    "placeholderEmail": "ornek@email.com",
+    "labelFirm": "Hastane / Kurum Adı",
+    "placeholderFirm": "Kurum adı",
+    "labelCity": "Bulunduğunuz Şehir",
+    "placeholderCity": "Şehir seçiniz",
+    "cities": ["Ankara", "İstanbul", "İzmir", "Bursa", "Antalya", "Konya", "Adana", "Diğer"],
+    "labelFaultType": "Talep Türü *",
+    "placeholderFaultType": "Talep türünü seçiniz",
+    "labelDescription": "Açıklama *",
+    "placeholderDescription": "Kısa açıklama giriniz...",
+    "kvkkConsent": "KVKK Aydınlatma Metni'ni okudum, onaylıyorum.",
+    "submit": "Talep Oluştur",
+    "submitting": "Gönderiliyor…",
+    "successTitle": "Talebiniz Alındı!",
+    "successBody": "Servis ekibimiz en kısa sürede sizinle iletişime geçecektir.",
+    "toastSuccess": "Garanti talebiniz iletildi! En kısa sürede sizinle iletişime geçeceğiz.",
+    "toastError": "Talep oluşturulamadı, lütfen tekrar deneyin.",
+    "toastValidation": "Lütfen zorunlu alanları doldurun ve KVKK onayını verin.",
+    "toastNoDevice": "Lütfen önce cihazı sorgulayın."
+  }
+}

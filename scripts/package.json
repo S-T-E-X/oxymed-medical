@@ -7,7 +7,9 @@
     "hello": "tsx ./src/hello.ts",
     "seed": "tsx ./src/seed.ts",
     "cleanup-visitor-events": "tsx ./src/cleanup-visitor-events.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "translate-i18n": "tsx ./src/translate-i18n.ts",
+    "gen-sitemap": "tsx ./src/gen-sitemap.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -17,6 +19,9 @@
     "@types/bcryptjs": "^3.0.0",
     "@workspace/db": "workspace:*",
     "bcryptjs": "^3.0.3",
-    "drizzle-orm": "catalog:"
+    "drizzle-orm": "catalog:",
+    "@workspace/integrations-openai-ai-server": "workspace:*",
+    "p-limit": "^7.3.0",
+    "p-retry": "^7.1.1"
   }
 }

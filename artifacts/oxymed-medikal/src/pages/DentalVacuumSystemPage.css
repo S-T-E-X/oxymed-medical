@@ -51,7 +51,7 @@
   align-items: center;
   min-height: 34px;
   padding: 0 14px;
-  border-left: 3px solid #16a3a6;
+  border-inline-start: 3px solid #16a3a6;
   background: rgba(22, 163, 166, 0.08);
   color: #0b326a;
   font-size: 12px;
@@ -224,10 +224,10 @@
 }
 
 .dvs-drawing {
-  padding-right: 34px;
-  padding-left: 34px;
-  border-right: 1px solid #d9e1eb;
-  border-left: 1px solid #d9e1eb;
+  padding-inline-end: 34px;
+  padding-inline-start: 34px;
+  border-inline-end: 1px solid #d9e1eb;
+  border-inline-start: 1px solid #d9e1eb;
 }
 
 .dvs-drawing-grid {
@@ -367,8 +367,8 @@
   .dvs-drawing {
     padding: 26px 0 0;
     border-top: 1px solid #d9e1eb;
-    border-right: 0;
-    border-left: 0;
+    border-inline-end: 0;
+    border-inline-start: 0;
   }
 }
 

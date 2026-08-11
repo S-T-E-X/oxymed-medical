@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "OUR PRODUCTS",
+    "description": "Innovative and reliable medical solutions developed for hospitals, clinics and healthcare centers.",
+    "imageAlt": "Products page banner image"
+  },
+  "features": {
+    "production": {
+      "title": "DIRECT FROM THE MANUFACTURER",
+      "description": "High-quality production and direct sales from our own factory"
+    },
+    "certified": {
+      "title": "CERTIFIED PRODUCTION",
+      "description": "ISO 9001, ISO 13485 and CE certified production"
+    },
+    "modular": {
+      "title": "MODULAR DESIGN",
+      "description": "Flexible and modular solutions tailored to your needs"
+    },
+    "durability": {
+      "title": "LONG-LASTING",
+      "description": "Durable materials and long service life"
+    },
+    "support": {
+      "title": "24/7 TECHNICAL SUPPORT",
+      "description": "Uninterrupted technical support before and after sales"
+    }
+  },
+  "sidebar": {
+    "allProducts": "All Products",
+    "categoriesError": "Categories could not be loaded.",
+    "catalogTitle": "Download Our Product Catalogue",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "All Products",
+    "allDescription": "Medical solutions developed for hospitals, clinics and healthcare centers.",
+    "categoryDescription": "Our products in the {{category}} category.",
+    "counter": "{{count}} products",
+    "loadError": "An error occurred while loading products. Please refresh the page."
+  },
+  "dentalCards": {
+    "amalgam-separator": "Amalgam Separator",
+    "dental-vakum-pompasi": "Dental Vacuum Pump",
+    "dental-vakum-sistemi": "Dental Vacuum System"
+  }
+}

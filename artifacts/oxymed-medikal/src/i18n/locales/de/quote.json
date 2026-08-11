@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "ANGEBOT ANFORDERN",
+    "subtitle": "Wir erstellen Ihnen ein individuelles Angebot für die optimalen Lösungen für Ihren Bedarf.",
+    "imageAlt": "Patientenzimmer mit Bettkopfversorgungseinheit und Pendantsystem"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "SCHNELLE RÜCKMELDUNG",
+      "description": "Nach Eingang Ihrer Anfrage wird sich unser Expertenteam innerhalb von spätestens 24 Stunden mit Ihnen in Verbindung setzen."
+    },
+    "reliable": {
+      "title": "ZUVERLÄSSIGE LÖSUNGEN",
+      "description": "Höchste Qualitätssicherheit durch nach ISO 9001 und ISO 13485 zertifizierte Produktionsprozesse."
+    },
+    "expert": {
+      "title": "FACHKUNDIGE UNTERSTÜTZUNG",
+      "description": "Von der Projektplanung bis zur Installation steht Ihnen unser erfahrenes Ingenieurteam zur Seite."
+    }
+  },
+  "form": {
+    "title": "Angebotsanfrageformular",
+    "subtitle": "Füllen Sie das untenstehende Formular aus, um uns Ihre Anfrage zu übermitteln.",
+    "fields": {
+      "fullName": "Vor- und Nachname *",
+      "fullNamePlaceholder": "Ihr Vor- und Nachname",
+      "email": "E-Mail *",
+      "emailPlaceholder": "beispiel@mail.com",
+      "phone": "Telefon *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Unternehmen / Institution",
+      "companyPlaceholder": "Name des Unternehmens oder der Institution",
+      "jobTitle": "Position / Titel",
+      "jobTitlePlaceholder": "Ihre Position oder Ihr Titel",
+      "projectType": "Projekttyp",
+      "city": "Stadt / Bezirk",
+      "applicationArea": "Einsatzbereich",
+      "notes": "Ihre Anfrage und Anmerkungen",
+      "notesPlaceholder": "Bitte geben Sie Informationen zu Ihrem Projekt an...",
+      "file": "Datei hochladen (optional)",
+      "fileButton": "Datei auswählen oder hineinziehen",
+      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)",
+      "selectDefault": "Bitte auswählen"
+    },
+    "validation": {
+      "fullNameRequired": "Vor- und Nachname sind erforderlich.",
+      "emailRequired": "E-Mail ist erforderlich.",
+      "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "phoneRequired": "Telefonnummer ist erforderlich."
+    },
+    "submit": "ANGEBOT ANFORDERN",
+    "submitting": "WIRD GESENDET…",
+    "privacy": "Die von Ihnen übermittelten Informationen werden sicher gespeichert und nicht an Dritte weitergegeben.",
+    "apiError": "Beim Senden der Angebotsanfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "success": {
+    "title": "Ihre Anfrage wurde entgegengenommen!",
+    "description": "Ihre Angebotsanfrage wurde erfolgreich übermittelt. Unser Expertenteam wird sich schnellstmöglich mit Ihnen in Verbindung setzen.",
+    "newRequest": "Neue Angebotsanfrage"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Bettkopfversorgungseinheit",
+      "pendant": "Pendantsystem",
+      "medicalGas": "Medizingassystem",
+      "electrical": "Elektroinstallation"
+    },
+    "cities": {
+      "izmir": "Izmir",
+      "ankara": "Ankara",
+      "istanbul": "Istanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Sonstige"
+    },
+    "applicationAreas": {
+      "hospital": "Krankenhaus",
+      "clinic": "Klinik",
+      "icu": "Intensivstation",
+      "operatingRoom": "Operationssaal",
+      "emergency": "Notaufnahme",
+      "other": "Sonstige"
+    }
+  }
+}

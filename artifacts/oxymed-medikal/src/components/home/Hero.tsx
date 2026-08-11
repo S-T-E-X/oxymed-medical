@@ -3,6 +3,8 @@ import { ArrowDownToLine, ArrowLeft, ArrowRight } from "lucide-react";
 import { useListSliders } from "@workspace/api-client-react";
 import CatalogModal from "./CatalogModal";
 import type { Slider } from "@workspace/api-client-react";
+import { useI18n } from "../../i18n/I18nProvider";
+import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 
 function hexToRgba(hex: string, pct: number): string {
   try {
@@ -28,6 +30,8 @@ function buildOverlayStyle(hero: Slider): React.CSSProperties {
 }
 
 export default function Hero() {
+  const { t } = useI18n();
+  const path = useLocalizedPath();
   const { data: allSliders, isLoading, isError } = useListSliders();
   const sliders = (allSliders ?? [])
     .filter((s) => s.isActive)
@@ -88,7 +92,7 @@ export default function Hero() {
         ) : (
           <img
             src="/assets/images/hero-medical-suite.png"
-            alt="Modern hastane odasında yatak başı ünitesi ve pendant sistemi"
+            alt={t("common.hero.fallbackImageAlt")}
             className="absolute inset-0 h-full w-full object-cover object-[63%_center]"
           />
         )}
@@ -149,7 +153,7 @@ export default function Hero() {
                     onClick={() => setCatalogOpen(true)}
                     className="inline-flex items-center justify-center gap-2 rounded border border-white/72 bg-white/6 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:bg-white/14"
                   >
-                    KATALOG İNDİR
+                    {t("common.cta.downloadCatalog")}
                     <ArrowDownToLine className="h-4 w-4" aria-hidden="true" />
                   </button>
                 )}
@@ -158,27 +162,26 @@ export default function Hero() {
           ) : (
             <div className="max-w-[590px] pt-6 text-white">
               <h1 className="text-[44px] font-extrabold leading-[1.08] sm:text-6xl lg:text-[68px]">
-                HAYAT İÇİN
-                <span className="block">TEKNOLOJİ</span>
+                {t("common.hero.fallbackTitleLine1")}
+                <span className="block">{t("common.hero.fallbackTitleLine2")}</span>
               </h1>
               <div className="mt-8 h-1 w-16 bg-white" />
               <p className="mt-8 max-w-[420px] text-base font-medium leading-8 text-white/88 sm:text-lg">
-                Yatak başı üniteleri, pendant sistemleri ve medikal gaz çözümleri ile güvenli,
-                konforlu ve teknolojik ortamlar sunuyoruz.
+                {t("common.hero.fallbackDescription")}
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <a
-                  href="/urunler"
+                  href={path("products")}
                   className="inline-flex items-center justify-center gap-2 rounded bg-oxynavy-950 px-7 py-4 text-xs font-extrabold text-white shadow-[0_10px_30px_rgba(2,20,35,0.22)] transition hover:bg-oxynavy-800"
                 >
-                  ÜRÜNLERİMİZ
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  {t("common.hero.ourProducts")}
+                  <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
                 </a>
                 <button
                   onClick={() => setCatalogOpen(true)}
                   className="inline-flex items-center justify-center gap-2 rounded border border-white/72 bg-white/6 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:bg-white/14"
                 >
-                  KATALOG İNDİR
+                  {t("common.cta.downloadCatalog")}
                   <ArrowDownToLine className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
@@ -191,7 +194,7 @@ export default function Hero() {
             <button
               onClick={() => setCurrent((c) => (c - 1 + sliders.length) % sliders.length)}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm hover:bg-white/28"
-              aria-label="Önceki"
+              aria-label={t("common.cta.previous")}
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -201,14 +204,14 @@ export default function Hero() {
                   key={i}
                   onClick={() => setCurrent(i)}
                   className={`h-1.5 rounded-full transition-all ${i === current ? "w-6 bg-white" : "w-1.5 bg-white/42"}`}
-                  aria-label={`Slider ${i + 1}`}
+                  aria-label={t("common.hero.slideLabel").replace("{{index}}", String(i + 1))}
                 />
               ))}
             </div>
             <button
               onClick={() => setCurrent((c) => (c + 1) % sliders.length)}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm hover:bg-white/28"
-              aria-label="Sonraki"
+              aria-label={t("common.cta.next")}
             >
               <ArrowRight className="h-4 w-4" />
             </button>

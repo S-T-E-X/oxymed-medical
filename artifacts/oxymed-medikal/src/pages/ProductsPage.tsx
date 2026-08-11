@@ -9,22 +9,24 @@ import {
   Factory,
   Headphones,
   Medal,
-  Settings,
   ShieldCheck,
-  SlidersHorizontal,
 } from "lucide-react";
 import { useListProductCategories, useListProducts, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import Seo from "../components/common/Seo";
 import { trackInteraction } from "../components/common/VisitorTracker";
-import { productHero, productPageFeatures } from "../data/products";
+import { productPageFeatures } from "../data/products";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import { routeKeyForTurkishSlug } from "../i18n/routes";
 
 const featureIconMap = {
   production: Factory,
   certified: Medal,
   modular: Boxes,
   durability: ShieldCheck,
-  support: Headphones
+  support: Headphones,
 };
 
 function ErrorMessage({ message }: { message: string }) {
@@ -39,6 +41,7 @@ function ErrorMessage({ message }: { message: string }) {
 export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-white text-oxynavy-950">
+      <Seo routeKey="products" />
       <Header />
       <main className="bg-steel-50">
         <ProductsHero />
@@ -50,18 +53,19 @@ export default function ProductsPage() {
 }
 
 function ProductsHero() {
+  const { t } = useI18n();
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
 
-  const title = settings?.["products_banner_title"] || productHero.title;
-  const description = settings?.["products_banner_description"] || productHero.description;
+  const title = settings?.["products_banner_title"] || t("products.hero.title");
+  const description = settings?.["products_banner_description"] || t("products.hero.description");
   const imageUrl = settings?.["products_banner_image_url"] || "/assets/images/hero-medical-suite.png";
 
   return (
     <section className="relative isolate h-[252px] overflow-hidden bg-oxynavy-950 text-white">
       <img
         src={imageUrl}
-        alt="Ürünler sayfa banner görseli"
+        alt={t("products.hero.imageAlt")}
         className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950 via-oxynavy-950/78 to-oxynavy-950/18" />
@@ -79,6 +83,8 @@ function ProductsHero() {
 }
 
 function ProductsContent() {
+  const { t } = useI18n();
+  const path = useLocalizedPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
   const selectedCategoryId = categoryParam ? parseInt(categoryParam, 10) : undefined;
@@ -92,6 +98,14 @@ function ProductsContent() {
   const { data: rawSettings } = useListSettings();
   const settingsMap = (rawSettings as Record<string, string> | undefined) ?? {};
   const products = productsData?.items ?? [];
+
+  // The API only knows Turkish slugs. Product pages that have a translated
+  // route open in the current language; anything else stays on the Turkish
+  // detail page, which is the only version that exists.
+  function productHref(slug: string): string {
+    const routeKey = routeKeyForTurkishSlug(slug);
+    return routeKey ? path(routeKey) : `/urunler/${slug}`;
+  }
 
   const activeCategory = categories.find((c) => c.id === selectedCategoryId);
 
@@ -124,24 +138,24 @@ function ProductsContent() {
             <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-[27px] font-extrabold leading-tight text-oxynavy-950">
-                  {activeCategory?.name ?? "Tüm Ürünler"}
+                  {activeCategory?.name ?? t("products.results.allTitle")}
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-steel-700">
                   {activeCategory
-                    ? `${activeCategory.name} kategorisindeki ürünlerimiz.`
-                    : "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz medikal çözümler."}
+                    ? t("products.results.categoryDescription").replace("{{category}}", activeCategory.name)
+                    : t("products.results.allDescription")}
                 </p>
               </div>
               {products.length > 0 && (
                 <span className="inline-flex h-10 shrink-0 items-center justify-center gap-1 rounded border border-oxynavy-200 px-4 text-xs font-bold text-steel-600">
-                  {products.length} ürün
+                  {t("products.results.counter").replace("{{count}}", String(products.length))}
                 </span>
               )}
             </div>
 
             {prodsError ? (
               <div className="mt-6">
-                <ErrorMessage message="Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
+                <ErrorMessage message={t("products.results.loadError")} />
               </div>
             ) : prodsLoading ? (
               <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -169,7 +183,7 @@ function ProductsContent() {
                   return product.pageSlug ? (
                     <Link
                       key={product.id}
-                      to={`/urunler/${product.pageSlug}`}
+                      to={productHref(product.pageSlug)}
                       className="block"
                       onClick={() => trackInteraction(`Ürün: ${product.title}`)}
                     >
@@ -180,13 +194,17 @@ function ProductsContent() {
                   );
                 })}
                 {!selectedCategoryId && ([
-                  { slug: "amalgam-separator", title: "Amalgam Separatörü", settingKey: "ams_card_image" },
-                  { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", settingKey: "dvp_card_image" },
-                  { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", settingKey: "dvs_card_image" },
-                ] as const).map((p) => (
+                  { slug: "amalgam-separator", settingKey: "ams_card_image" },
+                  { slug: "dental-vakum-pompasi", settingKey: "dvp_card_image" },
+                  { slug: "dental-vakum-sistemi", settingKey: "dvs_card_image" },
+                ] as const).map(({ slug, settingKey }) => ({
+                  slug,
+                  settingKey,
+                  title: t(`products.dentalCards.${slug}`),
+                })).map((p) => (
                   <Link
                     key={p.slug}
-                    to={`/urunler/${p.slug}`}
+                    to={productHref(p.slug)}
                     className="block"
                     onClick={() => trackInteraction(`Ürün: ${p.title}`)}
                   >
@@ -215,17 +233,22 @@ function ProductsContent() {
 }
 
 function ProductFeatureStrip() {
+  const { t } = useI18n();
   return (
-    <div className="-mt-8 ml-auto rounded-lg border border-steel-100 bg-white px-5 py-4 shadow-[0_14px_35px_rgba(2,20,35,0.08)] lg:w-[calc(100%-270px)]">
+    <div className="-mt-8 ms-auto rounded-lg border border-steel-100 bg-white px-5 py-4 shadow-[0_14px_35px_rgba(2,20,35,0.08)] lg:w-[calc(100%-270px)]">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 lg:divide-x lg:divide-steel-200">
         {productPageFeatures.map((feature) => {
           const Icon = featureIconMap[feature.icon as keyof typeof featureIconMap];
           return (
-            <div key={feature.title} className="flex items-start gap-4 lg:px-5 first:lg:pl-0 last:lg:pr-0">
+            <div key={feature.key} className="flex items-start gap-4 lg:px-5 first:lg:ps-0 last:lg:pe-0">
               <Icon className="mt-1 h-8 w-8 shrink-0 stroke-[1.35] text-oxynavy-900" aria-hidden="true" />
               <div>
-                <h3 className="text-[12px] font-extrabold text-oxynavy-950">{feature.title}</h3>
-                <p className="mt-1.5 text-[12px] leading-5 text-steel-700">{feature.description}</p>
+                <h3 className="text-[12px] font-extrabold text-oxynavy-950">
+                  {t(`products.features.${feature.key}.title`)}
+                </h3>
+                <p className="mt-1.5 text-[12px] leading-5 text-steel-700">
+                  {t(`products.features.${feature.key}.description`)}
+                </p>
               </div>
             </div>
           );
@@ -245,6 +268,7 @@ type SidebarProps = {
 };
 
 function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, onSelect, onCatalogOpen }: SidebarProps) {
+  const { t } = useI18n();
   return (
     <aside className="space-y-5">
       <nav className="overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.05)]">
@@ -254,10 +278,10 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
             !selectedCategoryId ? "bg-oxynavy-950 text-white" : "text-oxynavy-950 hover:bg-steel-50"
           }`}
         >
-          Tüm Ürünler
+          {t("products.sidebar.allProducts")}
         </button>
         {isError ? (
-          <div className="px-5 py-3 text-[12px] text-red-600">Kategoriler yüklenemedi.</div>
+          <div className="px-5 py-3 text-[12px] text-red-600">{t("products.sidebar.categoriesError")}</div>
         ) : isLoading ? (
           [1, 2, 3].map((i) => <div key={i} className="h-12 animate-pulse bg-steel-50" />)
         ) : (
@@ -286,11 +310,11 @@ function ProductsSidebar({ categories, isLoading, isError, selectedCategoryId, o
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-steel-200 text-oxynavy-950">
           <ArrowDownToLine className="h-5 w-5" aria-hidden="true" />
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-extrabold text-oxynavy-950">Ürün Kataloğumuzu İndirin</span>
-          <span className="mt-1 block text-xs text-steel-600">PDF / 12.4 MB</span>
+        <span className="min-w-0 flex-1 text-start">
+          <span className="block text-sm font-extrabold text-oxynavy-950">{t("products.sidebar.catalogTitle")}</span>
+          <span className="mt-1 block text-xs text-steel-600">{t("products.sidebar.catalogSize")}</span>
         </span>
-        <ArrowRight className="h-4 w-4 shrink-0 text-oxynavy-950" aria-hidden="true" />
+        <ArrowRight className="h-4 w-4 shrink-0 text-oxynavy-950 rtl:-scale-x-100" aria-hidden="true" />
       </button>
     </aside>
   );

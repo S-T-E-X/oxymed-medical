@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "Tableau de contrôle d’étage 3 gaz",
+    "description": "Un contrôle sûr, intelligent et continu pour vos systèmes de gaz médicaux. Gestion centralisée de 3 gaz médicaux différents sur un seul tableau.",
+    "photoSlot": "Emplacement photo produit Hero",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Fil d’Ariane",
+    "products": "Produits"
+  },
+  "heroFeatures": [
+    {
+      "title": "Haute sécurité",
+      "text": "Sécurité maximale grâce au système d’alarme et de coupure automatique."
+    },
+    {
+      "title": "Contrôle intelligent",
+      "text": "Surveillance continue grâce à l’unité de contrôle à microprocesseur."
+    },
+    {
+      "title": "Système d’alarme",
+      "text": "Information instantanée par alertes visuelles et sonores."
+    },
+    {
+      "title": "Installation facile",
+      "text": "Installation rapide et simple grâce à une structure de raccordement pratique."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Unité de raccordement des gaz",
+      "text": "Système de vannes de haute qualité pour les entrées d’oxygène, de vide et d’air."
+    },
+    {
+      "title": "Panneau de contrôle intelligent",
+      "text": "Les pressions des gaz sont surveillées et gérées en temps réel par un système contrôlé par microprocesseur."
+    },
+    {
+      "title": "Structure robuste",
+      "text": "Son boîtier métallique peint par poudrage électrostatique garantit une longue durée de vie et une résistance aux chocs."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "Emplacement visuel WEBP"
+  },
+  "specs": {
+    "title": "Caractéristiques techniques",
+    "rows": [
+      {
+        "k": "Nom du produit",
+        "v": "Tableau de contrôle d’étage 3 gaz"
+      },
+      {
+        "k": "Gaz pris en charge",
+        "v": "O2 (Oxygène) - VAC (Vide) - AIR (Air)"
+      },
+      {
+        "k": "Pression de service",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Type d’alarme",
+        "v": "Visuelle et sonore"
+      },
+      {
+        "k": "Matériau du boîtier",
+        "v": "Métal peint par poudrage électrostatique"
+      },
+      {
+        "k": "Alimentation électrique",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Type de montage",
+        "v": "En saillie / encastré"
+      },
+      {
+        "k": "Température de fonctionnement",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Dimensions (HxLxP)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Dimensions / Dessin technique",
+    "slotLabel": "Visuel du dessin technique",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "Domaines d’utilisation",
+    "items": [
+      "Hôpitaux",
+      "Unités de soins intensifs",
+      "Blocs opératoires",
+      "Cliniques",
+      "Centres de santé"
+    ]
+  },
+  "advantages": {
+    "title": "Avantages",
+    "items": [
+      "Contrôle centralisé de trois gaz différents sur un seul tableau",
+      "Système d’alarme et de coupure haute sécurité",
+      "Surveillance facile grâce à une interface conviviale",
+      "Boîtier métallique robuste et durable",
+      "Installation et maintenance simplifiées"
+    ]
+  },
+  "featureTiles": {
+    "title": "Caractéristiques du produit",
+    "items": [
+      {
+        "title": "Contrôle centralisé",
+        "text": "Gestion de 3 gaz depuis un point unique"
+      },
+      {
+        "title": "Surveillance en temps réel",
+        "text": "Les valeurs de pression sont surveillées et enregistrées en continu"
+      },
+      {
+        "title": "Alarme sécurisée",
+        "text": "Alerte instantanée par alarme visuelle et sonore"
+      },
+      {
+        "title": "Structure modulaire",
+        "text": "Maintenance et entretien facilités"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Questions fréquemment posées",
+    "items": [
+      {
+        "q": "Quels gaz sont pris en charge ?",
+        "a": "Le tableau de contrôle d’étage 3 gaz prend en charge l’oxygène (O2), le vide (VAC) et l’air médical (AIR)."
+      },
+      {
+        "q": "Dans quels domaines est-il utilisé ?",
+        "a": "Il est utilisé dans les hôpitaux, les soins intensifs, les blocs opératoires et les cliniques."
+      },
+      {
+        "q": "Quel est le type de montage ?",
+        "a": "Il peut être installé en saillie ou encastré."
+      },
+      {
+        "q": "Comment sont assurés la maintenance et le service ?",
+        "a": "Un fonctionnement sûr est assuré grâce à la maintenance périodique et à l’équipe de service technique."
+      },
+      {
+        "q": "Comment fonctionne le système d’alarme ?",
+        "a": "Une alarme sonore et visuelle se déclenche lorsque les valeurs de pression sortent des limites."
+      },
+      {
+        "q": "Le système fonctionne-t-il en cas de coupure de courant ?",
+        "a": "Des scénarios d’alimentation de secours et d’alarme peuvent être appliqués selon les besoins du projet."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Actions produit",
+    "title": "Demandez un devis, valorisez votre projet",
+    "subtitle": "Notre équipe d’experts est prête à vous proposer la solution la plus adaptée.",
+    "primaryBtn": "Demander un devis",
+    "secondaryBtn": "Nous contacter"
+  },
+  "category": "Tableau de contrôle d’étage"
+}

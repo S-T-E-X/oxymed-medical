@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "3 Qazlı Mərtəbə Nəzarət Paneli",
+    "description": "Tibbi qaz sistemləriniz üçün təhlükəsiz, ağıllı və fasiləsiz nəzarət. 3 fərqli tibbi qazın mərkəzi idarəetməsi bir paneldə.",
+    "photoSlot": "Hero məhsul foto sahəsi",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Səhifə yolu",
+    "products": "Məhsullar"
+  },
+  "heroFeatures": [
+    {
+      "title": "Yüksək Təhlükəsizlik",
+      "text": "Siqnalizasiya və avtomatik kəsmə sistemi ilə maksimum təhlükəsizlik."
+    },
+    {
+      "title": "Ağıllı Nəzarət",
+      "text": "Mikroprosessor əsaslı nəzarət bloku ilə fasiləsiz monitorinq."
+    },
+    {
+      "title": "Siqnalizasiya Sistemi",
+      "text": "Vizual və səsli xəbərdarlıqla ani məlumatlandırma."
+    },
+    {
+      "title": "Asan Quraşdırma",
+      "text": "Praktik qoşulma quruluşu ilə sürətli və asan quraşdırma."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Qaz Qoşulma Bloku",
+      "text": "Oksigen, vakuum və hava qaz girişləri üçün yüksək keyfiyyətli klapan sistemi."
+    },
+    {
+      "title": "Ağıllı Nəzarət Paneli",
+      "text": "Mikroprosessorla idarə olunan sistem vasitəsilə qaz təzyiqləri anlıq izlənilir və idarə edilir."
+    },
+    {
+      "title": "Dayanıqlı Konstruksiya",
+      "text": "Elektrostatik boyalı metal korpusu ilə uzunömürlü və zərbələrə davamlıdır."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "WEBP vizual sahəsi"
+  },
+  "specs": {
+    "title": "Texniki Xüsusiyyətlər",
+    "rows": [
+      {
+        "k": "Məhsulun Adı",
+        "v": "3 Qazlı Mərtəbə Nəzarət Paneli"
+      },
+      {
+        "k": "Dəstəklənən Qazlar",
+        "v": "O2 (Oksigen) - VAC (Vakuum) - AIR (Hava)"
+      },
+      {
+        "k": "İşçi Təzyiq",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Siqnalizasiya Növü",
+        "v": "Vizual və Səsli"
+      },
+      {
+        "k": "Korpus Materialı",
+        "v": "Elektrostatik Boyalı Metal"
+      },
+      {
+        "k": "Qida Gərginliyi",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Montaj Növü",
+        "v": "Divarüstü / Divariçi"
+      },
+      {
+        "k": "İşləmə Temperaturu",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Ölçülər (YxExD)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Ölçülər / Texniki Çertyoj",
+    "slotLabel": "Texniki çertyoj vizualı",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "İstifadə Sahələri",
+    "items": [
+      "Xəstəxanalar",
+      "Reanimasiya Bölmələri",
+      "Əməliyyat Otaqları",
+      "Klinikalar",
+      "Səhiyyə Mərkəzləri"
+    ]
+  },
+  "advantages": {
+    "title": "Üstünlüklər",
+    "items": [
+      "Üç fərqli qazın bir paneldə mərkəzi idarəetməsi",
+      "Yüksək təhlükəsizlikli siqnalizasiya və kəsmə sistemi",
+      "İstifadəçi dostu interfeys ilə asan monitorinq",
+      "Uzunömürlü və dayanıqlı metal korpus",
+      "Asan quraşdırma və texniki xidmət üstünlüyü"
+    ]
+  },
+  "featureTiles": {
+    "title": "Məhsul Xüsusiyyətləri",
+    "items": [
+      {
+        "title": "Mərkəzi İdarəetmə",
+        "text": "3 qazın bir nöqtədən idarə olunması"
+      },
+      {
+        "title": "Ani Monitorinq",
+        "text": "Təzyiq göstəriciləri fasiləsiz izlənilir və qeyd olunur"
+      },
+      {
+        "title": "Təhlükəsiz Siqnalizasiya",
+        "text": "Vizual və səsli siqnalizasiya ilə ani xəbərdarlıq"
+      },
+      {
+        "title": "Modul Quruluş",
+        "text": "Asan servis və texniki xidmət imkanı"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Tez-tez Verilən Suallar",
+    "items": [
+      {
+        "q": "Hansı qazlar dəstəklənir?",
+        "a": "3 Qazlı Mərtəbə Nəzarət Paneli Oksigen (O2), Vakuum (VAC) və Tibbi Hava (AIR) qazlarını dəstəkləyir."
+      },
+      {
+        "q": "Hansı sahələrdə istifadə olunur?",
+        "a": "Xəstəxana, reanimasiya, əməliyyat otağı və klinika sahələrində istifadə olunur."
+      },
+      {
+        "q": "Montaj növü hansıdır?",
+        "a": "Divarüstü və ya divariçi montaj seçimləri ilə tətbiq oluna bilər."
+      },
+      {
+        "q": "Texniki xidmət və servis ehtiyacı necə qarşılanır?",
+        "a": "Dövri texniki xidmət və texniki servis komandası ilə təhlükəsiz istismar təmin edilir."
+      },
+      {
+        "q": "Siqnalizasiya sistemi necə işləyir?",
+        "a": "Təzyiq göstəriciləri limitdən kənara çıxdıqda səsli və vizual siqnalizasiya verir."
+      },
+      {
+        "q": "Elektrik kəsintisi zamanı sistem işləyirmi?",
+        "a": "Layihə ehtiyacına uyğun olaraq ehtiyat enerji və siqnalizasiya ssenariləri tətbiq oluna bilər."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Məhsul əməliyyatları",
+    "title": "Təklif Alın, Layihənizə Dəyər Qatın",
+    "subtitle": "Mütəxəssis komandamız sizə ən uyğun həlli təqdim etməyə hazırdır.",
+    "primaryBtn": "Təklif Al",
+    "secondaryBtn": "Əlaqə Saxlayın"
+  },
+  "category": "Mərtəbə Nəzarət Paneli"
+}

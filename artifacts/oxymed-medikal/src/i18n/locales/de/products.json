@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "UNSERE PRODUKTE",
+    "description": "Innovative und zuverlässige medizinische Lösungen für Krankenhäuser, Kliniken und Gesundheitszentren.",
+    "imageAlt": "Bannerbild der Produktseite"
+  },
+  "features": {
+    "production": {
+      "title": "DIREKT VOM HERSTELLER",
+      "description": "Hochwertige Produktion und Direktvertrieb ab Werk"
+    },
+    "certified": {
+      "title": "ZERTIFIZIERTE PRODUKTION",
+      "description": "Produktion zertifiziert nach ISO 9001, ISO 13485 und CE"
+    },
+    "modular": {
+      "title": "MODULARES DESIGN",
+      "description": "Flexible und modulare Lösungen nach Bedarf"
+    },
+    "durability": {
+      "title": "LANGLEBIG",
+      "description": "Robuste Materialien und langlebige Nutzung"
+    },
+    "support": {
+      "title": "TECHNISCHER SUPPORT 24/7",
+      "description": "Kontinuierlicher technischer Support vor und nach dem Verkauf"
+    }
+  },
+  "sidebar": {
+    "allProducts": "Alle Produkte",
+    "categoriesError": "Kategorien konnten nicht geladen werden.",
+    "catalogTitle": "Produktkatalog herunterladen",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "Alle Produkte",
+    "allDescription": "Medizinische Lösungen für Krankenhäuser, Kliniken und Gesundheitszentren.",
+    "categoryDescription": "Unsere Produkte der Kategorie {{category}}.",
+    "counter": "{{count}} Produkte",
+    "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten. Bitte aktualisieren Sie die Seite."
+  },
+  "dentalCards": {
+    "amalgam-separator": "Amalgamabscheider",
+    "dental-vakum-pompasi": "Dental-Vakuumpumpe",
+    "dental-vakum-sistemi": "Dental-Vakuumsystem"
+  }
+}

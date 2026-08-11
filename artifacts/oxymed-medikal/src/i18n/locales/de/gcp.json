@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "3-Gas-Etagenkontrollpanel",
+    "description": "Sichere, intelligente und unterbrechungsfreie Kontrolle für Ihre medizinischen Gassysteme. Zentrale Steuerung von 3 verschiedenen medizinischen Gasen auf einem einzigen Panel.",
+    "photoSlot": "Hero-Produktbildbereich",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Navigationspfad",
+    "products": "Produkte"
+  },
+  "heroFeatures": [
+    {
+      "title": "Hohe Sicherheit",
+      "text": "Maximale Sicherheit durch Alarm- und automatische Absperrsysteme."
+    },
+    {
+      "title": "Intelligente Steuerung",
+      "text": "Kontinuierliche Überwachung mit mikroprozessorbasierter Steuereinheit."
+    },
+    {
+      "title": "Alarmsystem",
+      "text": "Sofortige Information durch optische und akustische Warnsignale."
+    },
+    {
+      "title": "Einfache Montage",
+      "text": "Schnelle und einfache Installation durch praktische Anschlussstruktur."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Gasanschlusseinheit",
+      "text": "Hochwertiges Ventilsystem für die Gaseingänge von Sauerstoff, Vakuum und Luft."
+    },
+    {
+      "title": "Intelligentes Bedienpanel",
+      "text": "Mit mikroprozessorgesteuertem System werden die Gasdrücke in Echtzeit überwacht und verwaltet."
+    },
+    {
+      "title": "Robuste Konstruktion",
+      "text": "Das elektrostatisch lackierte Metallgehäuse ist langlebig und stoßfest."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "WEBP-Bildbereich"
+  },
+  "specs": {
+    "title": "Technische Eigenschaften",
+    "rows": [
+      {
+        "k": "Produktname",
+        "v": "3-Gas-Etagenkontrollpanel"
+      },
+      {
+        "k": "Unterstützte Gase",
+        "v": "O2 (Sauerstoff) - VAC (Vakuum) - AIR (Luft)"
+      },
+      {
+        "k": "Betriebsdruck",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Alarmtyp",
+        "v": "Optisch und akustisch"
+      },
+      {
+        "k": "Gehäusematerial",
+        "v": "Elektrostatisch lackiertes Metall"
+      },
+      {
+        "k": "Stromversorgung",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Montageart",
+        "v": "Aufputz / Unterputz"
+      },
+      {
+        "k": "Betriebstemperatur",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Abmessungen (HxBxT)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Abmessungen / Technische Zeichnung",
+    "slotLabel": "Abbildung der technischen Zeichnung",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "Einsatzbereiche",
+    "items": [
+      "Krankenhäuser",
+      "Intensivstationen",
+      "Operationssäle",
+      "Kliniken",
+      "Gesundheitszentren"
+    ]
+  },
+  "advantages": {
+    "title": "Vorteile",
+    "items": [
+      "Zentrale Steuerung von drei verschiedenen Gasen auf einem Panel",
+      "Hochsicheres Alarm- und Absperrsystem",
+      "Einfache Überwachung mit benutzerfreundlicher Oberfläche",
+      "Langlebiges und robustes Metallgehäuse",
+      "Vorteile bei Montage und Wartung"
+    ]
+  },
+  "featureTiles": {
+    "title": "Produkteigenschaften",
+    "items": [
+      {
+        "title": "Zentrale Steuerung",
+        "text": "Steuerung von 3 Gasen über einen zentralen Punkt"
+      },
+      {
+        "title": "Echtzeitüberwachung",
+        "text": "Druckwerte werden kontinuierlich überwacht und aufgezeichnet"
+      },
+      {
+        "title": "Sicherer Alarm",
+        "text": "Sofortige Warnung durch optischen und akustischen Alarm"
+      },
+      {
+        "title": "Modulare Bauweise",
+        "text": "Einfache Service- und Wartungsmöglichkeiten"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Häufig gestellte Fragen",
+    "items": [
+      {
+        "q": "Welche Gase werden unterstützt?",
+        "a": "Das 3-Gas-Etagenkontrollpanel unterstützt Sauerstoff (O2), Vakuum (VAC) und medizinische Luft (AIR)."
+      },
+      {
+        "q": "In welchen Bereichen wird es eingesetzt?",
+        "a": "Es wird in Krankenhäusern, auf Intensivstationen, in Operationssälen und Kliniken eingesetzt."
+      },
+      {
+        "q": "Welche Montageart ist vorgesehen?",
+        "a": "Es kann mit Aufputz- oder Unterputzmontage installiert werden."
+      },
+      {
+        "q": "Wie werden Wartung und Service gewährleistet?",
+        "a": "Der sichere Betrieb wird durch regelmäßige Wartung und ein technisches Serviceteam sichergestellt."
+      },
+      {
+        "q": "Wie funktioniert das Alarmsystem?",
+        "a": "Bei Überschreitung der Druckgrenzwerte wird ein akustischer und optischer Alarm ausgelöst."
+      },
+      {
+        "q": "Funktioniert das System bei Stromausfall?",
+        "a": "Je nach Projektanforderung können Notstrom- und Alarmszenarien umgesetzt werden."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Produktaktionen",
+    "title": "Angebot anfordern, Ihrem Projekt Mehrwert verleihen",
+    "subtitle": "Unser Expertenteam ist bereit, Ihnen die passende Lösung anzubieten.",
+    "primaryBtn": "Angebot anfordern",
+    "secondaryBtn": "Kontakt aufnehmen"
+  },
+  "category": "Etagenkontrollpanel"
+}

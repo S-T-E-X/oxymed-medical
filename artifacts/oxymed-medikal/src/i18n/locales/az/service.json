@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "Servis və Dəstək",
+    "subtitle": "Cihazınıza aid servis tarixçəsini nəzərdən keçirin, sürətli servis görüşü yaradın.",
+    "breadcrumbHome": "Ana səhifə",
+    "breadcrumbCurrent": "Servis və Dəstək"
+  },
+  "benefits": [
+    {
+      "title": "Peşəkar Dəstək",
+      "text": "Təcrübəli texniki komandamız hər zaman yanınızdadır."
+    },
+    {
+      "title": "Sürətli Müdaxilə",
+      "text": "Sorğunuzdan sonra ən qısa müddətdə müdaxilə edirik."
+    },
+    {
+      "title": "Orijinal Ehtiyat Hissələri",
+      "text": "Bütün müdaxilələrdə orijinal hissələrdən istifadə edirik."
+    },
+    {
+      "title": "Təhlükəsiz və Zəmanətli",
+      "text": "İşlər zəmanət çərçivəsində təminat altındadır."
+    }
+  ],
+  "query": {
+    "title": "Cihaz Sorğusu",
+    "subtitle": "Cihazınızın seriya nömrəsi və ya servis kodu ilə sorğu aparın.",
+    "tabsAriaLabel": "Sorğu üsulu",
+    "tabSerial": "Seriya nömrəsi ilə sorğula",
+    "tabServiceCode": "Servis kodu ilə sorğula",
+    "labelSerial": "Seriya nömrəsi",
+    "labelServiceCode": "Servis kodu (QR)",
+    "placeholderSerial": "Məs: OXM-VAC-250-0148",
+    "placeholderServiceCode": "Məs: abc123xyz",
+    "searchButton": "Sorğula",
+    "hint": "Seriya nömrənizi cihazın üzərindəki etiketdə görə bilərsiniz.",
+    "techSupportImageAlt": "Oxymed Medikal servis mütəxəssisi"
+  },
+  "faultTypes": [
+    "Nasazlıq / İşləmir",
+    "Texniki xidmət tələbi",
+    "Ehtiyat hissəsi tələbi",
+    "Performansın aşağı düşməsi",
+    "Zəmanət tələbi",
+    "Digər"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "Aktiv zəmanət",
+    "yakin_bitis": "Tezliklə bitəcək",
+    "garanti_disi": "Zəmanətdənkənar",
+    "bakim_riskli": "Texniki xidmət tələb olunur",
+    "yetkisiz_askida": "Gözləmədə",
+    "uzatilmis_garanti": "Uzatılmış zəmanət",
+    "bakim_anlasmasi": "Texniki xidmət müqaviləsi",
+    "talep_incelemede": "Tələb nəzərdən keçirilir",
+    "talep_onaylandi": "Tələb təsdiqləndi",
+    "talep_reddedildi": "Tələb rədd edildi"
+  },
+  "device": {
+    "notFoundTitle": "Cihaz tapılmadı",
+    "notFoundBody": "Bu seriya nömrəsinə aid qeydiyyatlı cihaz məlumatı tapılmadı. Zəhmət olmasa seriya nömrəsini yoxlayın və ya texniki dəstək xəttimizə zəng edin.",
+    "cardTitle": "Cihaz Məlumatları",
+    "imageAlt": "Cihaz təsviri",
+    "labels": {
+      "productName": "Cihaz növü",
+      "model": "Model",
+      "serialNumber": "Seriya nömrəsi",
+      "installDate": "Quraşdırılma tarixi",
+      "customerFirm": "Müştəri / Müəssisə",
+      "warrantyStatus": "Zəmanət statusu",
+      "warrantyEndDate": "Zəmanətin bitməsi",
+      "lastMaintenanceDate": "Son texniki xidmət",
+      "nextMaintenanceDate": "Növbəti texniki xidmət"
+    },
+    "historyTitle": "Görülən İşlər və Servis Tarixçəsi",
+    "historyEmpty": "Hələ servis qeydi mövcud deyil.",
+    "tableDate": "Tarix",
+    "tableServiceType": "İşin növü",
+    "tablePersonnel": "Servis əməkdaşı",
+    "tableReport": "Hesabat",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Sürətli Servis Tələb Forması",
+    "subtitle": "Servis tələbinizi sürətlə yaradın, komandamız ən qısa müddətdə sizinlə əlaqə saxlasın.",
+    "labelName": "Ad Soyad *",
+    "placeholderName": "Adınız Soyadınız",
+    "labelPhone": "Telefon",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "E-poçt",
+    "placeholderEmail": "ornek@email.com",
+    "labelFirm": "Xəstəxana / Müəssisə adı",
+    "placeholderFirm": "Müəssisə adı",
+    "labelCity": "Olduğunuz şəhər",
+    "placeholderCity": "Şəhər seçin",
+    "cities": [
+      "Ankara",
+      "İstanbul",
+      "İzmir",
+      "Bursa",
+      "Antalya",
+      "Konya",
+      "Adana",
+      "Digər"
+    ],
+    "labelFaultType": "Tələb növü *",
+    "placeholderFaultType": "Tələb növünü seçin",
+    "labelDescription": "Açıqlama *",
+    "placeholderDescription": "Qısa açıqlama daxil edin...",
+    "kvkkConsent": "KVKK Məlumatlandırma Mətni'ni oxudum və təsdiqləyirəm.",
+    "submit": "Tələb yarat",
+    "submitting": "Göndərilir…",
+    "successTitle": "Tələbiniz qəbul edildi!",
+    "successBody": "Servis komandamız ən qısa müddətdə sizinlə əlaqə saxlayacaqdır.",
+    "toastSuccess": "Zəmanət tələbiniz göndərildi! Ən qısa müddətdə sizinlə əlaqə saxlayacağıq.",
+    "toastError": "Tələb yaradıla bilmədi, zəhmət olmasa yenidən cəhd edin.",
+    "toastValidation": "Zəhmət olmasa məcburi sahələri doldurun və KVKK təsdiqini verin.",
+    "toastNoDevice": "Zəhmət olmasa əvvəlcə cihazı sorğulayın."
+  }
+}

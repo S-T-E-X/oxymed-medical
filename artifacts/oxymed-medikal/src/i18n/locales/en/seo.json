@@ -1,0 +1,34 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Bed Head Units, Pendant and Medical Gas Systems",
+    "description": "Bed head units, pendant systems, medical gas systems and dental vacuum solutions for hospitals and clinics. ISO 9001 and ISO 13485 certified manufacturing, exported to 50+ countries."
+  },
+  "products": {
+    "title": "Our Products | Medical Gas and Hospital Equipment Systems | Oxymed",
+    "description": "Explore our product range of bed head units, pendant systems, medical gas alarm panels, dental vacuum pumps and amalgam separators."
+  },
+  "gcp": {
+    "title": "Area Alarm Panel (Medical Gas Alarm Panel) | Oxymed Medikal",
+    "description": "Digital area alarm panel for hospital medical gas pipelines: continuous pressure monitoring with audible and visual alarms for oxygen, vacuum, compressed air and nitrous oxide."
+  },
+  "ams": {
+    "title": "Amalgam Separator | ISO 11143 Compliant Dental Separator | Oxymed",
+    "description": "ISO 11143 compliant, quiet and easy-to-maintain amalgam separator systems that retain over 95% of amalgam waste in dental clinics."
+  },
+  "dvp": {
+    "title": "Dental Vacuum Pump | Dry and Wet System | Oxymed Medikal",
+    "description": "Quiet, energy-efficient and long-lasting dental vacuum pumps for dental clinics. Scalable solutions from single-unit practices to multi-unit clinics."
+  },
+  "dvs": {
+    "title": "Dental Vacuum System | Central Suction Solutions | Oxymed",
+    "description": "Central dental vacuum systems for multi-unit dental clinics and oral and dental health centers, with separator and control panel integration."
+  },
+  "service": {
+    "title": "Technical Service and Warranty Check | Oxymed Medikal",
+    "description": "Warranty checks, service requests and maintenance support for your Oxymed devices. View your device registration and service history using your serial number."
+  },
+  "quote": {
+    "title": "Request a Quote | Hospital and Clinic Projects | Oxymed Medikal",
+    "description": "Get a fast, free quote for your project. Expert support for bed head units, pendant systems, medical gas and dental vacuum solutions."
+  }
+}

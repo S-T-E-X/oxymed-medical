@@ -1,0 +1,34 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Unités tête de lit, bras plafonniers et systèmes de gaz médicaux",
+    "description": "Unités tête de lit, systèmes de bras plafonniers, systèmes de gaz médicaux et solutions de vide dentaire pour hôpitaux et cliniques. Production certifiée ISO 9001 et ISO 13485, exportation vers plus de 50 pays."
+  },
+  "products": {
+    "title": "Nos produits | Systèmes de gaz médicaux et équipements hospitaliers | Oxymed",
+    "description": "Découvrez nos gammes d'unités tête de lit, systèmes de bras plafonniers, tableaux de contrôle des gaz médicaux, pompes à vide dentaires et séparateurs d'amalgame."
+  },
+  "gcp": {
+    "title": "Tableau de contrôle d'étage (panneau d'alarme des gaz médicaux) | Oxymed Medikal",
+    "description": "Tableau de contrôle d'étage numérique pour réseaux de gaz médicaux hospitaliers : surveillance continue de la pression de l'oxygène, du vide, de l'air comprimé et du protoxyde d'azote, avec alarmes sonores et visuelles."
+  },
+  "ams": {
+    "title": "Séparateur d'amalgame | Séparateur dentaire conforme ISO 11143 | Oxymed",
+    "description": "Systèmes de séparateurs d'amalgame conformes ISO 11143, silencieux et faciles à entretenir, retenant plus de 95 % des déchets d'amalgame dans les cliniques dentaires."
+  },
+  "dvp": {
+    "title": "Pompe à vide dentaire | Système sec et humide | Oxymed Medikal",
+    "description": "Pompes à vide dentaires silencieuses, écoénergétiques et durables pour cliniques dentaires. Solutions évolutives, des cliniques à une unité aux cliniques multi-unités."
+  },
+  "dvs": {
+    "title": "Système de vide dentaire | Solutions d'aspiration centralisée | Oxymed",
+    "description": "Systèmes centralisés de vide dentaire, avec intégration de séparateurs et de tableaux de contrôle, pour les cliniques dentaires multi-unités et les centres de santé bucco-dentaire."
+  },
+  "service": {
+    "title": "Service technique et vérification de garantie | Oxymed Medikal",
+    "description": "Vérification de garantie, demande de service et assistance de maintenance pour vos appareils Oxymed. Consultez l'enregistrement de votre appareil et l'historique de service à l'aide de votre numéro de série."
+  },
+  "quote": {
+    "title": "Demander un devis | Projets hospitaliers et cliniques | Oxymed Medikal",
+    "description": "Obtenez un devis rapide et gratuit pour votre projet. Assistance d'experts en unités tête de lit, systèmes de bras plafonniers, gaz médicaux et solutions de vide dentaire."
+  }
+}

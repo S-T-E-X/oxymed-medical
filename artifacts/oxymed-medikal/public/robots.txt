@@ -1,2 +1,11 @@
 User-agent: *
 Allow: /
+
+# Admin and print-only pages carry no search value
+Disallow: /admin
+Disallow: /teklif-goruntule
+Disallow: /teklif-sablonu
+Disallow: /servis-raporu
+Disallow: /taslak
+
+Sitemap: https://www.oxymed.com.tr/sitemap.xml

@@ -1,3 +1,4 @@
+import { type ReactElement } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./admin/AuthContext";
@@ -55,35 +56,70 @@ import ServiceReportPage from "./pages/ServiceReportPage";
 import GasControlPanelPage from "./pages/GasControlPanelPage";
 import QuoteTemplatePage from "./pages/QuoteTemplatePage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import { I18nProvider } from "./i18n/I18nProvider";
+import LocaleSuggestion from "./i18n/LocaleSuggestion";
+import { LOCALES } from "./i18n/config";
+import { localizedPath, type RouteKey } from "./i18n/routes";
+
+/** The eight marketing pages that exist in every language. */
+const TRANSLATED_PAGES: Array<{ routeKey: RouteKey; element: ReactElement }> = [
+  { routeKey: "home", element: <HomePage /> },
+  { routeKey: "products", element: <ProductsPage /> },
+  { routeKey: "gcp", element: <GasControlPanelPage /> },
+  { routeKey: "ams", element: <AmalgamSeparatorPage /> },
+  { routeKey: "dvp", element: <DentalVacuumPumpPage /> },
+  { routeKey: "dvs", element: <DentalVacuumSystemPage /> },
+  { routeKey: "service", element: <ServicePage /> },
+  { routeKey: "quote", element: <QuotePage /> },
+];
+
+/**
+ * One route per language per translated page. Turkish keeps its original
+ * unprefixed URLs, so existing links and search results stay valid.
+ */
+function localizedRoutes() {
+  return LOCALES.flatMap((locale) =>
+    TRANSLATED_PAGES.map(({ routeKey, element }) => {
+      const path = localizedPath(routeKey, locale);
+      return <Route key={`${locale}-${routeKey}`} path={path} element={element} />;
+    }),
+  );
+}
+
+/** Serial-number deep links into the service page, per language. */
+function localizedServiceSerialRoutes() {
+  return LOCALES.map((locale) => (
+    <Route
+      key={`${locale}-service-serial`}
+      path={`${localizedPath("service", locale)}/:serialNo`}
+      element={<ServicePage />}
+    />
+  ));
+}
 
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <AuthProvider>
-        <Toaster richColors position="top-right" />
-        <VisitorTracker />
-        <CookieBanner />
-        <RouteTransitionLoader />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
+      <I18nProvider>
+        <AuthProvider>
+          <Toaster richColors position="top-right" />
+          <VisitorTracker />
+          <CookieBanner />
+          <LocaleSuggestion />
+          <RouteTransitionLoader />
+          <Routes>
+          {localizedRoutes()}
           <Route path="/kurumsal" element={<CorporatePage />} />
-          <Route path="/urunler" element={<ProductsPage />} />
           <Route path="/referanslar" element={<ReferencesPage />} />
           <Route path="/haberler" element={<NewsPage />} />
           <Route path="/haberler/:slug" element={<NewsDetailPage />} />
-          <Route path="/teklif-al" element={<QuotePage />} />
           <Route path="/taslak" element={<ServiceReportPageTaslak />} />
-          <Route path="/servis" element={<ServicePage />} />
-          <Route path="/servis/:serialNo" element={<ServicePage />} />
           <Route path="/servis/qr/:qrToken" element={<DeviceQrPage />} />
           <Route path="/servis/cihaz/:qrToken" element={<ServisCihazPage />} />
           <Route path="/servis/rapor/:verificationToken" element={<ServisRaporDogrulamaPage />} />
+          {localizedServiceSerialRoutes()}
           <Route path="/servis-raporu/:recordId" element={<ServiceReportPage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
-          <Route path="/urunler/kat-kontrol-panosu" element={<GasControlPanelPage />} />
-          <Route path="/urunler/amalgam-separator" element={<AmalgamSeparatorPage />} />
-          <Route path="/urunler/dental-vakum-pompasi" element={<DentalVacuumPumpPage />} />
-          <Route path="/urunler/dental-vakum-sistemi" element={<DentalVacuumSystemPage />} />
           <Route path="/urunler/:slug" element={<ProductDetailPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
           <Route path="/teklif-goruntule/:id" element={<QuotePrintPage />} />
@@ -135,6 +171,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
+      </I18nProvider>
     </BrowserRouter>
   );
 }

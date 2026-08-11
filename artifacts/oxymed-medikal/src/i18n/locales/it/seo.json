@@ -1,0 +1,34 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Unità Testaletto, Pensili e Sistemi di Gas Medicali",
+    "description": "Unità testaletto, sistemi pensili, sistemi di gas medicali e soluzioni per il vuoto dentale per ospedali e cliniche. Produzione certificata ISO 9001 e ISO 13485, esportazione in oltre 50 paesi."
+  },
+  "products": {
+    "title": "I Nostri Prodotti | Sistemi di Gas Medicali e Apparecchiature Ospedaliere | Oxymed",
+    "description": "Scoprite le nostre famiglie di prodotti: unità testaletto, sistemi pensili, pannelli di controllo dei gas medicali, pompe per vuoto dentale e separatori di amalgama."
+  },
+  "gcp": {
+    "title": "Pannello di Controllo di Piano (Pannello di Allarme Gas Medicali) | Oxymed Medikal",
+    "description": "Pannello digitale di controllo di piano per le linee di gas medicali ospedaliere: monitoraggio continuo della pressione, allarme acustico e visivo per ossigeno, vuoto, aria compressa e protossido di azoto."
+  },
+  "ams": {
+    "title": "Separatore di Amalgama | Separatore Dentale Conforme ISO 11143 | Oxymed",
+    "description": "Sistemi separatori di amalgama conformi a ISO 11143, silenziosi e di facile manutenzione, che trattengono oltre il 95% dei residui di amalgama nelle cliniche dentali."
+  },
+  "dvp": {
+    "title": "Pompa per Vuoto Dentale | Sistema Secco e Umido | Oxymed Medikal",
+    "description": "Pompe per vuoto dentale silenziose, efficienti dal punto di vista energetico e di lunga durata per cliniche dentali. Soluzioni scalabili dalla singola unità alle cliniche multiunità."
+  },
+  "dvs": {
+    "title": "Sistema per Vuoto Dentale | Soluzioni di Aspirazione Centralizzata | Oxymed",
+    "description": "Sistemi centralizzati per vuoto dentale per cliniche dentali multiunità e centri di salute orale e dentale, con integrazione di separatore e pannello di controllo."
+  },
+  "service": {
+    "title": "Assistenza Tecnica e Verifica della Garanzia | Oxymed Medikal",
+    "description": "Verifica della garanzia, richiesta di assistenza e supporto alla manutenzione per i vostri dispositivi Oxymed. Consultate la registrazione del dispositivo e lo storico degli interventi con il numero di serie."
+  },
+  "quote": {
+    "title": "Richiedi un Preventivo | Progetti Ospedalieri e Clinici | Oxymed Medikal",
+    "description": "Richiedete un preventivo rapido e gratuito per il vostro progetto. Supporto specializzato per unità testaletto, sistemi pensili, gas medicali e soluzioni per il vuoto dentale."
+  }
+}

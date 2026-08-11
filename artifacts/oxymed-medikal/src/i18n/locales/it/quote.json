@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "RICHIEDI UN PREVENTIVO",
+    "subtitle": "Prepariamo un preventivo su misura per le soluzioni più adatte alle vostre esigenze.",
+    "imageAlt": "Camera di degenza con unità testaletto e sistema pensile"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "RISPOSTA RAPIDA",
+      "description": "Il nostro team di esperti vi contatterà entro 24 ore dalla ricezione della richiesta."
+    },
+    "reliable": {
+      "title": "SOLUZIONI AFFIDABILI",
+      "description": "Massima garanzia di qualità grazie a processi produttivi certificati ISO 9001 e ISO 13485."
+    },
+    "expert": {
+      "title": "SUPPORTO SPECIALISTICO",
+      "description": "Il nostro team di ingegneri esperti vi affianca dalla pianificazione del progetto all'installazione."
+    }
+  },
+  "form": {
+    "title": "Modulo di richiesta preventivo",
+    "subtitle": "Compilate il modulo seguente per inviarci la vostra richiesta.",
+    "fields": {
+      "fullName": "Nome e cognome *",
+      "fullNamePlaceholder": "Il vostro nome e cognome",
+      "email": "E-mail *",
+      "emailPlaceholder": "esempio@mail.com",
+      "phone": "Telefono *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Azienda / Ente",
+      "companyPlaceholder": "Nome dell'azienda o dell'ente",
+      "jobTitle": "Funzione / Qualifica",
+      "jobTitlePlaceholder": "La vostra funzione o qualifica",
+      "projectType": "Tipo di progetto",
+      "city": "Provincia / Comune",
+      "applicationArea": "Ambito di applicazione",
+      "notes": "Richieste e note",
+      "notesPlaceholder": "Fornite informazioni sul vostro progetto...",
+      "file": "Carica file (opzionale)",
+      "fileButton": "Seleziona o trascina un file",
+      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)",
+      "selectDefault": "Seleziona"
+    },
+    "validation": {
+      "fullNameRequired": "Nome e cognome sono obbligatori.",
+      "emailRequired": "L'e-mail è obbligatoria.",
+      "emailInvalid": "Inserite un indirizzo e-mail valido.",
+      "phoneRequired": "Il numero di telefono è obbligatorio."
+    },
+    "submit": "RICHIEDI PREVENTIVO",
+    "submitting": "INVIO IN CORSO…",
+    "privacy": "Le informazioni inviate sono conservate in modo sicuro e non vengono condivise con terzi.",
+    "apiError": "Si è verificato un errore durante l'invio della richiesta. Riprova."
+  },
+  "success": {
+    "title": "Richiesta ricevuta!",
+    "description": "La vostra richiesta di preventivo è stata inviata con successo. Il nostro team di esperti vi contatterà al più presto.",
+    "newRequest": "Nuova richiesta di preventivo"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Unità testaletto",
+      "pendant": "Sistema pensile",
+      "medicalGas": "Sistema di gas medicali",
+      "electrical": "Impianto elettrico"
+    },
+    "cities": {
+      "izmir": "İzmir",
+      "ankara": "Ankara",
+      "istanbul": "İstanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Altro"
+    },
+    "applicationAreas": {
+      "hospital": "Ospedale",
+      "clinic": "Clinica",
+      "icu": "Terapia intensiva",
+      "operatingRoom": "Sala operatoria",
+      "emergency": "Pronto soccorso",
+      "other": "Altro"
+    }
+  }
+}

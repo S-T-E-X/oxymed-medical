@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "سرویس و پشتیبانی",
+    "subtitle": "سوابق سرویس دستگاه خود را مشاهده کنید و به‌سرعت درخواست سرویس ثبت کنید.",
+    "breadcrumbHome": "صفحه اصلی",
+    "breadcrumbCurrent": "سرویس و پشتیبانی"
+  },
+  "benefits": [
+    {
+      "title": "پشتیبانی تخصصی",
+      "text": "تیم فنی باتجربه ما همواره در کنار شماست."
+    },
+    {
+      "title": "مداخله سریع",
+      "text": "پس از ثبت درخواست شما، در کوتاه‌ترین زمان اقدام می‌کنیم."
+    },
+    {
+      "title": "قطعات یدکی اصلی",
+      "text": "در تمام خدمات از قطعات اصلی استفاده می‌کنیم."
+    },
+    {
+      "title": "ایمن و دارای ضمانت",
+      "text": "خدمات تحت پوشش ضمانت تضمین شده‌اند."
+    }
+  ],
+  "query": {
+    "title": "استعلام دستگاه",
+    "subtitle": "با شماره سریال یا کد سرویس دستگاه خود استعلام بگیرید.",
+    "tabsAriaLabel": "روش استعلام",
+    "tabSerial": "استعلام با شماره سریال",
+    "tabServiceCode": "استعلام با کد سرویس",
+    "labelSerial": "شماره سریال",
+    "labelServiceCode": "کد سرویس (QR)",
+    "placeholderSerial": "مثال: OXM-VAC-250-0148",
+    "placeholderServiceCode": "مثال: abc123xyz",
+    "searchButton": "استعلام",
+    "hint": "شماره سریال را می‌توانید روی برچسب دستگاه مشاهده کنید.",
+    "techSupportImageAlt": "کارشناس سرویس Oxymed Medikal"
+  },
+  "faultTypes": [
+    "خرابی / کار نمی‌کند",
+    "درخواست نگهداری",
+    "درخواست قطعه یدکی",
+    "کاهش عملکرد",
+    "درخواست ضمانت",
+    "سایر"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "ضمانت فعال",
+    "yakin_bitis": "به‌زودی منقضی می‌شود",
+    "garanti_disi": "خارج از ضمانت",
+    "bakim_riskli": "نیازمند نگهداری",
+    "yetkisiz_askida": "معلق",
+    "uzatilmis_garanti": "ضمانت تمدیدشده",
+    "bakim_anlasmasi": "قرارداد نگهداری",
+    "talep_incelemede": "درخواست در حال بررسی",
+    "talep_onaylandi": "درخواست تأیید شد",
+    "talep_reddedildi": "درخواست رد شد"
+  },
+  "device": {
+    "notFoundTitle": "دستگاه یافت نشد",
+    "notFoundBody": "اطلاعات دستگاه ثبت‌شده‌ای برای این شماره سریال یافت نشد. لطفاً شماره سریال را بررسی کنید یا با خط پشتیبانی فنی ما تماس بگیرید.",
+    "cardTitle": "اطلاعات دستگاه",
+    "imageAlt": "تصویر دستگاه",
+    "labels": {
+      "productName": "نوع دستگاه",
+      "model": "مدل",
+      "serialNumber": "شماره سریال",
+      "installDate": "تاریخ نصب",
+      "customerFirm": "مشتری / سازمان",
+      "warrantyStatus": "وضعیت ضمانت",
+      "warrantyEndDate": "پایان ضمانت",
+      "lastMaintenanceDate": "آخرین نگهداری",
+      "nextMaintenanceDate": "نگهداری بعدی"
+    },
+    "historyTitle": "خدمات انجام‌شده و سوابق سرویس",
+    "historyEmpty": "هنوز سابقه سرویس وجود ندارد.",
+    "tableDate": "تاریخ",
+    "tableServiceType": "نوع خدمت",
+    "tablePersonnel": "پرسنل سرویس",
+    "tableReport": "گزارش",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "فرم درخواست سریع سرویس",
+    "subtitle": "درخواست سرویس خود را سریع ثبت کنید تا تیم ما در کوتاه‌ترین زمان با شما تماس بگیرد.",
+    "labelName": "نام و نام خانوادگی *",
+    "placeholderName": "نام و نام خانوادگی شما",
+    "labelPhone": "تلفن",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "ایمیل",
+    "placeholderEmail": "ornek@email.com",
+    "labelFirm": "نام بیمارستان / سازمان",
+    "placeholderFirm": "نام سازمان",
+    "labelCity": "شهر محل استقرار",
+    "placeholderCity": "شهر را انتخاب کنید",
+    "cities": [
+      "آنکارا",
+      "استانبول",
+      "ازمیر",
+      "بورسا",
+      "آنتالیا",
+      "قونیه",
+      "آدانا",
+      "سایر"
+    ],
+    "labelFaultType": "نوع درخواست *",
+    "placeholderFaultType": "نوع درخواست را انتخاب کنید",
+    "labelDescription": "توضیحات *",
+    "placeholderDescription": "توضیحات کوتاهی وارد کنید...",
+    "kvkkConsent": "متن اطلاع‌رسانی KVKK را مطالعه کرده و تأیید می‌کنم.",
+    "submit": "ثبت درخواست",
+    "submitting": "در حال ارسال…",
+    "successTitle": "درخواست شما دریافت شد!",
+    "successBody": "تیم سرویس ما در کوتاه‌ترین زمان با شما تماس خواهد گرفت.",
+    "toastSuccess": "درخواست ضمانت شما ارسال شد! در کوتاه‌ترین زمان با شما تماس خواهیم گرفت.",
+    "toastError": "امکان ثبت درخواست وجود ندارد، لطفاً دوباره تلاش کنید.",
+    "toastValidation": "لطفاً فیلدهای الزامی را تکمیل کرده و تأییدیه KVKK را ارائه دهید.",
+    "toastNoDevice": "لطفاً ابتدا دستگاه را استعلام کنید."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "ANA SƏHİFƏ",
+    "corporate": "KORPORATİV",
+    "products": "MƏHSULLAR",
+    "references": "REFERANSLAR",
+    "news": "XƏBƏRLƏR",
+    "service": "SERVİS",
+    "contact": "ƏLAQƏ",
+    "allProducts": "Bütün Məhsullar",
+    "mainMenu": "Əsas menyu",
+    "mobileMenu": "Mobil əsas menyu",
+    "openMenu": "Menyunu aç",
+    "closeMenu": "Menyunu bağla",
+    "language": "Dil"
+  },
+  "cta": {
+    "getQuote": "TƏKLİF AL",
+    "reviewDetails": "Ətraflı Bax",
+    "downloadCatalog": "KATALOQU YÜKLƏ",
+    "contactUs": "BİZİMLƏ ƏLAQƏ",
+    "send": "GÖNDƏR",
+    "sending": "GÖNDƏRİLİR...",
+    "previous": "Əvvəlki",
+    "next": "Növbəti",
+    "close": "Bağla"
+  },
+  "footer": {
+    "tagline": "Yataqüstü bloklar, pendant sistemləri və tibbi qaz həlləri ilə təhlükəsiz, komfortlu və texnoloji mühitlər təqdim edirik.",
+    "contactTitle": "ƏLAQƏ",
+    "copyright": "© 2024 Oxymed Medikal. Bütün hüquqlar qorunur.",
+    "kvkk": "KVKK",
+    "privacy": "Məxfilik Siyasəti",
+    "terms": "İstifadə Şərtləri",
+    "columns": {
+      "corporate": {
+        "title": "KORPORATİV",
+        "about": "Haqqımızda",
+        "vision": "Vizyon və Missiya",
+        "quality": "Keyfiyyət Sertifikatlarımız",
+        "hr": "İnsan Resursları"
+      },
+      "products": {
+        "title": "MƏHSULLAR",
+        "bedHead": "Yataqüstü Bloklar",
+        "pendant": "Pendant Sistemləri",
+        "medicalGas": "Tibbi Qaz Sistemləri",
+        "electrical": "Elektrik və Data Sistemləri"
+      },
+      "services": {
+        "title": "XİDMƏTLƏRİMİZ",
+        "engineering": "Layihələndirmə",
+        "manufacturing": "İstehsal",
+        "installation": "Montaj",
+        "technicalService": "Texniki Servis"
+      },
+      "references": {
+        "title": "REFERANSLAR",
+        "completed": "Tamamlanmış Layihələr",
+        "public": "Dövlət Layihələri",
+        "private": "Özəl Layihələr"
+      }
+    }
+  },
+  "status": {
+    "loading": "Yüklənir...",
+    "genericError": "Xəta baş verdi. Zəhmət olmasa, yenidən cəhd edin.",
+    "notFound": "Nəticə tapılmadı.",
+    "loadingShort": "Yüklənir",
+    "pageLoading": "Səhifə yüklənir"
+  },
+  "catalog": {
+    "title": "Kataloqu yüklə",
+    "subtitle": "Dili seçərək kataloqu yükləyin",
+    "empty": "Hələ kataloq əlavə edilməyib.",
+    "trackLabel": "Kataloqu yüklə"
+  },
+  "cookies": {
+    "ariaLabel": "Çərəz bildirişi",
+    "title": "Bu sayt təcrübənizi yaxşılaşdırmaq üçün çərəzlərdən istifadə edir.",
+    "description": "Saytın funksionallığı və performans təhlili üçün zəruri çərəzlərdən istifadə olunur. Davam etməklə çərəz siyasətimizi qəbul etmiş olursunuz.",
+    "accept": "Qəbul et",
+    "decline": "Rədd et"
+  },
+  "hero": {
+    "fallbackImageAlt": "Müasir xəstəxana otağında yataqbaşı bloku və pendant sistemi",
+    "fallbackTitleLine1": "HƏYAT ÜÇÜN",
+    "fallbackTitleLine2": "TEXNOLOGİYA",
+    "fallbackDescription": "Yataqbaşı blokları, pendant sistemləri və tibbi qaz həlləri ilə təhlükəsiz, rahat və texnoloji mühitlər təqdim edirik.",
+    "ourProducts": "MƏHSULLARIMIZ",
+    "slideLabel": "Slayd {{index}}"
+  }
+}

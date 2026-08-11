@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  CalendarClock,
   CheckCircle2,
   ChevronRight,
   Clock3,
@@ -16,7 +15,6 @@ import {
   ShieldAlert,
   ShieldCheck,
   User,
-  X,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/layout/Footer";
@@ -27,37 +25,21 @@ import {
   useCreateWarrantyClaim,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import Seo from "../components/common/Seo";
 import "./ServicePage.css";
 
-// ─── Static content ───────────────────────────────────────────────────────────
+// ─── Benefit icons list (icons only; labels come from dictionary) ──────────────
 
-const benefits = [
-  { icon: Headphones, title: "Uzman Destek",        text: "Deneyimli teknik ekibimiz her zaman yanınızda." },
-  { icon: Clock3,     title: "Hızlı Müdahale",      text: "Talebiniz sonrası en kısa sürede müdahale ediyoruz." },
-  { icon: Settings,   title: "Orijinal Yedek Parça", text: "Tüm müdahalelerde orijinal parça kullanıyoruz." },
-  { icon: ShieldCheck, title: "Güvenli & Garantili", text: "İşlemler garanti kapsamında güvence altındadır." },
-];
-
-const FAULT_TYPES = ["Arıza / Çalışmıyor", "Bakım Talebi", "Yedek Parça Talebi", "Performans Düşüklüğü", "Garanti Talebi", "Diğer"];
-
-const STATUS_LABELS: Record<string, string> = {
-  aktif_garanti:     "Aktif Garanti",
-  yakin_bitis:       "Yakında Bitecek",
-  garanti_disi:      "Garanti Dışı",
-  bakim_riskli:      "Bakım Gerekiyor",
-  yetkisiz_askida:   "Askıda",
-  uzatilmis_garanti: "Uzatılmış Garanti",
-  bakim_anlasmasi:   "Bakım Anlaşması",
-  talep_incelemede:  "Talep İncelemede",
-  talep_onaylandi:   "Talep Onaylandı",
-  talep_reddedildi:  "Talep Reddedildi",
-};
+const BENEFIT_ICONS = [Headphones, Clock3, Settings, ShieldCheck];
 
 const STATUS_ACTIVE = new Set(["aktif_garanti", "yakin_bitis", "uzatilmis_garanti", "bakim_anlasmasi"]);
 
 // ─── Service request form ──────────────────────────────────────────────────────
 
-function ServiceRequestForm({ deviceId, prefillSerial }: { deviceId?: number; prefillSerial?: string }) {
+function ServiceRequestForm({ deviceId }: { deviceId?: number }) {
+  const { t, tv } = useI18n();
   const [form, setForm] = useState({
     claimantName: "", claimantPhone: "", claimantEmail: "",
     claimantFirm: "", claimantCity: "",
@@ -65,13 +47,16 @@ function ServiceRequestForm({ deviceId, prefillSerial }: { deviceId?: number; pr
   });
   const [submitted, setSubmitted] = useState(false);
 
+  const faultTypes = tv<string[]>("service.faultTypes", []);
+  const cities = tv<string[]>("service.form.cities", []);
+
   const createClaim = useCreateWarrantyClaim({
     mutation: {
       onSuccess: () => {
-        toast.success("Garanti talebiniz iletildi! En kısa sürede sizinle iletişime geçeceğiz.");
+        toast.success(t("service.form.toastSuccess"));
         setSubmitted(true);
       },
-      onError: () => toast.error("Talep oluşturulamadı, lütfen tekrar deneyin."),
+      onError: () => toast.error(t("service.form.toastError")),
     },
   });
 
@@ -79,15 +64,15 @@ function ServiceRequestForm({ deviceId, prefillSerial }: { deviceId?: number; pr
     return (
       <div className="service-request-success">
         <CheckCircle2 size={44} className="service-success-icon" />
-        <h3>Talebiniz Alındı!</h3>
-        <p>Servis ekibimiz en kısa sürede sizinle iletişime geçecektir.</p>
+        <h3>{t("service.form.successTitle")}</h3>
+        <p>{t("service.form.successBody")}</p>
       </div>
     );
   }
 
   function handleSubmit() {
     if (!form.claimantName || !form.faultType || !form.faultDescription || !form.kvkk) {
-      toast.error("Lütfen zorunlu alanları doldurun ve KVKK onayını verin.");
+      toast.error(t("service.form.toastValidation"));
       return;
     }
     if (deviceId) {
@@ -102,7 +87,7 @@ function ServiceRequestForm({ deviceId, prefillSerial }: { deviceId?: number; pr
         },
       });
     } else {
-      toast.error("Lütfen önce cihazı sorgulayın.");
+      toast.error(t("service.form.toastNoDevice"));
     }
   }
 
@@ -112,47 +97,59 @@ function ServiceRequestForm({ deviceId, prefillSerial }: { deviceId?: number; pr
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       <label>
-        <span>Ad Soyad *</span>
-        <div><User size={15} /><input type="text" placeholder="Adınız Soyadınız" value={form.claimantName} onChange={set("claimantName")} required /></div>
+        <span>{t("service.form.labelName")}</span>
+        <div>
+          <User size={15} />
+          <input type="text" placeholder={t("service.form.placeholderName")} value={form.claimantName} onChange={set("claimantName")} required />
+        </div>
       </label>
       <label>
-        <span>Telefon</span>
-        <div><Phone size={15} /><input type="tel" placeholder="5XX XXX XX XX" value={form.claimantPhone} onChange={set("claimantPhone")} /></div>
+        <span>{t("service.form.labelPhone")}</span>
+        <div>
+          <Phone size={15} />
+          <input type="tel" placeholder={t("service.form.placeholderPhone")} value={form.claimantPhone} onChange={set("claimantPhone")} dir="ltr" />
+        </div>
       </label>
       <label>
-        <span>E-posta</span>
-        <div><Mail size={15} /><input type="email" placeholder="ornek@email.com" value={form.claimantEmail} onChange={set("claimantEmail")} /></div>
+        <span>{t("service.form.labelEmail")}</span>
+        <div>
+          <Mail size={15} />
+          <input type="email" placeholder={t("service.form.placeholderEmail")} value={form.claimantEmail} onChange={set("claimantEmail")} dir="ltr" />
+        </div>
       </label>
       <label>
-        <span>Hastane / Kurum Adı</span>
-        <div><MapPin size={15} /><input type="text" placeholder="Kurum adı" value={form.claimantFirm} onChange={set("claimantFirm")} /></div>
+        <span>{t("service.form.labelFirm")}</span>
+        <div>
+          <MapPin size={15} />
+          <input type="text" placeholder={t("service.form.placeholderFirm")} value={form.claimantFirm} onChange={set("claimantFirm")} />
+        </div>
       </label>
       <label>
-        <span>Bulunduğunuz Şehir</span>
+        <span>{t("service.form.labelCity")}</span>
         <select value={form.claimantCity} onChange={set("claimantCity")}>
-          <option value="">Şehir seçiniz</option>
-          <option>Ankara</option><option>İstanbul</option><option>İzmir</option>
-          <option>Bursa</option><option>Antalya</option><option>Konya</option>
-          <option>Adana</option><option>Diğer</option>
+          <option value="">{t("service.form.placeholderCity")}</option>
+          {cities.map((city) => (
+            <option key={city}>{city}</option>
+          ))}
         </select>
       </label>
       <label>
-        <span>Talep Türü *</span>
+        <span>{t("service.form.labelFaultType")}</span>
         <select value={form.faultType} onChange={set("faultType")} required>
-          <option value="">Talep türünü seçiniz</option>
-          {FAULT_TYPES.map((t) => <option key={t}>{t}</option>)}
+          <option value="">{t("service.form.placeholderFaultType")}</option>
+          {faultTypes.map((ft) => <option key={ft}>{ft}</option>)}
         </select>
       </label>
       <label>
-        <span>Açıklama *</span>
-        <textarea placeholder="Kısa açıklama giriniz..." value={form.faultDescription} onChange={set("faultDescription")} required />
+        <span>{t("service.form.labelDescription")}</span>
+        <textarea placeholder={t("service.form.placeholderDescription")} value={form.faultDescription} onChange={set("faultDescription")} required />
       </label>
       <label className="service-check">
         <input type="checkbox" checked={form.kvkk} onChange={(e) => setForm((p) => ({ ...p, kvkk: e.target.checked }))} required />
-        <span>KVKK Aydınlatma Metni'ni okudum, onaylıyorum.</span>
+        <span>{t("service.form.kvkkConsent")}</span>
       </label>
       <button type="submit" className="service-submit" disabled={createClaim.isPending}>
-        {createClaim.isPending ? "Gönderiliyor…" : "Talep Oluştur"}
+        {createClaim.isPending ? t("service.form.submitting") : t("service.form.submit")}
       </button>
     </form>
   );
@@ -190,11 +187,12 @@ function DeviceLoadingSkeleton() {
 }
 
 function DeviceNotFound() {
+  const { t } = useI18n();
   return (
     <div className="service-not-found">
       <ShieldAlert size={48} />
-      <h3>Cihaz bulunamadı</h3>
-      <p>Bu seri numarasına ait kayıtlı cihaz bilgisi bulunamadı. Lütfen seri numarasını kontrol edin veya teknik destek hattımızı arayın.</p>
+      <h3>{t("service.device.notFoundTitle")}</h3>
+      <p>{t("service.device.notFoundBody")}</p>
     </div>
   );
 }
@@ -209,18 +207,23 @@ function DeviceFound({ device }: { device: {
     servicePersonnel?: string | null;
   }> | null;
 }}) {
+  const { t, tv } = useI18n();
   const isActive = STATUS_ACTIVE.has(device.status);
-  const deviceInfoRows = [
-    ["Cihaz Türü",        device.productName],
-    ["Model",             device.model],
-    ["Seri Numarası",     device.serialNumber],
-    ...(device.installDate          ? [["Kurulum Tarihi",   device.installDate         ]] : []),
-    ...(device.customerFirm         ? [["Müşteri / Kurum",  device.customerFirm        ]] : []),
-    ["Garanti Durumu",    STATUS_LABELS[device.status] ?? device.status],
-    ...(device.warrantyEndDate      ? [["Garanti Bitiş",    device.warrantyEndDate     ]] : []),
-    ...(device.lastMaintenanceDate  ? [["Son Bakım",        device.lastMaintenanceDate ]] : []),
-    ...(device.nextMaintenanceDate  ? [["Sonraki Bakım",    device.nextMaintenanceDate ]] : []),
-  ] as [string, string][];
+
+  const statusLabels = tv<Record<string, string>>("service.statusLabels", {});
+  const statusLabel = statusLabels[device.status] ?? device.status;
+
+  const deviceInfoRows: [string, string | React.ReactNode][] = [
+    [t("service.device.labels.productName"), device.productName],
+    [t("service.device.labels.model"),       <span dir="ltr">{device.model}</span>],
+    [t("service.device.labels.serialNumber"), <span dir="ltr">{device.serialNumber}</span>],
+    ...(device.installDate         ? [[t("service.device.labels.installDate"),         device.installDate        ]] : []) as [string, string][],
+    ...(device.customerFirm        ? [[t("service.device.labels.customerFirm"),        device.customerFirm       ]] : []) as [string, string][],
+    [t("service.device.labels.warrantyStatus"), statusLabel],
+    ...(device.warrantyEndDate     ? [[t("service.device.labels.warrantyEndDate"),     device.warrantyEndDate    ]] : []) as [string, string][],
+    ...(device.lastMaintenanceDate ? [[t("service.device.labels.lastMaintenanceDate"), device.lastMaintenanceDate]] : []) as [string, string][],
+    ...(device.nextMaintenanceDate ? [[t("service.device.labels.nextMaintenanceDate"), device.nextMaintenanceDate]] : []) as [string, string][],
+  ];
 
   const records = device.serviceRecords ?? [];
 
@@ -229,21 +232,21 @@ function DeviceFound({ device }: { device: {
       <div className="service-left-column">
         <section className="service-device-card">
           <div className="service-card-heading">
-            <h2>Cihaz Bilgileri</h2>
-            <span className={isActive ? "green" : ""}>{STATUS_LABELS[device.status] ?? device.status}</span>
+            <h2>{t("service.device.cardTitle")}</h2>
+            <span className={isActive ? "green" : ""}>{statusLabel}</span>
           </div>
           <div className="service-device-card__body">
-            {device.imageUrl && (
-              <img src={device.imageUrl} alt="Cihaz görseli" />
-            )}
-            {!device.imageUrl && (
-              <img src="/assets/images/service-vacuum-system.png" alt="Cihaz görseli" />
-            )}
+            <img
+              src={device.imageUrl ?? "/assets/images/service-vacuum-system.png"}
+              alt={t("service.device.imageAlt")}
+            />
             <dl>
-              {deviceInfoRows.map(([label, value]) => (
-                <div key={label}>
+              {deviceInfoRows.map(([label, value], idx) => (
+                <div key={idx}>
                   <dt>{label}</dt>
-                  <dd className={label === "Garanti Durumu" && isActive ? "green" : ""}>{value}</dd>
+                  <dd className={label === t("service.device.labels.warrantyStatus") && isActive ? "green" : ""}>
+                    {value}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -251,29 +254,29 @@ function DeviceFound({ device }: { device: {
         </section>
 
         <section className="service-history-card">
-          <h2>Yapılan İşlemler &amp; Servis Geçmişi</h2>
+          <h2>{t("service.device.historyTitle")}</h2>
           {records.length === 0 ? (
-            <p className="service-history-empty">Henüz servis kaydı bulunmuyor.</p>
+            <p className="service-history-empty">{t("service.device.historyEmpty")}</p>
           ) : (
             <div className="service-table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Tarih</th>
-                    <th>İşlem Türü</th>
-                    <th>Servis Personeli</th>
-                    <th>Rapor</th>
+                    <th>{t("service.device.tableDate")}</th>
+                    <th>{t("service.device.tableServiceType")}</th>
+                    <th>{t("service.device.tablePersonnel")}</th>
+                    <th>{t("service.device.tableReport")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {records.map((r) => (
                     <tr key={r.id}>
-                      <td>{r.serviceDate}</td>
+                      <td><span dir="ltr">{r.serviceDate}</span></td>
                       <td>{r.serviceType}</td>
                       <td>{r.servicePersonnel ?? "—"}</td>
                       <td>
                         <Link to={`/servis-raporu/${r.id}`} className="service-pdf-link">
-                          PDF <FileText size={15} />
+                          {t("service.device.pdfLabel")} <FileText size={15} />
                         </Link>
                       </td>
                     </tr>
@@ -286,9 +289,9 @@ function DeviceFound({ device }: { device: {
       </div>
 
       <aside className="service-request-card">
-        <h2>Hızlı Servis Talep Formu</h2>
-        <p>Servis talebinizi hızlıca oluşturun, ekibimiz en kısa sürede sizinle iletişime geçsin.</p>
-        <ServiceRequestForm deviceId={device.id} prefillSerial={device.serialNumber} />
+        <h2>{t("service.form.title")}</h2>
+        <p>{t("service.form.subtitle")}</p>
+        <ServiceRequestForm deviceId={device.id} />
       </aside>
     </div>
   );
@@ -301,12 +304,16 @@ type QueryMode = "serial" | "service_code";
 export default function ServicePage() {
   const { serialNo, qrToken } = useParams<{ serialNo?: string; qrToken?: string }>();
   const navigate = useNavigate();
+  const { t, tv } = useI18n();
+  const path = useLocalizedPath();
 
   const [queryMode, setQueryMode] = useState<QueryMode>("serial");
   const [inputValue, setInputValue] = useState(serialNo ?? "");
   const [submittedSerial, setSubmittedSerial] = useState<string | undefined>(serialNo);
   const [submittedQr, setSubmittedQr] = useState<string | undefined>(qrToken);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const benefits = tv<Array<{ title: string; text: string }>>("service.benefits", []);
 
   useEffect(() => {
     if (serialNo) {
@@ -336,18 +343,19 @@ export default function ServicePage() {
 
   return (
     <div className="service-page">
+      <Seo routeKey="service" />
       <Header />
 
       <main>
         <section className="service-hero">
           <div className="service-hero__shade" />
           <div className="service-hero__inner">
-            <h1>Servis &amp; Destek</h1>
-            <p>Cihazınıza ait servis geçmişini görüntüleyin, hızlı servis randevusu oluşturun.</p>
-            <nav aria-label="Sayfa yolu" className="service-breadcrumb">
-              <Link to="/">Anasayfa</Link>
-              <ChevronRight size={14} />
-              <span>Servis &amp; Destek</span>
+            <h1>{t("service.hero.title")}</h1>
+            <p>{t("service.hero.subtitle")}</p>
+            <nav aria-label={t("service.hero.breadcrumbCurrent")} className="service-breadcrumb">
+              <Link to={path("home")}>{t("service.hero.breadcrumbHome")}</Link>
+              <ChevronRight size={14} className="rtl:-scale-x-100" />
+              <span>{t("service.hero.breadcrumbCurrent")}</span>
             </nav>
           </div>
         </section>
@@ -356,18 +364,18 @@ export default function ServicePage() {
           <div className="service-query-card">
             <div className="service-query-card__content">
               <div>
-                <h2>Cihaz Sorgulama</h2>
-                <p>Cihazınızın seri numarası veya servis kodu ile sorgulama yapın.</p>
+                <h2>{t("service.query.title")}</h2>
+                <p>{t("service.query.subtitle")}</p>
               </div>
 
-              <div className="service-query-tabs" role="tablist" aria-label="Sorgulama yöntemi">
+              <div className="service-query-tabs" role="tablist" aria-label={t("service.query.tabsAriaLabel")}>
                 <button
                   type="button"
                   className={queryMode === "serial" ? "active" : ""}
                   onClick={() => { setQueryMode("serial"); setInputValue(""); setSubmittedSerial(undefined); setSubmittedQr(undefined); }}
                 >
                   <Search size={17} />
-                  Seri Numarası ile Sorgula
+                  {t("service.query.tabSerial")}
                 </button>
                 <button
                   type="button"
@@ -375,33 +383,38 @@ export default function ServicePage() {
                   onClick={() => { setQueryMode("service_code"); setInputValue(""); setSubmittedQr(undefined); setSubmittedSerial(undefined); }}
                 >
                   <QrCode size={17} />
-                  Servis Kodu ile Sorgula
+                  {t("service.query.tabServiceCode")}
                 </button>
               </div>
 
               <label className="service-field">
-                <span>{queryMode === "serial" ? "Seri Numarası" : "Servis Kodu (QR)"}</span>
+                <span>{queryMode === "serial" ? t("service.query.labelSerial") : t("service.query.labelServiceCode")}</span>
                 <div className="service-query-row">
                   <input
                     ref={inputRef}
                     type="text"
-                    placeholder={queryMode === "serial" ? "Örn: OXM-VAC-250-0148" : "Örn: abc123xyz"}
+                    placeholder={queryMode === "serial" ? t("service.query.placeholderSerial") : t("service.query.placeholderServiceCode")}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    dir="ltr"
                   />
-                  <button type="button" onClick={handleSearch}>Sorgula</button>
+                  <button type="button" onClick={handleSearch}>{t("service.query.searchButton")}</button>
                 </div>
               </label>
 
               <p className="service-hint">
                 <Info size={16} />
-                Seri numaranızı cihaz üzerindeki etiketten görebilirsiniz.
+                {t("service.query.hint")}
               </p>
             </div>
 
             <div className="service-query-card__visual">
-              <img src="/assets/brand/oxymedmanservice.webp" alt="Oxymed Medikal servis uzmanı" className="service-query-man" />
+              <img
+                src="/assets/brand/oxymedmanservice.webp"
+                alt={t("service.query.techSupportImageAlt")}
+                className="service-query-man"
+              />
             </div>
           </div>
 
@@ -412,9 +425,9 @@ export default function ServicePage() {
             </>
           )}
 
-          <section className="service-benefits" aria-label="Servis avantajları">
-            {benefits.map((item) => {
-              const Icon = item.icon;
+          <section className="service-benefits" aria-label={t("service.hero.breadcrumbCurrent")}>
+            {benefits.map((item, idx) => {
+              const Icon = BENEFIT_ICONS[idx];
               return (
                 <div key={item.title}>
                   <Icon size={46} />

@@ -4,13 +4,16 @@
  * loading (see RouteTransitionLoader). Images marked loading="lazy" are
  * intentionally excluded from the wait — they load on demand, not up front.
  */
+import { useI18n } from "../../i18n/I18nProvider";
+
 export default function PageLoader() {
+  const { t } = useI18n();
   return (
     <div
       className="fixed inset-0 z-[999] flex flex-col items-center justify-center gap-5 bg-white"
       role="status"
       aria-live="polite"
-      aria-label="Sayfa yükleniyor"
+      aria-label={t("common.status.pageLoading")}
     >
       <svg
         className="h-16 w-40 sm:h-20 sm:w-52"
@@ -36,7 +39,7 @@ export default function PageLoader() {
         />
       </svg>
       <span className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-oxynavy-700/70">
-        Yükleniyor
+        {t("common.status.loadingShort")}
       </span>
     </div>
   );

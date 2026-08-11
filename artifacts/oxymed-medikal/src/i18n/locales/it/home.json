@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "imageAlt": "Testaletto per letto e sistema pensile in una moderna camera d'ospedale"
+  },
+  "features": {
+    "production": {
+      "title": "DIRETTAMENTE DAL PRODUTTORE",
+      "description": "Produzione di alta qualità e vendita diretta dalla nostra fabbrica"
+    },
+    "design": {
+      "title": "DESIGN MODERNO",
+      "description": "Soluzioni estetiche, ergonomiche e funzionali"
+    },
+    "safety": {
+      "title": "SICUREZZA",
+      "description": "Sistemi sicuri conformi agli standard internazionali"
+    },
+    "support": {
+      "title": "SUPPORTO TECNICO",
+      "description": "Supporto tecnico continuo prima e dopo la vendita"
+    },
+    "durability": {
+      "title": "LUNGA DURATA",
+      "description": "Materiali resistenti e utilizzo duraturo"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "LE NOSTRE CATEGORIE DI PRODOTTI",
+    "title": "Tecnologia Avanzata, Prestazioni Superiori",
+    "description": "Con le innovative categorie di prodotti sviluppate per ospedali, cliniche e centri sanitari, rendiamo gli ambienti più sicuri ed efficienti.",
+    "loadError": "Si è verificato un errore durante il caricamento delle categorie di prodotti.",
+    "fallbackDescription": "Le nostre apparecchiature e soluzioni medicali.",
+    "descriptions": [
+      "Soluzioni sicure e confortevoli con unità elettriche, di gas medicali e dati.",
+      "Soluzioni pensili flessibili per sale operatorie, terapie intensive e pronto soccorso.",
+      "Sistemi di ossigeno, vuoto, aria, AGS e azoto.",
+      "Comunicazione ininterrotta con sistemi elettrici, a corrente debole e dati."
+    ]
+  },
+  "stats": {
+    "eyebrow": "PERCHÉ OXYMED?",
+    "description": "Ci distinguiamo nel settore grazie al nostro approccio orientato alla soddisfazione del cliente, ai nostri standard qualitativi e al nostro team esperto.",
+    "loadError": "Impossibile caricare le statistiche, vengono visualizzati i valori predefiniti.",
+    "imageAlt": "Moderno stabilimento di produzione medicale",
+    "yearsExperience": "ANNI DI ESPERIENZA",
+    "completedProjects": "PROGETTI COMPLETATI",
+    "exportCountries": "PAESI DI ESPORTAZIONE",
+    "customerSatisfaction": "SODDISFAZIONE DEL CLIENTE"
+  },
+  "references": {
+    "title": "ALCUNI DEI NOSTRI RIFERIMENTI",
+    "loadError": "Si è verificato un errore durante il caricamento dei riferimenti."
+  }
+}

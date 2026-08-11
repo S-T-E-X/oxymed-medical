@@ -67,7 +67,7 @@
   align-items: center;
   min-height: 30px;
   padding: 0 12px;
-  border-left: 3px solid #63b7ff;
+  border-inline-start: 3px solid #63b7ff;
   background: rgba(99, 183, 255, 0.1);
   color: #9fd2ff;
   font-size: 12px;
@@ -125,9 +125,9 @@
 
 .dvp-hero-floor {
   position: absolute;
-  right: 1%;
+  inset-inline-end: 1%;
   bottom: 0;
-  left: 7%;
+  inset-inline-start: 7%;
   height: 76px;
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(163, 203, 244, 0.34), rgba(1, 12, 24, 0) 66%);
@@ -148,18 +148,18 @@
 .dvp-feature-row article {
   min-height: 150px;
   padding: 0 30px;
-  border-right: 1px solid rgba(159, 210, 255, 0.4);
+  border-inline-end: 1px solid rgba(159, 210, 255, 0.4);
   color: #9fd2ff;
   text-align: center;
 }
 
 .dvp-feature-row article:first-child {
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 .dvp-feature-row article:last-child {
-  padding-right: 0;
-  border-right: 0;
+  padding-inline-end: 0;
+  border-inline-end: 0;
 }
 
 .dvp-feature-row svg {
@@ -301,8 +301,8 @@
 
 .dvp-drawing {
   padding: 0 28px;
-  border-right: 1px solid #ccd8e6;
-  border-left: 1px solid #ccd8e6;
+  border-inline-end: 1px solid #ccd8e6;
+  border-inline-start: 1px solid #ccd8e6;
 }
 
 .dvp-drawing-grid {
@@ -466,14 +466,14 @@
   }
 
   .dvp-feature-row article:nth-child(2) {
-    border-right: 0;
+    border-inline-end: 0;
   }
 
   .dvp-drawing {
     padding: 26px 0 0;
     border-top: 1px solid #ccd8e6;
-    border-right: 0;
-    border-left: 0;
+    border-inline-end: 0;
+    border-inline-start: 0;
   }
 }
 
@@ -514,7 +514,7 @@
   .dvp-feature-row article {
     min-height: auto;
     padding: 0 0 22px;
-    border-right: 0;
+    border-inline-end: 0;
     border-bottom: 1px solid rgba(159, 210, 255, 0.32);
   }
 

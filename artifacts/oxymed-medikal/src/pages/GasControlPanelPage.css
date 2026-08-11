@@ -100,8 +100,8 @@
 }
 
 .gcp-hero-features > div:nth-child(even) {
-  padding-left: 28px;
-  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  padding-inline-start: 28px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .gcp-hero-features svg {
@@ -304,10 +304,10 @@
 }
 
 .gcp-drawing {
-  border-left: 1px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
-  padding-right: 26px;
-  padding-left: 26px;
+  border-inline-start: 1px solid #e2e8f0;
+  border-inline-end: 1px solid #e2e8f0;
+  padding-inline-end: 26px;
+  padding-inline-start: 26px;
 }
 
 .gcp-drawing .gcp-image-slot {
@@ -381,8 +381,8 @@
 }
 
 .gcp-feature-strip {
-  padding-left: 54px;
-  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  padding-inline-start: 54px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .gcp-feature-strip > div {
@@ -394,12 +394,12 @@
 .gcp-feature-strip section {
   min-height: 118px;
   padding: 0 24px;
-  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.22);
   text-align: center;
 }
 
 .gcp-feature-strip section:last-child {
-  border-right: 0;
+  border-inline-end: 0;
 }
 
 .gcp-feature-strip svg {
@@ -562,13 +562,13 @@
 
   .gcp-drawing,
   .gcp-feature-strip {
-    padding-left: 0;
-    border-left: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
   }
 
   .gcp-drawing {
-    padding-right: 0;
-    border-right: 0;
+    padding-inline-end: 0;
+    border-inline-end: 0;
   }
 }
 
@@ -593,9 +593,9 @@
 
   .gcp-hero-features > div:nth-child(even),
   .gcp-feature-strip section {
-    padding-left: 0;
-    border-left: 0;
-    border-right: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+    border-inline-end: 0;
   }
 
   .gcp-info-grid {

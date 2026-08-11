@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "imageAlt": "Modern hastane odasında yatak başı ünitesi ve pendant sistemi"
+  },
+  "features": {
+    "production": {
+      "title": "YERLİ ÜRETİM",
+      "description": "%100 yerli sermaye ile yüksek kalite üretim"
+    },
+    "design": {
+      "title": "MODERN TASARIM",
+      "description": "Estetik, ergonomik ve fonksiyonel çözümler"
+    },
+    "safety": {
+      "title": "GÜVENLİK",
+      "description": "Uluslararası standartlara uygun güvenli sistemler"
+    },
+    "support": {
+      "title": "TEKNİK DESTEK",
+      "description": "Satış öncesi ve sonrası kesintisiz teknik destek"
+    },
+    "durability": {
+      "title": "UZUN ÖMÜRLÜ",
+      "description": "Dayanıklı malzeme ve uzun ömürlü kullanım"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "ÜRÜN GRUPLARIMIZ",
+    "title": "İleri Teknoloji, Üstün Performans",
+    "description": "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz yenilikçi ürün gruplarıyla yaşam alanlarını daha güvenli ve verimli hale getiriyoruz.",
+    "loadError": "Ürün grupları yüklenirken bir hata oluştu.",
+    "fallbackDescription": "Medikal ekipman ve çözümlerimiz.",
+    "descriptions": [
+      "Elektrik, medikal gaz ve data üniteleri ile güvenli ve konforlu çözümler.",
+      "Ameliyathane, yoğun bakım ve acil üniteler için esnek pendant çözümleri.",
+      "Oksijen, vakum, hava, AGS ve azot gaz sistemleri.",
+      "Elektrik, zayıf akım ve data sistemleri ile kesintisiz iletişim."
+    ]
+  },
+  "stats": {
+    "eyebrow": "NEDEN OXYMED?",
+    "description": "Müşteri memnuniyetini ön planda tutan anlayışımız, kalite standartlarımız ve tecrübeli ekibimizle sektörde fark yaratıyoruz.",
+    "loadError": "İstatistikler yüklenemedi, varsayılan değerler gösteriliyor.",
+    "imageAlt": "Modern medikal üretim tesisi",
+    "yearsExperience": "YILLIK TECRÜBE",
+    "completedProjects": "TAMAMLANAN PROJE",
+    "exportCountries": "ÜLKEYE İHRACAT",
+    "customerSatisfaction": "MÜŞTERİ MEMNUNİYETİ"
+  },
+  "references": {
+    "title": "REFERANSLARIMIZDAN BAZILARI",
+    "loadError": "Referanslar yüklenirken bir hata oluştu."
+  }
+}

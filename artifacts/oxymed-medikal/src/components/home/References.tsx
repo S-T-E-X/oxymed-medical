@@ -2,21 +2,23 @@ import { useEffect, useRef } from "react";
 import { AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useListReferences } from "@workspace/api-client-react";
+import { useI18n } from "../../i18n/I18nProvider";
 
 export default function References() {
   const { data, isLoading, isError } = useListReferences({ showInMarquee: true, limit: 100 });
   const items = data?.items ?? [];
+  const { t } = useI18n();
 
   return (
     <section id="referanslar" className="bg-white py-12 sm:py-14">
       <h2 className="text-center text-sm font-extrabold text-oxynavy-950">
-        REFERANSLARIMIZDAN BAZILARI
+        {t("home.references.title")}
       </h2>
 
       {isError ? (
         <div className="mx-auto mt-8 flex max-w-7xl items-center justify-center gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
           <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          Referanslar yüklenirken bir hata oluştu.
+          {t("home.references.loadError")}
         </div>
       ) : isLoading ? (
         <div className="mt-8 flex gap-5 overflow-hidden px-10">

@@ -1,5 +1,6 @@
 import { DraftingCompass, Factory, Headphones, ShieldCheck, TimerReset } from "lucide-react";
 import { features, type IconKey } from "../../data/home";
+import { useI18n } from "../../i18n/I18nProvider";
 
 const featureIconMap = {
   production: Factory,
@@ -16,6 +17,7 @@ type FeatureBarProps = {
 
 export default function FeatureBar({ variant = "dark", compact = false }: FeatureBarProps) {
   const isLight = variant === "light";
+  const { t } = useI18n();
 
   return (
     <section className={isLight ? "bg-white text-oxynavy-950" : "bg-oxynavy-900 text-white"}>
@@ -28,7 +30,7 @@ export default function FeatureBar({ variant = "dark", compact = false }: Featur
           const Icon = featureIconMap[feature.icon];
           return (
             <div
-              key={feature.title}
+              key={feature.key}
               className={`flex items-start gap-4 ${compact ? "py-5 sm:px-5 lg:px-6" : "py-7 sm:px-5 lg:px-6"}`}
             >
               <span
@@ -41,9 +43,9 @@ export default function FeatureBar({ variant = "dark", compact = false }: Featur
                 <Icon className={`${compact ? "h-5 w-5" : "h-6 w-6"} stroke-[1.4]`} aria-hidden="true" />
               </span>
               <div>
-                <h2 className="text-[12px] font-extrabold">{feature.title}</h2>
+                <h2 className="text-[12px] font-extrabold">{t(`home.features.${feature.key}.title`)}</h2>
                 <p className={`mt-2 text-[12px] leading-5 ${isLight ? "text-steel-700" : "text-white/72"}`}>
-                  {feature.description}
+                  {t(`home.features.${feature.key}.description`)}
                 </p>
               </div>
             </div>

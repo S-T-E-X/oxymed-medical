@@ -1,0 +1,150 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDİKAL",
+    "titleLine1": "AMALGAM",
+    "titleLine2": "ABSCHEIDER",
+    "desc1": "Der Oxymed Amalgamabscheider trennt Amalgampartikel aus den Absaugsystemen von Dentaleinheiten effektiv ab und verhindert deren Eintrag in die Umwelt.",
+    "desc2": "Mit seinem hygienischen, langlebigen und effizienten Design sorgt er für eine sichere Arbeitsumgebung.",
+    "photoSlotAriaLabel": "Hauptbildbereich des Amalgamabscheiders im WEBP-Format"
+  },
+  "heroFeatures": [
+    {
+      "title": "Edelstahlgehäuse",
+      "text": "Hochwertiger Edelstahl gewährleistet eine lange Lebensdauer."
+    },
+    {
+      "title": "Hygienisches Design",
+      "text": "Die glatte Oberflächenstruktur ermöglicht einfache Reinigung und hygienische Nutzung."
+    },
+    {
+      "title": "Einfache Integration",
+      "text": "Schnelle und einfache Integration in bestehende Vakuumleitungen."
+    },
+    {
+      "title": "Langlebiger Einsatz",
+      "text": "Robuste Konstruktion für maximale Leistung auch unter anspruchsvollen Bedingungen."
+    }
+  ],
+  "detailGrid": {
+    "ariaLabel": "Bildbereiche mit Produktdetails",
+    "cards": [
+      {
+        "title": "Robustes Gehäuse",
+        "text": "Die dickwandige Edelstahlkonstruktion bietet hervorragende Korrosionsbeständigkeit."
+      },
+      {
+        "title": "Durchdachte Anschlusskonstruktion",
+        "text": "Die interne Anschlusskonstruktion erhöht die Strömungseffizienz und minimiert das Verstopfungsrisiko."
+      },
+      {
+        "title": "Einfache Montage",
+        "text": "Standardisierte Anschlusspunkte ermöglichen eine schnelle und praktische Montage."
+      },
+      {
+        "title": "Hygienische Oberfläche",
+        "text": "Die glatte Innen- und Außenoberfläche ermöglicht einfache Reinigung und Hygiene."
+      }
+    ]
+  },
+  "imageSlot": {
+    "webpSuffix": "WEBP-Bildbereich"
+  },
+  "specs": {
+    "title": "TECHNISCHE EIGENSCHAFTEN",
+    "rows": [
+      {
+        "k": "Produktbezeichnung",
+        "v": "Amalgamabscheider"
+      },
+      {
+        "k": "Einsatzbereich",
+        "v": "Dentaleinheiten und Vakuumsysteme"
+      },
+      {
+        "k": "Gehäusematerial",
+        "v": "Edelstahl (AISI 304)"
+      },
+      {
+        "k": "Anschlussausführung",
+        "v": "Geeignet für Standard-Dentalvakuumleitungen"
+      },
+      {
+        "k": "Reinigung / Wartung",
+        "v": "Leicht demontierbare Konstruktion und glatte Oberfläche"
+      },
+      {
+        "k": "Montageart",
+        "v": "Vertikale Montage"
+      },
+      {
+        "k": "Kompatibilität",
+        "v": "Kompatibel mit allen Dentalvakuumsystemen"
+      },
+      {
+        "k": "Oberflächenbeschaffenheit",
+        "v": "Glatt, hygienisch, korrosionsbeständig"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "TECHNISCHE ZEICHNUNG UND ABMESSUNGEN",
+    "slotAriaLabel": "Bildbereich für technische Zeichnung und Abmessungen im WEBP-Format",
+    "unitNote": "Alle Maße sind in mm angegeben."
+  },
+  "useCases": {
+    "title": "EINSATZBEREICHE",
+    "items": [
+      {
+        "title": "Zahnarztpraxen",
+        "text": "Sichere Abscheidung von Amalgamabfällen in Zahnarztpraxen."
+      },
+      {
+        "title": "Dentalsysteme",
+        "text": "Vollständig kompatibler Einsatz mit Dentaleinheiten und Vakuumsystemen."
+      },
+      {
+        "title": "Integration in zentrale Vakuumleitungen",
+        "text": "Einfache Integration in zentrale Systeme und optimale Leistung."
+      },
+      {
+        "title": "Technische Serviceanwendungen",
+        "text": "Zuverlässiger Lösungspartner für technische Service- und Wartungsanwendungen."
+      },
+      {
+        "title": "Gesundheitseinrichtungen",
+        "text": "Ideale Lösung für Krankenhäuser und Gesundheitseinrichtungen."
+      }
+    ]
+  },
+  "faqs": {
+    "title": "FAQ",
+    "items": [
+      {
+        "q": "Wozu dient ein Amalgamabscheider?",
+        "a": "Er trennt Amalgampartikel aus Absaugsystemen ab, verhindert deren Eintrag in die Umwelt und ermöglicht eine sichere Sammlung der Abfälle."
+      },
+      {
+        "q": "Wie erfolgt die Montage?",
+        "a": "Eine vertikale Montage wird empfohlen. Dank der Standardanschlusspunkte lässt sich das Gerät schnell und einfach in die bestehende Vakuumleitung integrieren."
+      },
+      {
+        "q": "Mit welchen Systemen ist er kompatibel?",
+        "a": "Er ist mit allen Dentalvakuumsystemen und zentralen Vakuumleitungen kompatibel. Er verfügt über Standardanschlussmaße."
+      },
+      {
+        "q": "Warum wird Edelstahl verwendet?",
+        "a": "Edelstahl bietet hervorragende Korrosionsbeständigkeit, ist langlebig und ideal für eine hygienische Nutzung."
+      },
+      {
+        "q": "Wie wird die Wartung durchgeführt?",
+        "a": "Die Außenfläche kann mit einem feuchten Tuch gereinigt werden. Der Innenbereich sollte regelmäßig kontrolliert und bei Bedarf dank der demontierbaren Konstruktion einfach gereinigt werden."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Schnell Angebot anfordern",
+    "subtitle": "Kontaktieren Sie uns für die passende Lösung und ein Preisangebot für Ihr Projekt.",
+    "btn": "Angebot anfordern"
+  },
+  "category": "Amalgamabscheider"
+}

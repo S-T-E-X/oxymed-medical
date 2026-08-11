@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "Quadro di Controllo di Piano a 3 Gas",
+    "description": "Controllo sicuro, intelligente e continuo per i vostri sistemi di gas medicali. Gestione centralizzata di 3 diversi gas medicali in un unico pannello.",
+    "photoSlot": "Area foto prodotto hero",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Percorso pagina",
+    "products": "Prodotti"
+  },
+  "heroFeatures": [
+    {
+      "title": "Elevata Sicurezza",
+      "text": "Massima sicurezza con sistema di allarme e intercettazione automatica."
+    },
+    {
+      "title": "Controllo Intelligente",
+      "text": "Monitoraggio continuo con unità di controllo basata su microprocessore."
+    },
+    {
+      "title": "Sistema di Allarme",
+      "text": "Informazioni immediate tramite segnalazioni visive e acustiche."
+    },
+    {
+      "title": "Facile Installazione",
+      "text": "Installazione rapida e semplice grazie alla pratica struttura di collegamento."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Unità di Collegamento Gas",
+      "text": "Sistema di valvole di alta qualità per ingressi di ossigeno, vuoto e aria."
+    },
+    {
+      "title": "Pannello di Controllo Intelligente",
+      "text": "Le pressioni dei gas vengono monitorate e gestite in tempo reale tramite sistema controllato da microprocessore."
+    },
+    {
+      "title": "Struttura Robusta",
+      "text": "Corpo metallico verniciato elettrostaticamente, durevole e resistente agli urti."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "Area immagine WEBP"
+  },
+  "specs": {
+    "title": "Specifiche Tecniche",
+    "rows": [
+      {
+        "k": "Nome Prodotto",
+        "v": "Quadro di Controllo di Piano a 3 Gas"
+      },
+      {
+        "k": "Gas Supportati",
+        "v": "O2 (Ossigeno) - VAC (Vuoto) - AIR (Aria)"
+      },
+      {
+        "k": "Pressione di Esercizio",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Tipo di Allarme",
+        "v": "Visivo e Acustico"
+      },
+      {
+        "k": "Materiale del Corpo",
+        "v": "Metallo Verniciato Elettrostaticamente"
+      },
+      {
+        "k": "Alimentazione",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Tipo di Installazione",
+        "v": "A Parete / Incasso"
+      },
+      {
+        "k": "Temperatura di Esercizio",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Dimensioni (AxLxP)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Dimensioni / Disegno Tecnico",
+    "slotLabel": "Immagine del disegno tecnico",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "Campi di Applicazione",
+    "items": [
+      "Ospedali",
+      "Unità di Terapia Intensiva",
+      "Sale Operatorie",
+      "Cliniche",
+      "Centri Sanitari"
+    ]
+  },
+  "advantages": {
+    "title": "Vantaggi",
+    "items": [
+      "Controllo centralizzato di tre diversi gas in un unico pannello",
+      "Sistema di allarme e intercettazione ad alta sicurezza",
+      "Facile monitoraggio grazie all'interfaccia intuitiva",
+      "Corpo metallico durevole e resistente",
+      "Vantaggi di facile installazione e manutenzione"
+    ]
+  },
+  "featureTiles": {
+    "title": "Caratteristiche del Prodotto",
+    "items": [
+      {
+        "title": "Controllo Centralizzato",
+        "text": "Gestione di 3 gas da un unico punto"
+      },
+      {
+        "title": "Monitoraggio in Tempo Reale",
+        "text": "I valori di pressione vengono monitorati e registrati continuamente"
+      },
+      {
+        "title": "Allarme Sicuro",
+        "text": "Avviso immediato tramite allarme visivo e acustico"
+      },
+      {
+        "title": "Struttura Modulare",
+        "text": "Facilità di assistenza e manutenzione"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Domande Frequenti",
+    "items": [
+      {
+        "q": "Quali gas sono supportati?",
+        "a": "Il Quadro di Controllo di Piano a 3 Gas supporta Ossigeno (O2), Vuoto (VAC) e Aria Medicale (AIR)."
+      },
+      {
+        "q": "In quali ambienti viene utilizzato?",
+        "a": "Viene utilizzato in ospedali, terapie intensive, sale operatorie e cliniche."
+      },
+      {
+        "q": "Qual è il tipo di installazione?",
+        "a": "Può essere installato a parete o a incasso."
+      },
+      {
+        "q": "Come vengono gestite le esigenze di manutenzione e assistenza?",
+        "a": "Il funzionamento sicuro è garantito da manutenzione periodica e assistenza tecnica."
+      },
+      {
+        "q": "Come funziona il sistema di allarme?",
+        "a": "Emette un allarme acustico e visivo quando i valori di pressione superano i limiti."
+      },
+      {
+        "q": "Il sistema funziona in caso di interruzione di corrente?",
+        "a": "In base alle esigenze del progetto, possono essere applicati scenari di alimentazione di backup e allarme."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Azioni prodotto",
+    "title": "Richiedete un Preventivo, Valorizzate il Vostro Progetto",
+    "subtitle": "Il nostro team di esperti è pronto a offrirvi la soluzione più adatta.",
+    "primaryBtn": "Richiedi Preventivo",
+    "secondaryBtn": "Contattaci"
+  },
+  "category": "Quadro di controllo di piano"
+}

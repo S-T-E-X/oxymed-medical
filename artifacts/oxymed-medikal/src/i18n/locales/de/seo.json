@@ -1,0 +1,34 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Bettkopfgeräte, Pendelsysteme und medizinische Gassysteme",
+    "description": "Bettkopfgeräte, Pendelsysteme, medizinische Gassysteme und Dentalvakuumlösungen für Krankenhäuser und Kliniken. ISO 9001- und ISO 13485-zertifizierte Produktion, Export in 50+ Länder."
+  },
+  "products": {
+    "title": "Unsere Produkte | Medizinische Gas- und Krankenhausausstattungssysteme | Oxymed",
+    "description": "Entdecken Sie unsere Produktfamilien: Bettkopfgeräte, Pendelsysteme, medizinische Gasüberwachungspaneele, Dentalvakuumpumpen und Amalgamabscheider."
+  },
+  "gcp": {
+    "title": "Etagenkontrollpanel (Medizinisches Gasalarm-Panel) | Oxymed Medikal",
+    "description": "Digitales Etagenkontrollpanel für medizinische Gasleitungen in Krankenhäusern: kontinuierliche Drucküberwachung sowie akustischer und visueller Alarm für Sauerstoff, Vakuum, Druckluft und Lachgas."
+  },
+  "ams": {
+    "title": "Amalgamabscheider | ISO 11143-konformer Dentalabscheider | Oxymed",
+    "description": "ISO 11143-konforme, leise und wartungsfreundliche Amalgamabscheidersysteme für Zahnarztpraxen mit einer Abscheiderate von über 95 % für Amalgamabfälle."
+  },
+  "dvp": {
+    "title": "Dentalvakuumpumpe | Trocken- und Nasssystem | Oxymed Medikal",
+    "description": "Leise, energieeffiziente und langlebige Dentalvakuumpumpen für Zahnarztpraxen. Skalierbare Lösungen von Einzelgeräten bis zu Kliniken mit mehreren Behandlungseinheiten."
+  },
+  "dvs": {
+    "title": "Dentalvakuumsystem | Zentrale Absauglösungen | Oxymed",
+    "description": "Zentrale Dentalvakuumsysteme für Zahnkliniken mit mehreren Behandlungseinheiten und Mundgesundheitszentren, einschließlich Integration von Abscheider und Bedienpanel."
+  },
+  "service": {
+    "title": "Technischer Service und Garantieabfrage | Oxymed Medikal",
+    "description": "Garantieabfrage, Serviceanfrage und Wartungsunterstützung für Ihre Oxymed Geräte. Sehen Sie mit Ihrer Seriennummer die Geräteregistrierung und Servicehistorie ein."
+  },
+  "quote": {
+    "title": "Angebot anfordern | Krankenhaus- und Klinikprojekte | Oxymed Medikal",
+    "description": "Erhalten Sie schnell und kostenlos ein Angebot für Ihr Projekt. Kompetente Unterstützung für Bettkopfgeräte, Pendelsysteme, medizinische Gas- und Dentalvakuumlösungen."
+  }
+}

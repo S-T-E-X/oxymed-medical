@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "imageAlt": "Bettkopfeinheit und Pendantsystem in einem modernen Krankenhauszimmer"
+  },
+  "features": {
+    "production": {
+      "title": "DIREKT VOM HERSTELLER",
+      "description": "Hochwertige Fertigung und Direktvertrieb ab Werk"
+    },
+    "design": {
+      "title": "MODERNES DESIGN",
+      "description": "Ästhetische, ergonomische und funktionale Lösungen"
+    },
+    "safety": {
+      "title": "SICHERHEIT",
+      "description": "Sichere Systeme gemäß internationalen Standards"
+    },
+    "support": {
+      "title": "TECHNISCHER SUPPORT",
+      "description": "Lückenloser technischer Support vor und nach dem Verkauf"
+    },
+    "durability": {
+      "title": "LANGLEBIG",
+      "description": "Robuste Materialien und langlebige Nutzung"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "UNSERE PRODUKTGRUPPEN",
+    "title": "Fortschrittliche Technologie, höchste Leistung",
+    "description": "Mit unseren innovativen Produktgruppen für Krankenhäuser, Kliniken und Gesundheitszentren gestalten wir Umgebungen sicherer und effizienter.",
+    "loadError": "Beim Laden der Produktgruppen ist ein Fehler aufgetreten.",
+    "fallbackDescription": "Unsere medizinischen Geräte und Lösungen.",
+    "descriptions": [
+      "Sichere und komfortable Lösungen mit Strom-, Medizin-, Gas- und Dateneinheiten.",
+      "Flexible Pendantsysteme für OP, Intensivstation und Notaufnahme.",
+      "Sauerstoff-, Vakuum-, Druckluft-, AGS- und Stickstoffgassysteme.",
+      "Unterbrechungsfreie Kommunikation mit Strom-, Schwachstrom- und Datensystemen."
+    ]
+  },
+  "stats": {
+    "eyebrow": "WARUM OXYMED?",
+    "description": "Mit unserem Fokus auf Kundenzufriedenheit, unseren Qualitätsstandards und unserem erfahrenen Team setzen wir Maßstäbe in der Branche.",
+    "loadError": "Statistiken konnten nicht geladen werden, Standardwerte werden angezeigt.",
+    "imageAlt": "Moderne medizinische Produktionsstätte",
+    "yearsExperience": "JAHRE ERFAHRUNG",
+    "completedProjects": "ABGESCHLOSSENE PROJEKTE",
+    "exportCountries": "EXPORTLÄNDER",
+    "customerSatisfaction": "KUNDENZUFRIEDENHEIT"
+  },
+  "references": {
+    "title": "EINIGE UNSERER REFERENZEN",
+    "loadError": "Beim Laden der Referenzen ist ein Fehler aufgetreten."
+  }
+}

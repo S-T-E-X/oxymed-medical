@@ -1,0 +1,94 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "HOME",
+    "corporate": "CORPORATE",
+    "products": "PRODUCTS",
+    "references": "REFERENCES",
+    "news": "NEWS",
+    "service": "SERVICE",
+    "contact": "CONTACT",
+    "allProducts": "All Products",
+    "mainMenu": "Main menu",
+    "mobileMenu": "Mobile main menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language"
+  },
+  "cta": {
+    "getQuote": "GET A QUOTE",
+    "reviewDetails": "View Details",
+    "downloadCatalog": "DOWNLOAD CATALOG",
+    "contactUs": "CONTACT US",
+    "send": "SEND",
+    "sending": "SENDING...",
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close"
+  },
+  "footer": {
+    "tagline": "We deliver safe, comfortable and technologically advanced environments with bed head units, pendant systems and medical gas solutions.",
+    "contactTitle": "CONTACT",
+    "copyright": "© 2024 Oxymed Medikal. All rights reserved.",
+    "kvkk": "KVKK",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "columns": {
+      "corporate": {
+        "title": "CORPORATE",
+        "about": "About Us",
+        "vision": "Vision & Mission",
+        "quality": "Quality Certifications",
+        "hr": "Human Resources"
+      },
+      "products": {
+        "title": "PRODUCTS",
+        "bedHead": "Bed Head Units",
+        "pendant": "Pendant Systems",
+        "medicalGas": "Medical Gas Systems",
+        "electrical": "Electrical & Data Systems"
+      },
+      "services": {
+        "title": "OUR SERVICES",
+        "engineering": "Project Design",
+        "manufacturing": "Manufacturing",
+        "installation": "Installation",
+        "technicalService": "Technical Service"
+      },
+      "references": {
+        "title": "REFERENCES",
+        "completed": "Completed Projects",
+        "public": "Public Projects",
+        "private": "Private Projects"
+      }
+    }
+  },
+  "status": {
+    "loading": "Loading...",
+    "genericError": "An error occurred. Please try again.",
+    "notFound": "No results found.",
+    "loadingShort": "Loading",
+    "pageLoading": "Page loading"
+  },
+  "catalog": {
+    "title": "Download Catalogue",
+    "subtitle": "Select a language to download the catalogue",
+    "empty": "No catalogue has been added yet.",
+    "trackLabel": "Download Catalogue"
+  },
+  "cookies": {
+    "ariaLabel": "Cookie notice",
+    "title": "This website uses cookies to improve your experience.",
+    "description": "Cookies necessary for site functionality and performance analysis are used. By continuing, you are deemed to have accepted our cookie policy.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "hero": {
+    "fallbackImageAlt": "Bed head unit and pendant system in a modern hospital room",
+    "fallbackTitleLine1": "TECHNOLOGY",
+    "fallbackTitleLine2": "FOR LIFE",
+    "fallbackDescription": "We provide safe, comfortable and technologically advanced environments with bed head units, pendant systems and medical gas solutions.",
+    "ourProducts": "OUR PRODUCTS",
+    "slideLabel": "Slide {{index}}"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "TEKLİF AL",
+    "subtitle": "İhtiyacınıza en uygun çözümler için size özel teklifimizi hazırlayalım.",
+    "imageAlt": "Yatak başı ünitesi ve pendant sistemi bulunan hasta odası"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "HIZLI DÖNÜŞ",
+      "description": "Talebiniz alındıktan sonra en geç 24 saat içinde uzman ekibimiz sizinle iletişime geçer."
+    },
+    "reliable": {
+      "title": "GÜVENİLİR ÇÖZÜMLER",
+      "description": "ISO 9001 ve ISO 13485 sertifikalı üretim süreçleriyle en yüksek kalite güvencesi."
+    },
+    "expert": {
+      "title": "UZMAN DESTEK",
+      "description": "Proje planlama aşamasından kuruluma kadar deneyimli mühendis kadromuz yanınızda."
+    }
+  },
+  "form": {
+    "title": "Teklif Talep Formu",
+    "subtitle": "Aşağıdaki formu doldurarak talebinizi bize iletebilirsiniz.",
+    "fields": {
+      "fullName": "Ad Soyad *",
+      "fullNamePlaceholder": "Adınız ve soyadınız",
+      "email": "E-posta *",
+      "emailPlaceholder": "ornek@mail.com",
+      "phone": "Telefon *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Firma / Kurum",
+      "companyPlaceholder": "Firma veya kurum adı",
+      "jobTitle": "Görev / Unvan",
+      "jobTitlePlaceholder": "Göreviniz veya unvanınız",
+      "projectType": "Proje Türü",
+      "city": "İl / İlçe",
+      "applicationArea": "Uygulama Alanı",
+      "notes": "Talep ve Notlarınız",
+      "notesPlaceholder": "Projeniz hakkında bilgi veriniz...",
+      "file": "Dosya Yükleyin (Opsiyonel)",
+      "fileButton": "Dosya seçin veya sürükleyin",
+      "fileHint": "PDF, DWG, JPG, PNG (Maks. 100MB)",
+      "selectDefault": "Seçiniz"
+    },
+    "validation": {
+      "fullNameRequired": "Ad Soyad zorunludur.",
+      "emailRequired": "E-posta zorunludur.",
+      "emailInvalid": "Geçerli bir e-posta adresi giriniz.",
+      "phoneRequired": "Telefon numarası zorunludur."
+    },
+    "submit": "TEKLİF TALEP ET",
+    "submitting": "GÖNDERİLİYOR…",
+    "privacy": "Gönderdiğiniz bilgiler güvenle saklanır ve üçüncü taraflarla paylaşılmaz.",
+    "apiError": "Teklif gönderilirken bir hata oluştu. Lütfen tekrar deneyin."
+  },
+  "success": {
+    "title": "Talebiniz Alındı!",
+    "description": "Teklif talebiniz başarıyla iletildi. En kısa sürede uzman ekibimiz sizinle iletişime geçecektir.",
+    "newRequest": "Yeni Teklif Talebi"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Yatak Başı Ünitesi",
+      "pendant": "Pendant Sistemi",
+      "medicalGas": "Medikal Gaz Sistemi",
+      "electrical": "Elektrik Tesisatı"
+    },
+    "cities": {
+      "izmir": "İzmir",
+      "ankara": "Ankara",
+      "istanbul": "İstanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Diğer"
+    },
+    "applicationAreas": {
+      "hospital": "Hastane",
+      "clinic": "Klinik",
+      "icu": "Yoğun Bakım",
+      "operatingRoom": "Ameliyathane",
+      "emergency": "Acil Servis",
+      "other": "Diğer"
+    }
+  }
+}

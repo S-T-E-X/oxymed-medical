@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VAKUM SİSTEMİ",
+    "desc1": "Dental kliniklerin merkezi vakum ihtiyacını karşılamak için tasarlanmış, yüksek performanslı ve güvenilir sistem çözümü.",
+    "desc2": "Kesintisiz vakum gücü, sessiz çalışma ve uzun ömürlü yapı ile sağlık tesislerinde maksimum verimlilik sağlar."
+  },
+  "heroFeatures": [
+    {
+      "title": "YÜKSEK GÜVENİLİRLİK",
+      "text": "Kesintisiz vakum üretimi için yedekli pompa konfigürasyonu."
+    },
+    {
+      "title": "SESSİZ VE VERİMLİ",
+      "text": "Düşük ses seviyesi ve yüksek enerji verimliliği."
+    },
+    {
+      "title": "KOLAY KULLANIM",
+      "text": "Kullanıcı dostu kontrol paneli ile anlık izleme ve yönetim."
+    },
+    {
+      "title": "UZUN ÖMÜRLÜ YAPI",
+      "text": "Kaliteli komponentler ile uzun ve stabil çalışma ömrü."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "PASLANMAZ ÇELİK MANİFOLD",
+      "text": "Korozyona karşı dayanıklı, hijyenik ve uzun ömürlü yapı.",
+      "ariaLabel": "Paslanmaz çelik manifold WEBP görsel alanı"
+    },
+    {
+      "title": "AKILLI KONTROL PANELİ",
+      "text": "Sistem durumu, alarm ve otomasyon yönetimi.",
+      "ariaLabel": "Akıllı kontrol paneli WEBP görsel alanı"
+    },
+    {
+      "title": "YÜKSEK PERFORMANSLI POMPALAR",
+      "text": "Güçlü vakum sağlayan, dayanıklı ve sessiz üniteler.",
+      "ariaLabel": "Yüksek performanslı pompalar WEBP görsel alanı"
+    }
+  ],
+  "specs": {
+    "heading": "TEKNİK ÖZELLİKLER",
+    "rows": [
+      [
+        "Ürün Adı",
+        "OXY-DVS Dental Vakum Sistemi"
+      ],
+      [
+        "Vakum Kapasitesi",
+        "100 - 840 m³/h (isteğe bağlı)"
+      ],
+      [
+        "Çalışma Vakumu",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Pompa Adedi",
+        "2 - 4 adet (yedekli)"
+      ],
+      [
+        "Motor Gücü",
+        "2,2 - 4 kW (pompa başı)"
+      ],
+      [
+        "Güç Beslemesi",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Ses Seviyesi",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Manifold Malzemesi",
+        "Paslanmaz Çelik (AISI 304)"
+      ],
+      [
+        "Bağlantı Çapı",
+        "DN40 - DN65"
+      ],
+      [
+        "Çalışma Sıcaklığı",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Koruma Sınıfı",
+        "IP54"
+      ],
+      [
+        "Boyutlar (YxGxD)",
+        "1300 x 600 x 1200 mm (örnek)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TEKNİK ÇİZİM / BOYUTLAR",
+    "ariaLabel": "Teknik çizim ve boyutlar WEBP görsel alanı"
+  },
+  "useCases": {
+    "heading": "KULLANIM ALANLARI",
+    "items": [
+      "Diş Klinikleri",
+      "Ağız ve Diş Sağlığı Merkezleri",
+      "Hastaneler",
+      "Cerrahi Müdahale Odaları",
+      "Laboratuvarlar"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Ürün detay görsel alanları"
+  },
+  "bottomNote": {
+    "vacuum": "Güçlü, sessiz ve sürdürülebilir vakum performansı.",
+    "capacity": "Proje ihtiyacına göre kapasite ve ölçü seçenekleri.",
+    "cta": "TEKLİF AL"
+  },
+  "category": "Dental Vakum Sistemi"
+}

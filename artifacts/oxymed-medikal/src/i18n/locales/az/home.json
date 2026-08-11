@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "imageAlt": "Müasir xəstəxana otağında çarpayıbaşı bloku və pendant sistemi"
+  },
+  "features": {
+    "production": {
+      "title": "İSTEHSALÇIDAN BİRBAŞA",
+      "description": "Öz fabrikimizdən yüksək keyfiyyətli istehsal və birbaşa satış"
+    },
+    "design": {
+      "title": "MÜASİR DİZAYN",
+      "description": "Estetik, erqonomik və funksional həllər"
+    },
+    "safety": {
+      "title": "TƏHLÜKƏSİZLİK",
+      "description": "Beynəlxalq standartlara uyğun təhlükəsiz sistemlər"
+    },
+    "support": {
+      "title": "TEXNİKİ DƏSTƏK",
+      "description": "Satışdan əvvəl və sonra fasiləsiz texniki dəstək"
+    },
+    "durability": {
+      "title": "UZUNÖMÜRLÜ",
+      "description": "Dayanıqlı materiallar və uzunmüddətli istifadə"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "MƏHSUL QRUPLARIMIZ",
+    "title": "Qabaqcıl Texnologiya, Üstün Performans",
+    "description": "Xəstəxanalar, klinikalar və səhiyyə mərkəzləri üçün inkişaf etdirdiyimiz innovativ məhsul qrupları ilə məkanları daha təhlükəsiz və səmərəli edirik.",
+    "loadError": "Məhsul qrupları yüklənərkən xəta baş verdi.",
+    "fallbackDescription": "Tibbi avadanlıq və həllərimiz.",
+    "descriptions": [
+      "Elektrik, tibbi qaz və data blokları ilə təhlükəsiz və komfortlu həllər.",
+      "Əməliyyatxana, intensiv terapiya və təcili yardım bölmələri üçün çevik pendant həlləri.",
+      "Oksigen, vakuum, hava, AGS və azot qaz sistemləri.",
+      "Elektrik, zəif cərəyan və data sistemləri ilə fasiləsiz rabitə."
+    ]
+  },
+  "stats": {
+    "eyebrow": "NİYƏ OXYMED?",
+    "description": "Müştəri məmnuniyyətini ön planda tutan yanaşmamız, keyfiyyət standartlarımız və təcrübəli komandamızla sektorda fərq yaradırıq.",
+    "loadError": "Statistik məlumatlar yüklənmədi, standart dəyərlər göstərilir.",
+    "imageAlt": "Müasir tibbi istehsal müəssisəsi",
+    "yearsExperience": "İLLİK TƏCRÜBƏ",
+    "completedProjects": "TAMAMLANMIŞ LAYİHƏ",
+    "exportCountries": "ÖLKƏYƏ İXRAC",
+    "customerSatisfaction": "MÜŞTƏRİ MƏMNUNİYYƏTİ"
+  },
+  "references": {
+    "title": "REFERANSLARIMIZDAN BƏZİLƏRİ",
+    "loadError": "Referanslar yüklənərkən xəta baş verdi."
+  }
+}

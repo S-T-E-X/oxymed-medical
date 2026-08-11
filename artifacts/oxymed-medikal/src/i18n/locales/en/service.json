@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "Service & Support",
+    "subtitle": "View your device service history and quickly schedule a service appointment.",
+    "breadcrumbHome": "Home",
+    "breadcrumbCurrent": "Service & Support"
+  },
+  "benefits": [
+    {
+      "title": "Expert Support",
+      "text": "Our experienced technical team is always by your side."
+    },
+    {
+      "title": "Rapid Response",
+      "text": "We respond as quickly as possible after receiving your request."
+    },
+    {
+      "title": "Genuine Spare Parts",
+      "text": "We use genuine parts for all service interventions."
+    },
+    {
+      "title": "Safe & Guaranteed",
+      "text": "All services are secured under warranty."
+    }
+  ],
+  "query": {
+    "title": "Device Lookup",
+    "subtitle": "Look up your device using its serial number or service code.",
+    "tabsAriaLabel": "Lookup method",
+    "tabSerial": "Search by Serial Number",
+    "tabServiceCode": "Search by Service Code",
+    "labelSerial": "Serial Number",
+    "labelServiceCode": "Service Code (QR)",
+    "placeholderSerial": "Ex: OXM-VAC-250-0148",
+    "placeholderServiceCode": "Ex: abc123xyz",
+    "searchButton": "Search",
+    "hint": "You can find your serial number on the label attached to the device.",
+    "techSupportImageAlt": "Oxymed Medikal service specialist"
+  },
+  "faultTypes": [
+    "Fault / Not Operating",
+    "Maintenance Request",
+    "Spare Parts Request",
+    "Reduced Performance",
+    "Warranty Request",
+    "Other"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "Active Warranty",
+    "yakin_bitis": "Expiring Soon",
+    "garanti_disi": "Out of Warranty",
+    "bakim_riskli": "Maintenance Required",
+    "yetkisiz_askida": "Pending",
+    "uzatilmis_garanti": "Extended Warranty",
+    "bakim_anlasmasi": "Maintenance Agreement",
+    "talep_incelemede": "Request Under Review",
+    "talep_onaylandi": "Request Approved",
+    "talep_reddedildi": "Request Rejected"
+  },
+  "device": {
+    "notFoundTitle": "Device not found",
+    "notFoundBody": "No registered device information was found for this serial number. Please check the serial number or call our technical support line.",
+    "cardTitle": "Device Information",
+    "imageAlt": "Device image",
+    "labels": {
+      "productName": "Device Type",
+      "model": "Model",
+      "serialNumber": "Serial Number",
+      "installDate": "Installation Date",
+      "customerFirm": "Customer / Institution",
+      "warrantyStatus": "Warranty Status",
+      "warrantyEndDate": "Warranty Expiry",
+      "lastMaintenanceDate": "Last Maintenance",
+      "nextMaintenanceDate": "Next Maintenance"
+    },
+    "historyTitle": "Service Records & History",
+    "historyEmpty": "No service records found yet.",
+    "tableDate": "Date",
+    "tableServiceType": "Service Type",
+    "tablePersonnel": "Service Personnel",
+    "tableReport": "Report",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Quick Service Request Form",
+    "subtitle": "Submit your service request quickly and our team will contact you as soon as possible.",
+    "labelName": "Full Name *",
+    "placeholderName": "Your Full Name",
+    "labelPhone": "Phone",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "Email",
+    "placeholderEmail": "example@email.com",
+    "labelFirm": "Hospital / Institution Name",
+    "placeholderFirm": "Institution name",
+    "labelCity": "Your City",
+    "placeholderCity": "Select city",
+    "cities": [
+      "Ankara",
+      "Istanbul",
+      "Izmir",
+      "Bursa",
+      "Antalya",
+      "Konya",
+      "Adana",
+      "Other"
+    ],
+    "labelFaultType": "Request Type *",
+    "placeholderFaultType": "Select request type",
+    "labelDescription": "Description *",
+    "placeholderDescription": "Enter a brief description...",
+    "kvkkConsent": "I have read and agree to the Personal Data Protection Disclosure Statement.",
+    "submit": "Submit Request",
+    "submitting": "Submitting…",
+    "successTitle": "Your Request Has Been Received!",
+    "successBody": "Our service team will contact you as soon as possible.",
+    "toastSuccess": "Your warranty request has been submitted! We will contact you as soon as possible.",
+    "toastError": "The request could not be created. Please try again.",
+    "toastValidation": "Please complete the required fields and provide Personal Data Protection consent.",
+    "toastNoDevice": "Please look up the device first."
+  }
+}

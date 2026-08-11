@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "I NOSTRI PRODOTTI",
+    "description": "Soluzioni medicali innovative e affidabili sviluppate per ospedali, cliniche e centri sanitari.",
+    "imageAlt": "Immagine banner della pagina prodotti"
+  },
+  "features": {
+    "production": {
+      "title": "DIRETTAMENTE DAL PRODUTTORE",
+      "description": "Produzione di alta qualità e vendita diretta dalla nostra fabbrica"
+    },
+    "certified": {
+      "title": "PRODUZIONE CERTIFICATA",
+      "description": "Produzione certificata ISO 9001, ISO 13485 e CE"
+    },
+    "modular": {
+      "title": "DESIGN MODULARE",
+      "description": "Soluzioni flessibili e modulari secondo le esigenze"
+    },
+    "durability": {
+      "title": "LUNGA DURATA",
+      "description": "Materiali resistenti e utilizzo duraturo"
+    },
+    "support": {
+      "title": "SUPPORTO TECNICO 24/7",
+      "description": "Supporto tecnico continuo prima e dopo la vendita"
+    }
+  },
+  "sidebar": {
+    "allProducts": "Tutti i prodotti",
+    "categoriesError": "Impossibile caricare le categorie.",
+    "catalogTitle": "Scarica il nostro catalogo prodotti",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "Tutti i prodotti",
+    "allDescription": "Soluzioni medicali sviluppate per ospedali, cliniche e centri sanitari.",
+    "categoryDescription": "I nostri prodotti nella categoria {{category}}.",
+    "counter": "{{count}} prodotti",
+    "loadError": "Si è verificato un errore durante il caricamento dei prodotti. Aggiorna la pagina."
+  },
+  "dentalCards": {
+    "amalgam-separator": "Separatore di amalgama",
+    "dental-vakum-pompasi": "Pompa per vuoto dentale",
+    "dental-vakum-sistemi": "Sistema di aspirazione dentale"
+  }
+}

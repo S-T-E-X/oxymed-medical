@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "Assistenza & Supporto",
+    "subtitle": "Visualizzate lo storico degli interventi del vostro dispositivo e create rapidamente una richiesta di assistenza.",
+    "breadcrumbHome": "Home",
+    "breadcrumbCurrent": "Assistenza & Supporto"
+  },
+  "benefits": [
+    {
+      "title": "Supporto Specializzato",
+      "text": "Il nostro team tecnico esperto è sempre al vostro fianco."
+    },
+    {
+      "title": "Intervento Rapido",
+      "text": "Interveniamo nel più breve tempo possibile dopo la vostra richiesta."
+    },
+    {
+      "title": "Ricambi Originali",
+      "text": "Utilizziamo ricambi originali per ogni intervento."
+    },
+    {
+      "title": "Sicuro & Garantito",
+      "text": "Gli interventi sono tutelati da garanzia."
+    }
+  ],
+  "query": {
+    "title": "Ricerca Dispositivo",
+    "subtitle": "Effettuate la ricerca tramite il numero di serie o il codice di assistenza del dispositivo.",
+    "tabsAriaLabel": "Metodo di ricerca",
+    "tabSerial": "Cerca per Numero di Serie",
+    "tabServiceCode": "Cerca per Codice Assistenza",
+    "labelSerial": "Numero di Serie",
+    "labelServiceCode": "Codice Assistenza (QR)",
+    "placeholderSerial": "Es.: OXM-VAC-250-0148",
+    "placeholderServiceCode": "Es.: abc123xyz",
+    "searchButton": "Cerca",
+    "hint": "Il numero di serie è riportato sull'etichetta del dispositivo.",
+    "techSupportImageAlt": "Specialista dell'assistenza Oxymed Medikal"
+  },
+  "faultTypes": [
+    "Guasto / Non Funziona",
+    "Richiesta di Manutenzione",
+    "Richiesta di Ricambi",
+    "Riduzione delle Prestazioni",
+    "Richiesta di Garanzia",
+    "Altro"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "Garanzia Attiva",
+    "yakin_bitis": "In Scadenza",
+    "garanti_disi": "Fuori Garanzia",
+    "bakim_riskli": "Manutenzione Necessaria",
+    "yetkisiz_askida": "In Sospeso",
+    "uzatilmis_garanti": "Garanzia Estesa",
+    "bakim_anlasmasi": "Contratto di Manutenzione",
+    "talep_incelemede": "Richiesta in Valutazione",
+    "talep_onaylandi": "Richiesta Approvata",
+    "talep_reddedildi": "Richiesta Rifiutata"
+  },
+  "device": {
+    "notFoundTitle": "Dispositivo non trovato",
+    "notFoundBody": "Non sono state trovate informazioni registrate per questo numero di serie. Verificate il numero di serie o contattate il nostro supporto tecnico.",
+    "cardTitle": "Informazioni sul Dispositivo",
+    "imageAlt": "Immagine del dispositivo",
+    "labels": {
+      "productName": "Tipo di Dispositivo",
+      "model": "Modello",
+      "serialNumber": "Numero di Serie",
+      "installDate": "Data di Installazione",
+      "customerFirm": "Cliente / Struttura",
+      "warrantyStatus": "Stato della Garanzia",
+      "warrantyEndDate": "Scadenza Garanzia",
+      "lastMaintenanceDate": "Ultima Manutenzione",
+      "nextMaintenanceDate": "Prossima Manutenzione"
+    },
+    "historyTitle": "Interventi Effettuati & Storico Assistenza",
+    "historyEmpty": "Non sono ancora presenti registrazioni di assistenza.",
+    "tableDate": "Data",
+    "tableServiceType": "Tipo di Intervento",
+    "tablePersonnel": "Tecnico di Assistenza",
+    "tableReport": "Rapporto",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Modulo di Richiesta Assistenza Rapida",
+    "subtitle": "Create rapidamente la vostra richiesta di assistenza; il nostro team vi contatterà al più presto.",
+    "labelName": "Nome e Cognome *",
+    "placeholderName": "Nome e cognome",
+    "labelPhone": "Telefono",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "E-mail",
+    "placeholderEmail": "esempio@email.com",
+    "labelFirm": "Nome Ospedale / Struttura",
+    "placeholderFirm": "Nome della struttura",
+    "labelCity": "Città",
+    "placeholderCity": "Selezionate una città",
+    "cities": [
+      "Ankara",
+      "Istanbul",
+      "Izmir",
+      "Bursa",
+      "Antalya",
+      "Konya",
+      "Adana",
+      "Altro"
+    ],
+    "labelFaultType": "Tipo di Richiesta *",
+    "placeholderFaultType": "Selezionate il tipo di richiesta",
+    "labelDescription": "Descrizione *",
+    "placeholderDescription": "Inserite una breve descrizione...",
+    "kvkkConsent": "Ho letto e accetto l'Informativa sulla privacy.",
+    "submit": "Invia Richiesta",
+    "submitting": "Invio in corso…",
+    "successTitle": "Richiesta Ricevuta!",
+    "successBody": "Il nostro team di assistenza vi contatterà al più presto.",
+    "toastSuccess": "La vostra richiesta di garanzia è stata inviata! Vi contatteremo al più presto.",
+    "toastError": "Impossibile creare la richiesta, riprovate.",
+    "toastValidation": "Compilate i campi obbligatori e fornite il consenso alla privacy.",
+    "toastNoDevice": "Cercate prima il dispositivo."
+  }
+}

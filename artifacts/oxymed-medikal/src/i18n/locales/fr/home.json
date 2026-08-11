@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "imageAlt": "Unité tête de lit et système de bras plafonnier dans une chambre d’hôpital moderne"
+  },
+  "features": {
+    "production": {
+      "title": "DIRECT FABRICANT",
+      "description": "Fabrication de haute qualité et vente directe d’usine"
+    },
+    "design": {
+      "title": "DESIGN MODERNE",
+      "description": "Des solutions esthétiques, ergonomiques et fonctionnelles"
+    },
+    "safety": {
+      "title": "SÉCURITÉ",
+      "description": "Des systèmes sûrs conformes aux normes internationales"
+    },
+    "support": {
+      "title": "ASSISTANCE TECHNIQUE",
+      "description": "Assistance technique continue avant et après-vente"
+    },
+    "durability": {
+      "title": "LONGUE DURÉE DE VIE",
+      "description": "Des matériaux durables pour une utilisation de longue durée"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "NOS GROUPES DE PRODUITS",
+    "title": "Technologie avancée, performance supérieure",
+    "description": "Avec nos gammes de produits innovantes développées pour les hôpitaux, cliniques et centres de santé, nous rendons les espaces de soins plus sûrs et plus performants.",
+    "loadError": "Une erreur est survenue lors du chargement des groupes de produits.",
+    "fallbackDescription": "Nos équipements et solutions médicales.",
+    "descriptions": [
+      "Des solutions sûres et confortables avec unités électriques, de gaz médicaux et de données.",
+      "Des solutions de bras plafonniers flexibles pour les salles d’opération, les soins intensifs et les urgences.",
+      "Systèmes de distribution d’oxygène, de vide, d’air, d’AGS et d’azote.",
+      "Communication ininterrompue grâce aux systèmes électriques, de courants faibles et de données."
+    ]
+  },
+  "stats": {
+    "eyebrow": "POURQUOI OXYMED ?",
+    "description": "Nous faisons la différence dans le secteur grâce à notre approche centrée sur la satisfaction client, nos standards de qualité et notre équipe expérimentée.",
+    "loadError": "Les statistiques n’ont pas pu être chargées, les valeurs par défaut sont affichées.",
+    "imageAlt": "Installation moderne de fabrication de dispositifs médicaux",
+    "yearsExperience": "ANNÉES D’EXPÉRIENCE",
+    "completedProjects": "PROJETS RÉALISÉS",
+    "exportCountries": "PAYS D’EXPORTATION",
+    "customerSatisfaction": "SATISFACTION CLIENT"
+  },
+  "references": {
+    "title": "QUELQUES-UNES DE NOS RÉFÉRENCES",
+    "loadError": "Une erreur est survenue lors du chargement des références."
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VACUUM SYSTEM",
+    "desc1": "A high-performance, reliable system solution designed to meet the central vacuum requirements of dental clinics.",
+    "desc2": "Ensures maximum efficiency in healthcare facilities with continuous vacuum power, quiet operation and a long-lasting design."
+  },
+  "heroFeatures": [
+    {
+      "title": "HIGH RELIABILITY",
+      "text": "Redundant pump configuration for uninterrupted vacuum generation."
+    },
+    {
+      "title": "QUIET AND EFFICIENT",
+      "text": "Low noise level and high energy efficiency."
+    },
+    {
+      "title": "EASY TO USE",
+      "text": "Real-time monitoring and management via a user-friendly control panel."
+    },
+    {
+      "title": "LONG-LASTING DESIGN",
+      "text": "Long, stable service life with high-quality components."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "STAINLESS STEEL MANIFOLD",
+      "text": "Corrosion-resistant, hygienic and long-lasting construction.",
+      "ariaLabel": "Stainless steel manifold WEBP image area"
+    },
+    {
+      "title": "SMART CONTROL PANEL",
+      "text": "System status, alarm and automation management.",
+      "ariaLabel": "Smart control panel WEBP image area"
+    },
+    {
+      "title": "HIGH-PERFORMANCE PUMPS",
+      "text": "Durable, quiet units delivering powerful vacuum performance.",
+      "ariaLabel": "High-performance pumps WEBP image area"
+    }
+  ],
+  "specs": {
+    "heading": "TECHNICAL SPECIFICATIONS",
+    "rows": [
+      [
+        "Product Name",
+        "OXY-DVS Dental Vacuum System"
+      ],
+      [
+        "Vacuum Capacity",
+        "100 - 840 m³/h (optional)"
+      ],
+      [
+        "Operating Vacuum",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Number of Pumps",
+        "2 - 4 units (redundant)"
+      ],
+      [
+        "Motor Power",
+        "2,2 - 4 kW (per pump)"
+      ],
+      [
+        "Power Supply",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Noise Level",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Manifold Material",
+        "Stainless Steel (AISI 304)"
+      ],
+      [
+        "Connection Diameter",
+        "DN40 - DN65"
+      ],
+      [
+        "Operating Temperature",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Protection Class",
+        "IP54"
+      ],
+      [
+        "Dimensions (HxWxD)",
+        "1300 x 600 x 1200 mm (example)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TECHNICAL DRAWING / DIMENSIONS",
+    "ariaLabel": "Technical drawing and dimensions WEBP image area"
+  },
+  "useCases": {
+    "heading": "APPLICATION AREAS",
+    "items": [
+      "Dental Clinics",
+      "Oral and Dental Health Centers",
+      "Hospitals",
+      "Surgical Procedure Rooms",
+      "Laboratories"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Product detail image areas"
+  },
+  "bottomNote": {
+    "vacuum": "Powerful, quiet and sustainable vacuum performance.",
+    "capacity": "Capacity and size options according to project requirements.",
+    "cta": "GET A QUOTE"
+  },
+  "category": "Dental Vacuum System"
+}

@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "imageAlt": "Bed head unit and pendant system in a modern hospital room"
+  },
+  "features": {
+    "production": {
+      "title": "DIRECT FROM THE MANUFACTURER",
+      "description": "High-quality production and direct sales from our own factory"
+    },
+    "design": {
+      "title": "MODERN DESIGN",
+      "description": "Aesthetic, ergonomic and functional solutions"
+    },
+    "safety": {
+      "title": "SAFETY",
+      "description": "Safe systems compliant with international standards"
+    },
+    "support": {
+      "title": "TECHNICAL SUPPORT",
+      "description": "Uninterrupted technical support before and after sales"
+    },
+    "durability": {
+      "title": "LONG-LASTING",
+      "description": "Durable materials and long-lasting use"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "OUR PRODUCT GROUPS",
+    "title": "Advanced Technology, Superior Performance",
+    "description": "With our innovative product groups developed for hospitals, clinics and healthcare centers, we make care environments safer and more efficient.",
+    "loadError": "An error occurred while loading product groups.",
+    "fallbackDescription": "Our medical equipment and solutions.",
+    "descriptions": [
+      "Safe and comfortable solutions with electrical, medical gas and data units.",
+      "Flexible pendant solutions for operating rooms, intensive care and emergency units.",
+      "Oxygen, vacuum, air, AGS and nitrogen gas systems.",
+      "Uninterrupted communication with electrical, low-current and data systems."
+    ]
+  },
+  "stats": {
+    "eyebrow": "WHY OXYMED?",
+    "description": "We make a difference in the industry with our customer-focused approach, quality standards and experienced team.",
+    "loadError": "Statistics could not be loaded; default values are displayed.",
+    "imageAlt": "Modern medical manufacturing facility",
+    "yearsExperience": "YEARS OF EXPERIENCE",
+    "completedProjects": "COMPLETED PROJECTS",
+    "exportCountries": "COUNTRIES EXPORTED TO",
+    "customerSatisfaction": "CUSTOMER SATISFACTION"
+  },
+  "references": {
+    "title": "SOME OF OUR REFERENCES",
+    "loadError": "An error occurred while loading references."
+  }
+}

@@ -2,95 +2,77 @@ export type IconKey = "production" | "design" | "safety" | "support" | "durabili
 
 export type FeatureItem = {
   icon: IconKey;
-  title: string;
-  description: string;
+  /** Dictionary key under `home.features` — resolved at render time. */
+  key: IconKey;
 };
 
-export type FooterColumn = {
-  title: string;
-  links: { label: string; href: string }[];
+export type FooterColumnDef = {
+  /** Dictionary key under `common.footer.columns`. */
+  key: "corporate" | "products" | "services" | "references";
+  links: { key: string; href: string }[];
 };
 
-export type NavItem = {
-  label: string;
-  href: string;
+export type NavItemDef = {
+  /** Dictionary key under `common.nav`. */
+  key: "home" | "corporate" | "products" | "references" | "news" | "service" | "contact";
+  /** Route key for translated pages, or a raw href for Turkish-only pages. */
+  route?: "home" | "products" | "service" | "quote";
+  href?: string;
   dropdown?: "categories";
 };
 
-export const languages = ["TR", "EN"];
-
-export const navItems: NavItem[] = [
-  { label: "ANASAYFA", href: "/" },
-  { label: "KURUMSAL", href: "/kurumsal" },
-  { label: "ÜRÜNLER", href: "/urunler", dropdown: "categories" },
-  { label: "REFERANSLAR", href: "/referanslar" },
-  { label: "HABERLER", href: "/haberler" },
-  { label: "SERVİS", href: "/servis" },
-  { label: "İLETİŞİM", href: "/teklif-al" }
+export const navItems: NavItemDef[] = [
+  { key: "home", route: "home" },
+  { key: "corporate", href: "/kurumsal" },
+  { key: "products", route: "products", dropdown: "categories" },
+  { key: "references", href: "/referanslar" },
+  { key: "news", href: "/haberler" },
+  { key: "service", route: "service" },
+  { key: "contact", route: "quote" },
 ];
 
 export const features: FeatureItem[] = [
-  {
-    icon: "production",
-    title: "YERLİ ÜRETİM",
-    description: "%100 yerli sermaye ile yüksek kalite üretim"
-  },
-  {
-    icon: "design",
-    title: "MODERN TASARIM",
-    description: "Estetik, ergonomik ve fonksiyonel çözümler"
-  },
-  {
-    icon: "safety",
-    title: "GÜVENLİK",
-    description: "Uluslararası standartlara uygun güvenli sistemler"
-  },
-  {
-    icon: "support",
-    title: "TEKNİK DESTEK",
-    description: "Satış öncesi ve sonrası kesintisiz teknik destek"
-  },
-  {
-    icon: "durability",
-    title: "UZUN ÖMÜRLÜ",
-    description: "Dayanıklı malzeme ve uzun ömürlü kullanım"
-  }
+  { icon: "production", key: "production" },
+  { icon: "design", key: "design" },
+  { icon: "safety", key: "safety" },
+  { icon: "support", key: "support" },
+  { icon: "durability", key: "durability" },
 ];
 
-export const footerColumns: FooterColumn[] = [
+export const footerColumns: FooterColumnDef[] = [
   {
-    title: "KURUMSAL",
+    key: "corporate",
     links: [
-      { label: "Hakkımızda", href: "/kurumsal" },
-      { label: "Vizyon & Misyon", href: "/kurumsal#vizyon" },
-      { label: "Kalite Belgelerimiz", href: "/kurumsal#kalite" },
-      { label: "İnsan Kaynakları", href: "/kurumsal#insan-kaynaklari" }
-    ]
+      { key: "about", href: "/kurumsal" },
+      { key: "vision", href: "/kurumsal#vizyon" },
+      { key: "quality", href: "/kurumsal#kalite" },
+      { key: "hr", href: "/kurumsal#insan-kaynaklari" },
+    ],
   },
   {
-    title: "ÜRÜNLER",
+    key: "products",
     links: [
-      { label: "Yatak Başı Üniteleri", href: "/urunler#yatak-basi-uniteleri" },
-      { label: "Pendant Sistemleri", href: "/urunler#pendant-sistemleri" },
-      { label: "Medikal Gaz Sistemleri", href: "/urunler#medikal-gaz-sistemleri" },
-      { label: "Elektrik & Data Sistemleri", href: "/urunler#elektrik-data-sistemleri" }
-    ]
+      { key: "bedHead", href: "#yatak-basi-uniteleri" },
+      { key: "pendant", href: "#pendant-sistemleri" },
+      { key: "medicalGas", href: "#medikal-gaz-sistemleri" },
+      { key: "electrical", href: "#elektrik-data-sistemleri" },
+    ],
   },
   {
-    title: "HİZMETLERİMİZ",
+    key: "services",
     links: [
-      { label: "Projelendirme", href: "/hizmetler#projelendirme" },
-      { label: "Üretim", href: "/hizmetler#uretim" },
-      { label: "Montaj", href: "/hizmetler#montaj" },
-      { label: "Teknik Servis", href: "/hizmetler#teknik-servis" }
-    ]
+      { key: "engineering", href: "/hizmetler#projelendirme" },
+      { key: "manufacturing", href: "/hizmetler#uretim" },
+      { key: "installation", href: "/hizmetler#montaj" },
+      { key: "technicalService", href: "/hizmetler#teknik-servis" },
+    ],
   },
   {
-    title: "REFERANSLAR",
+    key: "references",
     links: [
-      { label: "Tamamlanan Projeler", href: "/referanslar" },
-      { label: "Kamu Projeleri", href: "/referanslar#kamu-projeleri" },
-      { label: "Özel Projeler", href: "/referanslar#ozel-projeler" }
-    ]
-  }
+      { key: "completed", href: "/referanslar" },
+      { key: "public", href: "/referanslar#kamu-projeleri" },
+      { key: "private", href: "/referanslar#ozel-projeler" },
+    ],
+  },
 ];

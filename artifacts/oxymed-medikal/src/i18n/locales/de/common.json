@@ -1,0 +1,94 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "STARTSEITE",
+    "corporate": "UNTERNEHMEN",
+    "products": "PRODUKTE",
+    "references": "REFERENZEN",
+    "news": "NEWS",
+    "service": "SERVICE",
+    "contact": "KONTAKT",
+    "allProducts": "Alle Produkte",
+    "mainMenu": "Hauptmenü",
+    "mobileMenu": "Mobiles Hauptmenü",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "language": "Sprache"
+  },
+  "cta": {
+    "getQuote": "ANGEBOT ANFORDERN",
+    "reviewDetails": "Details ansehen",
+    "downloadCatalog": "KATALOG HERUNTERLADEN",
+    "contactUs": "KONTAKTIEREN SIE UNS",
+    "send": "SENDEN",
+    "sending": "WIRD GESENDET...",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "close": "Schließen"
+  },
+  "footer": {
+    "tagline": "Mit Bettkopfeinheiten, Pendantsystemen und medizinischen Gaslösungen schaffen wir sichere, komfortable und technologisch moderne Umgebungen.",
+    "contactTitle": "KONTAKT",
+    "copyright": "© 2024 Oxymed Medikal. Alle Rechte vorbehalten.",
+    "kvkk": "KVKK",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "columns": {
+      "corporate": {
+        "title": "UNTERNEHMEN",
+        "about": "Über uns",
+        "vision": "Vision & Mission",
+        "quality": "Unsere Qualitätszertifikate",
+        "hr": "Personalwesen"
+      },
+      "products": {
+        "title": "PRODUKTE",
+        "bedHead": "Bettkopfeinheiten",
+        "pendant": "Pendantsysteme",
+        "medicalGas": "Medizinische Gassysteme",
+        "electrical": "Elektro- & Datensysteme"
+      },
+      "services": {
+        "title": "UNSERE LEISTUNGEN",
+        "engineering": "Planung",
+        "manufacturing": "Fertigung",
+        "installation": "Montage",
+        "technicalService": "Technischer Service"
+      },
+      "references": {
+        "title": "REFERENZEN",
+        "completed": "Abgeschlossene Projekte",
+        "public": "Öffentliche Projekte",
+        "private": "Private Projekte"
+      }
+    }
+  },
+  "status": {
+    "loading": "Wird geladen...",
+    "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "notFound": "Keine Ergebnisse gefunden.",
+    "loadingShort": "Wird geladen",
+    "pageLoading": "Seite wird geladen"
+  },
+  "catalog": {
+    "title": "Katalog herunterladen",
+    "subtitle": "Wählen Sie eine Sprache und laden Sie den Katalog herunter",
+    "empty": "Noch kein Katalog hinzugefügt.",
+    "trackLabel": "Katalog herunterladen"
+  },
+  "cookies": {
+    "ariaLabel": "Cookie-Hinweis",
+    "title": "Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern.",
+    "description": "Notwendige Cookies werden für die Funktionalität der Website und die Leistungsanalyse verwendet. Mit der weiteren Nutzung stimmen Sie unserer Cookie-Richtlinie zu.",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen"
+  },
+  "hero": {
+    "fallbackImageAlt": "Bettenkopfversorgungseinheit und Pendelsystem in einem modernen Krankenzimmer",
+    "fallbackTitleLine1": "FÜR DAS LEBEN",
+    "fallbackTitleLine2": "TECHNOLOGIE",
+    "fallbackDescription": "Mit Bettenkopfversorgungseinheiten, Pendelsystemen und medizinischen Gaslösungen schaffen wir sichere, komfortable und technologisch fortschrittliche Umgebungen.",
+    "ourProducts": "UNSERE PRODUKTE",
+    "slideLabel": "Folie {{index}}"
+  }
+}

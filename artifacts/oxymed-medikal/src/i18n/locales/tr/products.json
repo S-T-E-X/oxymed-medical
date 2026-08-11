@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "ÜRÜNLERİMİZ",
+    "description": "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz yenilikçi ve güvenilir medikal çözümler.",
+    "imageAlt": "Ürünler sayfa banner görseli"
+  },
+  "features": {
+    "production": {
+      "title": "YERLİ ÜRETİM",
+      "description": "%100 yerli sermaye ile yüksek kalite üretim"
+    },
+    "certified": {
+      "title": "SERTİFİKALI ÜRETİM",
+      "description": "ISO 9001, ISO 13485 ve CE sertifikalı üretim"
+    },
+    "modular": {
+      "title": "MODÜLER TASARIM",
+      "description": "İhtiyaca göre esnek ve modüler çözümler"
+    },
+    "durability": {
+      "title": "UZUN ÖMÜRLÜ",
+      "description": "Dayanıklı malzeme ve uzun ömürlü kullanım"
+    },
+    "support": {
+      "title": "7/24 TEKNİK DESTEK",
+      "description": "Satış öncesi ve sonrası kesintisiz teknik destek"
+    }
+  },
+  "sidebar": {
+    "allProducts": "Tüm Ürünler",
+    "categoriesError": "Kategoriler yüklenemedi.",
+    "catalogTitle": "Ürün Kataloğumuzu İndirin",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "Tüm Ürünler",
+    "allDescription": "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz medikal çözümler.",
+    "categoryDescription": "{{category}} kategorisindeki ürünlerimiz.",
+    "counter": "{{count}} ürün",
+    "loadError": "Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
+  },
+  "dentalCards": {
+    "amalgam-separator": "Amalgam Separatörü",
+    "dental-vakum-pompasi": "Dental Vakum Pompası",
+    "dental-vakum-sistemi": "Dental Vakum Sistemi"
+  }
+}

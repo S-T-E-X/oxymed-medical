@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useListSettings } from "@workspace/api-client-react";
 import {
   BadgeCheck,
@@ -16,68 +16,13 @@ import {
 import { Link } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import Seo from "../components/common/Seo";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import "./DentalVacuumSystemPage.css";
 
-const heroFeatures = [
-  {
-    icon: ShieldCheck,
-    title: "YÜKSEK GÜVENİLİRLİK",
-    text: "Kesintisiz vakum üretimi için yedekli pompa konfigürasyonu.",
-  },
-  {
-    icon: Volume2,
-    title: "SESSİZ VE VERİMLİ",
-    text: "Düşük ses seviyesi ve yüksek enerji verimliliği.",
-  },
-  {
-    icon: Settings,
-    title: "KOLAY KULLANIM",
-    text: "Kullanıcı dostu kontrol paneli ile anlık izleme ve yönetim.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "UZUN ÖMÜRLÜ YAPI",
-    text: "Kaliteli komponentler ile uzun ve stabil çalışma ömrü.",
-  },
-];
-
-const imageCards = [
-  {
-    title: "PASLANMAZ ÇELİK MANİFOLD",
-    text: "Korozyona karşı dayanıklı, hijyenik ve uzun ömürlü yapı.",
-  },
-  {
-    title: "AKILLI KONTROL PANELİ",
-    text: "Sistem durumu, alarm ve otomasyon yönetimi.",
-  },
-  {
-    title: "YÜKSEK PERFORMANSLI POMPALAR",
-    text: "Güçlü vakum sağlayan, dayanıklı ve sessiz üniteler.",
-  },
-];
-
-const specs = [
-  ["Ürün Adı", "OXY-DVS Dental Vakum Sistemi"],
-  ["Vakum Kapasitesi", "100 - 840 m³/h (isteğe bağlı)"],
-  ["Çalışma Vakumu", "-0,6 / -0,8 bar"],
-  ["Pompa Adedi", "2 - 4 adet (yedekli)"],
-  ["Motor Gücü", "2,2 - 4 kW (pompa başı)"],
-  ["Güç Beslemesi", "380 VAC - 50 Hz"],
-  ["Ses Seviyesi", "≤ 70 dB(A)"],
-  ["Manifold Malzemesi", "Paslanmaz Çelik (AISI 304)"],
-  ["Bağlantı Çapı", "DN40 - DN65"],
-  ["Çalışma Sıcaklığı", "-10 °C / +50 °C"],
-  ["Koruma Sınıfı", "IP54"],
-  ["Boyutlar (YxGxD)", "1300 x 600 x 1200 mm (örnek)"],
-];
-
-const useCases = [
-  { icon: Stethoscope, text: "Diş Klinikleri" },
-  { icon: Hospital, text: "Ağız ve Diş Sağlığı Merkezleri" },
-  { icon: Building2, text: "Hastaneler" },
-  { icon: CircleCheck, text: "Cerrahi Müdahale Odaları" },
-  { icon: Microscope, text: "Laboratuvarlar" },
-];
+const heroFeatureIcons = [ShieldCheck, Volume2, Settings, BadgeCheck];
+const useCaseIcons = [Stethoscope, Hospital, Building2, CircleCheck, Microscope];
 
 function parseDvsSpecsText(text: string): [string, string][] {
   return text.split("\n").filter(Boolean).map((line): [string, string] => {
@@ -91,20 +36,50 @@ export default function DentalVacuumSystemPage() {
     window.scrollTo(0, 0);
   }, []);
 
+  const { t, tv } = useI18n();
+  const path = useLocalizedPath();
+
   const { data: rawSettings } = useListSettings();
   const s = (rawSettings as Record<string, string> | undefined) ?? {};
-  const eyebrow = s["dvs_hero_eyebrow"] || "OXY-DVS SERIES";
+
+  const eyebrow = s["dvs_hero_eyebrow"] || t("dvs.hero.eyebrow");
   const heroTitle = s["dvs_hero_title"];
-  const desc1 = s["dvs_hero_desc1"] || "Dental kliniklerin merkezi vakum ihtiyacını karşılamak için tasarlanmış, yüksek performanslı ve güvenilir sistem çözümü.";
-  const desc2 = s["dvs_hero_desc2"] || "Kesintisiz vakum gücü, sessiz çalışma ve uzun ömürlü yapı ile sağlık tesislerinde maksimum verimlilik sağlar.";
+  const desc1 = s["dvs_hero_desc1"] || t("dvs.hero.desc1");
+  const desc2 = s["dvs_hero_desc2"] || t("dvs.hero.desc2");
   const heroImage = s["dvs_hero_image"];
   const heroMobileImage = s["dvs_hero_mobile_image"];
   const imageCards_imgs = [0, 1, 2].map((i) => s[`dvs_img_${i}`]);
-  const displaySpecs: [string, string][] = s["dvs_specs_text"] ? parseDvsSpecsText(s["dvs_specs_text"]) : (specs as [string, string][]);
   const drawingImage = s["dvs_drawing_image"];
+
+  const heroFeatures = tv<Array<{ title: string; text: string }>>("dvs.heroFeatures", []);
+  const imageCards = tv<Array<{ title: string; text: string; ariaLabel: string }>>("dvs.imageCards", []);
+  const specRows = tv<Array<[string, string]>>("dvs.specs.rows", []);
+
+  const displaySpecs: [string, string][] = s["dvs_specs_text"]
+    ? parseDvsSpecsText(s["dvs_specs_text"])
+    : (specRows as [string, string][]);
+
+  const useCaseItems = tv<string[]>("dvs.useCases.items", []);
+
+  const productName = t("dvs.hero.titleLine1") + " " + t("dvs.hero.titleLine2");
+  const jsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: productName,
+      description: t("dvs.hero.desc1"),
+      brand: {
+        "@type": "Brand",
+        name: "Oxymed Medikal",
+      },
+      category: "Dental Vakum Sistemi",
+    }),
+    [productName, t],
+  );
 
   return (
     <div className="dvs-page">
+      <Seo routeKey="dvs" jsonLd={jsonLd} />
       <Header />
 
       <main className="dvs-main">
@@ -125,15 +100,22 @@ export default function DentalVacuumSystemPage() {
             <div className="dvs-hero__content">
               <div className="dvs-eyebrow">{eyebrow}</div>
               <h1>
-                {heroTitle ? heroTitle : <>DENTAL<span>VAKUM SİSTEMİ</span></>}
+                {heroTitle ? (
+                  heroTitle
+                ) : (
+                  <>
+                    {t("dvs.hero.titleLine1")}
+                    <span>{t("dvs.hero.titleLine2")}</span>
+                  </>
+                )}
               </h1>
               <div className="dvs-title-line" />
               <p>{desc1}</p>
               <p>{desc2}</p>
 
               <div className="dvs-hero-features">
-                {heroFeatures.map((feature) => {
-                  const Icon = feature.icon;
+                {heroFeatures.map((feature, i) => {
+                  const Icon = heroFeatureIcons[i];
                   return (
                     <article key={feature.title}>
                       <Icon aria-hidden="true" />
@@ -148,19 +130,25 @@ export default function DentalVacuumSystemPage() {
 
               {heroMobileImage && (
                 <div className="dvs-hero__mobile-image">
-                  <img src={heroMobileImage} alt={heroTitle || "Dental Vakum Sistemi"} />
+                  <img
+                    src={heroMobileImage}
+                    alt={heroTitle || productName}
+                  />
                 </div>
               )}
             </div>
           </div>
         </section>
 
-        <section className="dvs-container dvs-image-strip" aria-label="Ürün detay görsel alanları">
+        <section
+          className="dvs-container dvs-image-strip"
+          aria-label={t("dvs.imageStrip.ariaLabel")}
+        >
           {imageCards.map((card, i) => (
             <article key={card.title} className="dvs-image-card">
               <div
                 className={`dvs-image-slot${imageCards_imgs[i] ? " dvs-image-slot--has-image" : ""}`}
-                aria-label={`${card.title} WEBP görsel alanı`}
+                aria-label={card.ariaLabel}
                 style={imageCards_imgs[i] ? { backgroundImage: `url(${imageCards_imgs[i]})` } : undefined}
               />
               <h2>{card.title}</h2>
@@ -171,7 +159,7 @@ export default function DentalVacuumSystemPage() {
 
         <section className="dvs-container dvs-technical-grid">
           <article className="dvs-specs">
-            <h2>TEKNİK ÖZELLİKLER</h2>
+            <h2>{t("dvs.specs.heading")}</h2>
             <dl>
               {displaySpecs.map(([label, value]) => (
                 <div key={label}>
@@ -183,25 +171,25 @@ export default function DentalVacuumSystemPage() {
           </article>
 
           <article className="dvs-drawing">
-            <h2>TEKNİK ÇİZİM / BOYUTLAR</h2>
+            <h2>{t("dvs.drawing.heading")}</h2>
             <div className="dvs-drawing-grid">
               <div
                 className={`dvs-drawing-slot${drawingImage ? " dvs-drawing-slot--has-image" : ""}`}
-                aria-label="Teknik çizim ve boyutlar WEBP görsel alanı"
+                aria-label={t("dvs.drawing.ariaLabel")}
                 style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
               />
             </div>
           </article>
 
           <article className="dvs-usage">
-            <h2>KULLANIM ALANLARI</h2>
+            <h2>{t("dvs.useCases.heading")}</h2>
             <ul>
-              {useCases.map((item) => {
-                const Icon = item.icon;
+              {useCaseItems.map((text, i) => {
+                const Icon = useCaseIcons[i];
                 return (
-                  <li key={item.text}>
+                  <li key={text}>
                     <Icon aria-hidden="true" />
-                    <span>{item.text}</span>
+                    <span>{text}</span>
                   </li>
                 );
               })}
@@ -212,13 +200,13 @@ export default function DentalVacuumSystemPage() {
         <section className="dvs-container dvs-bottom-note">
           <div>
             <Gauge aria-hidden="true" />
-            <span>Güçlü, sessiz ve sürdürülebilir vakum performansı.</span>
+            <span>{t("dvs.bottomNote.vacuum")}</span>
           </div>
           <div>
             <Ruler aria-hidden="true" />
-            <span>Proje ihtiyacına göre kapasite ve ölçü seçenekleri.</span>
+            <span>{t("dvs.bottomNote.capacity")}</span>
           </div>
-          <Link to="/teklif-al">TEKLİF AL</Link>
+          <Link to={path("quote")}>{t("dvs.bottomNote.cta")}</Link>
         </section>
       </main>
 

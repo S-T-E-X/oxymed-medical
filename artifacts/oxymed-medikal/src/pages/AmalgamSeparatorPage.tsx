@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useListSettings } from "@workspace/api-client-react";
 import {
   ArrowRight,
@@ -19,111 +19,13 @@ import {
 import { Link } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import Seo from "../components/common/Seo";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import "./AmalgamSeparatorPage.css";
 
-const heroFeatures = [
-  {
-    icon: ShieldCheck,
-    title: "Paslanmaz Çelik Gövde",
-    text: "Yüksek kaliteli paslanmaz çelik malzeme uzun ömürlü kullanım sağlar.",
-  },
-  {
-    icon: Droplets,
-    title: "Hijyenik Tasarım",
-    text: "Pürüzsüz yüzey yapısı ile kolay temizlik ve hijyenik kullanım sunar.",
-  },
-  {
-    icon: Puzzle,
-    title: "Kolay Entegrasyon",
-    text: "Mevcut vakum hatlarına hızlı ve kolay entegrasyon imkanı.",
-  },
-  {
-    icon: Clock3,
-    title: "Uzun Ömürlü Kullanım",
-    text: "Sağlam yapısı ile zorlu koşullarda bile maksimum performans.",
-  },
-];
-
-const detailCards = [
-  {
-    title: "Dayanıklı Gövde",
-    text: "Kalın paslanmaz çelik gövde yapısı ile korozyona karşı üstün direnç sağlar.",
-  },
-  {
-    title: "Detaylı Bağlantı Yapısı",
-    text: "İç bağlantı tasarımı, akış verimliliğini artırır ve tıkanma riskini minimize eder.",
-  },
-  {
-    title: "Kolay Montaj",
-    text: "Standart bağlantı noktaları sayesinde hızlı ve pratik montaj imkanı sunar.",
-  },
-  {
-    title: "Hijyenik Yüzey",
-    text: "Pürüzsüz iç ve dış yüzey yapısı ile kolay temizlik ve hijyen sağlar.",
-  },
-];
-
-const specs = [
-  ["Ürün Adı", "Amalgam Separatörü"],
-  ["Kullanım Alanı", "Diş üniteleri ve vakum sistemleri"],
-  ["Gövde Malzemesi", "Paslanmaz Çelik (AISI 304)"],
-  ["Bağlantı Yapısı", "Standart dental vakum hatlarına uygun"],
-  ["Temizlik / Bakım", "Kolay sökülebilir yapı ve pürüzsüz yüzey"],
-  ["Montaj Tipi", "Dikey montaj"],
-  ["Uyumluluk", "Tüm dental vakum sistemleri ile uyumlu"],
-  ["Yüzey Yapısı", "Pürüzsüz, hijyenik, korozyona dayanıklı"],
-];
-
-const useCases = [
-  {
-    icon: Stethoscope,
-    title: "Diş Klinikleri",
-    text: "Diş kliniklerinde amalgam atıklarının güvenli ayrıştırılması.",
-  },
-  {
-    icon: Settings,
-    title: "Dental Sistemler",
-    text: "Dental üniteler ve vakum sistemleriyle tam uyumlu kullanım.",
-  },
-  {
-    icon: Building2,
-    title: "Merkezi Vakum Hatları ile Entegrasyon",
-    text: "Merkezi sistemlere kolay entegrasyon ve optimum performans.",
-  },
-  {
-    icon: Wrench,
-    title: "Teknik Servis Uygulamaları",
-    text: "Teknik servis ve bakım uygulamalarında güvenilir çözüm ortağı.",
-  },
-  {
-    icon: CirclePlus,
-    title: "Sağlık Kuruluşları",
-    text: "Hastaneler ve sağlık kuruluşları için ideal çözüm.",
-  },
-];
-
-const faqs = [
-  {
-    q: "Amalgam separatörü ne işe yarar?",
-    a: "Amalgam partiküllerini aspirasyon sistemlerinden ayırarak çevreye karışmasını önler ve atıkların güvenli şekilde toplanmasını sağlar.",
-  },
-  {
-    q: "Montaj süreci nasıldır?",
-    a: "Dikey montaj önerilir. Standart bağlantı noktaları sayesinde mevcut vakum hattına hızlı ve kolay şekilde entegre edilir.",
-  },
-  {
-    q: "Hangi sistemlerle uyumludur?",
-    a: "Tüm dental vakum sistemleri ve merkezi vakum hatları ile uyumludur. Standart bağlantı ölçülerine sahiptir.",
-  },
-  {
-    q: "Neden paslanmaz çelik tercih edilmiştir?",
-    a: "Paslanmaz çelik malzeme, korozyona karşı üstün direnç sağlar, uzun ömürlüdür ve hijyenik kullanım için idealdir.",
-  },
-  {
-    q: "Bakımı nasıl yapılır?",
-    a: "Dış yüzey nemli bir bezle silinebilir. İç kısım periyodik olarak kontrol edilmeli ve gerektiğinde sökülebilir yapısı sayesinde kolayca temizlenmelidir.",
-  },
-];
+const HERO_FEATURE_ICONS = [ShieldCheck, Droplets, Puzzle, Clock3];
+const USE_CASE_ICONS = [Stethoscope, Settings, Building2, Wrench, CirclePlus];
 
 function parseSpecsText(text: string): [string, string][] {
   return text.split("\n").filter(Boolean).map((line): [string, string] => {
@@ -133,23 +35,46 @@ function parseSpecsText(text: string): [string, string][] {
 }
 
 export default function AmalgamSeparatorPage() {
+  const { t, tv } = useI18n();
+  const path = useLocalizedPath();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const { data: rawSettings } = useListSettings();
   const s = (rawSettings as Record<string, string> | undefined) ?? {};
-  const eyebrow = s["ams_hero_eyebrow"] || "OXYMED MEDİKAL";
+
+  const eyebrow = s["ams_hero_eyebrow"] || t("ams.hero.eyebrow");
   const heroTitle = s["ams_hero_title"];
-  const desc1 = s["ams_hero_desc1"] || "Oxymed Amalgam Separatörü, diş ünitelerinden aspirasyon sistemleriyle oluşan amalgam partiküllerini etkin şekilde ayırarak çevreye karışmasını önler.";
-  const desc2 = s["ams_hero_desc2"] || "Hijyenik, dayanıklı ve verimli tasarımıyla güvenli bir çalışma ortamı sunar.";
+  const desc1 = s["ams_hero_desc1"] || t("ams.hero.desc1");
+  const desc2 = s["ams_hero_desc2"] || t("ams.hero.desc2");
   const heroImage = s["ams_hero_image"];
   const detailImages = [0, 1, 2, 3].map((i) => s[`ams_img_${i}`]);
-  const displaySpecs: [string, string][] = s["ams_specs_text"] ? parseSpecsText(s["ams_specs_text"]) : (specs as [string, string][]);
   const drawingImage = s["ams_drawing_image"];
+
+  const heroFeatures = tv<Array<{ title: string; text: string }>>("ams.heroFeatures", []);
+  const detailCards = tv<Array<{ title: string; text: string }>>("ams.detailGrid.cards", []);
+  const faqs = tv<Array<{ q: string; a: string }>>("ams.faqs.items", []);
+  const useCases = tv<Array<{ title: string; text: string }>>("ams.useCases.items", []);
+  const defaultSpecRows = tv<Array<{ k: string; v: string }>>("ams.specs.rows", []);
+
+  const displaySpecs: [string, string][] = s["ams_specs_text"]
+    ? parseSpecsText(s["ams_specs_text"])
+    : defaultSpecRows.map((row) => [row.k, row.v]);
+
+  const jsonLd = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: t("ams.hero.titleLine1") + " " + t("ams.hero.titleLine2"),
+    description: desc1,
+    brand: { "@type": "Brand", name: "Oxymed Medikal" },
+    category: t("ams.useCases.title"),
+  }), [t, desc1]);
 
   return (
     <div className="ams-page">
+      <Seo routeKey="ams" jsonLd={jsonLd} />
       <Header />
 
       <main className="ams-main">
@@ -158,15 +83,15 @@ export default function AmalgamSeparatorPage() {
             <div className="ams-hero__content">
               <div className="ams-eyebrow">{eyebrow}</div>
               <h1>
-                {heroTitle ? heroTitle : <>AMALGAM<span>SEPARATÖRÜ</span></>}
+                {heroTitle ? heroTitle : <>{t("ams.hero.titleLine1")}<span>{t("ams.hero.titleLine2")}</span></>}
               </h1>
               <div className="ams-title-line" />
               <p>{desc1}</p>
               <p>{desc2}</p>
 
               <div className="ams-hero-features">
-                {heroFeatures.map((feature) => {
-                  const Icon = feature.icon;
+                {heroFeatures.map((feature, i) => {
+                  const Icon = HERO_FEATURE_ICONS[i] ?? ShieldCheck;
                   return (
                     <article key={feature.title}>
                       <Icon aria-hidden="true" />
@@ -180,7 +105,7 @@ export default function AmalgamSeparatorPage() {
               </div>
             </div>
 
-            <div className="ams-hero__visual" aria-label="Amalgam separatörü ana WEBP görsel alanı">
+            <div className="ams-hero__visual" aria-label={t("ams.hero.photoSlotAriaLabel")}>
               <div
                 className={`ams-hero-photo-slot${heroImage ? " ams-hero-photo-slot--has-image" : ""}`}
                 style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
@@ -189,12 +114,12 @@ export default function AmalgamSeparatorPage() {
           </div>
         </section>
 
-        <section className="ams-container ams-detail-grid" aria-label="Ürün detay görsel alanları">
+        <section className="ams-container ams-detail-grid" aria-label={t("ams.detailGrid.ariaLabel")}>
           {detailCards.map((card, i) => (
             <article key={card.title}>
               <div
                 className={`ams-image-slot${detailImages[i] ? " ams-image-slot--has-image" : ""}`}
-                aria-label={`${card.title} WEBP görsel alanı`}
+                aria-label={`${card.title} ${t("ams.imageSlot.webpSuffix")}`}
                 style={detailImages[i] ? { backgroundImage: `url(${detailImages[i]})` } : undefined}
               />
               <h2>{card.title}</h2>
@@ -207,7 +132,7 @@ export default function AmalgamSeparatorPage() {
           <article className="ams-specs">
             <header>
               <Settings aria-hidden="true" />
-              <h2>TEKNİK ÖZELLİKLER</h2>
+              <h2>{t("ams.specs.title")}</h2>
             </header>
             <dl>
               {displaySpecs.map(([label, value]) => (
@@ -222,22 +147,22 @@ export default function AmalgamSeparatorPage() {
           <article className="ams-drawing">
             <header>
               <Ruler aria-hidden="true" />
-              <h2>TEKNİK ÇİZİM VE ÖLÇÜLER</h2>
+              <h2>{t("ams.drawing.title")}</h2>
             </header>
             <div
               className={`ams-drawing-slot${drawingImage ? " ams-drawing-slot--has-image" : ""}`}
-              aria-label="Teknik çizim ve ölçüler WEBP görsel alanı"
+              aria-label={t("ams.drawing.slotAriaLabel")}
               style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
             />
-            <p>Tüm ölçüler mm cinsindendir.</p>
+            <p>{t("ams.drawing.unitNote")}</p>
           </article>
         </section>
 
         <section className="ams-container ams-usage-band">
-          <h2>KULLANIM ALANLARI</h2>
+          <h2>{t("ams.useCases.title")}</h2>
           <div>
-            {useCases.map((item) => {
-              const Icon = item.icon;
+            {useCases.map((item, i) => {
+              const Icon = USE_CASE_ICONS[i] ?? Stethoscope;
               return (
                 <article key={item.title}>
                   <Icon aria-hidden="true" />
@@ -252,7 +177,7 @@ export default function AmalgamSeparatorPage() {
         <section className="ams-container ams-faq">
           <header>
             <MessageCircle aria-hidden="true" />
-            <h2>S.S.S.</h2>
+            <h2>{t("ams.faqs.title")}</h2>
           </header>
           <div className="ams-faq__grid">
             {faqs.map((item, index) => (
@@ -271,11 +196,11 @@ export default function AmalgamSeparatorPage() {
           <div className="ams-container ams-quote-strip__inner">
             <FileCheck2 aria-hidden="true" />
             <div>
-              <h2>Hızlı Teklif Al</h2>
-              <p>Projeniz için uygun çözüm ve fiyat teklifi almak için bizimle iletişime geçin.</p>
+              <h2>{t("ams.cta.title")}</h2>
+              <p>{t("ams.cta.subtitle")}</p>
             </div>
-            <Link to="/teklif-al">
-              Teklif İste
+            <Link to={path("quote")}>
+              {t("ams.cta.btn")}
               <ArrowRight aria-hidden="true" />
             </Link>
           </div>

@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "GET A QUOTE",
+    "subtitle": "Let us prepare a tailored quotation for the solutions that best meet your needs.",
+    "imageAlt": "Patient room with bed head unit and pendant system"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "FAST RESPONSE",
+      "description": "Our expert team will contact you within 24 hours of receiving your request."
+    },
+    "reliable": {
+      "title": "RELIABLE SOLUTIONS",
+      "description": "The highest quality assurance through ISO 9001 and ISO 13485 certified production processes."
+    },
+    "expert": {
+      "title": "EXPERT SUPPORT",
+      "description": "Our experienced engineering team is with you from project planning through installation."
+    }
+  },
+  "form": {
+    "title": "Request a Quote Form",
+    "subtitle": "You can submit your request by completing the form below.",
+    "fields": {
+      "fullName": "Full Name *",
+      "fullNamePlaceholder": "Your first and last name",
+      "email": "Email *",
+      "emailPlaceholder": "example@mail.com",
+      "phone": "Phone *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Company / Organization",
+      "companyPlaceholder": "Company or organization name",
+      "jobTitle": "Position / Title",
+      "jobTitlePlaceholder": "Your position or title",
+      "projectType": "Project Type",
+      "city": "City / District",
+      "applicationArea": "Application Area",
+      "notes": "Request and Notes",
+      "notesPlaceholder": "Please provide information about your project...",
+      "file": "Upload File (Optional)",
+      "fileButton": "Select or drag and drop a file",
+      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)",
+      "selectDefault": "Select"
+    },
+    "validation": {
+      "fullNameRequired": "Full name is required.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "phoneRequired": "Phone number is required."
+    },
+    "submit": "REQUEST A QUOTE",
+    "submitting": "SENDING…",
+    "privacy": "The information you submit is stored securely and will not be shared with third parties.",
+    "apiError": "An error occurred while submitting your quote request. Please try again."
+  },
+  "success": {
+    "title": "Your Request Has Been Received!",
+    "description": "Your quote request has been submitted successfully. Our expert team will contact you as soon as possible.",
+    "newRequest": "New Quote Request"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Bed Head Unit",
+      "pendant": "Pendant System",
+      "medicalGas": "Medical Gas System",
+      "electrical": "Electrical Installation"
+    },
+    "cities": {
+      "izmir": "İzmir",
+      "ankara": "Ankara",
+      "istanbul": "İstanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Other"
+    },
+    "applicationAreas": {
+      "hospital": "Hospital",
+      "clinic": "Clinic",
+      "icu": "Intensive Care Unit",
+      "operatingRoom": "Operating Room",
+      "emergency": "Emergency Department",
+      "other": "Other"
+    }
+  }
+}

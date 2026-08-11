@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "DEMANDEZ UN DEVIS",
+    "subtitle": "Préparons une offre sur mesure adaptée à vos besoins.",
+    "imageAlt": "Chambre de patient équipée d'une unité tête de lit et d'un système de bras plafonnier"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "RÉPONSE RAPIDE",
+      "description": "Notre équipe d'experts vous contacte dans les 24 heures suivant la réception de votre demande."
+    },
+    "reliable": {
+      "title": "SOLUTIONS FIABLES",
+      "description": "Une qualité optimale garantie par des processus de fabrication certifiés ISO 9001 et ISO 13485."
+    },
+    "expert": {
+      "title": "ASSISTANCE EXPERTE",
+      "description": "De la planification du projet à l'installation, notre équipe d'ingénieurs expérimentés vous accompagne."
+    }
+  },
+  "form": {
+    "title": "Formulaire de demande de devis",
+    "subtitle": "Remplissez le formulaire ci-dessous pour nous transmettre votre demande.",
+    "fields": {
+      "fullName": "Nom complet *",
+      "fullNamePlaceholder": "Votre nom et prénom",
+      "email": "E-mail *",
+      "emailPlaceholder": "exemple@mail.com",
+      "phone": "Téléphone *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Entreprise / Établissement",
+      "companyPlaceholder": "Nom de l'entreprise ou de l'établissement",
+      "jobTitle": "Fonction / Titre",
+      "jobTitlePlaceholder": "Votre fonction ou titre",
+      "projectType": "Type de projet",
+      "city": "Ville / District",
+      "applicationArea": "Domaine d'application",
+      "notes": "Votre demande et vos notes",
+      "notesPlaceholder": "Veuillez fournir des informations sur votre projet...",
+      "file": "Joindre un fichier (facultatif)",
+      "fileButton": "Sélectionnez ou glissez un fichier",
+      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)",
+      "selectDefault": "Sélectionnez"
+    },
+    "validation": {
+      "fullNameRequired": "Le nom complet est obligatoire.",
+      "emailRequired": "L'e-mail est obligatoire.",
+      "emailInvalid": "Veuillez saisir une adresse e-mail valide.",
+      "phoneRequired": "Le numéro de téléphone est obligatoire."
+    },
+    "submit": "DEMANDER UN DEVIS",
+    "submitting": "ENVOI EN COURS…",
+    "privacy": "Les informations que vous transmettez sont conservées en toute sécurité et ne sont pas partagées avec des tiers.",
+    "apiError": "Une erreur est survenue lors de l'envoi de votre demande de devis. Veuillez réessayer."
+  },
+  "success": {
+    "title": "Votre demande a été reçue !",
+    "description": "Votre demande de devis a été transmise avec succès. Notre équipe d'experts vous contactera dans les plus brefs délais.",
+    "newRequest": "Nouvelle demande de devis"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Unité tête de lit",
+      "pendant": "Système de bras plafonnier",
+      "medicalGas": "Système de gaz médicaux",
+      "electrical": "Installation électrique"
+    },
+    "cities": {
+      "izmir": "İzmir",
+      "ankara": "Ankara",
+      "istanbul": "İstanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Autre"
+    },
+    "applicationAreas": {
+      "hospital": "Hôpital",
+      "clinic": "Clinique",
+      "icu": "Soins intensifs",
+      "operatingRoom": "Bloc opératoire",
+      "emergency": "Service d'urgence",
+      "other": "Autre"
+    }
+  }
+}

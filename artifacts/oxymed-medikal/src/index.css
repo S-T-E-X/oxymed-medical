@@ -182,3 +182,31 @@ select.input {
   }
 }
 
+
+/* ─── Right-to-left support (Arabic, Persian) ──────────────────────────────
+   Layout is driven by CSS logical properties, so most of the page mirrors
+   automatically once <html dir="rtl"> is set. These rules cover the cases a
+   logical property cannot express. */
+
+[dir="rtl"] {
+  /* Latin-script data must stay left-to-right inside RTL sentences. */
+  --oxy-ltr-embed: embed;
+}
+
+/* Phone numbers, e-mail addresses, model codes, measurements and serials. */
+[dir="rtl"] [dir="ltr"] {
+  unicode-bidi: embed;
+  text-align: start;
+}
+
+/* Icons that encode reading direction (arrows, chevrons) flip; symmetrical
+   or semantic icons (logos, check marks, product photos) must not. */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Marquee and slider tracks are animated with explicit translate values, so
+   they keep their original direction rather than mirroring mid-animation. */
+[dir="rtl"] .marquee-track {
+  direction: ltr;
+}

@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVP SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VAKUUM POMPASI",
+    "desc1": "Oxymed Dental Vakuum Pompası diş klinikaları və səhiyyə müəssisələrində etibarlı, səssiz və fasiləsiz vakuum həlli təqdim edir.",
+    "desc2": "Yüksək məhsuldarlıqlı mühərrik quruluşu və dayanıqlı dizaynı ilə uzunömürlü, qənaətcil və gigiyenik istifadə təmin edir.",
+    "visualAriaLabel": "Dental vakuum pompası əsas WEBP təsvir sahəsi"
+  },
+  "heroFeatures": [
+    {
+      "title": "ETİBARLI PERFORMANS",
+      "text": "Fasiləsiz və güclü vakuum gücü."
+    },
+    {
+      "title": "SƏSSİZ İŞLƏMƏ",
+      "text": "Aşağı səs səviyyəsi ilə rahat istifadə."
+    },
+    {
+      "title": "DAYANIQLI QURULUŞ",
+      "text": "Uzunömürlü polad çən və möhkəm gövdə."
+    },
+    {
+      "title": "ASAN TEXNİKİ XİDMƏT",
+      "text": "Modul quruluşla sürətli servis imkanı."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "YÜKSƏK PERFORMANSLI POMPALAR",
+      "text": "Güclü mühərrik quruluşu və səssiz işləmə.",
+      "ariaLabel": "Yüksək performanslı pompalar WEBP təsvir sahəsi"
+    },
+    {
+      "title": "DAYANIQLI BAĞLANTI SİSTEMİ",
+      "text": "Keyfiyyətli birləşdirici elementlər və təhlükəsiz klapanlar.",
+      "ariaLabel": "Dayanıqlı bağlantı sistemi WEBP təsvir sahəsi"
+    },
+    {
+      "title": "KOMPAKT VƏ MODUL DİZAYN",
+      "text": "Asan quraşdırma, yerə qənaət və uzunömürlülük.",
+      "ariaLabel": "Kompakt və modul dizayn WEBP təsvir sahəsi"
+    }
+  ],
+  "specs": {
+    "heading": "TEXNİKİ XÜSUSİYYƏTLƏR",
+    "rows": [
+      [
+        "Məhsulun adı",
+        "Dental Vakuum Pompası"
+      ],
+      [
+        "Pompa sayı",
+        "3 Ədəd"
+      ],
+      [
+        "Çən tipi",
+        "Üfüqi Polad Çən"
+      ],
+      [
+        "Gövdə quruluşu",
+        "Polad, Toz boyalı"
+      ],
+      [
+        "Çən həcmi",
+        "270 - 300 L (Opsional)"
+      ],
+      [
+        "İşləmə sistemi",
+        "Yağsız Vakuum Sistemi"
+      ],
+      [
+        "Maks. vakuum",
+        "-0,85 bar"
+      ],
+      [
+        "Bağlantılar",
+        "Vakuum Girişi: 1 1/4\" / Tahliye: 1/2\""
+      ],
+      [
+        "İstifadə sahəsi",
+        "Diş klinikaları, poliklinikalar və xəstəxanalar"
+      ],
+      [
+        "Texniki xidmət rahatlığı",
+        "Modul quruluş, asan servis və texniki xidmət"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TEXNİKİ ÇERTYOJ & ÖLÇÜLƏR",
+    "ariaLabel": "Texniki çertyoj və ölçülər WEBP təsvir sahəsi",
+    "note": "Ölçülər təxmini dəyərlərdir."
+  },
+  "useCases": {
+    "heading": "İSTİFADƏ SAHƏLƏRİ",
+    "items": [
+      "Diş Klinikaları",
+      "Ağız və Diş Sağlamlığı Mərkəzləri",
+      "Poliklinikalar",
+      "Xəstəxanalar"
+    ]
+  },
+  "quickQuote": {
+    "strong": "Dental vakuum pompası üçün sürətli təklif alın.",
+    "small": "Layihənizə uyğun tutumu və quraşdırma seçimini birlikdə dəqiqləşdirək.",
+    "cta": "TƏKLİF AL"
+  },
+  "category": "Dental Vakuum Pompası"
+}

@@ -1,0 +1,152 @@
+import { useEffect } from "react";
+import { LOCALE_META, LOCALES, SITE_ORIGIN } from "../../i18n/config";
+import { useI18n } from "../../i18n/I18nProvider";
+import { absoluteUrl, alternatesFor } from "../../i18n/seo";
+import type { RouteKey } from "../../i18n/routes";
+
+/**
+ * Marks every tag this component owns so a navigation can clean up the
+ * previous page's metadata without touching tags baked into index.html.
+ */
+const OWNED_ATTR = "data-seo-managed";
+
+function upsertMeta(selectorAttr: "name" | "property", key: string, content: string) {
+  let element = document.head.querySelector<HTMLMetaElement>(`meta[${selectorAttr}="${key}"]`);
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(selectorAttr, key);
+    document.head.appendChild(element);
+  }
+  element.setAttribute(OWNED_ATTR, "true");
+  element.setAttribute("content", content);
+}
+
+function upsertLink(rel: string, href: string, hreflang?: string) {
+  const selector = hreflang ? `link[rel="${rel}"][hreflang="${hreflang}"]` : `link[rel="${rel}"]:not([hreflang])`;
+  let element = document.head.querySelector<HTMLLinkElement>(selector);
+  if (!element) {
+    element = document.createElement("link");
+    element.rel = rel;
+    if (hreflang) element.hreflang = hreflang;
+    document.head.appendChild(element);
+  }
+  element.setAttribute(OWNED_ATTR, "true");
+  element.href = href;
+}
+
+function setJsonLd(id: string, data: unknown | null) {
+  const existing = document.head.querySelector<HTMLScriptElement>(`script[data-seo-jsonld="${id}"]`);
+  if (!data) {
+    existing?.remove();
+    return;
+  }
+  const script = existing ?? document.createElement("script");
+  script.type = "application/ld+json";
+  script.setAttribute("data-seo-jsonld", id);
+  script.textContent = JSON.stringify(data);
+  if (!existing) document.head.appendChild(script);
+}
+
+export type SeoProps = {
+  /** Which translated page this is — drives canonical and hreflang URLs. */
+  routeKey: RouteKey;
+  /** Overrides the `seo.<routeKey>.title` dictionary entry when provided. */
+  title?: string;
+  /** Overrides the `seo.<routeKey>.description` dictionary entry. */
+  description?: string;
+  /** Absolute or root-relative social share image. */
+  image?: string;
+  /** Extra JSON-LD (e.g. a Product schema) merged in alongside the defaults. */
+  jsonLd?: Record<string, unknown> | null;
+};
+
+/**
+ * Per-page metadata: title, description, canonical, hreflang alternates,
+ * Open Graph / Twitter cards and structured data. Static crawlers additionally
+ * get these values pre-baked into HTML by scripts/prerender.mjs at build time.
+ */
+export default function Seo({ routeKey, title, description, image, jsonLd = null }: SeoProps) {
+  const { locale, t } = useI18n();
+
+  const resolvedTitle = title ?? t(`seo.${routeKey}.title`);
+  const resolvedDescription = description ?? t(`seo.${routeKey}.description`);
+  const canonical = absoluteUrl(routeKey, locale);
+  const shareImage = image
+    ? image.startsWith("http")
+      ? image
+      : `${SITE_ORIGIN}${image}`
+    : `${SITE_ORIGIN}/assets/images/hero-medical-suite.png`;
+
+  useEffect(() => {
+    document.title = resolvedTitle;
+
+    upsertMeta("name", "description", resolvedDescription);
+    upsertMeta("name", "robots", "index, follow");
+
+    upsertMeta("property", "og:title", resolvedTitle);
+    upsertMeta("property", "og:description", resolvedDescription);
+    upsertMeta("property", "og:type", "website");
+    upsertMeta("property", "og:url", canonical);
+    upsertMeta("property", "og:image", shareImage);
+    upsertMeta("property", "og:site_name", "Oxymed Medikal");
+    upsertMeta("property", "og:locale", LOCALE_META[locale].ogLocale);
+
+    // Tell social crawlers which other languages exist for this page.
+    document.head
+      .querySelectorAll('meta[property="og:locale:alternate"]')
+      .forEach((node) => node.remove());
+    for (const alternate of LOCALES.filter((candidate) => candidate !== locale)) {
+      const element = document.createElement("meta");
+      element.setAttribute("property", "og:locale:alternate");
+      element.setAttribute("content", LOCALE_META[alternate].ogLocale);
+      element.setAttribute(OWNED_ATTR, "true");
+      document.head.appendChild(element);
+    }
+
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:title", resolvedTitle);
+    upsertMeta("name", "twitter:description", resolvedDescription);
+    upsertMeta("name", "twitter:image", shareImage);
+
+    upsertLink("canonical", canonical);
+    // Drop stale alternates before writing this page's set, otherwise a
+    // navigation would leave the previous page's hreflang URLs behind.
+    document.head
+      .querySelectorAll(`link[rel="alternate"][hreflang]`)
+      .forEach((node) => node.remove());
+    for (const alternate of alternatesFor(routeKey)) {
+      upsertLink("alternate", alternate.href, alternate.hreflang);
+    }
+  }, [canonical, locale, resolvedDescription, resolvedTitle, routeKey, shareImage]);
+
+  useEffect(() => {
+    setJsonLd("organization", {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Oxymed Medikal",
+      url: SITE_ORIGIN,
+      logo: `${SITE_ORIGIN}/favicon.svg`,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "10016 Sk. No:5 AOSB",
+        addressLocality: "Çiğli, İzmir",
+        addressCountry: "TR",
+      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          telephone: "+90 232 870 0 222",
+          contactType: "sales",
+          availableLanguage: LOCALES.map((candidate) => LOCALE_META[candidate].englishName),
+        },
+      ],
+    });
+  }, []);
+
+  useEffect(() => {
+    setJsonLd("page", jsonLd);
+    return () => setJsonLd("page", null);
+  }, [jsonLd]);
+
+  return null;
+}

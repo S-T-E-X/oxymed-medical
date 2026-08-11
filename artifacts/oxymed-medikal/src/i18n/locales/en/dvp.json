@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVP SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VACUUM PUMP",
+    "desc1": "Oxymed Dental Vacuum Pump provides a reliable, quiet and uninterrupted vacuum solution for dental clinics and healthcare facilities.",
+    "desc2": "Its high-performance motor design and durable construction ensure long-lasting, economical and hygienic operation.",
+    "visualAriaLabel": "Dental vacuum pump main WEBP image area"
+  },
+  "heroFeatures": [
+    {
+      "title": "RELIABLE PERFORMANCE",
+      "text": "Continuous and powerful vacuum performance."
+    },
+    {
+      "title": "QUIET OPERATION",
+      "text": "Comfortable operation with low noise levels."
+    },
+    {
+      "title": "DURABLE CONSTRUCTION",
+      "text": "Long-lasting steel tank and robust housing."
+    },
+    {
+      "title": "EASY MAINTENANCE",
+      "text": "Fast service access with modular construction."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "HIGH-PERFORMANCE PUMPS",
+      "text": "Powerful motor design and quiet operation.",
+      "ariaLabel": "High-performance pumps WEBP image area"
+    },
+    {
+      "title": "DURABLE CONNECTION SYSTEM",
+      "text": "Quality fittings and reliable valves.",
+      "ariaLabel": "Durable connection system WEBP image area"
+    },
+    {
+      "title": "COMPACT AND MODULAR DESIGN",
+      "text": "Easy installation, space-saving design and long service life.",
+      "ariaLabel": "Compact and modular design WEBP image area"
+    }
+  ],
+  "specs": {
+    "heading": "TECHNICAL SPECIFICATIONS",
+    "rows": [
+      [
+        "Product Name",
+        "Dental Vacuum Pump"
+      ],
+      [
+        "Number of Pumps",
+        "3 Units"
+      ],
+      [
+        "Tank Type",
+        "Horizontal Steel Tank"
+      ],
+      [
+        "Housing Construction",
+        "Steel, Powder-Coated"
+      ],
+      [
+        "Tank Capacity",
+        "270 - 300 L (Optional)"
+      ],
+      [
+        "Operating System",
+        "Oil-Free Vacuum System"
+      ],
+      [
+        "Max. Vacuum",
+        "-0,85 bar"
+      ],
+      [
+        "Connections",
+        "Vacuum Inlet: 1 1/4\" / Drain: 1/2\""
+      ],
+      [
+        "Applications",
+        "Dental clinics, outpatient clinics and hospitals"
+      ],
+      [
+        "Ease of Maintenance",
+        "Modular construction, easy service and maintenance"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TECHNICAL DRAWING & DIMENSIONS",
+    "ariaLabel": "Technical drawing and dimensions WEBP image area",
+    "note": "Dimensions are approximate."
+  },
+  "useCases": {
+    "heading": "APPLICATIONS",
+    "items": [
+      "Dental Clinics",
+      "Oral and Dental Health Centers",
+      "Outpatient Clinics",
+      "Hospitals"
+    ]
+  },
+  "quickQuote": {
+    "strong": "Get a quick quote for a dental vacuum pump.",
+    "small": "Let us determine the capacity and installation option best suited to your project.",
+    "cta": "GET A QUOTE"
+  },
+  "category": "Dental Vacuum Pump"
+}

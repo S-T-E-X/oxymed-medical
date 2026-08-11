@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVP SERIES",
+    "titleLine1": "POMPE À VIDE",
+    "titleLine2": "DENTAIRE",
+    "desc1": "La pompe à vide dentaire Oxymed offre une solution de vide fiable, silencieuse et continue aux cliniques dentaires et établissements de santé.",
+    "desc2": "Grâce à son moteur haute performance et à sa conception robuste, elle garantit une utilisation durable, économique et hygiénique.",
+    "visualAriaLabel": "Zone d’image WEBP principale de la pompe à vide dentaire"
+  },
+  "heroFeatures": [
+    {
+      "title": "PERFORMANCE FIABLE",
+      "text": "Une puissance de vide continue et élevée."
+    },
+    {
+      "title": "FONCTIONNEMENT SILENCIEUX",
+      "text": "Utilisation confortable grâce à un faible niveau sonore."
+    },
+    {
+      "title": "CONCEPTION ROBUSTE",
+      "text": "Réservoir en acier durable et châssis solide."
+    },
+    {
+      "title": "ENTRETIEN FACILE",
+      "text": "Maintenance rapide grâce à une conception modulaire."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "POMPES HAUTE PERFORMANCE",
+      "text": "Motorisation puissante et fonctionnement silencieux.",
+      "ariaLabel": "Zone d’image WEBP des pompes haute performance"
+    },
+    {
+      "title": "SYSTÈME DE RACCORDEMENT ROBUSTE",
+      "text": "Raccords de qualité et vannes sécurisées.",
+      "ariaLabel": "Zone d’image WEBP du système de raccordement robuste"
+    },
+    {
+      "title": "CONCEPTION COMPACTE ET MODULAIRE",
+      "text": "Installation facile, gain de place et longue durée de vie.",
+      "ariaLabel": "Zone d’image WEBP de la conception compacte et modulaire"
+    }
+  ],
+  "specs": {
+    "heading": "CARACTÉRISTIQUES TECHNIQUES",
+    "rows": [
+      [
+        "Nom du produit",
+        "Pompe à vide dentaire"
+      ],
+      [
+        "Nombre de pompes",
+        "3 unités"
+      ],
+      [
+        "Type de réservoir",
+        "Réservoir horizontal en acier"
+      ],
+      [
+        "Structure du châssis",
+        "Acier, revêtement poudre"
+      ],
+      [
+        "Volume du réservoir",
+        "270 - 300 L (Optionnel)"
+      ],
+      [
+        "Système de fonctionnement",
+        "Système de vide sans huile"
+      ],
+      [
+        "Vide max.",
+        "-0,85 bar"
+      ],
+      [
+        "Raccordements",
+        "Entrée de vide : 1 1/4\" / Évacuation : 1/2\""
+      ],
+      [
+        "Domaines d'utilisation",
+        "Cliniques dentaires, polycliniques et hôpitaux"
+      ],
+      [
+        "Facilité d'entretien",
+        "Structure modulaire, service et entretien simplifiés"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "PLAN TECHNIQUE & DIMENSIONS",
+    "ariaLabel": "Zone d’image WEBP du plan technique et des dimensions",
+    "note": "Les dimensions sont approximatives."
+  },
+  "useCases": {
+    "heading": "DOMAINES D'UTILISATION",
+    "items": [
+      "Cliniques dentaires",
+      "Centres de santé bucco-dentaire",
+      "Polycliniques",
+      "Hôpitaux"
+    ]
+  },
+  "quickQuote": {
+    "strong": "Obtenez rapidement un devis pour votre pompe à vide dentaire.",
+    "small": "Définissons ensemble la capacité et l'option d'installation adaptées à votre projet.",
+    "cta": "DEMANDER UN DEVIS"
+  },
+  "category": "Pompe à vide dentaire"
+}

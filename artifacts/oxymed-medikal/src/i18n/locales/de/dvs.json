@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VAKUUMSYSTEM",
+    "desc1": "Leistungsstarke und zuverlässige Systemlösung für den zentralen Vakuumbedarf von Zahnkliniken.",
+    "desc2": "Gewährleistet maximale Effizienz in Gesundheitseinrichtungen durch kontinuierliche Vakuumleistung, leisen Betrieb und langlebige Konstruktion."
+  },
+  "heroFeatures": [
+    {
+      "title": "HOHE ZUVERLÄSSIGKEIT",
+      "text": "Redundante Pumpenkonfiguration für eine unterbrechungsfreie Vakuumerzeugung."
+    },
+    {
+      "title": "LEISE UND EFFIZIENT",
+      "text": "Niedriger Geräuschpegel und hohe Energieeffizienz."
+    },
+    {
+      "title": "EINFACHE BEDIENUNG",
+      "text": "Echtzeitüberwachung und -steuerung über ein benutzerfreundliches Bedienfeld."
+    },
+    {
+      "title": "LANGLEBIGE KONSTRUKTION",
+      "text": "Lange und stabile Lebensdauer durch hochwertige Komponenten."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "EDELSTAHL-SAMMELLEITUNG",
+      "text": "Korrosionsbeständige, hygienische und langlebige Konstruktion.",
+      "ariaLabel": "WEBP-Bildbereich Edelstahl-Sammelleitung"
+    },
+    {
+      "title": "INTELLIGENTES BEDIENFELD",
+      "text": "Systemstatus, Alarm- und Automatisierungsmanagement.",
+      "ariaLabel": "WEBP-Bildbereich intelligentes Bedienfeld"
+    },
+    {
+      "title": "HOCHLEISTUNGSPUMPEN",
+      "text": "Robuste und leise Einheiten mit hoher Vakuumleistung.",
+      "ariaLabel": "WEBP-Bildbereich Hochleistungspumpen"
+    }
+  ],
+  "specs": {
+    "heading": "TECHNISCHE DATEN",
+    "rows": [
+      [
+        "Produktname",
+        "OXY-DVS Dental-Vakuumsystem"
+      ],
+      [
+        "Vakuumleistung",
+        "100 - 840 m³/h (optional)"
+      ],
+      [
+        "Betriebsvakuum",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Anzahl der Pumpen",
+        "2 - 4 Stück (redundant)"
+      ],
+      [
+        "Motorleistung",
+        "2,2 - 4 kW (pro Pumpe)"
+      ],
+      [
+        "Stromversorgung",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Geräuschpegel",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Material der Sammelleitung",
+        "Edelstahl (AISI 304)"
+      ],
+      [
+        "Anschlussdurchmesser",
+        "DN40 - DN65"
+      ],
+      [
+        "Betriebstemperatur",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Schutzart",
+        "IP54"
+      ],
+      [
+        "Abmessungen (HxBxT)",
+        "1300 x 600 x 1200 mm (Beispiel)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TECHNISCHE ZEICHNUNG / ABMESSUNGEN",
+    "ariaLabel": "WEBP-Bildbereich technische Zeichnung und Abmessungen"
+  },
+  "useCases": {
+    "heading": "EINSATZBEREICHE",
+    "items": [
+      "Zahnkliniken",
+      "Zentren für Mund- und Zahngesundheit",
+      "Krankenhäuser",
+      "Chirurgische Behandlungsräume",
+      "Laboratorien"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Bildbereiche mit Produktdetails"
+  },
+  "bottomNote": {
+    "vacuum": "Leistungsstarke, leise und nachhaltige Vakuumleistung.",
+    "capacity": "Kapazitäts- und Abmessungsoptionen gemäß Projektanforderungen.",
+    "cta": "ANGEBOT ANFORDERN"
+  },
+  "category": "Dental-Vakuumsystem"
+}

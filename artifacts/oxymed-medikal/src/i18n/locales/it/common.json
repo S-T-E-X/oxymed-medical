@@ -1,0 +1,94 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "HOME",
+    "corporate": "AZIENDA",
+    "products": "PRODOTTI",
+    "references": "REFERENZE",
+    "news": "NEWS",
+    "service": "ASSISTENZA",
+    "contact": "CONTATTI",
+    "allProducts": "Tutti i prodotti",
+    "mainMenu": "Menu principale",
+    "mobileMenu": "Menu principale mobile",
+    "openMenu": "Apri menu",
+    "closeMenu": "Chiudi menu",
+    "language": "Lingua"
+  },
+  "cta": {
+    "getQuote": "RICHIEDI UN PREVENTIVO",
+    "reviewDetails": "Scopri i dettagli",
+    "downloadCatalog": "SCARICA IL CATALOGO",
+    "contactUs": "CONTATTACI",
+    "send": "INVIA",
+    "sending": "INVIO IN CORSO...",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "close": "Chiudi"
+  },
+  "footer": {
+    "tagline": "Offriamo ambienti sicuri, confortevoli e tecnologici con unità testaletto, sistemi pensili e soluzioni per gas medicali.",
+    "contactTitle": "CONTATTI",
+    "copyright": "© 2024 Oxymed Medikal. Tutti i diritti riservati.",
+    "kvkk": "KVKK",
+    "privacy": "Informativa sulla privacy",
+    "terms": "Termini di utilizzo",
+    "columns": {
+      "corporate": {
+        "title": "AZIENDA",
+        "about": "Chi siamo",
+        "vision": "Visione e missione",
+        "quality": "Certificazioni di qualità",
+        "hr": "Risorse umane"
+      },
+      "products": {
+        "title": "PRODOTTI",
+        "bedHead": "Unità testaletto",
+        "pendant": "Sistemi pensili",
+        "medicalGas": "Sistemi di gas medicali",
+        "electrical": "Sistemi elettrici e dati"
+      },
+      "services": {
+        "title": "I NOSTRI SERVIZI",
+        "engineering": "Progettazione",
+        "manufacturing": "Produzione",
+        "installation": "Installazione",
+        "technicalService": "Assistenza tecnica"
+      },
+      "references": {
+        "title": "REFERENZE",
+        "completed": "Progetti completati",
+        "public": "Progetti pubblici",
+        "private": "Progetti privati"
+      }
+    }
+  },
+  "status": {
+    "loading": "Caricamento...",
+    "genericError": "Si è verificato un errore. Riprova.",
+    "notFound": "Nessun risultato trovato.",
+    "loadingShort": "Caricamento",
+    "pageLoading": "Caricamento pagina"
+  },
+  "catalog": {
+    "title": "Scarica il catalogo",
+    "subtitle": "Seleziona la lingua e scarica il catalogo",
+    "empty": "Nessun catalogo ancora disponibile.",
+    "trackLabel": "Scarica il catalogo"
+  },
+  "cookies": {
+    "ariaLabel": "Informativa sui cookie",
+    "title": "Questo sito utilizza i cookie per migliorare la tua esperienza.",
+    "description": "Vengono utilizzati cookie necessari per la funzionalità del sito e l'analisi delle prestazioni. Proseguendo, accetti la nostra politica sui cookie.",
+    "accept": "Accetta",
+    "decline": "Rifiuta"
+  },
+  "hero": {
+    "fallbackImageAlt": "Unità testaletto e sistema pensile in una moderna stanza d'ospedale",
+    "fallbackTitleLine1": "TECNOLOGIA",
+    "fallbackTitleLine2": "PER LA VITA",
+    "fallbackDescription": "Offriamo ambienti sicuri, confortevoli e tecnologicamente avanzati con unità testaletto, sistemi pensili e soluzioni per gas medicali.",
+    "ourProducts": "I NOSTRI PRODOTTI",
+    "slideLabel": "Slide {{index}}"
+  }
+}

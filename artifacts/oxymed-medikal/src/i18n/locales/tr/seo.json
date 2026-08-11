@@ -1,0 +1,34 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Yatak Başı Ünitesi, Pendant ve Medikal Gaz Sistemleri",
+    "description": "Hastaneler ve klinikler için yatak başı üniteleri, pendant sistemleri, medikal gaz sistemleri ve dental vakum çözümleri. ISO 9001 ve ISO 13485 sertifikalı üretim, 50+ ülkeye ihracat."
+  },
+  "products": {
+    "title": "Ürünlerimiz | Medikal Gaz ve Hastane Donanım Sistemleri | Oxymed",
+    "description": "Yatak başı üniteleri, pendant sistemleri, medikal gaz kontrol panoları, dental vakum pompaları ve amalgam separatör ürün ailemizi inceleyin."
+  },
+  "gcp": {
+    "title": "Kat Kontrol Panosu (Medikal Gaz Alarm Paneli) | Oxymed Medikal",
+    "description": "Hastane medikal gaz hatları için dijital kat kontrol panosu: oksijen, vakum, basınçlı hava ve azot protoksit için sürekli basınç izleme, sesli ve görsel alarm."
+  },
+  "ams": {
+    "title": "Amalgam Separatör | ISO 11143 Uyumlu Dental Ayırıcı | Oxymed",
+    "description": "Diş kliniklerinde amalgam atığını %95'in üzerinde tutan, ISO 11143 uyumlu, sessiz ve bakımı kolay amalgam separatör sistemleri."
+  },
+  "dvp": {
+    "title": "Dental Vakum Pompası | Kuru ve Islak Sistem | Oxymed Medikal",
+    "description": "Diş klinikleri için sessiz, enerji verimli ve uzun ömürlü dental vakum pompaları. Tek üniteden çok üniteli kliniklere kadar ölçeklenebilir çözümler."
+  },
+  "dvs": {
+    "title": "Dental Vakum Sistemi | Merkezi Aspirasyon Çözümleri | Oxymed",
+    "description": "Çok üniteli diş klinikleri ve ağız diş sağlığı merkezleri için merkezi dental vakum sistemleri, separatör ve kontrol paneli entegrasyonu."
+  },
+  "service": {
+    "title": "Teknik Servis ve Garanti Sorgulama | Oxymed Medikal",
+    "description": "Oxymed cihazlarınız için garanti sorgulama, servis talebi ve bakım desteği. Seri numaranızla cihaz kaydınızı ve servis geçmişinizi görüntüleyin."
+  },
+  "quote": {
+    "title": "Teklif Al | Hastane ve Klinik Projeleri | Oxymed Medikal",
+    "description": "Projeniz için hızlı ve ücretsiz teklif alın. Yatak başı üniteleri, pendant sistemleri, medikal gaz ve dental vakum çözümlerinde uzman desteği."
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDİKAL",
+    "titleLine1": "SÉPARATEUR",
+    "titleLine2": "D’AMALGAME",
+    "desc1": "Le séparateur d’amalgame Oxymed sépare efficacement les particules d’amalgame générées par les systèmes d’aspiration des unités dentaires, empêchant leur rejet dans l’environnement.",
+    "desc2": "Sa conception hygiénique, robuste et performante garantit un environnement de travail sûr.",
+    "photoSlotAriaLabel": "Zone d’image principale WEBP du séparateur d’amalgame"
+  },
+  "heroFeatures": [
+    {
+      "title": "Corps en acier inoxydable",
+      "text": "L’acier inoxydable de haute qualité garantit une utilisation durable."
+    },
+    {
+      "title": "Conception hygiénique",
+      "text": "Sa surface lisse facilite le nettoyage et assure une utilisation hygiénique."
+    },
+    {
+      "title": "Intégration facile",
+      "text": "Intégration rapide et simple aux réseaux de vide existants."
+    },
+    {
+      "title": "Utilisation durable",
+      "text": "Sa structure robuste assure des performances maximales, même en conditions exigeantes."
+    }
+  ],
+  "detailGrid": {
+    "ariaLabel": "Zones d’images détaillées du produit",
+    "cards": [
+      {
+        "title": "Corps robuste",
+        "text": "Son corps épais en acier inoxydable offre une résistance supérieure à la corrosion."
+      },
+      {
+        "title": "Structure de raccordement optimisée",
+        "text": "La conception des raccordements internes améliore l’efficacité du flux et minimise les risques d’obstruction."
+      },
+      {
+        "title": "Montage facile",
+        "text": "Les points de raccordement standard permettent une installation rapide et pratique."
+      },
+      {
+        "title": "Surface hygiénique",
+        "text": "Les surfaces intérieures et extérieures lisses facilitent le nettoyage et garantissent l’hygiène."
+      }
+    ]
+  },
+  "imageSlot": {
+    "webpSuffix": "Zone d’image WEBP"
+  },
+  "specs": {
+    "title": "CARACTÉRISTIQUES TECHNIQUES",
+    "rows": [
+      {
+        "k": "Nom du produit",
+        "v": "Séparateur d’amalgame"
+      },
+      {
+        "k": "Domaine d’utilisation",
+        "v": "Unités dentaires et systèmes de vide"
+      },
+      {
+        "k": "Matériau du corps",
+        "v": "Acier inoxydable (AISI 304)"
+      },
+      {
+        "k": "Structure de raccordement",
+        "v": "Adapté aux réseaux de vide dentaires standard"
+      },
+      {
+        "k": "Nettoyage / entretien",
+        "v": "Structure facilement démontable et surface lisse"
+      },
+      {
+        "k": "Type de montage",
+        "v": "Montage vertical"
+      },
+      {
+        "k": "Compatibilité",
+        "v": "Compatible avec tous les systèmes de vide dentaires"
+      },
+      {
+        "k": "Finition de surface",
+        "v": "Lisse, hygiénique, résistante à la corrosion"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "PLAN TECHNIQUE ET DIMENSIONS",
+    "slotAriaLabel": "Zone d’image WEBP du plan technique et des dimensions",
+    "unitNote": "Toutes les dimensions sont en mm."
+  },
+  "useCases": {
+    "title": "DOMAINES D’UTILISATION",
+    "items": [
+      {
+        "title": "Cliniques dentaires",
+        "text": "Séparation sécurisée des déchets d’amalgame dans les cliniques dentaires."
+      },
+      {
+        "title": "Systèmes dentaires",
+        "text": "Utilisation parfaitement compatible avec les unités dentaires et les systèmes de vide."
+      },
+      {
+        "title": "Intégration aux réseaux de vide centralisés",
+        "text": "Intégration facile aux systèmes centralisés et performances optimales."
+      },
+      {
+        "title": "Applications de service technique",
+        "text": "Partenaire de solution fiable pour les opérations de service technique et de maintenance."
+      },
+      {
+        "title": "Établissements de santé",
+        "text": "Solution idéale pour les hôpitaux et les établissements de santé."
+      }
+    ]
+  },
+  "faqs": {
+    "title": "FAQ",
+    "items": [
+      {
+        "q": "À quoi sert un séparateur d’amalgame ?",
+        "a": "Il sépare les particules d’amalgame des systèmes d’aspiration, empêche leur rejet dans l’environnement et assure la collecte sécurisée des déchets."
+      },
+      {
+        "q": "Comment se déroule l’installation ?",
+        "a": "Un montage vertical est recommandé. Grâce à ses points de raccordement standard, il s’intègre rapidement et facilement au réseau de vide existant."
+      },
+      {
+        "q": "Avec quels systèmes est-il compatible ?",
+        "a": "Il est compatible avec tous les systèmes de vide dentaires et les réseaux de vide centralisés. Il dispose de dimensions de raccordement standard."
+      },
+      {
+        "q": "Pourquoi l’acier inoxydable a-t-il été choisi ?",
+        "a": "L’acier inoxydable offre une résistance supérieure à la corrosion, une longue durée de vie et convient parfaitement à une utilisation hygiénique."
+      },
+      {
+        "q": "Comment effectuer l’entretien ?",
+        "a": "La surface extérieure peut être essuyée avec un chiffon humide. La partie intérieure doit être contrôlée périodiquement et, si nécessaire, facilement nettoyée grâce à sa structure démontable."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Obtenez un devis rapide",
+    "subtitle": "Contactez-nous pour obtenir la solution adaptée et un devis pour votre projet.",
+    "btn": "Demander un devis"
+  },
+  "category": "Séparateur d’amalgame"
+}

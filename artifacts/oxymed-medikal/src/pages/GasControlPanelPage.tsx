@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Bell,
   Building2,
@@ -20,10 +20,18 @@ import { Link } from "react-router-dom";
 import { useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import Seo from "../components/common/Seo";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import "./GasControlPanelPage.css";
+
+const USE_CASE_ICONS = [Hospital, HeartPulse, Stethoscope, Building2, FileCheck2];
+const HERO_FEATURE_ICONS = [ShieldCheck, SlidersHorizontal, Bell, Wrench];
+const FEATURE_TILE_ICONS = [Layers3, Gauge, Bell, Zap];
 
 function useGCPContent() {
   const { data: rawSettings } = useListSettings();
+  const { tv } = useI18n();
   const s = (rawSettings as Record<string, string>) ?? {};
 
   function parse<T>(key: string, fallback: T): T {
@@ -41,135 +49,29 @@ function useGCPContent() {
 
   return {
     hero: parse<{ title: string; description: string }>("gcp_hero", {
-      title: "3 Gazlı Kat Kontrol Panosu",
-      description: "Medikal gaz sistemleriniz için güvenli, akıllı ve kesintisiz kontrol. 3 farklı medikal gazın merkezi yönetimi tek panelde.",
+      title: tv<string>("gcp.hero.title", "3 Gazlı Kat Kontrol Panosu"),
+      description: tv<string>("gcp.hero.description", "Medikal gaz sistemleriniz için güvenli, akıllı ve kesintisiz kontrol."),
     }),
     heroImage: s["gcp_hero_image"] ?? "",
     drawingImage: s["gcp_drawing_image"] ?? "",
     imgs: [s["gcp_img_0"] ?? "", s["gcp_img_1"] ?? "", s["gcp_img_2"] ?? ""],
-    specs: parse<Array<{ k: string; v: string }>>("gcp_specs", [
-      { k: "Ürün Adı", v: "3 Gazlı Kat Kontrol Panosu" },
-      { k: "Desteklenen Gazlar", v: "O2 (Oksijen) - VAC (Vakum) - AIR (Hava)" },
-      { k: "Çalışma Basıncı", v: "4 - 6 bar" },
-      { k: "Alarm Türü", v: "Görsel ve Sesli" },
-      { k: "Gövde Malzemesi", v: "Elektrostatik Boyalı Metal" },
-      { k: "Güç Beslemesi", v: "220 VAC - 50/60 Hz" },
-      { k: "Montaj Tipi", v: "Sıva Üstü / Sıva Altı" },
-      { k: "Çalışma Sıcaklığı", v: "-10 °C / +50 °C" },
-      { k: "Boyutlar (YxGxD)", v: "400 x 320 x 80 mm" },
-    ]),
-    faqs: parse<Array<{ q: string; a: string }>>("gcp_faqs", [
-      { q: "Hangi gazlar desteklenmektedir?", a: "3 Gazlı Kat Kontrol Panosu, Oksijen (O2), Vakum (VAC) ve Tıbbi Hava (AIR) gazlarını destekler." },
-      { q: "Hangi alanlarda kullanılır?", a: "Hastane, yoğun bakım, ameliyathane ve klinik alanlarında kullanılır." },
-      { q: "Montaj tipi nedir?", a: "Sıva üstü veya sıva altı montaj seçenekleriyle uygulanabilir." },
-      { q: "Bakım ve servis ihtiyacı nasıl karşılanır?", a: "Periyodik bakım ve teknik servis ekibiyle güvenli çalışma sürdürülür." },
-      { q: "Alarm sistemi nasıl çalışır?", a: "Basınç değerleri limit dışına çıktığında sesli ve görsel alarm verir." },
-      { q: "Güç kesintisi durumunda sistem çalışır mı?", a: "Proje ihtiyacına göre yedek güç ve alarm senaryoları uygulanabilir." },
-    ]),
-    advantages: parse<string[]>("gcp_advantages", [
-      "Üç farklı gazın tek panelde merkezi kontrolü",
-      "Yüksek güvenlikli alarm ve kesme sistemi",
-      "Kullanıcı dostu arayüz ile kolay izleme",
-      "Uzun ömürlü ve dayanıklı metal gövde",
-      "Kolay montaj ve bakım avantajı",
-    ]),
-    detailCards: parse<Array<{ title: string; text: string }>>("gcp_detail_cards", [
-      { title: "Gaz Bağlantı Ünitesi", text: "Oksijen, vakum ve hava gaz girişleri için yüksek kaliteli vana sistemi." },
-      { title: "Akıllı Kontrol Paneli", text: "Mikroişlemci kontrollü sistem ile gaz basınçları anlık olarak izlenir ve yönetilir." },
-      { title: "Dayanıklı Yapı", text: "Elektrostatik boyalı metal gövdesi ile uzun ömürlü ve darbelere karşı dayanıklıdır." },
-    ]),
+    specs: parse<Array<{ k: string; v: string }>>("gcp_specs",
+      tv<Array<{ k: string; v: string }>>("gcp.specs.rows", [])
+    ),
+    faqs: parse<Array<{ q: string; a: string }>>("gcp_faqs",
+      tv<Array<{ q: string; a: string }>>("gcp.faqs.items", [])
+    ),
+    advantages: parse<string[]>("gcp_advantages",
+      tv<string[]>("gcp.advantages.items", [])
+    ),
+    detailCards: parse<Array<{ title: string; text: string }>>("gcp_detail_cards",
+      tv<Array<{ title: string; text: string }>>("gcp.detailCards", [])
+    ),
   };
 }
 
-const heroFeatures = [
-  {
-    icon: ShieldCheck,
-    title: "Yüksek Güvenlik",
-    text: "Alarm ve otomatik kesme sistemi ile maksimum güvenlik.",
-  },
-  {
-    icon: SlidersHorizontal,
-    title: "Akıllı Kontrol",
-    text: "Mikroişlemci tabanlı kontrol ünitesi ile sürekli izleme.",
-  },
-  {
-    icon: Bell,
-    title: "Alarm Sistemi",
-    text: "Görsel ve sesli uyarı ile anlık bilgilendirme.",
-  },
-  {
-    icon: Wrench,
-    title: "Kolay Montaj",
-    text: "Pratik bağlantı yapısı ile hızlı ve kolay kurulum.",
-  },
-];
-
-const detailCards = [
-  {
-    title: "Gaz Bağlantı Ünitesi",
-    text: "Oksijen, vakum ve hava gaz girişleri için yüksek kaliteli vana sistemi.",
-    size: "420 x 240 px",
-  },
-  {
-    title: "Akıllı Kontrol Paneli",
-    text: "Mikroişlemci kontrollü sistem ile gaz basınçları anlık olarak izlenir ve yönetilir.",
-    size: "420 x 240 px",
-  },
-  {
-    title: "Dayanıklı Yapı",
-    text: "Elektrostatik boyalı metal gövdesi ile uzun ömürlü ve darbelere karşı dayanıklıdır.",
-    size: "420 x 240 px",
-  },
-];
-
-const specs = [
-  ["Ürün Adı", "3 Gazlı Kat Kontrol Panosu"],
-  ["Desteklenen Gazlar", "O2 (Oksijen) - VAC (Vakum) - AIR (Hava)"],
-  ["Çalışma Basıncı", "4 - 6 bar"],
-  ["Alarm Türü", "Görsel ve Sesli"],
-  ["Gövde Malzemesi", "Elektrostatik Boyalı Metal"],
-  ["Güç Beslemesi", "220 VAC - 50/60 Hz"],
-  ["Montaj Tipi", "Sıva Üstü / Sıva Altı"],
-  ["Çalışma Sıcaklığı", "-10 °C / +50 °C"],
-  ["Boyutlar (YxGxD)", "400 x 320 x 80 mm"],
-];
-
-const useCases = [
-  { icon: Hospital, text: "Hastaneler" },
-  { icon: HeartPulse, text: "Yoğun Bakım Üniteleri" },
-  { icon: Stethoscope, text: "Ameliyathaneler" },
-  { icon: Building2, text: "Klinikler" },
-  { icon: FileCheck2, text: "Sağlık Merkezleri" },
-];
-
-const advantages = [
-  "Üç farklı gazın tek panelde merkezi kontrolü",
-  "Yüksek güvenlikli alarm ve kesme sistemi",
-  "Kullanıcı dostu arayüz ile kolay izleme",
-  "Uzun ömürlü ve dayanıklı metal gövde",
-  "Kolay montaj ve bakım avantajı",
-];
-
-const featureTiles = [
-  { icon: Layers3, title: "Merkezi Kontrol", text: "3 gazın tek noktadan yönetimi" },
-  { icon: Gauge, title: "Anlık İzleme", text: "Basınç değerleri sürekli izlenir ve kaydedilir" },
-  { icon: Bell, title: "Güvenli Alarm", text: "Görsel ve sesli alarm ile anlık uyarı" },
-  { icon: Zap, title: "Modüler Yapı", text: "Kolay servis ve bakım imkanı" },
-];
-
-const faqs = [
-  [
-    "Hangi gazlar desteklenmektedir?",
-    "3 Gazlı Kat Kontrol Panosu, Oksijen (O2), Vakum (VAC) ve Tıbbi Hava (AIR) gazlarını destekler.",
-  ],
-  ["Hangi alanlarda kullanılır?", "Hastane, yoğun bakım, ameliyathane ve klinik alanlarında kullanılır."],
-  ["Montaj tipi nedir?", "Sıva üstü veya sıva altı montaj seçenekleriyle uygulanabilir."],
-  ["Bakım ve servis ihtiyacı nasıl karşılanır?", "Periyodik bakım ve teknik servis ekibiyle güvenli çalışma sürdürülür."],
-  ["Alarm sistemi nasıl çalışır?", "Basınç değerleri limit dışına çıktığında sesli ve görsel alarm verir."],
-  ["Güç kesintisi durumunda sistem çalışır mı?", "Proje ihtiyacına göre yedek güç ve alarm senaryoları uygulanabilir."],
-];
-
 function ImageSlot({ label, size, className = "", image }: { label: string; size: string; className?: string; image?: string }) {
+  const { t } = useI18n();
   return (
     <div
       className={`gcp-image-slot ${image ? "gcp-image-slot--has-image" : ""} ${className}`}
@@ -179,7 +81,7 @@ function ImageSlot({ label, size, className = "", image }: { label: string; size
         <>
           <span>{label}</span>
           <strong>{size}</strong>
-          <small>WEBP görsel alanı</small>
+          <small>{t("gcp.imageSlot.webpLabel")}</small>
         </>
       )}
     </div>
@@ -188,6 +90,21 @@ function ImageSlot({ label, size, className = "", image }: { label: string; size
 
 export default function GasControlPanelPage() {
   const { hero, specs, faqs, advantages, detailCards, heroImage, drawingImage, imgs } = useGCPContent();
+  const { t, tv } = useI18n();
+  const path = useLocalizedPath();
+
+  const heroFeatures = tv<Array<{ title: string; text: string }>>("gcp.heroFeatures", []);
+  const featureTiles = tv<Array<{ title: string; text: string }>>("gcp.featureTiles.items", []);
+  const useCaseLabels = tv<string[]>("gcp.useCases.items", []);
+
+  const jsonLd = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: hero.title,
+    description: hero.description,
+    brand: { "@type": "Brand", name: "Oxymed Medikal" },
+    category: t("gcp.useCases.title"),
+  }), [hero.title, hero.description, t]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -195,18 +112,19 @@ export default function GasControlPanelPage() {
 
   return (
     <div className="gcp-page">
+      <Seo routeKey="gcp" jsonLd={jsonLd} />
       <Header />
 
       <main>
         <section className="gcp-hero">
           <div className="gcp-container gcp-hero__grid">
             <div className="gcp-hero__content">
-              <nav className="gcp-breadcrumb" aria-label="Sayfa yolu">
-                <Link to="/">
+              <nav className="gcp-breadcrumb" aria-label={t("gcp.breadcrumb.ariaLabel")}>
+                <Link to={path("home")}>
                   <Home size={15} />
                 </Link>
                 <span>/</span>
-                <Link to="/urunler">Ürünler</Link>
+                <Link to={path("products")}>{t("gcp.breadcrumb.products")}</Link>
                 <span>/</span>
                 <span>{hero.title}</span>
               </nav>
@@ -217,8 +135,8 @@ export default function GasControlPanelPage() {
               <p>{hero.description}</p>
 
               <div className="gcp-hero-features">
-                {heroFeatures.map((item) => {
-                  const Icon = item.icon;
+                {heroFeatures.map((item, i) => {
+                  const Icon = HERO_FEATURE_ICONS[i] ?? ShieldCheck;
                   return (
                     <div key={item.title}>
                       <Icon size={36} />
@@ -239,8 +157,8 @@ export default function GasControlPanelPage() {
             >
               {!heroImage && (
                 <>
-                  <span>Hero ürün fotoğraf alanı</span>
-                  <strong>1080 x 960 px WEBP</strong>
+                  <span>{t("gcp.hero.photoSlot")}</span>
+                  <strong>{t("gcp.hero.photoSlotSize")}</strong>
                 </>
               )}
             </div>
@@ -261,7 +179,7 @@ export default function GasControlPanelPage() {
 
         <section className="gcp-container gcp-info-grid">
           <article className="gcp-specs">
-            <h2>Teknik Özellikler</h2>
+            <h2>{t("gcp.specs.title")}</h2>
             <dl>
               {specs.map((s) => (
                 <div key={s.k}>
@@ -273,19 +191,19 @@ export default function GasControlPanelPage() {
           </article>
 
           <article className="gcp-drawing">
-            <h2>Ölçüler / Teknik Çizim</h2>
-            <ImageSlot label="Teknik çizim görseli" size="700 x 600 px" image={drawingImage} />
+            <h2>{t("gcp.drawing.title")}</h2>
+            <ImageSlot label={t("gcp.drawing.slotLabel")} size={t("gcp.drawing.slotSize")} image={drawingImage} />
           </article>
 
           <article className="gcp-uses">
-            <h2>Kullanım Alanları</h2>
+            <h2>{t("gcp.useCases.title")}</h2>
             <ul>
-              {useCases.map((item) => {
-                const Icon = item.icon;
+              {useCaseLabels.map((label, i) => {
+                const Icon = USE_CASE_ICONS[i] ?? Hospital;
                 return (
-                  <li key={item.text}>
+                  <li key={label}>
                     <Icon size={34} />
-                    <span>{item.text}</span>
+                    <span>{label}</span>
                   </li>
                 );
               })}
@@ -296,7 +214,7 @@ export default function GasControlPanelPage() {
         <section className="gcp-dark-band">
           <div className="gcp-container gcp-dark-grid">
             <article className="gcp-advantages">
-              <h2>Avantajlar</h2>
+              <h2>{t("gcp.advantages.title")}</h2>
               <ul>
                 {advantages.map((item, i) => (
                   <li key={i}>
@@ -308,10 +226,10 @@ export default function GasControlPanelPage() {
             </article>
 
             <article className="gcp-feature-strip">
-              <h2>Ürün Özellikleri</h2>
+              <h2>{t("gcp.featureTiles.title")}</h2>
               <div>
-                {featureTiles.map((item) => {
-                  const Icon = item.icon;
+                {featureTiles.map((item, i) => {
+                  const Icon = FEATURE_TILE_ICONS[i] ?? Layers3;
                   return (
                     <section key={item.title}>
                       <Icon size={42} />
@@ -326,7 +244,7 @@ export default function GasControlPanelPage() {
         </section>
 
         <section className="gcp-container gcp-faq">
-          <h2>Sıkça Sorulan Sorular</h2>
+          <h2>{t("gcp.faqs.title")}</h2>
           <div className="gcp-faq-grid">
             {faqs.map((f, index) => (
               <details key={index} open={index === 0}>
@@ -345,13 +263,13 @@ export default function GasControlPanelPage() {
             <div>
               <FileCheck2 size={42} />
               <span>
-                <strong>Teklif Alın, Projenize Değer Katın</strong>
-                <small>Uzman ekibimiz size en uygun çözümü sunmak için hazır.</small>
+                <strong>{t("gcp.cta.title")}</strong>
+                <small>{t("gcp.cta.subtitle")}</small>
               </span>
             </div>
-            <nav aria-label="Ürün aksiyonları">
-              <Link to="/teklif-al" className="gcp-cta-primary">Teklif Al</Link>
-              <Link to="/#iletisim" className="gcp-cta-secondary">İletişime Geç</Link>
+            <nav aria-label={t("gcp.cta.ariaLabel")}>
+              <Link to={path("quote")} className="gcp-cta-primary">{t("gcp.cta.primaryBtn")}</Link>
+              <Link to={path("home") + "#iletisim"} className="gcp-cta-secondary">{t("gcp.cta.secondaryBtn")}</Link>
             </nav>
           </div>
         </section>

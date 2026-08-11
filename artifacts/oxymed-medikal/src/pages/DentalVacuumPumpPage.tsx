@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, useMemo, type CSSProperties } from "react";
 import { useListSettings } from "@workspace/api-client-react";
 import {
   BadgeCheck,
@@ -16,65 +16,13 @@ import {
 import { Link } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import Seo from "../components/common/Seo";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import "./DentalVacuumPumpPage.css";
 
-const heroFeatures = [
-  {
-    icon: ShieldCheck,
-    title: "GÜVENİLİR PERFORMANS",
-    text: "Kesintisiz ve güçlü vakum gücü.",
-  },
-  {
-    icon: VolumeX,
-    title: "SESSİZ ÇALIŞMA",
-    text: "Düşük ses seviyesi ile konforlu kullanım.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "DAYANIKLI YAPI",
-    text: "Uzun ömürlü çelik tank ve sağlam gövde.",
-  },
-  {
-    icon: Wrench,
-    title: "KOLAY BAKIM",
-    text: "Modüler yapı ile hızlı servis imkanı.",
-  },
-];
-
-const imageCards = [
-  {
-    title: "YÜKSEK PERFORMANSLI POMPALAR",
-    text: "Güçlü motor yapısı ve sessiz çalışma.",
-  },
-  {
-    title: "DAYANIKLI BAĞLANTI SİSTEMİ",
-    text: "Kaliteli bağlantı elemanları ve güvenli valfler.",
-  },
-  {
-    title: "KOMPAKT VE MODÜLER TASARIM",
-    text: "Kolay kurulum, yer tasarrufu ve uzun ömür.",
-  },
-];
-
-const specs = [
-  ["Ürün Adı", "Dental Vakum Pompası"],
-  ["Pompa Adedi", "3 Adet"],
-  ["Tank Tipi", "Yatay Çelik Tank"],
-  ["Gövde Yapısı", "Çelik, Toz Boyalı"],
-  ["Tank Hacmi", "270 - 300 L (Opsiyonel)"],
-  ["Çalışma Sistemi", "Yağsız Vakum Sistemi"],
-  ["Maks. Vakum", "-0,85 bar"],
-  ["Bağlantılar", "Vakum Girişi: 1 1/4\" / Tahliye: 1/2\""],
-  ["Kullanım Alanı", "Diş klinikleri, poliklinikler ve hastaneler"],
-  ["Bakım Kolaylığı", "Modüler yapı, kolay servis ve bakım"],
-];
-
-const useCases = [
-  { icon: Stethoscope, text: "Diş Klinikleri" },
-  { icon: Settings, text: "Ağız ve Diş Sağlığı Merkezleri" },
-  { icon: Building2, text: "Poliklinikler" },
-  { icon: Hospital, text: "Hastaneler" },
-];
+const heroFeatureIcons = [ShieldCheck, VolumeX, BadgeCheck, Wrench];
+const useCaseIcons = [Stethoscope, Settings, Building2, Hospital];
 
 function parseDvpSpecsText(text: string): [string, string][] {
   return text.split("\n").filter(Boolean).map((line): [string, string] => {
@@ -88,24 +36,55 @@ export default function DentalVacuumPumpPage() {
     window.scrollTo(0, 0);
   }, []);
 
+  const { t, tv } = useI18n();
+  const path = useLocalizedPath();
+
   const { data: rawSettings } = useListSettings();
   const s = (rawSettings as Record<string, string> | undefined) ?? {};
-  const eyebrow = s["dvp_hero_eyebrow"] || "OXY-DVP SERIES";
+
+  const eyebrow = s["dvp_hero_eyebrow"] || t("dvp.hero.eyebrow");
   const heroTitle = s["dvp_hero_title"];
-  const desc1 = s["dvp_hero_desc1"] || "Oxymed Dental Vakum Pompası, diş klinikleri ve sağlık kuruluşlarında güvenilir, sessiz ve kesintisiz vakum çözümü sunar.";
-  const desc2 = s["dvp_hero_desc2"] || "Yüksek performanslı motor yapısı ve dayanıklı tasarımıyla uzun ömürlü, ekonomik ve hijyenik bir kullanım sağlar.";
+  const desc1 = s["dvp_hero_desc1"] || t("dvp.hero.desc1");
+  const desc2 = s["dvp_hero_desc2"] || t("dvp.hero.desc2");
   const heroImage = s["dvp_hero_image"];
   const heroMobileImage = s["dvp_hero_mobile_image"];
   const galleryImages = [0, 1, 2].map((i) => s[`dvp_img_${i}`]);
-  const displaySpecs: [string, string][] = s["dvp_specs_text"] ? parseDvpSpecsText(s["dvp_specs_text"]) : (specs as [string, string][]);
   const drawingImage = s["dvp_drawing_image"];
+
+  const heroFeatures = tv<Array<{ title: string; text: string }>>("dvp.heroFeatures", []);
+  const imageCards = tv<Array<{ title: string; text: string; ariaLabel: string }>>("dvp.imageCards", []);
+  const specRows = tv<Array<[string, string]>>("dvp.specs.rows", []);
+
+  const displaySpecs: [string, string][] = s["dvp_specs_text"]
+    ? parseDvpSpecsText(s["dvp_specs_text"])
+    : (specRows as [string, string][]);
+
+  const useCaseItems = tv<string[]>("dvp.useCases.items", []);
+
   const heroVisualStyle = {
     "--dvp-hero-image": heroImage ? `url(${heroImage})` : "none",
     "--dvp-hero-mobile-image": `url(${heroMobileImage || heroImage || ""})`,
   } as CSSProperties;
 
+  const productName = t("dvp.hero.titleLine1") + " " + t("dvp.hero.titleLine2");
+  const jsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: productName,
+      description: t("dvp.hero.desc1"),
+      brand: {
+        "@type": "Brand",
+        name: "Oxymed Medikal",
+      },
+      category: t("dvp.category"),
+    }),
+    [productName, t],
+  );
+
   return (
     <div className="dvp-page">
+      <Seo routeKey="dvp" jsonLd={jsonLd} />
       <Header />
 
       <main className="dvp-main">
@@ -114,22 +93,33 @@ export default function DentalVacuumPumpPage() {
             <div className="dvp-hero__content">
               <div className="dvp-eyebrow">{eyebrow}</div>
               <h1>
-                {heroTitle ? heroTitle : <><span>DENTAL</span>VAKUM POMPASI</>}
+                {heroTitle ? (
+                  heroTitle
+                ) : (
+                  <>
+                    <span>{t("dvp.hero.titleLine1")}</span>
+                    {t("dvp.hero.titleLine2")}
+                  </>
+                )}
               </h1>
               <div className="dvp-title-line" />
               <p>{desc1}</p>
               <p>{desc2}</p>
             </div>
 
-            <div className="dvp-hero__visual" aria-label="Dental vakum pompası ana WEBP görsel alanı" style={heroVisualStyle}>
+            <div
+              className="dvp-hero__visual"
+              aria-label={t("dvp.hero.visualAriaLabel")}
+              style={heroVisualStyle}
+            >
               <div className="dvp-hero-photo-slot" />
               <div className="dvp-hero-floor" aria-hidden="true" />
             </div>
           </div>
 
           <div className="dvp-container dvp-feature-row">
-            {heroFeatures.map((feature) => {
-              const Icon = feature.icon;
+            {heroFeatures.map((feature, i) => {
+              const Icon = heroFeatureIcons[i];
               return (
                 <article key={feature.title}>
                   <Icon aria-hidden="true" />
@@ -147,7 +137,7 @@ export default function DentalVacuumPumpPage() {
               <article key={card.title}>
                 <div
                   className={`dvp-image-slot${galleryImages[i] ? " dvp-image-slot--has-image" : ""}`}
-                  aria-label={`${card.title} WEBP görsel alanı`}
+                  aria-label={card.ariaLabel}
                   style={galleryImages[i] ? { backgroundImage: `url(${galleryImages[i]})` } : undefined}
                 />
                 <h2>{card.title}</h2>
@@ -161,7 +151,7 @@ export default function DentalVacuumPumpPage() {
           <article className="dvp-specs">
             <header>
               <Settings aria-hidden="true" />
-              <h2>TEKNİK ÖZELLİKLER</h2>
+              <h2>{t("dvp.specs.heading")}</h2>
             </header>
             <dl>
               {displaySpecs.map(([label, value]) => (
@@ -176,30 +166,30 @@ export default function DentalVacuumPumpPage() {
           <article className="dvp-drawing">
             <header>
               <Ruler aria-hidden="true" />
-              <h2>TEKNİK ÇİZİM & BOYUTLAR</h2>
+              <h2>{t("dvp.drawing.heading")}</h2>
             </header>
             <div className="dvp-drawing-grid">
               <div
                 className={`dvp-drawing-slot${drawingImage ? " dvp-drawing-slot--has-image" : ""}`}
-                aria-label="Teknik çizim ve boyutlar WEBP görsel alanı"
+                aria-label={t("dvp.drawing.ariaLabel")}
                 style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
               />
             </div>
-            <p>Boyutlar yaklaşık değerlerdir.</p>
+            <p>{t("dvp.drawing.note")}</p>
           </article>
 
           <article className="dvp-usage">
             <header>
               <Gauge aria-hidden="true" />
-              <h2>KULLANIM ALANLARI</h2>
+              <h2>{t("dvp.useCases.heading")}</h2>
             </header>
             <ul>
-              {useCases.map((item) => {
-                const Icon = item.icon;
+              {useCaseItems.map((text, i) => {
+                const Icon = useCaseIcons[i];
                 return (
-                  <li key={item.text}>
+                  <li key={text}>
                     <Icon aria-hidden="true" />
-                    <span>{item.text}</span>
+                    <span>{text}</span>
                   </li>
                 );
               })}
@@ -211,11 +201,11 @@ export default function DentalVacuumPumpPage() {
           <div>
             <CircleCheck aria-hidden="true" />
             <span>
-              <strong>Dental vakum pompası için hızlı teklif alın.</strong>
-              <small>Projenize uygun kapasite ve kurulum seçeneğini birlikte netleştirelim.</small>
+              <strong>{t("dvp.quickQuote.strong")}</strong>
+              <small>{t("dvp.quickQuote.small")}</small>
             </span>
           </div>
-          <Link to="/teklif-al">TEKLİF AL</Link>
+          <Link to={path("quote")}>{t("dvp.quickQuote.cta")}</Link>
         </section>
       </main>
 

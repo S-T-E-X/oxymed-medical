@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useListCatalogs } from "@workspace/api-client-react";
 import { BookOpen, ExternalLink, X } from "lucide-react";
 import { trackInteraction } from "../common/VisitorTracker";
+import { useI18n } from "../../i18n/I18nProvider";
 
 const LANG_LABELS: Record<string, string> = {
   TR: "Türkçe",
@@ -13,6 +14,7 @@ const LANG_LABELS: Record<string, string> = {
 
 export default function CatalogModal({ onClose }: { onClose: () => void }) {
   const { data: allCatalogs = [] } = useListCatalogs({ activeOnly: true });
+  const { t } = useI18n();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -45,8 +47,8 @@ export default function CatalogModal({ onClose }: { onClose: () => void }) {
               <BookOpen className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-oxynavy-950">Katalog İndir</h2>
-              <p className="text-xs text-steel-500">Dil seçerek kataloğu indirin</p>
+              <h2 className="text-base font-extrabold text-oxynavy-950">{t("common.catalog.title")}</h2>
+              <p className="text-xs text-steel-500">{t("common.catalog.subtitle")}</p>
             </div>
           </div>
           <button
@@ -59,7 +61,7 @@ export default function CatalogModal({ onClose }: { onClose: () => void }) {
 
         <div className="max-h-[60vh] overflow-y-auto p-6">
           {allCatalogs.length === 0 ? (
-            <p className="text-center text-sm text-steel-400 py-8">Henüz katalog eklenmemiş.</p>
+            <p className="text-center text-sm text-steel-400 py-8">{t("common.catalog.empty")}</p>
           ) : (
             <div className="space-y-6">
               {languages.map((lang) => (
@@ -101,7 +103,7 @@ export default function CatalogModal({ onClose }: { onClose: () => void }) {
             onClick={onClose}
             className="w-full rounded-xl border border-steel-200 py-2.5 text-sm font-semibold text-steel-600 hover:bg-steel-50 transition"
           >
-            Kapat
+            {t("common.cta.close")}
           </button>
         </div>
       </div>

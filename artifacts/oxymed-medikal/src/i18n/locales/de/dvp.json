@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVP SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VAKUUMPUMPE",
+    "desc1": "Die Oxymed Dental-Vakuumpumpe bietet eine zuverlässige, leise und unterbrechungsfreie Vakuumlösung für Zahnkliniken und Gesundheitseinrichtungen.",
+    "desc2": "Mit ihrer leistungsstarken Motorkonstruktion und dem robusten Design ermöglicht sie eine langlebige, wirtschaftliche und hygienische Nutzung.",
+    "visualAriaLabel": "WEBP-Bildbereich der Dental-Vakuumpumpe"
+  },
+  "heroFeatures": [
+    {
+      "title": "ZUVERLÄSSIGE LEISTUNG",
+      "text": "Kontinuierliche und starke Vakuumleistung."
+    },
+    {
+      "title": "LEISER BETRIEB",
+      "text": "Komfortable Nutzung bei niedrigem Geräuschpegel."
+    },
+    {
+      "title": "ROBUSTE KONSTRUKTION",
+      "text": "Langlebiger Stahltank und stabiles Gehäuse."
+    },
+    {
+      "title": "EINFACHE WARTUNG",
+      "text": "Schneller Service dank modularer Bauweise."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "HOCHLEISTUNGSPUMPEN",
+      "text": "Leistungsstarke Motorkonstruktion und leiser Betrieb.",
+      "ariaLabel": "WEBP-Bildbereich der Hochleistungspumpen"
+    },
+    {
+      "title": "ROBUSTES ANSCHLUSSSYSTEM",
+      "text": "Hochwertige Verbindungselemente und sichere Ventile.",
+      "ariaLabel": "WEBP-Bildbereich des robusten Anschlusssystems"
+    },
+    {
+      "title": "KOMPAKTES UND MODULARES DESIGN",
+      "text": "Einfache Installation, platzsparend und langlebig.",
+      "ariaLabel": "WEBP-Bildbereich des kompakten und modularen Designs"
+    }
+  ],
+  "specs": {
+    "heading": "TECHNISCHE DATEN",
+    "rows": [
+      [
+        "Produktbezeichnung",
+        "Dental-Vakuumpumpe"
+      ],
+      [
+        "Anzahl der Pumpen",
+        "3 Stück"
+      ],
+      [
+        "Tanktyp",
+        "Horizontaler Stahltank"
+      ],
+      [
+        "Gehäuseausführung",
+        "Stahl, pulverbeschichtet"
+      ],
+      [
+        "Tankvolumen",
+        "270 - 300 L (Optional)"
+      ],
+      [
+        "Betriebssystem",
+        "Ölfreies Vakuumsystem"
+      ],
+      [
+        "Max. Vakuum",
+        "-0,85 bar"
+      ],
+      [
+        "Anschlüsse",
+        "Vakuumeingang: 1 1/4\" / Ablass: 1/2\""
+      ],
+      [
+        "Einsatzbereich",
+        "Zahnkliniken, Polikliniken und Krankenhäuser"
+      ],
+      [
+        "Wartungsfreundlichkeit",
+        "Modulare Bauweise, einfacher Service und Wartung"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TECHNISCHE ZEICHNUNG & ABMESSUNGEN",
+    "ariaLabel": "WEBP-Bildbereich für technische Zeichnung und Abmessungen",
+    "note": "Die Abmessungen sind Richtwerte."
+  },
+  "useCases": {
+    "heading": "EINSATZBEREICHE",
+    "items": [
+      "Zahnkliniken",
+      "Mund- und Zahngesundheitszentren",
+      "Polikliniken",
+      "Krankenhäuser"
+    ]
+  },
+  "quickQuote": {
+    "strong": "Fordern Sie schnell ein Angebot für die Dental-Vakuumpumpe an.",
+    "small": "Lassen Sie uns gemeinsam die passende Kapazität und Installationsoption für Ihr Projekt festlegen.",
+    "cta": "ANGEBOT ANFORDERN"
+  },
+  "category": "Dental-Vakuumpumpe"
+}

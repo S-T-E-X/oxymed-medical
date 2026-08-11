@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "NOS PRODUITS",
+    "description": "Des solutions médicales innovantes et fiables développées pour les hôpitaux, cliniques et centres de santé.",
+    "imageAlt": "Bannière de la page Produits"
+  },
+  "features": {
+    "production": {
+      "title": "DIRECT DU FABRICANT",
+      "description": "Production de haute qualité et vente directe depuis notre usine"
+    },
+    "certified": {
+      "title": "PRODUCTION CERTIFIÉE",
+      "description": "Production certifiée ISO 9001, ISO 13485 et CE"
+    },
+    "modular": {
+      "title": "CONCEPTION MODULAIRE",
+      "description": "Des solutions flexibles et modulaires selon les besoins"
+    },
+    "durability": {
+      "title": "LONGUE DURÉE DE VIE",
+      "description": "Matériaux résistants et utilisation durable"
+    },
+    "support": {
+      "title": "ASSISTANCE TECHNIQUE 24H/24, 7J/7",
+      "description": "Assistance technique continue avant et après-vente"
+    }
+  },
+  "sidebar": {
+    "allProducts": "Tous les produits",
+    "categoriesError": "Impossible de charger les catégories.",
+    "catalogTitle": "Téléchargez notre catalogue produits",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "Tous les produits",
+    "allDescription": "Des solutions médicales développées pour les hôpitaux, cliniques et centres de santé.",
+    "categoryDescription": "Nos produits de la catégorie {{category}}.",
+    "counter": "{{count}} produits",
+    "loadError": "Une erreur est survenue lors du chargement des produits. Veuillez actualiser la page."
+  },
+  "dentalCards": {
+    "amalgam-separator": "Séparateur d’amalgame",
+    "dental-vakum-pompasi": "Pompe à vide dentaire",
+    "dental-vakum-sistemi": "Système d’aspiration dentaire"
+  }
+}

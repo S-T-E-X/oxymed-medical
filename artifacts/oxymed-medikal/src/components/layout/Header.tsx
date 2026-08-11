@@ -3,8 +3,11 @@ import { ChevronDown, Instagram, Linkedin, Mail, Menu, Phone, X, Youtube } from 
 import { Link, useLocation } from "react-router-dom";
 import { useListSettings, useListProductCategories } from "@workspace/api-client-react";
 import Logo from "./Logo";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { trackInteraction } from "../common/VisitorTracker";
-import { languages, navItems } from "../../data/home";
+import { navItems, type NavItemDef } from "../../data/home";
+import { useI18n } from "../../i18n/I18nProvider";
+import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 
 const socialIconMap = {
   LinkedIn: Linkedin,
@@ -13,10 +16,11 @@ const socialIconMap = {
 };
 
 function isActivePath(currentPath: string, href: string) {
-  if (href === "/") {
+  const target = href.split("#")[0];
+  if (target === "/") {
     return currentPath === "/";
   }
-  return currentPath === href.split("#")[0];
+  return currentPath === target;
 }
 
 export default function Header() {
@@ -27,6 +31,8 @@ export default function Header() {
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
   const { data: categories = [] } = useListProductCategories();
+  const { t } = useI18n();
+  const path = useLocalizedPath();
 
   const phone = settings?.["phone"] ?? "+90 232 870 0 222";
   const email = settings?.["email"] ?? "info@oxymed.com.tr";
@@ -36,6 +42,14 @@ export default function Header() {
     { label: "Instagram", href: settings?.["instagram"] ?? "#" },
     { label: "YouTube", href: settings?.["youtube"] ?? "#" },
   ];
+
+  /** Nav entries either point at a translated route or a Turkish-only page. */
+  function hrefFor(item: NavItemDef): string {
+    return item.route ? path(item.route) : item.href ?? "/";
+  }
+
+  const productsHref = path("products");
+  const quoteHref = path("quote");
 
   function openUrunler() {
     if (urunlerTimeout.current) clearTimeout(urunlerTimeout.current);
@@ -57,7 +71,7 @@ export default function Header() {
               onClick={() => trackInteraction("Telefon (Üst Menü)")}
             >
               <Phone className="h-3.5 w-3.5" aria-hidden="true" />
-              {phone}
+              <span dir="ltr">{phone}</span>
             </a>
             <a
               className="inline-flex items-center gap-2 transition hover:text-white"
@@ -65,22 +79,12 @@ export default function Header() {
               onClick={() => trackInteraction("E-posta (Üst Menü)")}
             >
               <Mail className="h-3.5 w-3.5" aria-hidden="true" />
-              {email}
+              <span dir="ltr">{email}</span>
             </a>
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
-            <div className="flex items-center divide-x divide-white/25 text-white/78">
-              {languages.map((language) => (
-                <a
-                  key={language}
-                  href={`#${language.toLowerCase()}`}
-                  className="px-2 transition first:pl-0 last:pr-0 hover:text-white"
-                >
-                  {language}
-                </a>
-              ))}
-            </div>
+            <LanguageSwitcher />
             <div className="flex items-center gap-3">
               {socialLinks.map((link) => {
                 const Icon = socialIconMap[link.label as keyof typeof socialIconMap];
@@ -98,9 +102,11 @@ export default function Header() {
       <div className="mx-auto flex h-[92px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-[92px] lg:px-8">
         <Logo />
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Ana menü">
+        <nav className="hidden items-center gap-8 lg:flex" aria-label={t("common.nav.mainMenu")}>
           {navItems.map((item) => {
-            const active = isActivePath(pathname, item.href);
+            const href = hrefFor(item);
+            const active = isActivePath(pathname, href);
+            const label = t(`common.nav.${item.key}`);
             const baseClass = `inline-flex h-[92px] items-center gap-1.5 border-b-2 text-[13px] font-bold transition ${
               active
                 ? "border-oxynavy-900 text-oxynavy-950"
@@ -110,13 +116,13 @@ export default function Header() {
             if (item.dropdown === "categories") {
               return (
                 <div
-                  key={item.label}
+                  key={item.key}
                   className="relative"
                   onMouseEnter={openUrunler}
                   onMouseLeave={closeUrunler}
                 >
-                  <Link to={item.href} className={baseClass}>
-                    {item.label}
+                  <Link to={href} className={baseClass}>
+                    {label}
                     <ChevronDown
                       className={`h-3.5 w-3.5 transition-transform duration-200 ${urunlerOpen ? "rotate-180" : ""}`}
                       aria-hidden="true"
@@ -125,16 +131,16 @@ export default function Header() {
 
                   {urunlerOpen && (
                     <div
-                      className="absolute left-0 top-full z-50 min-w-[230px] rounded-xl border border-steel-100 bg-white py-2 shadow-[0_14px_35px_rgba(2,20,35,0.12)]"
+                      className="absolute start-0 top-full z-50 min-w-[230px] rounded-xl border border-steel-100 bg-white py-2 shadow-[0_14px_35px_rgba(2,20,35,0.12)]"
                       onMouseEnter={openUrunler}
                       onMouseLeave={closeUrunler}
                     >
                       <Link
-                        to="/urunler"
+                        to={productsHref}
                         className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-bold text-oxynavy-950 hover:bg-steel-50"
                         onClick={() => setUrunlerOpen(false)}
                       >
-                        Tüm Ürünler
+                        {t("common.nav.allProducts")}
                       </Link>
                       {categories.length > 0 && (
                         <div className="my-1 border-t border-steel-100" />
@@ -142,7 +148,7 @@ export default function Header() {
                       {categories.map((cat) => (
                         <Link
                           key={cat.id}
-                          to={`/urunler?category=${cat.id}`}
+                          to={`${productsHref}?category=${cat.id}`}
                           className="flex items-center gap-2 px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950"
                           onClick={() => setUrunlerOpen(false)}
                         >
@@ -157,11 +163,11 @@ export default function Header() {
 
             return (
               <Link
-                key={item.label}
-                to={item.href}
+                key={item.key}
+                to={href}
                 className={baseClass}
               >
-                {item.label}
+                {label}
               </Link>
             );
           })}
@@ -169,18 +175,18 @@ export default function Header() {
 
         <div className="hidden items-center gap-4 lg:flex">
           <Link
-            to="/teklif-al"
+            to={quoteHref}
             className="rounded bg-oxynavy-950 px-7 py-4 text-[12px] font-bold text-white transition hover:bg-oxynavy-800"
             onClick={() => trackInteraction("Teklif Al (Üst Menü)")}
           >
-            TEKLİF AL
+            {t("common.cta.getQuote")}
           </Link>
         </div>
 
         <button
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded border border-steel-200 text-oxynavy-950 lg:hidden"
-          aria-label={isOpen ? "Menüyü kapat" : "Menüyü aç"}
+          aria-label={isOpen ? t("common.nav.closeMenu") : t("common.nav.openMenu")}
           aria-expanded={isOpen}
           onClick={() => setIsOpen((current) => !current)}
         >
@@ -189,28 +195,34 @@ export default function Header() {
       </div>
 
       {isOpen ? (
-        <div className="absolute left-0 top-full w-full border-t border-steel-100 bg-white px-4 pb-6 shadow-[0_14px_35px_rgba(2,20,35,0.08)] lg:hidden">
-          <nav className="mx-auto flex max-w-7xl flex-col py-3" aria-label="Mobil ana menü">
+        <div className="absolute start-0 top-full w-full border-t border-steel-100 bg-white px-4 pb-6 shadow-[0_14px_35px_rgba(2,20,35,0.08)] lg:hidden">
+          <nav className="mx-auto flex max-w-7xl flex-col py-3" aria-label={t("common.nav.mobileMenu")}>
             {navItems.map((item) => (
               <Link
-                key={item.label}
-                to={item.href}
+                key={item.key}
+                to={hrefFor(item)}
                 className="flex items-center justify-between border-b border-steel-100 py-4 text-sm font-bold text-oxynavy-950"
                 onClick={() => setIsOpen(false)}
               >
-                {item.label}
+                {t(`common.nav.${item.key}`)}
                 {item.dropdown === "categories" ? <ChevronDown className="h-4 w-4" aria-hidden="true" /> : null}
               </Link>
             ))}
+
+            <div className="border-b border-steel-100">
+              <p className="pt-4 text-[11px] font-extrabold text-steel-600">{t("common.nav.language")}</p>
+              <LanguageSwitcher variant="panel" onSelect={() => setIsOpen(false)} />
+            </div>
+
             <Link
-              to="/teklif-al"
+              to={quoteHref}
               className="mt-5 inline-flex justify-center rounded bg-oxynavy-950 px-6 py-3.5 text-xs font-bold text-white"
               onClick={() => {
                 trackInteraction("Teklif Al (Mobil Menü)");
                 setIsOpen(false);
               }}
             >
-              TEKLİF AL
+              {t("common.cta.getQuote")}
             </Link>
           </nav>
         </div>

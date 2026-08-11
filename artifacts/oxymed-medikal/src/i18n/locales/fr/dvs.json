@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "SYSTÈME DE",
+    "titleLine2": "VIDE DENTAIRE",
+    "desc1": "Solution système performante et fiable, conçue pour répondre aux besoins en vide centralisé des cliniques dentaires.",
+    "desc2": "Assure une efficacité maximale dans les établissements de santé grâce à une puissance de vide continue, un fonctionnement silencieux et une conception durable."
+  },
+  "heroFeatures": [
+    {
+      "title": "HAUTE FIABILITÉ",
+      "text": "Configuration de pompes redondantes pour une production de vide ininterrompue."
+    },
+    {
+      "title": "SILENCIEUX ET EFFICACE",
+      "text": "Faible niveau sonore et haute efficacité énergétique."
+    },
+    {
+      "title": "UTILISATION FACILE",
+      "text": "Surveillance et gestion instantanées grâce à un panneau de commande intuitif."
+    },
+    {
+      "title": "CONCEPTION DURABLE",
+      "text": "Longue durée de fonctionnement stable grâce à des composants de qualité."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "COLLECTEUR EN ACIER INOXYDABLE",
+      "text": "Structure hygiénique, durable et résistante à la corrosion.",
+      "ariaLabel": "Zone d’image WEBP du collecteur en acier inoxydable"
+    },
+    {
+      "title": "PANNEAU DE COMMANDE INTELLIGENT",
+      "text": "Gestion de l'état du système, des alarmes et de l'automatisation.",
+      "ariaLabel": "Zone d’image WEBP du panneau de commande intelligent"
+    },
+    {
+      "title": "POMPES HAUTE PERFORMANCE",
+      "text": "Unités robustes et silencieuses assurant un vide puissant.",
+      "ariaLabel": "Zone d’image WEBP des pompes haute performance"
+    }
+  ],
+  "specs": {
+    "heading": "CARACTÉRISTIQUES TECHNIQUES",
+    "rows": [
+      [
+        "Nom du produit",
+        "Système de vide dentaire OXY-DVS"
+      ],
+      [
+        "Capacité de vide",
+        "100 - 840 m³/h (en option)"
+      ],
+      [
+        "Vide de service",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Nombre de pompes",
+        "2 - 4 unités (redondantes)"
+      ],
+      [
+        "Puissance moteur",
+        "2,2 - 4 kW (par pompe)"
+      ],
+      [
+        "Alimentation électrique",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Niveau sonore",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Matériau du collecteur",
+        "Acier inoxydable (AISI 304)"
+      ],
+      [
+        "Diamètre de raccordement",
+        "DN40 - DN65"
+      ],
+      [
+        "Température de fonctionnement",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Indice de protection",
+        "IP54"
+      ],
+      [
+        "Dimensions (HxLxP)",
+        "1300 x 600 x 1200 mm (exemple)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "PLAN TECHNIQUE / DIMENSIONS",
+    "ariaLabel": "Zone d’image WEBP du plan technique et des dimensions"
+  },
+  "useCases": {
+    "heading": "DOMAINES D'UTILISATION",
+    "items": [
+      "Cliniques dentaires",
+      "Centres de santé bucco-dentaire",
+      "Hôpitaux",
+      "Salles d'intervention chirurgicale",
+      "Laboratoires"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Zones d’images détaillées du produit"
+  },
+  "bottomNote": {
+    "vacuum": "Performance de vide puissante, silencieuse et durable.",
+    "capacity": "Options de capacité et de dimensions selon les besoins du projet.",
+    "cta": "DEMANDER UN DEVIS"
+  },
+  "category": "Système d’aspiration dentaire"
+}

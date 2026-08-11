@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "DENTALE",
+    "titleLine2": "SISTEMA DEL VUOTO",
+    "desc1": "Soluzione di sistema ad alte prestazioni e affidabile, progettata per soddisfare le esigenze di vuoto centralizzato delle cliniche dentali.",
+    "desc2": "Garantisce la massima efficienza nelle strutture sanitarie grazie a una potenza di vuoto continua, funzionamento silenzioso e struttura di lunga durata."
+  },
+  "heroFeatures": [
+    {
+      "title": "ELEVATA AFFIDABILITÀ",
+      "text": "Configurazione pompe ridondante per una generazione continua del vuoto."
+    },
+    {
+      "title": "SILENZIOSO ED EFFICIENTE",
+      "text": "Basso livello sonoro ed elevata efficienza energetica."
+    },
+    {
+      "title": "FACILE DA USARE",
+      "text": "Monitoraggio e gestione in tempo reale tramite pannello di controllo intuitivo."
+    },
+    {
+      "title": "STRUTTURA DI LUNGA DURATA",
+      "text": "Lunga durata operativa e stabilità grazie a componenti di qualità."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "COLLETTORE IN ACCIAIO INOSSIDABILE",
+      "text": "Struttura igienica, resistente alla corrosione e di lunga durata.",
+      "ariaLabel": "Area immagine WEBP del collettore in acciaio inossidabile"
+    },
+    {
+      "title": "PANNELLO DI CONTROLLO INTELLIGENTE",
+      "text": "Gestione dello stato del sistema, degli allarmi e dell'automazione.",
+      "ariaLabel": "Area immagine WEBP del pannello di controllo intelligente"
+    },
+    {
+      "title": "POMPE AD ALTE PRESTAZIONI",
+      "text": "Unità robuste e silenziose che garantiscono un potente vuoto.",
+      "ariaLabel": "Area immagine WEBP delle pompe ad alte prestazioni"
+    }
+  ],
+  "specs": {
+    "heading": "CARATTERISTICHE TECNICHE",
+    "rows": [
+      [
+        "Nome prodotto",
+        "OXY-DVS Sistema del Vuoto Dentale"
+      ],
+      [
+        "Capacità di vuoto",
+        "100 - 840 m³/h (opzionale)"
+      ],
+      [
+        "Vuoto di esercizio",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Numero di pompe",
+        "2 - 4 unità (ridondanti)"
+      ],
+      [
+        "Potenza motore",
+        "2,2 - 4 kW (per pompa)"
+      ],
+      [
+        "Alimentazione",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Livello sonoro",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Materiale del collettore",
+        "Acciaio inossidabile (AISI 304)"
+      ],
+      [
+        "Diametro di connessione",
+        "DN40 - DN65"
+      ],
+      [
+        "Temperatura di esercizio",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Grado di protezione",
+        "IP54"
+      ],
+      [
+        "Dimensioni (AxLxP)",
+        "1300 x 600 x 1200 mm (esempio)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "DISEGNO TECNICO / DIMENSIONI",
+    "ariaLabel": "Area immagine WEBP del disegno tecnico e delle dimensioni"
+  },
+  "useCases": {
+    "heading": "CAMPI DI UTILIZZO",
+    "items": [
+      "Cliniche dentali",
+      "Centri di salute orale e dentale",
+      "Ospedali",
+      "Sale per interventi chirurgici",
+      "Laboratori"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Aree immagini dei dettagli del prodotto"
+  },
+  "bottomNote": {
+    "vacuum": "Prestazioni del vuoto potenti, silenziose e sostenibili.",
+    "capacity": "Opzioni di capacità e dimensioni in base alle esigenze del progetto.",
+    "cta": "RICHIEDI UN PREVENTIVO"
+  },
+  "category": "Sistema di aspirazione dentale"
+}

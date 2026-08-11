@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "3-Gas Floor Control Panel",
+    "description": "Safe, intelligent and uninterrupted control for your medical gas systems. Central management of 3 different medical gases on a single panel.",
+    "photoSlot": "Hero product image area",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Page path",
+    "products": "Products"
+  },
+  "heroFeatures": [
+    {
+      "title": "High Safety",
+      "text": "Maximum safety with alarm and automatic shut-off system."
+    },
+    {
+      "title": "Intelligent Control",
+      "text": "Continuous monitoring with a microprocessor-based control unit."
+    },
+    {
+      "title": "Alarm System",
+      "text": "Instant notification through visual and audible alerts."
+    },
+    {
+      "title": "Easy Installation",
+      "text": "Fast and easy installation with a practical connection design."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Gas Connection Unit",
+      "text": "High-quality valve system for oxygen, vacuum and air gas inlets."
+    },
+    {
+      "title": "Intelligent Control Panel",
+      "text": "Gas pressures are monitored and managed in real time with the microprocessor-controlled system."
+    },
+    {
+      "title": "Durable Construction",
+      "text": "Its electrostatically painted metal enclosure ensures long service life and impact resistance."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "WEBP image area"
+  },
+  "specs": {
+    "title": "Technical Specifications",
+    "rows": [
+      {
+        "k": "Product Name",
+        "v": "3-Gas Floor Control Panel"
+      },
+      {
+        "k": "Supported Gases",
+        "v": "O2 (Oxygen) - VAC (Vacuum) - AIR (Air)"
+      },
+      {
+        "k": "Operating Pressure",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Alarm Type",
+        "v": "Visual and Audible"
+      },
+      {
+        "k": "Enclosure Material",
+        "v": "Electrostatically Painted Metal"
+      },
+      {
+        "k": "Power Supply",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Mounting Type",
+        "v": "Surface-Mounted / Flush-Mounted"
+      },
+      {
+        "k": "Operating Temperature",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Dimensions (HxWxD)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Dimensions / Technical Drawing",
+    "slotLabel": "Technical drawing image",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "Applications",
+    "items": [
+      "Hospitals",
+      "Intensive Care Units",
+      "Operating Rooms",
+      "Clinics",
+      "Healthcare Centers"
+    ]
+  },
+  "advantages": {
+    "title": "Advantages",
+    "items": [
+      "Central control of three different gases on a single panel",
+      "High-safety alarm and shut-off system",
+      "Easy monitoring through a user-friendly interface",
+      "Long-lasting and durable metal enclosure",
+      "Easy installation and maintenance"
+    ]
+  },
+  "featureTiles": {
+    "title": "Product Features",
+    "items": [
+      {
+        "title": "Central Control",
+        "text": "Management of 3 gases from a single point"
+      },
+      {
+        "title": "Real-Time Monitoring",
+        "text": "Pressure values are continuously monitored and recorded"
+      },
+      {
+        "title": "Reliable Alarm",
+        "text": "Instant alerts through visual and audible alarms"
+      },
+      {
+        "title": "Modular Design",
+        "text": "Easy service and maintenance"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "q": "Which gases are supported?",
+        "a": "The 3-Gas Floor Control Panel supports Oxygen (O2), Vacuum (VAC) and Medical Air (AIR) gases."
+      },
+      {
+        "q": "Where is it used?",
+        "a": "It is used in hospitals, intensive care units, operating rooms and clinical areas."
+      },
+      {
+        "q": "What is the mounting type?",
+        "a": "It can be installed with surface-mounted or flush-mounted options."
+      },
+      {
+        "q": "How are maintenance and service requirements handled?",
+        "a": "Safe operation is maintained through periodic maintenance and technical service support."
+      },
+      {
+        "q": "How does the alarm system work?",
+        "a": "It provides audible and visual alarms when pressure values exceed the specified limits."
+      },
+      {
+        "q": "Does the system operate during a power outage?",
+        "a": "Backup power and alarm scenarios can be implemented according to project requirements."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Product actions",
+    "title": "Request a Quote, Add Value to Your Project",
+    "subtitle": "Our expert team is ready to provide the most suitable solution for you.",
+    "primaryBtn": "Request a Quote",
+    "secondaryBtn": "Contact Us"
+  },
+  "category": "Floor Control Panel"
+}

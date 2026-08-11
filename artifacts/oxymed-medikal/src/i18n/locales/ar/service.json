@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "الخدمة والدعم",
+    "subtitle": "اعرض سجل صيانة جهازك وأنشئ موعد خدمة سريعًا.",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbCurrent": "الخدمة والدعم"
+  },
+  "benefits": [
+    {
+      "title": "دعم متخصص",
+      "text": "فريقنا الفني ذو الخبرة إلى جانبكم دائمًا."
+    },
+    {
+      "title": "استجابة سريعة",
+      "text": "نتدخل في أقرب وقت ممكن بعد استلام طلبكم."
+    },
+    {
+      "title": "قطع غيار أصلية",
+      "text": "نستخدم قطع غيار أصلية في جميع عمليات الخدمة."
+    },
+    {
+      "title": "آمن ومضمون",
+      "text": "جميع العمليات مؤمّنة ضمن نطاق الضمان."
+    }
+  ],
+  "query": {
+    "title": "الاستعلام عن الجهاز",
+    "subtitle": "استعلم باستخدام الرقم التسلسلي لجهازك أو رمز الخدمة.",
+    "tabsAriaLabel": "طريقة الاستعلام",
+    "tabSerial": "الاستعلام بالرقم التسلسلي",
+    "tabServiceCode": "الاستعلام برمز الخدمة",
+    "labelSerial": "الرقم التسلسلي",
+    "labelServiceCode": "رمز الخدمة (QR)",
+    "placeholderSerial": "مثال: OXM-VAC-250-0148",
+    "placeholderServiceCode": "مثال: abc123xyz",
+    "searchButton": "استعلام",
+    "hint": "يمكنك العثور على الرقم التسلسلي على الملصق الموجود على الجهاز.",
+    "techSupportImageAlt": "أخصائي خدمة Oxymed Medikal"
+  },
+  "faultTypes": [
+    "عطل / لا يعمل",
+    "طلب صيانة",
+    "طلب قطع غيار",
+    "انخفاض الأداء",
+    "طلب ضمان",
+    "أخرى"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "ضمان ساري",
+    "yakin_bitis": "ينتهي قريبًا",
+    "garanti_disi": "خارج الضمان",
+    "bakim_riskli": "يتطلب صيانة",
+    "yetkisiz_askida": "قيد الانتظار",
+    "uzatilmis_garanti": "ضمان ممتد",
+    "bakim_anlasmasi": "عقد صيانة",
+    "talep_incelemede": "الطلب قيد المراجعة",
+    "talep_onaylandi": "تمت الموافقة على الطلب",
+    "talep_reddedildi": "تم رفض الطلب"
+  },
+  "device": {
+    "notFoundTitle": "لم يتم العثور على الجهاز",
+    "notFoundBody": "لم يتم العثور على معلومات جهاز مسجلة لهذا الرقم التسلسلي. يرجى التحقق من الرقم التسلسلي أو الاتصال بخط الدعم الفني.",
+    "cardTitle": "معلومات الجهاز",
+    "imageAlt": "صورة الجهاز",
+    "labels": {
+      "productName": "نوع الجهاز",
+      "model": "الطراز",
+      "serialNumber": "الرقم التسلسلي",
+      "installDate": "تاريخ التركيب",
+      "customerFirm": "العميل / المؤسسة",
+      "warrantyStatus": "حالة الضمان",
+      "warrantyEndDate": "انتهاء الضمان",
+      "lastMaintenanceDate": "آخر صيانة",
+      "nextMaintenanceDate": "الصيانة التالية"
+    },
+    "historyTitle": "العمليات المنفذة وسجل الخدمة",
+    "historyEmpty": "لا يوجد سجل خدمة حتى الآن.",
+    "tableDate": "التاريخ",
+    "tableServiceType": "نوع العملية",
+    "tablePersonnel": "فني الخدمة",
+    "tableReport": "التقرير",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "نموذج طلب خدمة سريع",
+    "subtitle": "أنشئ طلب الخدمة بسرعة، وسيتواصل معك فريقنا في أقرب وقت ممكن.",
+    "labelName": "الاسم الكامل *",
+    "placeholderName": "اسمك الكامل",
+    "labelPhone": "الهاتف",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "البريد الإلكتروني",
+    "placeholderEmail": "ornek@email.com",
+    "labelFirm": "اسم المستشفى / المؤسسة",
+    "placeholderFirm": "اسم المؤسسة",
+    "labelCity": "المدينة",
+    "placeholderCity": "اختر المدينة",
+    "cities": [
+      "أنقرة",
+      "إسطنبول",
+      "إزمير",
+      "بورصة",
+      "أنطاليا",
+      "قونية",
+      "أضنة",
+      "أخرى"
+    ],
+    "labelFaultType": "نوع الطلب *",
+    "placeholderFaultType": "اختر نوع الطلب",
+    "labelDescription": "الوصف *",
+    "placeholderDescription": "أدخل وصفًا مختصرًا...",
+    "kvkkConsent": "قرأت نص الإفصاح الخاص بحماية البيانات الشخصية وأوافق عليه.",
+    "submit": "إنشاء طلب",
+    "submitting": "جارٍ الإرسال…",
+    "successTitle": "تم استلام طلبك!",
+    "successBody": "سيتواصل معك فريق الخدمة في أقرب وقت ممكن.",
+    "toastSuccess": "تم إرسال طلب الضمان! سنتواصل معك في أقرب وقت ممكن.",
+    "toastError": "تعذر إنشاء الطلب، يرجى المحاولة مرة أخرى.",
+    "toastValidation": "يرجى تعبئة الحقول الإلزامية والموافقة على حماية البيانات الشخصية.",
+    "toastNoDevice": "يرجى الاستعلام عن الجهاز أولاً."
+  }
+}

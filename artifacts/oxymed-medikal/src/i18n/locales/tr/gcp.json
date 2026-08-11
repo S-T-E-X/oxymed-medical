@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "3 Gazlı Kat Kontrol Panosu",
+    "description": "Medikal gaz sistemleriniz için güvenli, akıllı ve kesintisiz kontrol. 3 farklı medikal gazın merkezi yönetimi tek panelde.",
+    "photoSlot": "Hero ürün fotoğraf alanı",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Sayfa yolu",
+    "products": "Ürünler"
+  },
+  "heroFeatures": [
+    {
+      "title": "Yüksek Güvenlik",
+      "text": "Alarm ve otomatik kesme sistemi ile maksimum güvenlik."
+    },
+    {
+      "title": "Akıllı Kontrol",
+      "text": "Mikroişlemci tabanlı kontrol ünitesi ile sürekli izleme."
+    },
+    {
+      "title": "Alarm Sistemi",
+      "text": "Görsel ve sesli uyarı ile anlık bilgilendirme."
+    },
+    {
+      "title": "Kolay Montaj",
+      "text": "Pratik bağlantı yapısı ile hızlı ve kolay kurulum."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Gaz Bağlantı Ünitesi",
+      "text": "Oksijen, vakum ve hava gaz girişleri için yüksek kaliteli vana sistemi."
+    },
+    {
+      "title": "Akıllı Kontrol Paneli",
+      "text": "Mikroişlemci kontrollü sistem ile gaz basınçları anlık olarak izlenir ve yönetilir."
+    },
+    {
+      "title": "Dayanıklı Yapı",
+      "text": "Elektrostatik boyalı metal gövdesi ile uzun ömürlü ve darbelere karşı dayanıklıdır."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "WEBP görsel alanı"
+  },
+  "specs": {
+    "title": "Teknik Özellikler",
+    "rows": [
+      {
+        "k": "Ürün Adı",
+        "v": "3 Gazlı Kat Kontrol Panosu"
+      },
+      {
+        "k": "Desteklenen Gazlar",
+        "v": "O2 (Oksijen) - VAC (Vakum) - AIR (Hava)"
+      },
+      {
+        "k": "Çalışma Basıncı",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Alarm Türü",
+        "v": "Görsel ve Sesli"
+      },
+      {
+        "k": "Gövde Malzemesi",
+        "v": "Elektrostatik Boyalı Metal"
+      },
+      {
+        "k": "Güç Beslemesi",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Montaj Tipi",
+        "v": "Sıva Üstü / Sıva Altı"
+      },
+      {
+        "k": "Çalışma Sıcaklığı",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Boyutlar (YxGxD)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Ölçüler / Teknik Çizim",
+    "slotLabel": "Teknik çizim görseli",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "Kullanım Alanları",
+    "items": [
+      "Hastaneler",
+      "Yoğun Bakım Üniteleri",
+      "Ameliyathaneler",
+      "Klinikler",
+      "Sağlık Merkezleri"
+    ]
+  },
+  "advantages": {
+    "title": "Avantajlar",
+    "items": [
+      "Üç farklı gazın tek panelde merkezi kontrolü",
+      "Yüksek güvenlikli alarm ve kesme sistemi",
+      "Kullanıcı dostu arayüz ile kolay izleme",
+      "Uzun ömürlü ve dayanıklı metal gövde",
+      "Kolay montaj ve bakım avantajı"
+    ]
+  },
+  "featureTiles": {
+    "title": "Ürün Özellikleri",
+    "items": [
+      {
+        "title": "Merkezi Kontrol",
+        "text": "3 gazın tek noktadan yönetimi"
+      },
+      {
+        "title": "Anlık İzleme",
+        "text": "Basınç değerleri sürekli izlenir ve kaydedilir"
+      },
+      {
+        "title": "Güvenli Alarm",
+        "text": "Görsel ve sesli alarm ile anlık uyarı"
+      },
+      {
+        "title": "Modüler Yapı",
+        "text": "Kolay servis ve bakım imkanı"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Sıkça Sorulan Sorular",
+    "items": [
+      {
+        "q": "Hangi gazlar desteklenmektedir?",
+        "a": "3 Gazlı Kat Kontrol Panosu, Oksijen (O2), Vakum (VAC) ve Tıbbi Hava (AIR) gazlarını destekler."
+      },
+      {
+        "q": "Hangi alanlarda kullanılır?",
+        "a": "Hastane, yoğun bakım, ameliyathane ve klinik alanlarında kullanılır."
+      },
+      {
+        "q": "Montaj tipi nedir?",
+        "a": "Sıva üstü veya sıva altı montaj seçenekleriyle uygulanabilir."
+      },
+      {
+        "q": "Bakım ve servis ihtiyacı nasıl karşılanır?",
+        "a": "Periyodik bakım ve teknik servis ekibiyle güvenli çalışma sürdürülür."
+      },
+      {
+        "q": "Alarm sistemi nasıl çalışır?",
+        "a": "Basınç değerleri limit dışına çıktığında sesli ve görsel alarm verir."
+      },
+      {
+        "q": "Güç kesintisi durumunda sistem çalışır mı?",
+        "a": "Proje ihtiyacına göre yedek güç ve alarm senaryoları uygulanabilir."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Ürün aksiyonları",
+    "title": "Teklif Alın, Projenize Değer Katın",
+    "subtitle": "Uzman ekibimiz size en uygun çözümü sunmak için hazır.",
+    "primaryBtn": "Teklif Al",
+    "secondaryBtn": "İletişime Geç"
+  },
+  "category": "Kat Kontrol Panosu"
+}

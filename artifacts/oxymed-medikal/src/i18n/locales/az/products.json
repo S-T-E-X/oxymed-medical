@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "MƏHSULLARIMIZ",
+    "description": "Xəstəxanalar, klinikalar və səhiyyə mərkəzləri üçün hazırladığımız innovativ və etibarlı tibbi həllər.",
+    "imageAlt": "Məhsullar səhifəsinin banner şəkli"
+  },
+  "features": {
+    "production": {
+      "title": "BİRBAŞA İSTEHSALÇIDAN",
+      "description": "Öz fabrikimizdən yüksək keyfiyyətli istehsal və birbaşa satış"
+    },
+    "certified": {
+      "title": "SERTİFİKATLI İSTEHSAL",
+      "description": "ISO 9001, ISO 13485 və CE sertifikatlı istehsal"
+    },
+    "modular": {
+      "title": "MODUL DİZAYN",
+      "description": "Ehtiyaclara uyğun çevik və modul həllər"
+    },
+    "durability": {
+      "title": "UZUNÖMÜRLÜ",
+      "description": "Davamlı material və uzunmüddətli istifadə"
+    },
+    "support": {
+      "title": "24/7 TEXNİKİ DƏSTƏK",
+      "description": "Satışdan əvvəl və sonra fasiləsiz texniki dəstək"
+    }
+  },
+  "sidebar": {
+    "allProducts": "Bütün Məhsullar",
+    "categoriesError": "Kateqoriyalar yüklənmədi.",
+    "catalogTitle": "Məhsul Kataloqumuzu Yükləyin",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "Bütün Məhsullar",
+    "allDescription": "Xəstəxanalar, klinikalar və səhiyyə mərkəzləri üçün hazırladığımız tibbi həllər.",
+    "categoryDescription": "{{category}} kateqoriyasındakı məhsullarımız.",
+    "counter": "{{count}} məhsul",
+    "loadError": "Məhsullar yüklənərkən xəta baş verdi. Zəhmət olmasa səhifəni yeniləyin."
+  },
+  "dentalCards": {
+    "amalgam-separator": "Amalqam Separatoru",
+    "dental-vakum-pompasi": "Dental Vakuum Pompası",
+    "dental-vakum-sistemi": "Dental Vakuum Sistemi"
+  }
+}

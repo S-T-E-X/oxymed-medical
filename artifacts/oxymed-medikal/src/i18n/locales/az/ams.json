@@ -1,0 +1,150 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDİKAL",
+    "titleLine1": "AMALQAM",
+    "titleLine2": "SEPARATORU",
+    "desc1": "Oxymed Amalqam Separatoru diş qurğularında aspirasiya sistemləri ilə yaranan amalqam hissəciklərini effektiv şəkildə ayıraraq onların ətraf mühitə qarışmasının qarşısını alır.",
+    "desc2": "Gigiyenik, davamlı və səmərəli dizaynı ilə təhlükəsiz iş mühiti yaradır.",
+    "photoSlotAriaLabel": "Amalqam separatorunun əsas WEBP şəkil sahəsi"
+  },
+  "heroFeatures": [
+    {
+      "title": "Paslanmaz Polad Korpus",
+      "text": "Yüksək keyfiyyətli paslanmaz polad material uzunmüddətli istifadə təmin edir."
+    },
+    {
+      "title": "Gigiyenik Dizayn",
+      "text": "Hamar səth quruluşu ilə asan təmizləmə və gigiyenik istifadə imkanı yaradır."
+    },
+    {
+      "title": "Asan İnteqrasiya",
+      "text": "Mövcud vakuum xətlərinə sürətli və asan inteqrasiya imkanı."
+    },
+    {
+      "title": "Uzunmüddətli İstifadə",
+      "text": "Möhkəm konstruksiyası ilə hətta çətin şəraitdə maksimum performans."
+    }
+  ],
+  "detailGrid": {
+    "ariaLabel": "Məhsulun detallı şəkil sahələri",
+    "cards": [
+      {
+        "title": "Davamlı Korpus",
+        "text": "Qalın paslanmaz polad korpus quruluşu ilə korroziyaya qarşı üstün müqavimət təmin edir."
+      },
+      {
+        "title": "Ətraflı Birləşmə Quruluşu",
+        "text": "Daxili birləşmə dizaynı axın səmərəliliyini artırır və tıxanma riskini minimuma endirir."
+      },
+      {
+        "title": "Asan Quraşdırma",
+        "text": "Standart qoşulma nöqtələri sayəsində sürətli və praktik quraşdırma imkanı yaradır."
+      },
+      {
+        "title": "Gigiyenik Səth",
+        "text": "Hamar daxili və xarici səth quruluşu ilə asan təmizləmə və gigiyena təmin edir."
+      }
+    ]
+  },
+  "imageSlot": {
+    "webpSuffix": "WEBP şəkil sahəsi"
+  },
+  "specs": {
+    "title": "TEXNİKİ XÜSUSİYYƏTLƏR",
+    "rows": [
+      {
+        "k": "Məhsulun Adı",
+        "v": "Amalqam Separatoru"
+      },
+      {
+        "k": "İstifadə Sahəsi",
+        "v": "Diş qurğuları və vakuum sistemləri"
+      },
+      {
+        "k": "Korpus Materialı",
+        "v": "Paslanmaz Polad (AISI 304)"
+      },
+      {
+        "k": "Qoşulma Quruluşu",
+        "v": "Standart dental vakuum xətlərinə uyğun"
+      },
+      {
+        "k": "Təmizləmə / Baxım",
+        "v": "Asan sökülən konstruksiya və hamar səth"
+      },
+      {
+        "k": "Quraşdırma Tipi",
+        "v": "Şaquli quraşdırma"
+      },
+      {
+        "k": "Uyğunluq",
+        "v": "Bütün dental vakuum sistemləri ilə uyğun"
+      },
+      {
+        "k": "Səth Quruluşu",
+        "v": "Hamar, gigiyenik, korroziyaya davamlı"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "TEXNİKİ ÇERTYOJ VƏ ÖLÇÜLƏR",
+    "slotAriaLabel": "Texniki çertyoj və ölçülər üçün WEBP şəkil sahəsi",
+    "unitNote": "Bütün ölçülər mm ilə göstərilmişdir."
+  },
+  "useCases": {
+    "title": "İSTİFADƏ SAHƏLƏRİ",
+    "items": [
+      {
+        "title": "Diş Klinikaları",
+        "text": "Diş klinikalarında amalqam tullantılarının təhlükəsiz şəkildə ayrılması."
+      },
+      {
+        "title": "Dental Sistemlər",
+        "text": "Dental qurğular və vakuum sistemləri ilə tam uyğun istifadə."
+      },
+      {
+        "title": "Mərkəzi Vakuum Xətləri ilə İnteqrasiya",
+        "text": "Mərkəzi sistemlərə asan inteqrasiya və optimal performans."
+      },
+      {
+        "title": "Texniki Servis Tətbiqləri",
+        "text": "Texniki servis və baxım tətbiqlərində etibarlı həll tərəfdaşı."
+      },
+      {
+        "title": "Səhiyyə Müəssisələri",
+        "text": "Xəstəxanalar və səhiyyə müəssisələri üçün ideal həll."
+      }
+    ]
+  },
+  "faqs": {
+    "title": "T.S.S.",
+    "items": [
+      {
+        "q": "Amalqam separatoru nə işə yarayır?",
+        "a": "Amalqam hissəciklərini aspirasiya sistemlərindən ayıraraq onların ətraf mühitə qarışmasının qarşısını alır və tullantıların təhlükəsiz şəkildə toplanmasını təmin edir."
+      },
+      {
+        "q": "Quraşdırma prosesi necədir?",
+        "a": "Şaquli quraşdırma tövsiyə olunur. Standart qoşulma nöqtələri sayəsində mövcud vakuum xəttinə sürətli və asan şəkildə inteqrasiya edilir."
+      },
+      {
+        "q": "Hansı sistemlərlə uyğundur?",
+        "a": "Bütün dental vakuum sistemləri və mərkəzi vakuum xətləri ilə uyğundur. Standart qoşulma ölçülərinə malikdir."
+      },
+      {
+        "q": "Niyə paslanmaz polada üstünlük verilmişdir?",
+        "a": "Paslanmaz polad material korroziyaya qarşı üstün müqavimət təmin edir, uzunömürlüdür və gigiyenik istifadə üçün idealdır."
+      },
+      {
+        "q": "Baxımı necə aparılır?",
+        "a": "Xarici səth nəm parça ilə silinə bilər. Daxili hissə müntəzəm olaraq yoxlanılmalı və zərurət olduqda asan sökülən konstruksiyası sayəsində rahatlıqla təmizlənməlidir."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Sürətli Təklif Alın",
+    "subtitle": "Layihəniz üçün uyğun həll və qiymət təklifi almaq üçün bizimlə əlaqə saxlayın.",
+    "btn": "Təklif İstəyin"
+  },
+  "category": "Amalqam Separatoru"
+}

@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "Service & Support",
+    "subtitle": "Sehen Sie den Serviceverlauf Ihres Geräts ein und erstellen Sie schnell einen Servicetermin.",
+    "breadcrumbHome": "Startseite",
+    "breadcrumbCurrent": "Service & Support"
+  },
+  "benefits": [
+    {
+      "title": "Kompetenter Support",
+      "text": "Unser erfahrenes Technikteam steht Ihnen jederzeit zur Seite."
+    },
+    {
+      "title": "Schnelle Reaktion",
+      "text": "Nach Ihrer Anfrage reagieren wir schnellstmöglich."
+    },
+    {
+      "title": "Original-Ersatzteile",
+      "text": "Bei allen Serviceeinsätzen verwenden wir Originalteile."
+    },
+    {
+      "title": "Sicher & Garantiert",
+      "text": "Alle Leistungen sind im Rahmen der Garantie abgesichert."
+    }
+  ],
+  "query": {
+    "title": "Geräteabfrage",
+    "subtitle": "Fragen Sie Ihr Gerät über die Seriennummer oder den Servicecode ab.",
+    "tabsAriaLabel": "Abfragemethode",
+    "tabSerial": "Abfrage per Seriennummer",
+    "tabServiceCode": "Abfrage per Servicecode",
+    "labelSerial": "Seriennummer",
+    "labelServiceCode": "Servicecode (QR)",
+    "placeholderSerial": "Z. B.: OXM-VAC-250-0148",
+    "placeholderServiceCode": "Z. B.: abc123xyz",
+    "searchButton": "Abfragen",
+    "hint": "Ihre Seriennummer finden Sie auf dem Typenschild des Geräts.",
+    "techSupportImageAlt": "Oxymed Medikal Serviceexperte"
+  },
+  "faultTypes": [
+    "Störung / Außer Betrieb",
+    "Wartungsanfrage",
+    "Ersatzteilanfrage",
+    "Leistungsminderung",
+    "Garantieanfrage",
+    "Sonstiges"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "Garantie aktiv",
+    "yakin_bitis": "Läuft bald ab",
+    "garanti_disi": "Außerhalb der Garantie",
+    "bakim_riskli": "Wartung erforderlich",
+    "yetkisiz_askida": "Ausgesetzt",
+    "uzatilmis_garanti": "Garantieverlängerung",
+    "bakim_anlasmasi": "Wartungsvertrag",
+    "talep_incelemede": "Anfrage wird geprüft",
+    "talep_onaylandi": "Anfrage genehmigt",
+    "talep_reddedildi": "Anfrage abgelehnt"
+  },
+  "device": {
+    "notFoundTitle": "Gerät nicht gefunden",
+    "notFoundBody": "Für diese Seriennummer wurden keine Gerätedaten gefunden. Bitte überprüfen Sie die Seriennummer oder rufen Sie unseren technischen Support an.",
+    "cardTitle": "Geräteinformationen",
+    "imageAlt": "Geräteabbildung",
+    "labels": {
+      "productName": "Gerätetyp",
+      "model": "Modell",
+      "serialNumber": "Seriennummer",
+      "installDate": "Installationsdatum",
+      "customerFirm": "Kunde / Einrichtung",
+      "warrantyStatus": "Garantiestatus",
+      "warrantyEndDate": "Garantieende",
+      "lastMaintenanceDate": "Letzte Wartung",
+      "nextMaintenanceDate": "Nächste Wartung"
+    },
+    "historyTitle": "Durchgeführte Arbeiten & Serviceverlauf",
+    "historyEmpty": "Noch kein Serviceeintrag vorhanden.",
+    "tableDate": "Datum",
+    "tableServiceType": "Art der Leistung",
+    "tablePersonnel": "Servicepersonal",
+    "tableReport": "Bericht",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Schnelles Serviceanfrageformular",
+    "subtitle": "Erstellen Sie Ihre Serviceanfrage schnell und unser Team wird sich schnellstmöglich mit Ihnen in Verbindung setzen.",
+    "labelName": "Vor- und Nachname *",
+    "placeholderName": "Ihr Vor- und Nachname",
+    "labelPhone": "Telefon",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "E-Mail",
+    "placeholderEmail": "ornek@email.com",
+    "labelFirm": "Name des Krankenhauses / der Einrichtung",
+    "placeholderFirm": "Name der Einrichtung",
+    "labelCity": "Ihr Standort",
+    "placeholderCity": "Standort auswählen",
+    "cities": [
+      "Ankara",
+      "Istanbul",
+      "Izmir",
+      "Bursa",
+      "Antalya",
+      "Konya",
+      "Adana",
+      "Sonstige"
+    ],
+    "labelFaultType": "Art der Anfrage *",
+    "placeholderFaultType": "Art der Anfrage auswählen",
+    "labelDescription": "Beschreibung *",
+    "placeholderDescription": "Kurze Beschreibung eingeben...",
+    "kvkkConsent": "Ich habe die Datenschutzinformation gelesen und stimme zu.",
+    "submit": "Anfrage erstellen",
+    "submitting": "Wird gesendet…",
+    "successTitle": "Ihre Anfrage wurde entgegengenommen!",
+    "successBody": "Unser Serviceteam wird sich schnellstmöglich mit Ihnen in Verbindung setzen.",
+    "toastSuccess": "Ihre Garantieanfrage wurde übermittelt! Wir werden uns schnellstmöglich mit Ihnen in Verbindung setzen.",
+    "toastError": "Die Anfrage konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "toastValidation": "Bitte füllen Sie die Pflichtfelder aus und erteilen Sie Ihre Datenschutzeinwilligung.",
+    "toastNoDevice": "Bitte fragen Sie zuerst das Gerät ab."
+  }
+}

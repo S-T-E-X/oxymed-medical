@@ -1,0 +1,150 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDİKAL",
+    "titleLine1": "AMALGAM",
+    "titleLine2": "SEPARATÖRÜ",
+    "desc1": "Oxymed Amalgam Separatörü, diş ünitelerinden aspirasyon sistemleriyle oluşan amalgam partiküllerini etkin şekilde ayırarak çevreye karışmasını önler.",
+    "desc2": "Hijyenik, dayanıklı ve verimli tasarımıyla güvenli bir çalışma ortamı sunar.",
+    "photoSlotAriaLabel": "Amalgam separatörü ana WEBP görsel alanı"
+  },
+  "heroFeatures": [
+    {
+      "title": "Paslanmaz Çelik Gövde",
+      "text": "Yüksek kaliteli paslanmaz çelik malzeme uzun ömürlü kullanım sağlar."
+    },
+    {
+      "title": "Hijyenik Tasarım",
+      "text": "Pürüzsüz yüzey yapısı ile kolay temizlik ve hijyenik kullanım sunar."
+    },
+    {
+      "title": "Kolay Entegrasyon",
+      "text": "Mevcut vakum hatlarına hızlı ve kolay entegrasyon imkanı."
+    },
+    {
+      "title": "Uzun Ömürlü Kullanım",
+      "text": "Sağlam yapısı ile zorlu koşullarda bile maksimum performans."
+    }
+  ],
+  "detailGrid": {
+    "ariaLabel": "Ürün detay görsel alanları",
+    "cards": [
+      {
+        "title": "Dayanıklı Gövde",
+        "text": "Kalın paslanmaz çelik gövde yapısı ile korozyona karşı üstün direnç sağlar."
+      },
+      {
+        "title": "Detaylı Bağlantı Yapısı",
+        "text": "İç bağlantı tasarımı, akış verimliliğini artırır ve tıkanma riskini minimize eder."
+      },
+      {
+        "title": "Kolay Montaj",
+        "text": "Standart bağlantı noktaları sayesinde hızlı ve pratik montaj imkanı sunar."
+      },
+      {
+        "title": "Hijyenik Yüzey",
+        "text": "Pürüzsüz iç ve dış yüzey yapısı ile kolay temizlik ve hijyen sağlar."
+      }
+    ]
+  },
+  "imageSlot": {
+    "webpSuffix": "WEBP görsel alanı"
+  },
+  "specs": {
+    "title": "TEKNİK ÖZELLİKLER",
+    "rows": [
+      {
+        "k": "Ürün Adı",
+        "v": "Amalgam Separatörü"
+      },
+      {
+        "k": "Kullanım Alanı",
+        "v": "Diş üniteleri ve vakum sistemleri"
+      },
+      {
+        "k": "Gövde Malzemesi",
+        "v": "Paslanmaz Çelik (AISI 304)"
+      },
+      {
+        "k": "Bağlantı Yapısı",
+        "v": "Standart dental vakum hatlarına uygun"
+      },
+      {
+        "k": "Temizlik / Bakım",
+        "v": "Kolay sökülebilir yapı ve pürüzsüz yüzey"
+      },
+      {
+        "k": "Montaj Tipi",
+        "v": "Dikey montaj"
+      },
+      {
+        "k": "Uyumluluk",
+        "v": "Tüm dental vakum sistemleri ile uyumlu"
+      },
+      {
+        "k": "Yüzey Yapısı",
+        "v": "Pürüzsüz, hijyenik, korozyona dayanıklı"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "TEKNİK ÇİZİM VE ÖLÇÜLER",
+    "slotAriaLabel": "Teknik çizim ve ölçüler WEBP görsel alanı",
+    "unitNote": "Tüm ölçüler mm cinsindendir."
+  },
+  "useCases": {
+    "title": "KULLANIM ALANLARI",
+    "items": [
+      {
+        "title": "Diş Klinikleri",
+        "text": "Diş kliniklerinde amalgam atıklarının güvenli ayrıştırılması."
+      },
+      {
+        "title": "Dental Sistemler",
+        "text": "Dental üniteler ve vakum sistemleriyle tam uyumlu kullanım."
+      },
+      {
+        "title": "Merkezi Vakum Hatları ile Entegrasyon",
+        "text": "Merkezi sistemlere kolay entegrasyon ve optimum performans."
+      },
+      {
+        "title": "Teknik Servis Uygulamaları",
+        "text": "Teknik servis ve bakım uygulamalarında güvenilir çözüm ortağı."
+      },
+      {
+        "title": "Sağlık Kuruluşları",
+        "text": "Hastaneler ve sağlık kuruluşları için ideal çözüm."
+      }
+    ]
+  },
+  "faqs": {
+    "title": "S.S.S.",
+    "items": [
+      {
+        "q": "Amalgam separatörü ne işe yarar?",
+        "a": "Amalgam partiküllerini aspirasyon sistemlerinden ayırarak çevreye karışmasını önler ve atıkların güvenli şekilde toplanmasını sağlar."
+      },
+      {
+        "q": "Montaj süreci nasıldır?",
+        "a": "Dikey montaj önerilir. Standart bağlantı noktaları sayesinde mevcut vakum hattına hızlı ve kolay şekilde entegre edilir."
+      },
+      {
+        "q": "Hangi sistemlerle uyumludur?",
+        "a": "Tüm dental vakum sistemleri ve merkezi vakum hatları ile uyumludur. Standart bağlantı ölçülerine sahiptir."
+      },
+      {
+        "q": "Neden paslanmaz çelik tercih edilmiştir?",
+        "a": "Paslanmaz çelik malzeme, korozyona karşı üstün direnç sağlar, uzun ömürlüdür ve hijyenik kullanım için idealdir."
+      },
+      {
+        "q": "Bakımı nasıl yapılır?",
+        "a": "Dış yüzey nemli bir bezle silinebilir. İç kısım periyodik olarak kontrol edilmeli ve gerektiğinde sökülebilir yapısı sayesinde kolayca temizlenmelidir."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Hızlı Teklif Al",
+    "subtitle": "Projeniz için uygun çözüm ve fiyat teklifi almak için bizimle iletişime geçin.",
+    "btn": "Teklif İste"
+  },
+  "category": "Amalgam Separatörü"
+}

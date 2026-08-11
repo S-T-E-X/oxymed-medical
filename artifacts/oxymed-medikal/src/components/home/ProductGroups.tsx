@@ -1,5 +1,8 @@
 import { AlertCircle, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useListProductCategories } from "@workspace/api-client-react";
+import { useI18n } from "../../i18n/I18nProvider";
+import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 
 const CATEGORY_IMAGES = [
   "/assets/images/product-bed-head-unit.png",
@@ -8,35 +11,34 @@ const CATEGORY_IMAGES = [
   "/assets/images/product-electrical-data.png",
 ];
 
-const CATEGORY_DESCS = [
-  "Elektrik, medikal gaz ve data üniteleri ile güvenli ve konforlu çözümler.",
-  "Ameliyathane, yoğun bakım ve acil üniteler için esnek pendant çözümleri.",
-  "Oksijen, vakum, hava, AGS ve azot gaz sistemleri.",
-  "Elektrik, zayıf akım ve data sistemleri ile kesintisiz iletişim.",
-];
-
 export default function ProductGroups() {
   const { data: categories = [], isLoading, isError } = useListProductCategories();
   const displayed = categories.slice(0, 4);
+  const { t, tv } = useI18n();
+  const path = useLocalizedPath();
+  const productsHref = path("products");
+
+  // Category names come from the API in Turkish; the supporting blurbs are
+  // translated per position so every language reads naturally.
+  const descriptions = tv<string[]>("home.productGroups.descriptions", []);
 
   return (
     <section id="urunler" className="bg-white py-20 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-extrabold text-oxynavy-700">ÜRÜN GRUPLARIMIZ</p>
+          <p className="text-xs font-extrabold text-oxynavy-700">{t("home.productGroups.eyebrow")}</p>
           <h2 className="mt-4 text-3xl font-extrabold leading-tight text-oxynavy-950 sm:text-4xl lg:text-[42px]">
-            İleri Teknoloji, Üstün Performans
+            {t("home.productGroups.title")}
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-steel-700 sm:text-base">
-            Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz yenilikçi ürün
-            gruplarıyla yaşam alanlarını daha güvenli ve verimli hale getiriyoruz.
+            {t("home.productGroups.description")}
           </p>
         </div>
 
         {isError ? (
           <div className="mt-10 flex items-center justify-center gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
             <AlertCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-            Ürün grupları yüklenirken bir hata oluştu.
+            {t("home.productGroups.loadError")}
           </div>
         ) : (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -59,15 +61,15 @@ export default function ProductGroups() {
                     <div className="p-6">
                       <h3 className="text-base font-extrabold text-oxynavy-950">{cat.name.toUpperCase()}</h3>
                       <p className="mt-4 min-h-[72px] text-sm leading-6 text-steel-700">
-                        {CATEGORY_DESCS[i] ?? "Medikal ekipman ve çözümlerimiz."}
+                        {descriptions[i] ?? t("home.productGroups.fallbackDescription")}
                       </p>
-                      <a
-                        href="/urunler"
+                      <Link
+                        to={productsHref}
                         className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500"
                       >
-                        Detaylı İncele
-                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                      </a>
+                        {t("common.cta.reviewDetails")}
+                        <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
+                      </Link>
                     </div>
                   </article>
                 ))}

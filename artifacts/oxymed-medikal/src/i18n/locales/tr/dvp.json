@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVP SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VAKUM POMPASI",
+    "desc1": "Oxymed Dental Vakum Pompası, diş klinikleri ve sağlık kuruluşlarında güvenilir, sessiz ve kesintisiz vakum çözümü sunar.",
+    "desc2": "Yüksek performanslı motor yapısı ve dayanıklı tasarımıyla uzun ömürlü, ekonomik ve hijyenik bir kullanım sağlar.",
+    "visualAriaLabel": "Dental vakum pompası ana WEBP görsel alanı"
+  },
+  "heroFeatures": [
+    {
+      "title": "GÜVENİLİR PERFORMANS",
+      "text": "Kesintisiz ve güçlü vakum gücü."
+    },
+    {
+      "title": "SESSİZ ÇALIŞMA",
+      "text": "Düşük ses seviyesi ile konforlu kullanım."
+    },
+    {
+      "title": "DAYANIKLI YAPI",
+      "text": "Uzun ömürlü çelik tank ve sağlam gövde."
+    },
+    {
+      "title": "KOLAY BAKIM",
+      "text": "Modüler yapı ile hızlı servis imkanı."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "YÜKSEK PERFORMANSLI POMPALAR",
+      "text": "Güçlü motor yapısı ve sessiz çalışma.",
+      "ariaLabel": "Yüksek performanslı pompalar WEBP görsel alanı"
+    },
+    {
+      "title": "DAYANIKLI BAĞLANTI SİSTEMİ",
+      "text": "Kaliteli bağlantı elemanları ve güvenli valfler.",
+      "ariaLabel": "Dayanıklı bağlantı sistemi WEBP görsel alanı"
+    },
+    {
+      "title": "KOMPAKT VE MODÜLER TASARIM",
+      "text": "Kolay kurulum, yer tasarrufu ve uzun ömür.",
+      "ariaLabel": "Kompakt ve modüler tasarım WEBP görsel alanı"
+    }
+  ],
+  "specs": {
+    "heading": "TEKNİK ÖZELLİKLER",
+    "rows": [
+      [
+        "Ürün Adı",
+        "Dental Vakum Pompası"
+      ],
+      [
+        "Pompa Adedi",
+        "3 Adet"
+      ],
+      [
+        "Tank Tipi",
+        "Yatay Çelik Tank"
+      ],
+      [
+        "Gövde Yapısı",
+        "Çelik, Toz Boyalı"
+      ],
+      [
+        "Tank Hacmi",
+        "270 - 300 L (Opsiyonel)"
+      ],
+      [
+        "Çalışma Sistemi",
+        "Yağsız Vakum Sistemi"
+      ],
+      [
+        "Maks. Vakum",
+        "-0,85 bar"
+      ],
+      [
+        "Bağlantılar",
+        "Vakum Girişi: 1 1/4\" / Tahliye: 1/2\""
+      ],
+      [
+        "Kullanım Alanı",
+        "Diş klinikleri, poliklinikler ve hastaneler"
+      ],
+      [
+        "Bakım Kolaylığı",
+        "Modüler yapı, kolay servis ve bakım"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TEKNİK ÇİZİM & BOYUTLAR",
+    "ariaLabel": "Teknik çizim ve boyutlar WEBP görsel alanı",
+    "note": "Boyutlar yaklaşık değerlerdir."
+  },
+  "useCases": {
+    "heading": "KULLANIM ALANLARI",
+    "items": [
+      "Diş Klinikleri",
+      "Ağız ve Diş Sağlığı Merkezleri",
+      "Poliklinikler",
+      "Hastaneler"
+    ]
+  },
+  "quickQuote": {
+    "strong": "Dental vakum pompası için hızlı teklif alın.",
+    "small": "Projenize uygun kapasite ve kurulum seçeneğini birlikte netleştirelim.",
+    "cta": "TEKLİF AL"
+  },
+  "category": "Dental Vakum Pompası"
+}

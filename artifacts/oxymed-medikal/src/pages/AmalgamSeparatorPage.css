@@ -58,7 +58,7 @@
   align-items: center;
   min-height: 34px;
   padding: 0 14px;
-  border-left: 3px solid #082653;
+  border-inline-start: 3px solid #082653;
   background: rgba(8, 38, 83, 0.06);
   color: #082653;
   font-size: 12px;
@@ -164,9 +164,9 @@
 
 .ams-hero-photo-slot::after {
   position: absolute;
-  right: 10%;
+  inset-inline-end: 10%;
   bottom: 4%;
-  left: 8%;
+  inset-inline-start: 8%;
   height: 14%;
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(8, 38, 83, 0.11), transparent 70%);
@@ -299,8 +299,8 @@
 
 .ams-drawing {
   min-width: 0;
-  padding-left: 34px;
-  border-left: 1px solid #d4deea;
+  padding-inline-start: 34px;
+  border-inline-start: 1px solid #d4deea;
 }
 
 .ams-drawing-slot {
@@ -329,7 +329,7 @@
   color: #344960;
   font-size: 12px;
   font-weight: 750;
-  text-align: right;
+  text-align: end;
 }
 
 .ams-usage-band {
@@ -358,17 +358,17 @@
 .ams-usage-band article {
   min-height: 166px;
   padding: 0 22px;
-  border-right: 1px solid rgba(255, 255, 255, 0.32);
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.32);
   text-align: center;
 }
 
 .ams-usage-band article:first-child {
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 .ams-usage-band article:last-child {
-  padding-right: 0;
-  border-right: 0;
+  padding-inline-end: 0;
+  border-inline-end: 0;
 }
 
 .ams-usage-band svg {
@@ -566,9 +566,9 @@
 
   .ams-drawing {
     padding-top: 24px;
-    padding-left: 0;
+    padding-inline-start: 0;
     border-top: 1px solid #d4deea;
-    border-left: 0;
+    border-inline-start: 0;
   }
 
   .ams-usage-band > div {

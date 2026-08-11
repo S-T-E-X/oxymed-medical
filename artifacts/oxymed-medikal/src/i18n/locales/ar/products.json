@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "title": "منتجاتنا",
+    "description": "حلول طبية مبتكرة وموثوقة طورناها للمستشفيات والعيادات والمراكز الصحية.",
+    "imageAlt": "صورة بانر صفحة المنتجات"
+  },
+  "features": {
+    "production": {
+      "title": "مباشرة من المُصنِّع",
+      "description": "إنتاج عالي الجودة ومبيعات مباشرة من مصنعنا"
+    },
+    "certified": {
+      "title": "إنتاج معتمد",
+      "description": "إنتاج معتمد وفق ISO 9001 وISO 13485 وCE"
+    },
+    "modular": {
+      "title": "تصميم معياري",
+      "description": "حلول مرنة ومعيارية حسب الحاجة"
+    },
+    "durability": {
+      "title": "عمر تشغيلي طويل",
+      "description": "مواد متينة واستخدام طويل الأمد"
+    },
+    "support": {
+      "title": "دعم فني 24/7",
+      "description": "دعم فني متواصل قبل البيع وبعده"
+    }
+  },
+  "sidebar": {
+    "allProducts": "جميع المنتجات",
+    "categoriesError": "تعذر تحميل الفئات.",
+    "catalogTitle": "حمّل كتالوج منتجاتنا",
+    "catalogSize": "PDF / 12.4 MB"
+  },
+  "results": {
+    "allTitle": "جميع المنتجات",
+    "allDescription": "حلول طبية طورناها للمستشفيات والعيادات والمراكز الصحية.",
+    "categoryDescription": "منتجاتنا ضمن فئة {{category}}.",
+    "counter": "{{count}} منتج",
+    "loadError": "حدث خطأ أثناء تحميل المنتجات. يرجى تحديث الصفحة."
+  },
+  "dentalCards": {
+    "amalgam-separator": "فاصل الأملغم",
+    "dental-vakum-pompasi": "مضخة تفريغ للأسنان",
+    "dental-vakum-sistemi": "نظام تفريغ للأسنان"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "ANASAYFA",
+    "corporate": "KURUMSAL",
+    "products": "ÜRÜNLER",
+    "references": "REFERANSLAR",
+    "news": "HABERLER",
+    "service": "SERVİS",
+    "contact": "İLETİŞİM",
+    "allProducts": "Tüm Ürünler",
+    "mainMenu": "Ana menü",
+    "mobileMenu": "Mobil ana menü",
+    "openMenu": "Menüyü aç",
+    "closeMenu": "Menüyü kapat",
+    "language": "Dil"
+  },
+  "cta": {
+    "getQuote": "TEKLİF AL",
+    "reviewDetails": "Detaylı İncele",
+    "downloadCatalog": "KATALOG İNDİR",
+    "contactUs": "BİZE ULAŞIN",
+    "send": "GÖNDER",
+    "sending": "GÖNDERİLİYOR...",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "close": "Kapat"
+  },
+  "footer": {
+    "tagline": "Yatak başı üniteleri, pendant sistemleri ve medikal gaz çözümleri ile güvenli, konforlu ve teknolojik ortamlar sunuyoruz.",
+    "contactTitle": "İLETİŞİM",
+    "copyright": "© 2024 Oxymed Medikal. Tüm hakları saklıdır.",
+    "kvkk": "KVKK",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları",
+    "columns": {
+      "corporate": {
+        "title": "KURUMSAL",
+        "about": "Hakkımızda",
+        "vision": "Vizyon & Misyon",
+        "quality": "Kalite Belgelerimiz",
+        "hr": "İnsan Kaynakları"
+      },
+      "products": {
+        "title": "ÜRÜNLER",
+        "bedHead": "Yatak Başı Üniteleri",
+        "pendant": "Pendant Sistemleri",
+        "medicalGas": "Medikal Gaz Sistemleri",
+        "electrical": "Elektrik & Data Sistemleri"
+      },
+      "services": {
+        "title": "HİZMETLERİMİZ",
+        "engineering": "Projelendirme",
+        "manufacturing": "Üretim",
+        "installation": "Montaj",
+        "technicalService": "Teknik Servis"
+      },
+      "references": {
+        "title": "REFERANSLAR",
+        "completed": "Tamamlanan Projeler",
+        "public": "Kamu Projeleri",
+        "private": "Özel Projeler"
+      }
+    }
+  },
+  "status": {
+    "loading": "Yükleniyor...",
+    "genericError": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "notFound": "Sonuç bulunamadı.",
+    "loadingShort": "Yükleniyor",
+    "pageLoading": "Sayfa yükleniyor"
+  },
+  "catalog": {
+    "title": "Katalog İndir",
+    "subtitle": "Dil seçerek kataloğu indirin",
+    "empty": "Henüz katalog eklenmemiş.",
+    "trackLabel": "Katalog İndir"
+  },
+  "cookies": {
+    "ariaLabel": "Çerez bildirimi",
+    "title": "Bu site deneyiminizi iyileştirmek için çerezler kullanmaktadır.",
+    "description": "Site işlevselliği ve performans analizi için gerekli çerezler kullanılmaktadır. Devam ederek çerez politikamızı kabul etmiş sayılırsınız.",
+    "accept": "Kabul Et",
+    "decline": "Reddet"
+  },
+  "hero": {
+    "fallbackImageAlt": "Modern hastane odasında yatak başı ünitesi ve pendant sistemi",
+    "fallbackTitleLine1": "HAYAT İÇİN",
+    "fallbackTitleLine2": "TEKNOLOJİ",
+    "fallbackDescription": "Yatak başı üniteleri, pendant sistemleri ve medikal gaz çözümleri ile güvenli, konforlu ve teknolojik ortamlar sunuyoruz.",
+    "ourProducts": "ÜRÜNLERİMİZ",
+    "slideLabel": "Slayt {{index}}"
+  }
+}

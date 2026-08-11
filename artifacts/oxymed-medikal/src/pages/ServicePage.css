@@ -37,11 +37,15 @@
 .service-hero__jacket-logo {
   position: absolute;
   top: 88px;
-  right: max(6vw, 76px);
+  inset-inline-end: max(6vw, 76px);
   width: 190px;
   opacity: 0.44;
   filter: grayscale(1);
   transform: rotate(-2deg);
+}
+
+[dir="rtl"] .service-hero__jacket-logo {
+  transform: rotate(2deg);
 }
 
 .service-hero__inner {
@@ -162,8 +166,16 @@
 }
 
 .service-query-tabs button:last-child {
-  border-left: 0;
+  border-inline-start: 0;
   border-radius: 0 4px 4px 0;
+}
+
+[dir="rtl"] .service-query-tabs button:first-child {
+  border-radius: 0 4px 4px 0;
+}
+
+[dir="rtl"] .service-query-tabs button:last-child {
+  border-radius: 4px 0 0 4px;
 }
 
 .service-query-tabs button.active {
@@ -245,6 +257,10 @@
   justify-content: flex-end;
   padding: 0 16px 0 0;
   overflow: hidden;
+}
+
+[dir="rtl"] .service-query-card__visual {
+  padding: 0 0 0 16px;
 }
 
 .service-query-card__visual img.service-query-man {
@@ -362,7 +378,7 @@
   color: #071b38;
   font-size: 11px;
   font-weight: 900;
-  text-align: left;
+  text-align: start;
   text-transform: uppercase;
 }
 
@@ -451,7 +467,7 @@
 .service-request-card label > div svg {
   position: absolute;
   top: 50%;
-  left: 12px;
+  inset-inline-start: 12px;
   color: #68788d;
   transform: translateY(-50%);
 }
@@ -465,7 +481,7 @@
 }
 
 .service-request-card label > div input {
-  padding-left: 36px;
+  padding-inline-start: 36px;
 }
 
 .service-request-card select {
@@ -646,7 +662,7 @@
   }
 
   .service-query-tabs button:last-child {
-    border-left: 1px solid #cfd8e5;
+    border-inline-start: 1px solid #cfd8e5;
     border-top: 0;
   }
 

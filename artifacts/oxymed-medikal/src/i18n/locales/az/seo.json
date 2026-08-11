@@ -1,0 +1,34 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Yataqüstü Blok, Pendant və Tibbi Qaz Sistemləri",
+    "description": "Xəstəxana və klinikalar üçün yataqüstü bloklar, pendant sistemləri, tibbi qaz sistemləri və dental vakuum həlləri. ISO 9001 və ISO 13485 sertifikatlı istehsal, 50+ ölkəyə ixrac."
+  },
+  "products": {
+    "title": "Məhsullarımız | Tibbi Qaz və Xəstəxana Avadanlıq Sistemləri | Oxymed",
+    "description": "Yataqüstü bloklar, pendant sistemləri, tibbi qaz nəzarət panelləri, dental vakuum nasosları və amalgam separatoru məhsul ailəmizlə tanış olun."
+  },
+  "gcp": {
+    "title": "Mərtəbə Nəzarət Paneli (Tibbi Qaz Siqnalizasiya Paneli) | Oxymed Medikal",
+    "description": "Xəstəxanaların tibbi qaz xətləri üçün rəqəmsal mərtəbə nəzarət paneli: oksigen, vakuum, sıxılmış hava və azot protoksid üçün fasiləsiz təzyiq monitorinqi, səsli və vizual siqnalizasiya."
+  },
+  "ams": {
+    "title": "Amalqam Separatoru | ISO 11143 Uyğun Dental Ayırıcı | Oxymed",
+    "description": "Diş klinikalarında amalgam tullantılarını 95%-dən çox tutan, ISO 11143 uyğun, səssiz və asan texniki xidmətli amalgam separator sistemləri."
+  },
+  "dvp": {
+    "title": "Dental Vakuum Nasosu | Quru və Yaş Sistem | Oxymed Medikal",
+    "description": "Diş klinikaları üçün səssiz, enerji səmərəli və uzunömürlü dental vakuum nasosları. Tək blokdan çox bloklu klinikalara qədər miqyaslana bilən həllər."
+  },
+  "dvs": {
+    "title": "Dental Vakuum Sistemi | Mərkəzi Aspirasiya Həlləri | Oxymed",
+    "description": "Çox bloklu diş klinikaları və ağız-diş sağlamlığı mərkəzləri üçün mərkəzi dental vakuum sistemləri, separator və nəzarət paneli inteqrasiyası."
+  },
+  "service": {
+    "title": "Texniki Servis və Zəmanət Sorğusu | Oxymed Medikal",
+    "description": "Oxymed cihazlarınız üçün zəmanət sorğusu, servis tələbi və texniki xidmət dəstəyi. Seriya nömrənizlə cihaz qeydiyyatınızı və servis tarixçənizi görüntüləyin."
+  },
+  "quote": {
+    "title": "Təklif Alın | Xəstəxana və Klinika Layihələri | Oxymed Medikal",
+    "description": "Layihəniz üçün sürətli və pulsuz təklif alın. Yataqüstü bloklar, pendant sistemləri, tibbi qaz və dental vakuum həllərində peşəkar dəstək."
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "hero": {
+    "title": "Service & Assistance",
+    "subtitle": "Consultez l'historique de service de votre appareil et créez rapidement une demande d'intervention.",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbCurrent": "Service & Assistance"
+  },
+  "benefits": [
+    {
+      "title": "Assistance experte",
+      "text": "Notre équipe technique expérimentée est toujours à vos côtés."
+    },
+    {
+      "title": "Intervention rapide",
+      "text": "Nous intervenons dans les meilleurs délais après votre demande."
+    },
+    {
+      "title": "Pièces de rechange d'origine",
+      "text": "Nous utilisons des pièces d'origine pour toutes les interventions."
+    },
+    {
+      "title": "Sécurisé & garanti",
+      "text": "Les opérations sont couvertes par la garantie."
+    }
+  ],
+  "query": {
+    "title": "Recherche d'appareil",
+    "subtitle": "Recherchez votre appareil à l'aide de son numéro de série ou de son code service.",
+    "tabsAriaLabel": "Méthode de recherche",
+    "tabSerial": "Rechercher par numéro de série",
+    "tabServiceCode": "Rechercher par code service",
+    "labelSerial": "Numéro de série",
+    "labelServiceCode": "Code service (QR)",
+    "placeholderSerial": "Ex. : OXM-VAC-250-0148",
+    "placeholderServiceCode": "Ex. : abc123xyz",
+    "searchButton": "Rechercher",
+    "hint": "Vous trouverez le numéro de série sur l'étiquette de l'appareil.",
+    "techSupportImageAlt": "Spécialiste service Oxymed Medikal"
+  },
+  "faultTypes": [
+    "Panne / Ne fonctionne pas",
+    "Demande de maintenance",
+    "Demande de pièce de rechange",
+    "Baisse de performance",
+    "Demande de garantie",
+    "Autre"
+  ],
+  "statusLabels": {
+    "aktif_garanti": "Garantie active",
+    "yakin_bitis": "Expire bientôt",
+    "garanti_disi": "Hors garantie",
+    "bakim_riskli": "Maintenance requise",
+    "yetkisiz_askida": "En attente",
+    "uzatilmis_garanti": "Garantie prolongée",
+    "bakim_anlasmasi": "Contrat de maintenance",
+    "talep_incelemede": "Demande en cours d'examen",
+    "talep_onaylandi": "Demande approuvée",
+    "talep_reddedildi": "Demande refusée"
+  },
+  "device": {
+    "notFoundTitle": "Appareil introuvable",
+    "notFoundBody": "Aucune information d'appareil enregistrée n'a été trouvée pour ce numéro de série. Veuillez vérifier le numéro de série ou contacter notre assistance technique.",
+    "cardTitle": "Informations sur l'appareil",
+    "imageAlt": "Visuel de l'appareil",
+    "labels": {
+      "productName": "Type d'appareil",
+      "model": "Modèle",
+      "serialNumber": "Numéro de série",
+      "installDate": "Date d'installation",
+      "customerFirm": "Client / Établissement",
+      "warrantyStatus": "Statut de la garantie",
+      "warrantyEndDate": "Fin de garantie",
+      "lastMaintenanceDate": "Dernière maintenance",
+      "nextMaintenanceDate": "Prochaine maintenance"
+    },
+    "historyTitle": "Interventions & historique de service",
+    "historyEmpty": "Aucun dossier de service pour le moment.",
+    "tableDate": "Date",
+    "tableServiceType": "Type d'intervention",
+    "tablePersonnel": "Technicien de service",
+    "tableReport": "Rapport",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Formulaire de demande d'intervention rapide",
+    "subtitle": "Créez rapidement votre demande d'intervention, notre équipe vous contactera dans les meilleurs délais.",
+    "labelName": "Nom complet *",
+    "placeholderName": "Votre nom complet",
+    "labelPhone": "Téléphone",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "E-mail",
+    "placeholderEmail": "ornek@email.com",
+    "labelFirm": "Nom de l'hôpital / établissement",
+    "placeholderFirm": "Nom de l'établissement",
+    "labelCity": "Votre ville",
+    "placeholderCity": "Sélectionnez une ville",
+    "cities": [
+      "Ankara",
+      "Istanbul",
+      "Izmir",
+      "Bursa",
+      "Antalya",
+      "Konya",
+      "Adana",
+      "Autre"
+    ],
+    "labelFaultType": "Type de demande *",
+    "placeholderFaultType": "Sélectionnez le type de demande",
+    "labelDescription": "Description *",
+    "placeholderDescription": "Saisissez une brève description...",
+    "kvkkConsent": "J'ai lu et j'accepte le texte d'information KVKK.",
+    "submit": "Créer une demande",
+    "submitting": "Envoi en cours…",
+    "successTitle": "Votre demande a été reçue !",
+    "successBody": "Notre équipe de service vous contactera dans les meilleurs délais.",
+    "toastSuccess": "Votre demande de garantie a été transmise ! Nous vous contacterons dans les meilleurs délais.",
+    "toastError": "Impossible de créer la demande, veuillez réessayer.",
+    "toastValidation": "Veuillez remplir les champs obligatoires et donner votre consentement KVKK.",
+    "toastNoDevice": "Veuillez d'abord rechercher l'appareil."
+  }
+}

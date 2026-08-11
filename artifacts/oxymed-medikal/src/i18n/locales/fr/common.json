@@ -1,0 +1,94 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "ACCUEIL",
+    "corporate": "ENTREPRISE",
+    "products": "PRODUITS",
+    "references": "RÉFÉRENCES",
+    "news": "ACTUALITÉS",
+    "service": "SERVICE",
+    "contact": "CONTACT",
+    "allProducts": "Tous les produits",
+    "mainMenu": "Menu principal",
+    "mobileMenu": "Menu principal mobile",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "language": "Langue"
+  },
+  "cta": {
+    "getQuote": "DEVIS",
+    "reviewDetails": "Voir les détails",
+    "downloadCatalog": "TÉLÉCHARGER LE CATALOGUE",
+    "contactUs": "CONTACTEZ-NOUS",
+    "send": "ENVOYER",
+    "sending": "ENVOI EN COURS...",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "close": "Fermer"
+  },
+  "footer": {
+    "tagline": "Nous proposons des environnements sûrs, confortables et technologiques avec des unités de tête de lit, des systèmes de bras plafonniers et des solutions de gaz médicaux.",
+    "contactTitle": "CONTACT",
+    "copyright": "© 2024 Oxymed Medikal. Tous droits réservés.",
+    "kvkk": "KVKK",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "columns": {
+      "corporate": {
+        "title": "ENTREPRISE",
+        "about": "À propos de nous",
+        "vision": "Vision & Mission",
+        "quality": "Nos certificats qualité",
+        "hr": "Ressources humaines"
+      },
+      "products": {
+        "title": "PRODUITS",
+        "bedHead": "Unités de tête de lit",
+        "pendant": "Systèmes de bras plafonniers",
+        "medicalGas": "Systèmes de gaz médicaux",
+        "electrical": "Systèmes électriques & data"
+      },
+      "services": {
+        "title": "NOS SERVICES",
+        "engineering": "Études de projet",
+        "manufacturing": "Fabrication",
+        "installation": "Installation",
+        "technicalService": "Service technique"
+      },
+      "references": {
+        "title": "RÉFÉRENCES",
+        "completed": "Projets réalisés",
+        "public": "Projets publics",
+        "private": "Projets privés"
+      }
+    }
+  },
+  "status": {
+    "loading": "Chargement...",
+    "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+    "notFound": "Aucun résultat trouvé.",
+    "loadingShort": "Chargement",
+    "pageLoading": "Chargement de la page"
+  },
+  "catalog": {
+    "title": "Télécharger le catalogue",
+    "subtitle": "Sélectionnez une langue pour télécharger le catalogue",
+    "empty": "Aucun catalogue n’a encore été ajouté.",
+    "trackLabel": "Télécharger le catalogue"
+  },
+  "cookies": {
+    "ariaLabel": "Notification relative aux cookies",
+    "title": "Ce site utilise des cookies pour améliorer votre expérience.",
+    "description": "Des cookies nécessaires au fonctionnement du site et à l’analyse des performances sont utilisés. En continuant, vous acceptez notre politique en matière de cookies.",
+    "accept": "Accepter",
+    "decline": "Refuser"
+  },
+  "hero": {
+    "fallbackImageAlt": "Unité tête de lit et système de bras plafonnier dans une chambre d’hôpital moderne",
+    "fallbackTitleLine1": "LA TECHNOLOGIE",
+    "fallbackTitleLine2": "AU SERVICE DE LA VIE",
+    "fallbackDescription": "Nous proposons des environnements sûrs, confortables et technologiques grâce à nos unités tête de lit, systèmes de bras plafonniers et solutions de gaz médicaux.",
+    "ourProducts": "NOS PRODUITS",
+    "slideLabel": "Diapositive {{index}}"
+  }
+}

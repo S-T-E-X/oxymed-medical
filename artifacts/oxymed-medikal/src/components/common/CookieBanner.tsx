@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useI18n } from "../../i18n/I18nProvider";
 
 const STORAGE_KEY = "oxymed_cookie_consent";
 
 export default function CookieBanner() {
   const location = useLocation();
+  const { t } = useI18n();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function CookieBanner() {
   return (
     <div
       role="dialog"
-      aria-label="Çerez bildirimi"
+      aria-label={t("common.cookies.ariaLabel")}
       style={{
         position: "fixed",
         bottom: 0,
@@ -75,7 +77,7 @@ export default function CookieBanner() {
               lineHeight: 1.5,
             }}
           >
-            Bu site deneyiminizi iyileştirmek için çerezler kullanmaktadır.
+            {t("common.cookies.title")}
           </p>
           <p
             style={{
@@ -85,8 +87,7 @@ export default function CookieBanner() {
               lineHeight: 1.5,
             }}
           >
-            Site işlevselliği ve performans analizi için gerekli çerezler kullanılmaktadır.
-            Devam ederek çerez politikamızı kabul etmiş sayılırsınız.
+            {t("common.cookies.description")}
           </p>
         </div>
 
@@ -115,7 +116,7 @@ export default function CookieBanner() {
               (e.target as HTMLButtonElement).style.color = "#576773";
             }}
           >
-            Reddet
+            {t("common.cookies.decline")}
           </button>
           <button
             onClick={accept}
@@ -139,7 +140,7 @@ export default function CookieBanner() {
               ((e.target as HTMLButtonElement).style.opacity = "1")
             }
           >
-            Kabul Et
+            {t("common.cookies.accept")}
           </button>
         </div>
       </div>

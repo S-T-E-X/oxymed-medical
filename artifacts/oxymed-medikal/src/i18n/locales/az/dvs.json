@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "DENTAL",
+    "titleLine2": "VAKUUM SİSTEMİ",
+    "desc1": "Dental klinikaların mərkəzi vakuum tələbatını qarşılamaq üçün hazırlanmış, yüksək performanslı və etibarlı sistem həlli.",
+    "desc2": "Fasiləsiz vakuum gücü, səssiz iş rejimi və uzunömürlü konstruksiyası ilə səhiyyə müəssisələrində maksimum səmərəlilik təmin edir."
+  },
+  "heroFeatures": [
+    {
+      "title": "YÜKSƏK ETİBARLILIQ",
+      "text": "Fasiləsiz vakuum istehsalı üçün ehtiyatlı nasos konfiqurasiyası."
+    },
+    {
+      "title": "SƏSSİZ VƏ SƏMƏRƏLİ",
+      "text": "Aşağı səs səviyyəsi və yüksək enerji səmərəliliyi."
+    },
+    {
+      "title": "ASAN İSTİFADƏ",
+      "text": "İstifadəçi dostu idarəetmə paneli ilə ani monitorinq və idarəetmə."
+    },
+    {
+      "title": "UZUNÖMÜRLÜ KONSTRUKSİYA",
+      "text": "Keyfiyyətli komponentlərlə uzun və stabil istismar müddəti."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "PASLANMAZ POLAD MANİFOLD",
+      "text": "Korroziyaya davamlı, gigiyenik və uzunömürlü konstruksiya.",
+      "ariaLabel": "Paslanmaz polad manifold WEBP təsvir sahəsi"
+    },
+    {
+      "title": "AĞILLI İDARƏETMƏ PANELİ",
+      "text": "Sistem vəziyyəti, siqnalizasiya və avtomatlaşdırmanın idarə edilməsi.",
+      "ariaLabel": "Ağıllı idarəetmə paneli WEBP təsvir sahəsi"
+    },
+    {
+      "title": "YÜKSƏK PERFORMANSLI NASOSLAR",
+      "text": "Güclü vakuum təmin edən, dayanıqlı və səssiz qurğular.",
+      "ariaLabel": "Yüksək performanslı nasoslar WEBP təsvir sahəsi"
+    }
+  ],
+  "specs": {
+    "heading": "TEXNİKİ XÜSUSİYYƏTLƏR",
+    "rows": [
+      [
+        "Məhsulun Adı",
+        "OXY-DVS Dental Vakuum Sistemi"
+      ],
+      [
+        "Vakuum Tutumu",
+        "100 - 840 m³/h (istəyə bağlı)"
+      ],
+      [
+        "İşçi Vakuum",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Nasos Sayı",
+        "2 - 4 ədəd (ehtiyatlı)"
+      ],
+      [
+        "Mühərrik Gücü",
+        "2,2 - 4 kW (hər nasos üçün)"
+      ],
+      [
+        "Qidalanma Gərginliyi",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Səs Səviyyəsi",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Manifold Materialı",
+        "Paslanmaz Polad (AISI 304)"
+      ],
+      [
+        "Bağlantı Diametri",
+        "DN40 - DN65"
+      ],
+      [
+        "İşləmə Temperaturu",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Mühafizə Sinfi",
+        "IP54"
+      ],
+      [
+        "Ölçülər (HxExD)",
+        "1300 x 600 x 1200 mm (nümunə)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "TEXNİKİ ÇERTYOJ / ÖLÇÜLƏR",
+    "ariaLabel": "Texniki çertyoj və ölçülər WEBP təsvir sahəsi"
+  },
+  "useCases": {
+    "heading": "İSTİFADƏ SAHƏLƏRİ",
+    "items": [
+      "Diş Klinikalari",
+      "Ağız və Diş Sağlamlığı Mərkəzləri",
+      "Xəstəxanalar",
+      "Cərrahi Müdaxilə Otaqları",
+      "Laboratoriyalar"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Məhsul detal təsvir sahələri"
+  },
+  "bottomNote": {
+    "vacuum": "Güclü, səssiz və davamlı vakuum performansı.",
+    "capacity": "Layihə tələbatına uyğun tutum və ölçü seçimləri.",
+    "cta": "TƏKLİF AL"
+  },
+  "category": "Dental Vakuum Sistemi"
+}

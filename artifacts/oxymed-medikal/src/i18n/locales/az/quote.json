@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "TƏKLİF ALIN",
+    "subtitle": "Ehtiyaclarınıza ən uyğun həllər üçün sizə xüsusi təklifimizi hazırlayaq.",
+    "imageAlt": "Yataqbaşı bloku və pendant sistemi olan xəstə otağı"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "SÜRƏTLİ CAVAB",
+      "description": "Sorğunuz qəbul edildikdən sonra ən geci 24 saat ərzində mütəxəssis komandamız sizinlə əlaqə saxlayacaq."
+    },
+    "reliable": {
+      "title": "ETİBARLI HƏLLƏR",
+      "description": "ISO 9001 və ISO 13485 sertifikatlı istehsal prosesləri ilə ən yüksək keyfiyyət zəmanəti."
+    },
+    "expert": {
+      "title": "EKSPERT DƏSTƏK",
+      "description": "Layihənin planlaşdırılması mərhələsindən quraşdırmaya qədər təcrübəli mühəndis heyətimiz yanınızdadır."
+    }
+  },
+  "form": {
+    "title": "Təklif Sorğu Forması",
+    "subtitle": "Aşağıdakı formanı dolduraraq sorğunuzu bizə göndərə bilərsiniz.",
+    "fields": {
+      "fullName": "Ad Soyad *",
+      "fullNamePlaceholder": "Adınız və soyadınız",
+      "email": "E-poçt *",
+      "emailPlaceholder": "ornek@mail.com",
+      "phone": "Telefon *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Şirkət / Müəssisə",
+      "companyPlaceholder": "Şirkət və ya müəssisənin adı",
+      "jobTitle": "Vəzifə / Ünvan",
+      "jobTitlePlaceholder": "Vəzifəniz və ya ünvanınız",
+      "projectType": "Layihə Növü",
+      "city": "İl / Rayon",
+      "applicationArea": "Tətbiq Sahəsi",
+      "notes": "Sorğunuz və Qeydləriniz",
+      "notesPlaceholder": "Layihəniz haqqında məlumat verin...",
+      "file": "Fayl Yükləyin (İsteğe bağlı)",
+      "fileButton": "Fayl seçin və ya sürükləyin",
+      "fileHint": "PDF, DWG, JPG, PNG (Maks. 100MB)",
+      "selectDefault": "Seçin"
+    },
+    "validation": {
+      "fullNameRequired": "Ad Soyad məcburidir.",
+      "emailRequired": "E-poçt məcburidir.",
+      "emailInvalid": "Etibarlı e-poçt ünvanı daxil edin.",
+      "phoneRequired": "Telefon nömrəsi məcburidir."
+    },
+    "submit": "TƏKLİF TƏLƏB EDİN",
+    "submitting": "GÖNDƏRİLİR…",
+    "privacy": "Göndərdiyiniz məlumatlar təhlükəsiz şəkildə saxlanılır və üçüncü tərəflərlə paylaşılmır.",
+    "apiError": "Təklif göndərilərkən xəta baş verdi. Zəhmət olmasa, yenidən cəhd edin."
+  },
+  "success": {
+    "title": "Sorğunuz Qəbul Edildi!",
+    "description": "Təklif sorğunuz uğurla göndərildi. Mütəxəssis komandamız ən qısa zamanda sizinlə əlaqə saxlayacaq.",
+    "newRequest": "Yeni Təklif Sorğusu"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Yataqbaşı Bloku",
+      "pendant": "Pendant Sistemi",
+      "medicalGas": "Tibbi Qaz Sistemi",
+      "electrical": "Elektrik Təsisatı"
+    },
+    "cities": {
+      "izmir": "İzmir",
+      "ankara": "Ankara",
+      "istanbul": "İstanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Digər"
+    },
+    "applicationAreas": {
+      "hospital": "Xəstəxana",
+      "clinic": "Klinika",
+      "icu": "Reanimasiya",
+      "operatingRoom": "Əməliyyatxana",
+      "emergency": "Təcili Yardım",
+      "other": "Digər"
+    }
+  }
+}
