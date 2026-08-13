@@ -32,15 +32,11 @@
       "companyPlaceholder": "Company or organization name",
       "jobTitle": "Position / Title",
       "jobTitlePlaceholder": "Your position or title",
-      "projectType": "Project Type",
-      "city": "City / District",
-      "applicationArea": "Application Area",
       "notes": "Request and Notes",
       "notesPlaceholder": "Please provide information about your project...",
       "file": "Upload File (Optional)",
       "fileButton": "Select or drag and drop a file",
-      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)",
-      "selectDefault": "Select"
+      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)"
     },
     "validation": {
       "fullNameRequired": "Full name is required.",

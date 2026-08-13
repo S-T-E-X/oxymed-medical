@@ -12,9 +12,6 @@ const QuoteBody = z.object({
   phone: z.string().min(1),
   company: z.string().optional().nullable(),
   jobTitle: z.string().optional().nullable(),
-  projectType: z.string().optional().nullable(),
-  city: z.string().optional().nullable(),
-  applicationArea: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
 });
 

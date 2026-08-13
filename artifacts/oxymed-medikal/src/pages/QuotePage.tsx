@@ -8,15 +8,7 @@ import FeatureBar from "../components/home/FeatureBar";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import { useI18n } from "../i18n/I18nProvider";
-import {
-  APPLICATION_AREA_VALUES,
-  CITY_VALUES,
-  PROJECT_TYPE_VALUES,
-  applicationAreaKeys,
-  cityKeys,
-  projectTypeKeys,
-  quoteBenefits,
-} from "../data/quote";
+import { quoteBenefits } from "../data/quote";
 
 const benefitIconMap = {
   clock: Clock3,
@@ -30,9 +22,6 @@ type FormState = {
   phone: string;
   company: string;
   jobTitle: string;
-  projectType: string;
-  city: string;
-  applicationArea: string;
   notes: string;
 };
 
@@ -48,9 +37,6 @@ const EMPTY: FormState = {
   phone: "",
   company: "",
   jobTitle: "",
-  projectType: "",
-  city: "",
-  applicationArea: "",
   notes: "",
 };
 
@@ -194,29 +180,10 @@ function QuoteForm() {
         phone: form.phone,
         company: form.company || undefined,
         jobTitle: form.jobTitle || undefined,
-        projectType: form.projectType || undefined,
-        city: form.city || undefined,
-        applicationArea: form.applicationArea || undefined,
         notes: form.notes || undefined,
       },
     });
   }
-
-  // Build translated select options: displayed label from dictionary, submitted value is canonical Turkish
-  const projectTypeOptions = projectTypeKeys.map((key) => ({
-    value: PROJECT_TYPE_VALUES[key],
-    label: t(`quote.options.projectTypes.${key}`),
-  }));
-
-  const cityOptions = cityKeys.map((key) => ({
-    value: CITY_VALUES[key],
-    label: t(`quote.options.cities.${key}`),
-  }));
-
-  const applicationAreaOptions = applicationAreaKeys.map((key) => ({
-    value: APPLICATION_AREA_VALUES[key],
-    label: t(`quote.options.applicationAreas.${key}`),
-  }));
 
   if (submitted) {
     return (
@@ -289,30 +256,6 @@ function QuoteForm() {
           placeholder={t("quote.form.fields.jobTitlePlaceholder")}
           value={form.jobTitle}
           onChange={(v) => set("jobTitle", v)}
-        />
-      </div>
-
-      <div className="mt-4 grid gap-x-5 gap-y-4 md:grid-cols-3">
-        <SelectField
-          label={t("quote.form.fields.projectType")}
-          placeholder={t("quote.form.fields.selectDefault")}
-          options={projectTypeOptions}
-          value={form.projectType}
-          onChange={(v) => set("projectType", v)}
-        />
-        <SelectField
-          label={t("quote.form.fields.city")}
-          placeholder={t("quote.form.fields.selectDefault")}
-          options={cityOptions}
-          value={form.city}
-          onChange={(v) => set("city", v)}
-        />
-        <SelectField
-          label={t("quote.form.fields.applicationArea")}
-          placeholder={t("quote.form.fields.selectDefault")}
-          options={applicationAreaOptions}
-          value={form.applicationArea}
-          onChange={(v) => set("applicationArea", v)}
         />
       </div>
 
@@ -393,36 +336,6 @@ function Field({ label, placeholder, type = "text", value, onChange, error }: Fi
         }`}
       />
       {error && <p className="mt-1 text-[11px] font-semibold text-red-600">{error}</p>}
-    </label>
-  );
-}
-
-type SelectOption = { value: string; label: string };
-
-type SelectFieldProps = {
-  label: string;
-  placeholder: string;
-  options: SelectOption[];
-  value: string;
-  onChange: (value: string) => void;
-};
-
-function SelectField({ label, placeholder, options, value, onChange }: SelectFieldProps) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-[12px] font-semibold text-oxynavy-950">{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-9 w-full rounded-lg border border-steel-200 bg-white px-3.5 text-[13px] text-steel-700 outline-none transition focus:border-oxynavy-500 focus:ring-4 focus:ring-oxynavy-100"
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
     </label>
   );
 }

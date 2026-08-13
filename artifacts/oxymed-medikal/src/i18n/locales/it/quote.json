@@ -32,15 +32,11 @@
       "companyPlaceholder": "Nome dell'azienda o dell'ente",
       "jobTitle": "Funzione / Qualifica",
       "jobTitlePlaceholder": "La vostra funzione o qualifica",
-      "projectType": "Tipo di progetto",
-      "city": "Provincia / Comune",
-      "applicationArea": "Ambito di applicazione",
       "notes": "Richieste e note",
       "notesPlaceholder": "Fornite informazioni sul vostro progetto...",
       "file": "Carica file (opzionale)",
       "fileButton": "Seleziona o trascina un file",
-      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)",
-      "selectDefault": "Seleziona"
+      "fileHint": "PDF, DWG, JPG, PNG (Max. 100MB)"
     },
     "validation": {
       "fullNameRequired": "Nome e cognome sono obbligatori.",

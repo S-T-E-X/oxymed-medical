@@ -32,15 +32,11 @@
       "companyPlaceholder": "نام شرکت یا سازمان",
       "jobTitle": "سمت / عنوان",
       "jobTitlePlaceholder": "سمت یا عنوان شما",
-      "projectType": "نوع پروژه",
-      "city": "استان / شهرستان",
-      "applicationArea": "حوزه کاربرد",
       "notes": "درخواست و یادداشت‌های شما",
       "notesPlaceholder": "اطلاعاتی درباره پروژه خود ارائه دهید...",
       "file": "بارگذاری فایل (اختیاری)",
       "fileButton": "فایل را انتخاب یا بکشید",
-      "fileHint": "PDF, DWG, JPG, PNG (حداکثر 100MB)",
-      "selectDefault": "انتخاب کنید"
+      "fileHint": "PDF, DWG, JPG, PNG (حداکثر 100MB)"
     },
     "validation": {
       "fullNameRequired": "نام و نام خانوادگی الزامی است.",

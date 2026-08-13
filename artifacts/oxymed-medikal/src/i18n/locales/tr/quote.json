@@ -32,15 +32,11 @@
       "companyPlaceholder": "Firma veya kurum adı",
       "jobTitle": "Görev / Unvan",
       "jobTitlePlaceholder": "Göreviniz veya unvanınız",
-      "projectType": "Proje Türü",
-      "city": "İl / İlçe",
-      "applicationArea": "Uygulama Alanı",
       "notes": "Talep ve Notlarınız",
       "notesPlaceholder": "Projeniz hakkında bilgi veriniz...",
       "file": "Dosya Yükleyin (Opsiyonel)",
       "fileButton": "Dosya seçin veya sürükleyin",
-      "fileHint": "PDF, DWG, JPG, PNG (Maks. 100MB)",
-      "selectDefault": "Seçiniz"
+      "fileHint": "PDF, DWG, JPG, PNG (Maks. 100MB)"
     },
     "validation": {
       "fullNameRequired": "Ad Soyad zorunludur.",

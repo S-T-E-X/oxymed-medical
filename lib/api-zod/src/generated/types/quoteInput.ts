@@ -12,8 +12,5 @@ export interface QuoteInput {
   phone: string;
   company?: string;
   jobTitle?: string;
-  projectType?: string;
-  city?: string;
-  applicationArea?: string;
   notes?: string;
 }

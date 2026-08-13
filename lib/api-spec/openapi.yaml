@@ -3284,12 +3284,6 @@ components:
           type: string
         jobTitle:
           type: string
-        projectType:
-          type: string
-        city:
-          type: string
-        applicationArea:
-          type: string
         notes:
           type: string
 

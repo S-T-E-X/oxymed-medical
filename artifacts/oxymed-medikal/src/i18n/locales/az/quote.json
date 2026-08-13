@@ -32,15 +32,11 @@
       "companyPlaceholder": "Şirkət və ya müəssisənin adı",
       "jobTitle": "Vəzifə / Ünvan",
       "jobTitlePlaceholder": "Vəzifəniz və ya ünvanınız",
-      "projectType": "Layihə Növü",
-      "city": "İl / Rayon",
-      "applicationArea": "Tətbiq Sahəsi",
       "notes": "Sorğunuz və Qeydləriniz",
       "notesPlaceholder": "Layihəniz haqqında məlumat verin...",
       "file": "Fayl Yükləyin (İsteğe bağlı)",
       "fileButton": "Fayl seçin və ya sürükləyin",
-      "fileHint": "PDF, DWG, JPG, PNG (Maks. 100MB)",
-      "selectDefault": "Seçin"
+      "fileHint": "PDF, DWG, JPG, PNG (Maks. 100MB)"
     },
     "validation": {
       "fullNameRequired": "Ad Soyad məcburidir.",

@@ -32,15 +32,11 @@
       "companyPlaceholder": "კომპანიის ან დაწესებულების დასახელება",
       "jobTitle": "თანამდებობა / წოდება",
       "jobTitlePlaceholder": "თქვენი თანამდებობა ან წოდება",
-      "projectType": "პროექტის ტიპი",
-      "city": "ქალაქი / რაიონი",
-      "applicationArea": "გამოყენების სფერო",
       "notes": "თქვენი მოთხოვნები და შენიშვნები",
       "notesPlaceholder": "მოგვაწოდეთ ინფორმაცია თქვენი პროექტის შესახებ...",
       "file": "ატვირთეთ ფაილი (არასავალდებულო)",
       "fileButton": "აირჩიეთ ან გადაათრიეთ ფაილი",
-      "fileHint": "PDF, DWG, JPG, PNG (მაქს. 100MB)",
-      "selectDefault": "აირჩიეთ"
+      "fileHint": "PDF, DWG, JPG, PNG (მაქს. 100MB)"
     },
     "validation": {
       "fullNameRequired": "სახელი და გვარი სავალდებულოა.",

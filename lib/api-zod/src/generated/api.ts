@@ -1358,9 +1358,6 @@ export const CreateQuoteBody = zod.object({
   "phone": zod.string(),
   "company": zod.string().optional(),
   "jobTitle": zod.string().optional(),
-  "projectType": zod.string().optional(),
-  "city": zod.string().optional(),
-  "applicationArea": zod.string().optional(),
   "notes": zod.string().optional()
 })
 

@@ -9,6 +9,8 @@ export const quoteRequestsTable = pgTable("quote_requests", {
   phone: text("phone").notNull(),
   company: text("company"),
   jobTitle: text("job_title"),
+  // Legacy lead details are retained for existing requests. New public
+  // submissions no longer collect or accept these values.
   projectType: text("project_type"),
   city: text("city"),
   applicationArea: text("application_area"),

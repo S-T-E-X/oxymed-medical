@@ -32,15 +32,11 @@
       "companyPlaceholder": "Име на фирмата или организацията",
       "jobTitle": "Длъжност / Титла",
       "jobTitlePlaceholder": "Вашата длъжност или титла",
-      "projectType": "Тип проект",
-      "city": "Град / Район",
-      "applicationArea": "Област на приложение",
       "notes": "Вашите изисквания и бележки",
       "notesPlaceholder": "Моля, предоставете информация за Вашия проект...",
       "file": "Качете файл (по избор)",
       "fileButton": "Изберете или плъзнете файл",
-      "fileHint": "PDF, DWG, JPG, PNG (Макс. 100MB)",
-      "selectDefault": "Изберете"
+      "fileHint": "PDF, DWG, JPG, PNG (Макс. 100MB)"
     },
     "validation": {
       "fullNameRequired": "Името и фамилията са задължителни.",

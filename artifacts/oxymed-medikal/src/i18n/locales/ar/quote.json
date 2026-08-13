@@ -32,15 +32,11 @@
       "companyPlaceholder": "اسم الشركة أو المؤسسة",
       "jobTitle": "الوظيفة / المسمى الوظيفي",
       "jobTitlePlaceholder": "وظيفتك أو مسماك الوظيفي",
-      "projectType": "نوع المشروع",
-      "city": "المدينة / المنطقة",
-      "applicationArea": "مجال التطبيق",
       "notes": "طلباتك وملاحظاتك",
       "notesPlaceholder": "يرجى تقديم معلومات عن مشروعك...",
       "file": "تحميل ملف (اختياري)",
       "fileButton": "اختر ملفاً أو اسحبه هنا",
-      "fileHint": "PDF, DWG, JPG, PNG (الحد الأقصى 100MB)",
-      "selectDefault": "اختر"
+      "fileHint": "PDF, DWG, JPG, PNG (الحد الأقصى 100MB)"
     },
     "validation": {
       "fullNameRequired": "الاسم الكامل مطلوب.",
