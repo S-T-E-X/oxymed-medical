@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { LOCALES, LOCALE_META, type Locale } from "../../i18n/config";
 import { rememberLocale, useI18n } from "../../i18n/I18nProvider";
 import { equivalentPath } from "../../i18n/routes";
+import { useLocalePathOverrides } from "../../i18n/LocalePathContext";
 
 type LanguageSwitcherProps = {
   /** `bar` is the compact dark top bar; `panel` is the full-width mobile menu list. */
@@ -17,6 +18,9 @@ export default function LanguageSwitcher({ variant = "bar", onSelect }: Language
   const { pathname, search, hash } = useLocation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  // Per-page overrides registered by article detail pages so switching language
+  // goes to the same article in the target language, not a dead URL.
+  const localePathOverrides = useLocalePathOverrides();
 
   useEffect(() => {
     if (!open) return;
@@ -40,8 +44,11 @@ export default function LanguageSwitcher({ variant = "bar", onSelect }: Language
     if (target === locale) return;
     // An explicit pick is a real preference, so it is worth remembering.
     rememberLocale(target);
-    // Keep the visitor on the same page, just in the other language.
-    navigate(`${equivalentPath(pathname, target)}${search}${hash}`);
+    // If the current page registered per-locale paths (e.g. an article detail
+    // page with per-article translation slugs), use those; otherwise fall back
+    // to equivalentPath which works for any translated marketing page.
+    const overridePath = localePathOverrides[target];
+    navigate(`${overridePath ?? equivalentPath(pathname, target)}${search}${hash}`);
   }
 
   if (variant === "panel") {

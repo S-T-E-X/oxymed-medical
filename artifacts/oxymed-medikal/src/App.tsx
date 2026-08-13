@@ -63,7 +63,7 @@ import LocaleSuggestion from "./i18n/LocaleSuggestion";
 import { LOCALES } from "./i18n/config";
 import { localizedPath, type RouteKey } from "./i18n/routes";
 
-/** The eight marketing pages that exist in every language. */
+/** The marketing pages that exist in every language. */
 const TRANSLATED_PAGES: Array<{ routeKey: RouteKey; element: ReactElement }> = [
   { routeKey: "home", element: <HomePage /> },
   { routeKey: "products", element: <ProductsPage /> },
@@ -73,6 +73,9 @@ const TRANSLATED_PAGES: Array<{ routeKey: RouteKey; element: ReactElement }> = [
   { routeKey: "dvs", element: <DentalVacuumSystemPage /> },
   { routeKey: "service", element: <ServicePage /> },
   { routeKey: "quote", element: <QuotePage /> },
+  // News list page is translated; detail routes are registered separately
+  // because they carry a dynamic :slug segment.
+  { routeKey: "news", element: <NewsPage /> },
 ];
 
 /**
@@ -99,6 +102,22 @@ function localizedServiceSerialRoutes() {
   ));
 }
 
+/**
+ * Article detail routes for every locale. Each locale uses its own news
+ * segment (e.g. /haberler/:slug for tr, /en/news/:slug for en).
+ * Turkish detail route reuses the unprefixed /haberler/:slug so existing
+ * indexed URLs stay valid.
+ */
+function localizedNewsDetailRoutes() {
+  return LOCALES.map((locale) => (
+    <Route
+      key={`${locale}-news-detail`}
+      path={`${localizedPath("news", locale)}/:slug`}
+      element={<NewsDetailPage />}
+    />
+  ));
+}
+
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -111,11 +130,10 @@ export default function App() {
           <RouteTransitionLoader />
           <Routes>
           {localizedRoutes()}
+          {localizedNewsDetailRoutes()}
           <Route path="/kurumsal" element={<CorporatePage />} />
            <Route path="/sertifikalar" element={<CertificatesPage />} />
           <Route path="/referanslar" element={<ReferencesPage />} />
-          <Route path="/haberler" element={<NewsPage />} />
-          <Route path="/haberler/:slug" element={<NewsDetailPage />} />
           <Route path="/taslak" element={<ServiceReportPageTaslak />} />
           <Route path="/servis/qr/:qrToken" element={<DeviceQrPage />} />
           <Route path="/servis/cihaz/:qrToken" element={<ServisCihazPage />} />

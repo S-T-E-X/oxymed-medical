@@ -61,6 +61,8 @@ import type {
   NewsInput,
   NewsItem,
   NewsListResponse,
+  NewsTranslation,
+  NewsTranslationInput,
   NewsUpdate,
   PresignedUrlInput,
   PresignedUrlResponse,
@@ -2584,6 +2586,306 @@ export const useDeleteNews = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteNewsMutationOptions(options));
+    }
+
+export const getListAllNewsTranslationsUrl = () => {
+
+
+
+
+  return `/api/admin/news/translations`
+}
+
+/**
+ * @summary List every news translation row for administration
+ */
+export const listAllNewsTranslations = async ( options?: RequestInit): Promise<NewsTranslation[]> => {
+
+  return customFetch<NewsTranslation[]>(getListAllNewsTranslationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAllNewsTranslationsQueryKey = () => {
+    return [
+    `/api/admin/news/translations`
+    ] as const;
+    }
+
+
+export const getListAllNewsTranslationsQueryOptions = <TData = Awaited<ReturnType<typeof listAllNewsTranslations>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAllNewsTranslations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAllNewsTranslationsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAllNewsTranslations>>> = ({ signal }) => listAllNewsTranslations({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAllNewsTranslations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAllNewsTranslationsQueryResult = NonNullable<Awaited<ReturnType<typeof listAllNewsTranslations>>>
+export type ListAllNewsTranslationsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List every news translation row for administration
+ */
+
+export function useListAllNewsTranslations<TData = Awaited<ReturnType<typeof listAllNewsTranslations>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAllNewsTranslations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAllNewsTranslationsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListNewsTranslationsUrl = (id: number,) => {
+
+
+
+
+  return `/api/news/${id}/translations`
+}
+
+/**
+ * @summary List all language versions of one news post
+ */
+export const listNewsTranslations = async (id: number, options?: RequestInit): Promise<NewsTranslation[]> => {
+
+  return customFetch<NewsTranslation[]>(getListNewsTranslationsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListNewsTranslationsQueryKey = (id: number,) => {
+    return [
+    `/api/news/${id}/translations`
+    ] as const;
+    }
+
+
+export const getListNewsTranslationsQueryOptions = <TData = Awaited<ReturnType<typeof listNewsTranslations>>, TError = ErrorType<ErrorResponse>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listNewsTranslations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListNewsTranslationsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listNewsTranslations>>> = ({ signal }) => listNewsTranslations(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listNewsTranslations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListNewsTranslationsQueryResult = NonNullable<Awaited<ReturnType<typeof listNewsTranslations>>>
+export type ListNewsTranslationsQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary List all language versions of one news post
+ */
+
+export function useListNewsTranslations<TData = Awaited<ReturnType<typeof listNewsTranslations>>, TError = ErrorType<ErrorResponse>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listNewsTranslations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListNewsTranslationsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpsertNewsTranslationUrl = (id: number,
+    locale: string,) => {
+
+
+
+
+  return `/api/news/${id}/translations/${locale}`
+}
+
+/**
+ * @summary Create or update one language version of a news post
+ */
+export const upsertNewsTranslation = async (id: number,
+    locale: string,
+    newsTranslationInput: NewsTranslationInput, options?: RequestInit): Promise<NewsTranslation> => {
+
+  return customFetch<NewsTranslation>(getUpsertNewsTranslationUrl(id,locale),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      newsTranslationInput,)
+  }
+);}
+
+
+
+
+export const getUpsertNewsTranslationMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof upsertNewsTranslation>>, TError,{id: number;locale: string;data: BodyType<NewsTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof upsertNewsTranslation>>, TError,{id: number;locale: string;data: BodyType<NewsTranslationInput>}, TContext> => {
+
+const mutationKey = ['upsertNewsTranslation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof upsertNewsTranslation>>, {id: number;locale: string;data: BodyType<NewsTranslationInput>}> = (props) => {
+          const {id,locale,data} = props ?? {};
+
+          return  upsertNewsTranslation(id,locale,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpsertNewsTranslationMutationResult = NonNullable<Awaited<ReturnType<typeof upsertNewsTranslation>>>
+    export type UpsertNewsTranslationMutationBody = BodyType<NewsTranslationInput>
+    export type UpsertNewsTranslationMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create or update one language version of a news post
+ */
+export const useUpsertNewsTranslation = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof upsertNewsTranslation>>, TError,{id: number;locale: string;data: BodyType<NewsTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof upsertNewsTranslation>>,
+        TError,
+        {id: number;locale: string;data: BodyType<NewsTranslationInput>},
+        TContext
+      > => {
+      return useMutation(getUpsertNewsTranslationMutationOptions(options));
+    }
+
+export const getDeleteNewsTranslationUrl = (id: number,
+    locale: string,) => {
+
+
+
+
+  return `/api/news/${id}/translations/${locale}`
+}
+
+/**
+ * @summary Delete one language version of a news post
+ */
+export const deleteNewsTranslation = async (id: number,
+    locale: string, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteNewsTranslationUrl(id,locale),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteNewsTranslationMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteNewsTranslation>>, TError,{id: number;locale: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteNewsTranslation>>, TError,{id: number;locale: string}, TContext> => {
+
+const mutationKey = ['deleteNewsTranslation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteNewsTranslation>>, {id: number;locale: string}> = (props) => {
+          const {id,locale} = props ?? {};
+
+          return  deleteNewsTranslation(id,locale,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteNewsTranslationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteNewsTranslation>>>
+
+    export type DeleteNewsTranslationMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Delete one language version of a news post
+ */
+export const useDeleteNewsTranslation = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteNewsTranslation>>, TError,{id: number;locale: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteNewsTranslation>>,
+        TError,
+        {id: number;locale: string},
+        TContext
+      > => {
+      return useMutation(getDeleteNewsTranslationMutationOptions(options));
     }
 
 export const getListReferencesUrl = (params?: ListReferencesParams,) => {

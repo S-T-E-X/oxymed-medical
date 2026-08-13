@@ -47,3 +47,6 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Generated at build time from the database by gen-sitemap (see scripts/src/gen-sitemap.ts)
+.news-seo.json

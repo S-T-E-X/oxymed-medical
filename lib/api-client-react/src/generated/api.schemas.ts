@@ -683,6 +683,11 @@ export interface ProductListResponse {
   total: number;
 }
 
+export interface NewsAlternate {
+  locale: string;
+  slug: string;
+}
+
 export interface NewsItem {
   id: number;
   title: string;
@@ -696,6 +701,16 @@ export interface NewsItem {
   slug: string;
   published: boolean;
   publishedAt: string;
+  /** @nullable */
+  seoTitle?: string | null;
+  /** @nullable */
+  seoDescription?: string | null;
+  newsId?: number;
+  locale?: string;
+  sourceSlug?: string;
+  /** @nullable */
+  translationId?: number | null;
+  alternates?: NewsAlternate[];
   createdAt: string;
   updatedAt: string;
 }
@@ -709,6 +724,10 @@ export interface NewsInput {
   slug: string;
   published?: boolean;
   publishedAt?: string;
+  /** @nullable */
+  seoTitle?: string | null;
+  /** @nullable */
+  seoDescription?: string | null;
 }
 
 export interface NewsUpdate {
@@ -723,6 +742,51 @@ export interface NewsUpdate {
   slug?: string;
   published?: boolean;
   publishedAt?: string;
+  /** @nullable */
+  seoTitle?: string | null;
+  /** @nullable */
+  seoDescription?: string | null;
+}
+
+export interface NewsTranslation {
+  id: number;
+  newsId: number;
+  locale: string;
+  title: string;
+  /** @nullable */
+  excerpt?: string | null;
+  /** @nullable */
+  content?: string | null;
+  /** @nullable */
+  category?: string | null;
+  slug: string;
+  published: boolean;
+  /** @nullable */
+  publishedAt?: string | null;
+  /** @nullable */
+  seoTitle?: string | null;
+  /** @nullable */
+  seoDescription?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewsTranslationInput {
+  title: string;
+  /** @nullable */
+  excerpt?: string | null;
+  /** @nullable */
+  content?: string | null;
+  /** @nullable */
+  category?: string | null;
+  slug: string;
+  published?: boolean;
+  /** @nullable */
+  publishedAt?: string | null;
+  /** @nullable */
+  seoTitle?: string | null;
+  /** @nullable */
+  seoDescription?: string | null;
 }
 
 export interface NewsListResponse {
@@ -1485,6 +1549,10 @@ limit?: number;
 };
 
 export type ListNewsParams = {
+/**
+ * Language to resolve each article in. Defaults to Turkish.
+ */
+locale?: string;
 slug?: string;
 category?: string;
 published?: boolean;

@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "imageAlt": "Üretim tesisi genel görünümü",
+    "breadcrumb": ["Anasayfa", "Haberler"],
+    "title": "HABERLER",
+    "description": "Medikal teknolojiler, projelerimiz, üretim süreçlerimiz ve sektörle ilgili güncel gelişmeleri takip edin."
+  },
+  "list": {
+    "allCategories": "TÜM HABERLER",
+    "readMore": "Devamını Oku",
+    "popular": "Popüler İçerikler",
+    "empty": "Bu kategoride haber bulunamadı.",
+    "emptyLocale": "Bu dilde henüz haber yayınlanmamıştır.",
+    "errorCategories": "Haber kategorileri yüklenemedi.",
+    "errorList": "Haberler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.",
+    "errorPopular": "Popüler içerikler yüklenemedi."
+  },
+  "detail": {
+    "notFound": "Haber bulunamadı. Silinmiş veya yayından kaldırılmış olabilir.",
+    "backAll": "Tüm Haberler",
+    "backList": "Haberlere Dön"
+  }
+}

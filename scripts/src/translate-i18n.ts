@@ -20,7 +20,7 @@ import { openai } from "@workspace/integrations-openai-ai-server";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const LOCALES_DIR = path.resolve(HERE, "../../artifacts/oxymed-medikal/src/i18n/locales");
 
-const NAMESPACES = ["common", "seo", "home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote"] as const;
+const NAMESPACES = ["common", "seo", "home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"] as const;
 
 /** Target languages. Turkish is the source and is never generated. */
 const TARGETS: Array<{ code: string; englishName: string }> = [
@@ -165,8 +165,8 @@ async function translateFile(
   const translated = await pRetry(() => translateChunk(pending, target.englishName), {
     retries: 3,
     minTimeout: 2000,
-    onFailedAttempt: (error) =>
-      console.log(`  retry ${target.code}/${namespace} (attempt ${error.attemptNumber}): ${error.message}`),
+    onFailedAttempt: (ctx) =>
+      console.log(`  retry ${target.code}/${namespace} (attempt ${ctx.attemptNumber}): ${ctx.error.message}`),
   });
 
   const merged = existing ? mergeDeep(existing, translated) : translated;

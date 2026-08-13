@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "imageAlt": "Vista generale dello stabilimento produttivo",
+    "breadcrumb": [
+      "Home",
+      "News"
+    ],
+    "title": "NEWS",
+    "description": "Seguite le tecnologie medicali, i nostri progetti, i processi produttivi e gli sviluppi più recenti del settore."
+  },
+  "list": {
+    "allCategories": "TUTTE LE NEWS",
+    "readMore": "Leggi di più",
+    "popular": "Contenuti più popolari",
+    "empty": "Nessuna notizia trovata in questa categoria.",
+    "emptyLocale": "Non sono ancora state pubblicate notizie in questa lingua.",
+    "errorCategories": "Impossibile caricare le categorie delle notizie.",
+    "errorList": "Si è verificato un errore durante il caricamento delle notizie. Aggiorna la pagina.",
+    "errorPopular": "Impossibile caricare i contenuti più popolari."
+  },
+  "detail": {
+    "notFound": "Notizia non trovata. Potrebbe essere stata eliminata o rimossa dalla pubblicazione.",
+    "backAll": "Tutte le news",
+    "backList": "Torna alle news"
+  }
+}

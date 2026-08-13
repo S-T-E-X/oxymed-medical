@@ -16,7 +16,7 @@ export type NavItemDef = {
   /** Dictionary key under `common.nav`. */
   key: "home" | "corporate" | "products" | "references" | "news" | "service" | "contact";
   /** Route key for translated pages, or a raw href for Turkish-only pages. */
-  route?: "home" | "products" | "service" | "quote";
+  route?: "home" | "products" | "service" | "quote" | "news";
   href?: string;
   dropdown?: "categories" | "corporate";
 };
@@ -26,7 +26,8 @@ export const navItems: NavItemDef[] = [
   { key: "corporate", href: "/kurumsal", dropdown: "corporate" },
   { key: "products", route: "products", dropdown: "categories" },
   { key: "references", href: "/referanslar" },
-  { key: "news", href: "/haberler" },
+  // "news" is a translated route so hrefFor() resolves the per-locale segment.
+  { key: "news", route: "news" },
   { key: "service", route: "service" },
   { key: "contact", route: "quote" },
 ];

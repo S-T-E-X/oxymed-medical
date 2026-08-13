@@ -30,5 +30,9 @@
   "quote": {
     "title": "Request a Quote | Hospital and Clinic Projects | Oxymed Medikal",
     "description": "Get a fast, free quote for your project. Expert support for bed head units, pendant systems, medical gas and dental vacuum solutions."
+  },
+  "news": {
+    "title": "News | Medical Gas and Hospital Equipment | Oxymed Medikal",
+    "description": "Industry news, product updates and technical content from Oxymed Medikal on medical gas systems, dental vacuum solutions and hospital equipment."
   }
 }

@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "imageAlt": "Overview of the production facility",
+    "breadcrumb": [
+      "Home",
+      "News"
+    ],
+    "title": "NEWS",
+    "description": "Follow the latest developments in medical technologies, our projects, production processes and the industry."
+  },
+  "list": {
+    "allCategories": "ALL NEWS",
+    "readMore": "Read More",
+    "popular": "Popular Content",
+    "empty": "No news found in this category.",
+    "emptyLocale": "No news has been published in this language yet.",
+    "errorCategories": "News categories could not be loaded.",
+    "errorList": "An error occurred while loading news. Please refresh the page.",
+    "errorPopular": "Popular content could not be loaded."
+  },
+  "detail": {
+    "notFound": "News not found. It may have been deleted or unpublished.",
+    "backAll": "All News",
+    "backList": "Back to News"
+  }
+}

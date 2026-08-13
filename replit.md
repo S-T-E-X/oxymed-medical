@@ -40,7 +40,8 @@ Turkish medical equipment company website with full CMS backend. Admin panel man
 - `sliders` — homepage slider/banner items
 - `product_categories` — product category tree
 - `products` — product catalog with JSON specs field
-- `news` — news/blog posts with slugs
+- `news` — Turkish source news posts with slugs and SEO fields
+- `news_translations` — one row per non-Turkish language version of a news post (own title, slug, publish state, SEO fields)
 - `references` — reference project portfolio
 - `quote_requests` — inbound quote form submissions
 - `corporate_sections` — key-value content sections for corporate page
@@ -58,6 +59,8 @@ Turkish medical equipment company website with full CMS backend. Admin panel man
 - OpenAPI-first: spec in `lib/api-spec/openapi.yaml` drives Zod schema and React Query hook codegen
 - Schema names must not match Orval-generated operation names (e.g. use `AuthTokenResult` not `AdminLoginResponse`)
 - Object Storage uses presigned URL flow: client requests URL from `/api/media/request-upload-url`, uploads directly to GCS
+- News is translated with one row per language (not per-locale columns like sliders/products) so each language has its own slug and publish state; a language with no published translation is hidden entirely rather than falling back to Turkish
+- SEO for the client-rendered SPA is baked into static HTML at build time: `gen-sitemap` reads the database and writes `sitemap.xml`, `robots.txt` and the generated (gitignored) `.news-seo.json`, then `prerender.mjs` writes one HTML file per static route and per published news article, then `verify-prerender.mjs` fails the build if any page is missing its title, canonical, hreflang or `NewsArticle` JSON-LD. All three run in order from the web artifact's `build` script, so publishing or re-slugging an article updates the sitemap and article metadata on the next deploy — never hand-run the sitemap script
 - Turkish content throughout; all nav items, categories, and labels in Turkish
 
 ## Product
@@ -76,6 +79,7 @@ Corporate website for Oxymed Medikal — a Turkish medical gas systems and hospi
 - After any `lib/db` schema change + push, RESTART the `artifacts/api-server: API Server` workflow — tsx watch does not reload the linked `@workspace/db` package, so new columns are silently dropped on insert until restart
 - JWT_SECRET env var is required; defaults to a dev secret if unset
 - Object Storage env vars: `DEFAULT_OBJECT_STORAGE_BUCKET_ID`, `PUBLIC_OBJECT_SEARCH_PATHS`, `PRIVATE_OBJECT_DIR`
+- The web build needs `DATABASE_URL` because its first step reads news articles out of the database for the sitemap and article prerendering
 
 ## Pointers
 

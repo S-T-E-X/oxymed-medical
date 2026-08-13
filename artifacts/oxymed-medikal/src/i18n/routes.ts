@@ -4,7 +4,7 @@ import { DEFAULT_LOCALE, isLocale, LOCALES, type Locale } from "./config";
  * Pages that exist in every language. Each one has a locale-specific slug so
  * search engines see a native URL per market (e.g. /de/produkte/dental-vakuumpumpe).
  */
-export const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote"] as const;
+export const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"] as const;
 
 export type RouteKey = (typeof ROUTE_KEYS)[number];
 
@@ -89,6 +89,19 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     bg: "serviz",
     az: "servis",
   },
+  news: {
+    tr: "haberler",
+    en: "news",
+    de: "nachrichten",
+    fr: "actualites",
+    it: "notizie",
+    ar: "akhbar",
+    ru: "novosti",
+    fa: "akhbar",
+    ka: "siakhleebi",
+    bg: "novini",
+    az: "xeberler",
+  },
   quote: {
     tr: "teklif-al",
     en: "get-a-quote",
@@ -103,6 +116,16 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     az: "teklif-al",
   },
 };
+
+/** URL segment of the news section in each language, e.g. /de/nachrichten. */
+export function newsSegment(locale: Locale): string {
+  return LEAF_SLUGS.news[locale];
+}
+
+/** Absolute in-app path of a single article in one language. */
+export function newsDetailPath(locale: Locale, slug: string): string {
+  return localizedPath("news", locale, [slug]);
+}
 
 /** Product detail pages live under the products segment. */
 const NESTED_UNDER_PRODUCTS: ReadonlySet<RouteKey> = new Set<RouteKey>(["gcp", "ams", "dvp", "dvs"]);

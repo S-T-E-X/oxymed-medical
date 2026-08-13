@@ -1,28 +1,56 @@
 /**
- * Writes public/sitemap.xml and public/robots.txt for the marketing site.
+ * Generates every database-derived SEO artifact for the marketing site:
+ *
+ *   - public/sitemap.xml
+ *   - public/robots.txt
+ *   - .news-seo.json  (build input consumed by scripts/prerender.mjs)
  *
  *   pnpm --filter @workspace/scripts run gen-sitemap
  *   SITE_ORIGIN=https://www.example.com pnpm --filter @workspace/scripts run gen-sitemap
  *
+ * Runs as the first step of the web artifact's build, before `vite build`, so
+ * the freshly written sitemap is copied into dist and the article metadata is
+ * available to the prerender step. Article data therefore always reflects the
+ * database as of the build/deploy, never a hand-run snapshot.
+ *
  * Every translated page is listed once per language, and each entry carries the
  * full reciprocal xhtml:link alternate set plus x-default, which is what Google
  * expects for a multilingual site.
+ *
+ * News article URLs are read from the database so each published language
+ * version receives an accurate <lastmod> and a reciprocal alternate set that
+ * covers only the languages that actually exist and are published.
  */
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { eq, and } from "drizzle-orm";
+import { db, pool, newsTable, newsTranslationsTable } from "@workspace/db";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SITE_DIR = path.resolve(HERE, "../../artifacts/oxymed-medikal");
 const PUBLIC_DIR = path.join(SITE_DIR, "public");
 
+/**
+ * Build-time handoff to scripts/prerender.mjs. Generated, not checked in —
+ * regenerated from the database on every build.
+ */
+const NEWS_SEO_FILE = ".news-seo.json";
+
 const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymed.com.tr").replace(/\/$/, "");
+
+// Fail loudly rather than writing a sitemap that silently omits all news.
+if (!process.env.DATABASE_URL) {
+  console.error("ERROR: DATABASE_URL is not set. Cannot query news from the database.");
+  console.error("Set DATABASE_URL and re-run: pnpm --filter @workspace/scripts run gen-sitemap");
+  process.exit(1);
+}
 
 const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"] as const;
 type Locale = (typeof LOCALES)[number];
 const DEFAULT_LOCALE: Locale = "tr";
 
-const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote"] as const;
+const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"] as const;
 type RouteKey = (typeof ROUTE_KEYS)[number];
 
 // Mirrors artifacts/oxymed-medikal/src/i18n/routes.ts — keep the two in sync.
@@ -31,7 +59,12 @@ const PRODUCTS_SLUG: Record<Locale, string> = {
   ar: "muntajat", ru: "produkciya", fa: "mahsulat", ka: "produkcia", bg: "produkti", az: "mehsullar",
 };
 
-const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, string>> = {
+const NEWS_SLUG: Record<Locale, string> = {
+  tr: "haberler", en: "news", de: "nachrichten", fr: "actualites", it: "notizie",
+  ar: "akhbar", ru: "novosti", fa: "akhbar", ka: "siakhleebi", bg: "novini", az: "xeberler",
+};
+
+const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products" | "news">, Record<Locale, string>> = {
   gcp: {
     tr: "kat-kontrol-panosu", en: "gas-control-panel", de: "gas-kontrolltafel", fr: "panneau-de-controle-gaz",
     it: "pannello-controllo-gas", ar: "lawhat-altahakum-bialghaz", ru: "panel-kontrolya-gaza",
@@ -68,13 +101,14 @@ const NESTED_UNDER_PRODUCTS = new Set<RouteKey>(["gcp", "ams", "dvp", "dvs"]);
 /** Search-engine priority per page type. */
 const PRIORITY: Record<RouteKey, string> = {
   home: "1.0", products: "0.9", gcp: "0.8", ams: "0.8",
-  dvp: "0.8", dvs: "0.8", service: "0.7", quote: "0.7",
+  dvp: "0.8", dvs: "0.8", service: "0.7", quote: "0.7", news: "0.8",
 };
 
 function localizedPath(routeKey: RouteKey, locale: Locale): string {
   const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
   if (routeKey === "home") return prefix || "/";
   if (routeKey === "products") return `${prefix}/${PRODUCTS_SLUG[locale]}`;
+  if (routeKey === "news") return `${prefix}/${NEWS_SLUG[locale]}`;
   const leaf = LEAF_SLUGS[routeKey][locale];
   return NESTED_UNDER_PRODUCTS.has(routeKey)
     ? `${prefix}/${PRODUCTS_SLUG[locale]}/${leaf}`
@@ -85,14 +119,133 @@ function absoluteUrl(routeKey: RouteKey, locale: Locale): string {
   return `${SITE_ORIGIN}${localizedPath(routeKey, locale)}`;
 }
 
+function newsArticlePath(locale: Locale, slug: string): string {
+  const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  return `${prefix}/${NEWS_SLUG[locale]}/${slug}`;
+}
+
+function newsArticleUrl(locale: Locale, slug: string): string {
+  return `${SITE_ORIGIN}${newsArticlePath(locale, slug)}`;
+}
+
 function xmlEscape(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-async function main() {
-  const lastmod = new Date().toISOString().slice(0, 10);
+function isoDate(date: Date | string | null | undefined, fallback: Date): string {
+  const d = date ? new Date(date) : fallback;
+  return d.toISOString().slice(0, 10);
+}
 
-  const entries: string[] = [];
+interface ArticleVersion {
+  locale: Locale;
+  slug: string;
+  publishedAt: Date;
+  /** Everything the prerender step needs to bake a real <head> for this URL. */
+  title: string;
+  description: string;
+  /** Raw value from the database; may be a site-relative path or absolute URL. */
+  imageUrl: string | null;
+  updatedAt: Date;
+}
+
+interface ArticleGroup {
+  sourceId: number;
+  versions: ArticleVersion[];
+}
+
+/** First non-empty value, trimmed; "" when there is none. */
+function firstText(...values: Array<string | null | undefined>): string {
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return "";
+}
+
+/** Search snippets should be a sentence or two, not a whole article. */
+function toDescription(value: string): string {
+  const flat = value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  if (flat.length <= 300) return flat;
+  return `${flat.slice(0, 297).trimEnd()}...`;
+}
+
+async function loadPublishedNewsGroups(): Promise<ArticleGroup[]> {
+  // Fetch all published Turkish source articles.
+  const sources = await db
+    .select()
+    .from(newsTable)
+    .where(eq(newsTable.published, true));
+
+  if (sources.length === 0) return [];
+
+  // Fetch all translation rows whose source is among the published set and
+  // where the translation itself is also published.
+  const sourceIds = sources.map((s) => s.id);
+  const allTranslations = await db
+    .select()
+    .from(newsTranslationsTable)
+    .where(eq(newsTranslationsTable.published, true));
+
+  // Index sources by id for quick lookup.
+  const sourceById = new Map(sources.map((s) => [s.id, s]));
+
+  // Group: one entry per article containing all language versions.
+  const groupMap = new Map<number, ArticleGroup>();
+
+  for (const source of sources) {
+    groupMap.set(source.id, {
+      sourceId: source.id,
+      versions: [
+        {
+          locale: "tr" as Locale,
+          slug: source.slug,
+          publishedAt: source.publishedAt,
+          title: firstText(source.seoTitle, source.title),
+          description: toDescription(firstText(source.seoDescription, source.excerpt, source.content)),
+          imageUrl: source.imageUrl,
+          updatedAt: source.updatedAt,
+        },
+      ],
+    });
+  }
+
+  // Only add a translation when its source is also published (i.e. in our map).
+  for (const tr of allTranslations) {
+    const source = sourceById.get(tr.newsId);
+    if (!source) continue; // source not published — skip
+
+    // Only include locales we actually support.
+    if (!LOCALES.includes(tr.locale as Locale)) continue;
+
+    const group = groupMap.get(tr.newsId);
+    if (!group) continue;
+
+    // Effective publish date: translation date if set, else source date.
+    const publishedAt = tr.publishedAt ?? source.publishedAt;
+
+    group.versions.push({
+      locale: tr.locale as Locale,
+      slug: tr.slug,
+      publishedAt,
+      // Only translated copy — never the Turkish source — so a foreign page's
+      // <head> cannot contain Turkish text.
+      title: firstText(tr.seoTitle, tr.title),
+      description: toDescription(firstText(tr.seoDescription, tr.excerpt, tr.content)),
+      // Images are shared across languages; they carry no language of their own.
+      imageUrl: source.imageUrl,
+      updatedAt: tr.updatedAt,
+    });
+  }
+
+  return [...groupMap.values()];
+}
+
+async function main() {
+  const todayLastmod = new Date().toISOString().slice(0, 10);
+
+  // ── Static routes ─────────────────────────────────────────────────────────
+  const staticEntries: string[] = [];
   for (const routeKey of ROUTE_KEYS) {
     const alternates = [
       ...LOCALES.map((locale) => ({ hreflang: locale, href: absoluteUrl(routeKey, locale) })),
@@ -104,11 +257,11 @@ async function main() {
         .map((a) => `    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${xmlEscape(a.href)}" />`)
         .join("\n");
 
-      entries.push(
+      staticEntries.push(
         [
           "  <url>",
           `    <loc>${xmlEscape(absoluteUrl(routeKey, locale))}</loc>`,
-          `    <lastmod>${lastmod}</lastmod>`,
+          `    <lastmod>${todayLastmod}</lastmod>`,
           `    <changefreq>monthly</changefreq>`,
           `    <priority>${PRIORITY[routeKey]}</priority>`,
           links,
@@ -118,10 +271,50 @@ async function main() {
     }
   }
 
+  // ── Dynamic news article URLs ─────────────────────────────────────────────
+  const articleGroups = await loadPublishedNewsGroups();
+  const newsEntries: string[] = [];
+
+  for (const group of articleGroups) {
+    // Build the alternate set for THIS article only (the languages that exist
+    // and are published). x-default points at Turkish when it exists.
+    const trVersion = group.versions.find((v) => v.locale === "tr");
+
+    const alternates: Array<{ hreflang: string; href: string }> = group.versions.map((v) => ({
+      hreflang: v.locale,
+      href: newsArticleUrl(v.locale, v.slug),
+    }));
+
+    // x-default is the Turkish version when published, otherwise omit it.
+    if (trVersion) {
+      alternates.push({ hreflang: "x-default", href: newsArticleUrl("tr", trVersion.slug) });
+    }
+
+    for (const version of group.versions) {
+      const links = alternates
+        .map((a) => `    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${xmlEscape(a.href)}" />`)
+        .join("\n");
+
+      newsEntries.push(
+        [
+          "  <url>",
+          `    <loc>${xmlEscape(newsArticleUrl(version.locale, version.slug))}</loc>`,
+          `    <lastmod>${isoDate(version.publishedAt, new Date())}</lastmod>`,
+          `    <changefreq>weekly</changefreq>`,
+          `    <priority>0.7</priority>`,
+          links,
+          "  </url>",
+        ].join("\n"),
+      );
+    }
+  }
+
+  const allEntries = [...staticEntries, ...newsEntries];
+
   const sitemap = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
-    entries.join("\n"),
+    allEntries.join("\n"),
     "</urlset>",
     "",
   ].join("\n");
@@ -141,10 +334,42 @@ async function main() {
     "",
   ].join("\n");
 
+  // ── Article metadata for the prerender step ───────────────────────────────
+  // One record per published language version, carrying the same reciprocal
+  // alternate set used in the sitemap so the baked <head> and the sitemap can
+  // never disagree about which languages exist.
+  const seoArticles = articleGroups.flatMap((group) => {
+    const trVersion = group.versions.find((v) => v.locale === "tr");
+    const alternates = [
+      ...group.versions.map((v) => ({ hreflang: v.locale as string, path: newsArticlePath(v.locale, v.slug) })),
+      ...(trVersion ? [{ hreflang: "x-default", path: newsArticlePath("tr", trVersion.slug) }] : []),
+    ];
+
+    return group.versions.map((version) => ({
+      locale: version.locale,
+      slug: version.slug,
+      path: newsArticlePath(version.locale, version.slug),
+      title: version.title,
+      description: version.description,
+      imageUrl: version.imageUrl,
+      publishedAt: version.publishedAt.toISOString(),
+      updatedAt: version.updatedAt.toISOString(),
+      alternates,
+    }));
+  });
+
   await writeFile(path.join(PUBLIC_DIR, "sitemap.xml"), sitemap, "utf8");
   await writeFile(path.join(PUBLIC_DIR, "robots.txt"), robots, "utf8");
+  await writeFile(path.join(SITE_DIR, NEWS_SEO_FILE), `${JSON.stringify(seoArticles, null, 2)}\n`, "utf8");
 
-  console.log(`Wrote sitemap.xml (${ROUTE_KEYS.length * LOCALES.length} URLs) and robots.txt for ${SITE_ORIGIN}`);
+  const staticCount = staticEntries.length;
+  const newsCount = newsEntries.length;
+  console.log(
+    `Wrote sitemap.xml (${staticCount} static URLs + ${newsCount} news article URLs = ${staticCount + newsCount} total), robots.txt and ${NEWS_SEO_FILE} (${seoArticles.length} article versions) for ${SITE_ORIGIN}`,
+  );
+
+  // Close the pg pool so the process exits cleanly instead of hanging in CI.
+  await pool.end();
 }
 
 main().catch((error) => {

@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "imageAlt": "İstehsal müəssisəsinin ümumi görünüşü",
+    "breadcrumb": [
+      "Ana səhifə",
+      "Xəbərlər"
+    ],
+    "title": "XƏBƏRLƏR",
+    "description": "Tibbi texnologiyalar, layihələrimiz, istehsal proseslərimiz və sahə ilə bağlı aktual yenilikləri izləyin."
+  },
+  "list": {
+    "allCategories": "BÜTÜN XƏBƏRLƏR",
+    "readMore": "Ətraflı Oxu",
+    "popular": "Populyar Məzmunlar",
+    "empty": "Bu kateqoriyada xəbər tapılmadı.",
+    "emptyLocale": "Bu dildə hələ xəbər dərc edilməyib.",
+    "errorCategories": "Xəbər kateqoriyaları yüklənmədi.",
+    "errorList": "Xəbərlər yüklənərkən xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin.",
+    "errorPopular": "Populyar məzmunlar yüklənmədi."
+  },
+  "detail": {
+    "notFound": "Xəbər tapılmadı. Silinmiş və ya yayımdan çıxarılmış ola bilər.",
+    "backAll": "Bütün Xəbərlər",
+    "backList": "Xəbərlərə Qayıt"
+  }
+}

@@ -1133,6 +1133,7 @@ export const DeleteProductParams = zod.object({
  * @summary List news posts
  */
 export const ListNewsQueryParams = zod.object({
+  "locale": zod.coerce.string().optional().describe('Language to resolve each article in. Defaults to Turkish.'),
   "slug": zod.coerce.string().optional(),
   "category": zod.coerce.string().optional(),
   "published": zod.coerce.boolean().optional(),
@@ -1151,6 +1152,16 @@ export const ListNewsResponse = zod.object({
   "slug": zod.string(),
   "published": zod.boolean(),
   "publishedAt": zod.string(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish(),
+  "newsId": zod.number().optional(),
+  "locale": zod.string().optional(),
+  "sourceSlug": zod.string().optional(),
+  "translationId": zod.number().nullish(),
+  "alternates": zod.array(zod.object({
+  "locale": zod.string(),
+  "slug": zod.string()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })),
@@ -1169,7 +1180,9 @@ export const CreateNewsBody = zod.object({
   "imageUrl": zod.string().optional(),
   "slug": zod.string(),
   "published": zod.boolean().optional(),
-  "publishedAt": zod.string().optional()
+  "publishedAt": zod.string().optional(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish()
 })
 
 
@@ -1190,6 +1203,16 @@ export const GetNewsItemResponse = zod.object({
   "slug": zod.string(),
   "published": zod.boolean(),
   "publishedAt": zod.string(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish(),
+  "newsId": zod.number().optional(),
+  "locale": zod.string().optional(),
+  "sourceSlug": zod.string().optional(),
+  "translationId": zod.number().nullish(),
+  "alternates": zod.array(zod.object({
+  "locale": zod.string(),
+  "slug": zod.string()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -1210,7 +1233,9 @@ export const UpdateNewsBody = zod.object({
   "imageUrl": zod.string().nullish(),
   "slug": zod.string().optional(),
   "published": zod.boolean().optional(),
-  "publishedAt": zod.string().optional()
+  "publishedAt": zod.string().optional(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish()
 })
 
 export const UpdateNewsResponse = zod.object({
@@ -1223,6 +1248,16 @@ export const UpdateNewsResponse = zod.object({
   "slug": zod.string(),
   "published": zod.boolean(),
   "publishedAt": zod.string(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish(),
+  "newsId": zod.number().optional(),
+  "locale": zod.string().optional(),
+  "sourceSlug": zod.string().optional(),
+  "translationId": zod.number().nullish(),
+  "alternates": zod.array(zod.object({
+  "locale": zod.string(),
+  "slug": zod.string()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -1233,6 +1268,101 @@ export const UpdateNewsResponse = zod.object({
  */
 export const DeleteNewsParams = zod.object({
   "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List every news translation row for administration
+ */
+export const ListAllNewsTranslationsResponseItem = zod.object({
+  "id": zod.number(),
+  "newsId": zod.number(),
+  "locale": zod.string(),
+  "title": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "slug": zod.string(),
+  "published": zod.boolean(),
+  "publishedAt": zod.string().nullish(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListAllNewsTranslationsResponse = zod.array(ListAllNewsTranslationsResponseItem)
+
+
+/**
+ * @summary List all language versions of one news post
+ */
+export const ListNewsTranslationsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListNewsTranslationsResponseItem = zod.object({
+  "id": zod.number(),
+  "newsId": zod.number(),
+  "locale": zod.string(),
+  "title": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "slug": zod.string(),
+  "published": zod.boolean(),
+  "publishedAt": zod.string().nullish(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListNewsTranslationsResponse = zod.array(ListNewsTranslationsResponseItem)
+
+
+/**
+ * @summary Create or update one language version of a news post
+ */
+export const UpsertNewsTranslationParams = zod.object({
+  "id": zod.coerce.number(),
+  "locale": zod.coerce.string()
+})
+
+export const UpsertNewsTranslationBody = zod.object({
+  "title": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "slug": zod.string(),
+  "published": zod.boolean().optional(),
+  "publishedAt": zod.string().nullish(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish()
+})
+
+export const UpsertNewsTranslationResponse = zod.object({
+  "id": zod.number(),
+  "newsId": zod.number(),
+  "locale": zod.string(),
+  "title": zod.string(),
+  "excerpt": zod.string().nullish(),
+  "content": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "slug": zod.string(),
+  "published": zod.boolean(),
+  "publishedAt": zod.string().nullish(),
+  "seoTitle": zod.string().nullish(),
+  "seoDescription": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Delete one language version of a news post
+ */
+export const DeleteNewsTranslationParams = zod.object({
+  "id": zod.coerce.number(),
+  "locale": zod.coerce.string()
 })
 
 

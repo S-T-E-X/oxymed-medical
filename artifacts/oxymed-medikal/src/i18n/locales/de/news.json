@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "imageAlt": "Gesamtansicht der Produktionsstätte",
+    "breadcrumb": [
+      "Startseite",
+      "News"
+    ],
+    "title": "NEWS",
+    "description": "Verfolgen Sie aktuelle Entwicklungen in der Medizintechnik, unsere Projekte, Produktionsprozesse und Branchenneuigkeiten."
+  },
+  "list": {
+    "allCategories": "ALLE NEWS",
+    "readMore": "Mehr erfahren",
+    "popular": "Beliebte Beiträge",
+    "empty": "In dieser Kategorie wurden keine Nachrichten gefunden.",
+    "emptyLocale": "In dieser Sprache wurden noch keine Nachrichten veröffentlicht.",
+    "errorCategories": "Nachrichtenkategorien konnten nicht geladen werden.",
+    "errorList": "Beim Laden der Nachrichten ist ein Fehler aufgetreten. Bitte aktualisieren Sie die Seite.",
+    "errorPopular": "Beliebte Beiträge konnten nicht geladen werden."
+  },
+  "detail": {
+    "notFound": "Nachricht nicht gefunden. Sie wurde möglicherweise gelöscht oder unveröffentlicht.",
+    "backAll": "Alle News",
+    "backList": "Zurück zu den News"
+  }
+}

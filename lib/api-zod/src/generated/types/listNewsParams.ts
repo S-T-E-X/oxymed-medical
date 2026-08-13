@@ -7,6 +7,10 @@
  */
 
 export type ListNewsParams = {
+/**
+ * Language to resolve each article in. Defaults to Turkish.
+ */
+locale?: string;
 slug?: string;
 category?: string;
 published?: boolean;

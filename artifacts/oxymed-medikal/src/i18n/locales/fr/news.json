@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "imageAlt": "Vue générale de l'installation de production",
+    "breadcrumb": [
+      "Accueil",
+      "Actualités"
+    ],
+    "title": "ACTUALITÉS",
+    "description": "Suivez les dernières évolutions des technologies médicales, de nos projets, de nos processus de production et du secteur."
+  },
+  "list": {
+    "allCategories": "TOUTES LES ACTUALITÉS",
+    "readMore": "Lire la suite",
+    "popular": "Contenus populaires",
+    "empty": "Aucune actualité trouvée dans cette catégorie.",
+    "emptyLocale": "Aucune actualité n'a encore été publiée dans cette langue.",
+    "errorCategories": "Impossible de charger les catégories d'actualités.",
+    "errorList": "Une erreur s'est produite lors du chargement des actualités. Veuillez actualiser la page.",
+    "errorPopular": "Impossible de charger les contenus populaires."
+  },
+  "detail": {
+    "notFound": "Actualité introuvable. Elle a peut-être été supprimée ou retirée de la publication.",
+    "backAll": "Toutes les actualités",
+    "backList": "Retour aux actualités"
+  }
+}

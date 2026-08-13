@@ -5,31 +5,21 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { NewsAlternate } from './newsAlternate';
 
-export interface NewsItem {
-  id: number;
+export interface NewsTranslationInput {
   title: string;
   /** @nullable */
   excerpt?: string | null;
   /** @nullable */
   content?: string | null;
-  category: string;
   /** @nullable */
-  imageUrl?: string | null;
+  category?: string | null;
   slug: string;
-  published: boolean;
-  publishedAt: string;
+  published?: boolean;
+  /** @nullable */
+  publishedAt?: string | null;
   /** @nullable */
   seoTitle?: string | null;
   /** @nullable */
   seoDescription?: string | null;
-  newsId?: number;
-  locale?: string;
-  sourceSlug?: string;
-  /** @nullable */
-  translationId?: number | null;
-  alternates?: NewsAlternate[];
-  createdAt: string;
-  updatedAt: string;
 }

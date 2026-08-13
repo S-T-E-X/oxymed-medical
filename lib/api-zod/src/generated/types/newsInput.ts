@@ -15,4 +15,8 @@ export interface NewsInput {
   slug: string;
   published?: boolean;
   publishedAt?: string;
+  /** @nullable */
+  seoTitle?: string | null;
+  /** @nullable */
+  seoDescription?: string | null;
 }

@@ -20,6 +20,7 @@ export const NAMESPACES = [
   "dvs",
   "service",
   "quote",
+  "news",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -36,6 +37,7 @@ import trDvp from "./locales/tr/dvp.json";
 import trDvs from "./locales/tr/dvs.json";
 import trService from "./locales/tr/service.json";
 import trQuote from "./locales/tr/quote.json";
+import trNews from "./locales/tr/news.json";
 
 export const TR_DICTIONARY: DictionaryNode = {
   common: trCommon as DictionaryNode,
@@ -48,6 +50,7 @@ export const TR_DICTIONARY: DictionaryNode = {
   dvs: trDvs as DictionaryNode,
   service: trService as DictionaryNode,
   quote: trQuote as DictionaryNode,
+  news: trNews as DictionaryNode,
 };
 
 // Non-Turkish namespace files are loaded on demand so each visitor downloads

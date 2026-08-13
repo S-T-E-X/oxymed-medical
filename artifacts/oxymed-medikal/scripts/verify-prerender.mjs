@@ -20,12 +20,14 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SITE_DIR = path.resolve(HERE, "..");
 const DIST_DIR = path.join(SITE_DIR, "dist/public");
+/** Build input written by gen-sitemap; the list of pages prerender should have produced. */
+const NEWS_SEO_FILE = path.join(SITE_DIR, ".news-seo.json");
 
 const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymed.com.tr").replace(/\/$/, "");
 
 const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"];
 const DEFAULT_LOCALE = "tr";
-const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote"];
+const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"];
 
 const PRODUCTS_SLUG = {
   tr: "urunler", en: "products", de: "produkte", fr: "produits", it: "prodotti",
@@ -57,6 +59,10 @@ const LEAF_SLUGS = {
     tr: "servis", en: "service", de: "service", fr: "service", it: "assistenza", ar: "khidmat-alsiyana",
     ru: "servis", fa: "khadamat", ka: "servisi", bg: "serviz", az: "servis",
   },
+  news: {
+    tr: "haberler", en: "news", de: "nachrichten", fr: "actualites", it: "notizie",
+    ar: "akhbar", ru: "novosti", fa: "akhbar", ka: "siakhleebi", bg: "novini", az: "xeberler",
+  },
   quote: {
     tr: "teklif-al", en: "get-a-quote", de: "angebot-anfordern", fr: "demander-un-devis",
     it: "richiedi-preventivo", ar: "talab-arad-siar", ru: "zapros-predlozheniya",
@@ -70,6 +76,7 @@ function routePath(routeKey, locale) {
   const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
   if (routeKey === "home") return prefix || "/";
   if (routeKey === "products") return `${prefix}/${PRODUCTS_SLUG[locale]}`;
+  if (routeKey === "news") return `${prefix}/${LEAF_SLUGS.news[locale]}`;
   const leaf = LEAF_SLUGS[routeKey][locale];
   return NESTED_UNDER_PRODUCTS.has(routeKey)
     ? `${prefix}/${PRODUCTS_SLUG[locale]}/${leaf}`
@@ -158,6 +165,77 @@ async function main() {
     }
   }
 
+  // --- News article detail pages ---
+  // Sourced from the same build input the prerender step used, so this catches
+  // a published article whose HTML never got written.
+  let articles = [];
+  try {
+    articles = JSON.parse(await readFile(NEWS_SEO_FILE, "utf8"));
+  } catch {
+    errors.push(
+      `Missing or unreadable ${path.basename(NEWS_SEO_FILE)} — the gen-sitemap step must run before prerender.`,
+    );
+  }
+
+  for (const article of articles) {
+    const label = `[${article.locale}/news:${article.slug}]`;
+    const filePath = path.join(DIST_DIR, article.path.replace(/^\//, ""), "index.html");
+
+    let html;
+    try {
+      html = await readFile(filePath, "utf8");
+    } catch {
+      errors.push(`${label} Missing prerendered article file: ${filePath}`);
+      continue;
+    }
+
+    const title = extractTitle(html);
+    if (!title) {
+      errors.push(`${label} No <title> found`);
+    } else if (title === "Oxymed Medikal") {
+      errors.push(`${label} Title is the generic fallback — article metadata was not baked in`);
+    }
+
+    const canonical = extractCanonical(html);
+    const expectedCanonical = `${SITE_ORIGIN}${article.path}`;
+    if (canonical !== expectedCanonical) {
+      errors.push(`${label} Canonical mismatch:\n    expected: ${expectedCanonical}\n    got:      ${canonical}`);
+    }
+
+    const lang = extractLang(html);
+    if (lang !== article.locale) {
+      errors.push(`${label} <html lang="${lang}"> but expected "${article.locale}"`);
+    }
+
+    if (canonical) {
+      if (canonicalsSeen.has(canonical)) {
+        errors.push(`${label} Duplicate canonical "${canonical}" also used by ${canonicalsSeen.get(canonical)}`);
+      } else {
+        canonicalsSeen.set(canonical, label);
+      }
+    }
+
+    // A crawler must be able to read the article without running JavaScript.
+    if (!html.includes('"@type":"NewsArticle"')) {
+      errors.push(`${label} No NewsArticle JSON-LD in the prerendered HTML`);
+    }
+    if (!html.includes('property="og:type" content="article"')) {
+      errors.push(`${label} og:type is not "article"`);
+    }
+
+    // Every advertised hreflang must itself have been prerendered, or we are
+    // pointing crawlers at URLs that resolve to the bare SPA shell.
+    for (const alt of article.alternates ?? []) {
+      if (alt.hreflang === "x-default") continue;
+      const altFile = path.join(DIST_DIR, alt.path.replace(/^\//, ""), "index.html");
+      try {
+        await access(altFile);
+      } catch {
+        errors.push(`${label} hreflang="${alt.hreflang}" points at ${alt.path}, which was not prerendered`);
+      }
+    }
+  }
+
   // --- sitemap.xml and robots.txt must exist ---
   for (const staticFile of ["sitemap.xml", "robots.txt"]) {
     try {
@@ -173,10 +251,12 @@ async function main() {
     if (!sitemap.includes(SITE_ORIGIN)) {
       errors.push(`sitemap.xml does not contain the expected origin "${SITE_ORIGIN}"`);
     }
+    // Static pages are a fixed grid; news ARTICLE urls come from the database
+    // and legitimately vary per build, so the count is a floor, not an equality.
     const urlCount = (sitemap.match(/<loc>/g) ?? []).length;
-    const expected = LOCALES.length * ROUTE_KEYS.length;
-    if (urlCount !== expected) {
-      errors.push(`sitemap.xml has ${urlCount} <loc> entries; expected ${expected} (${LOCALES.length} locales × ${ROUTE_KEYS.length} routes)`);
+    const expectedStatic = LOCALES.length * ROUTE_KEYS.length;
+    if (urlCount < expectedStatic) {
+      errors.push(`sitemap.xml has ${urlCount} <loc> entries; expected at least ${expectedStatic} (${LOCALES.length} locales × ${ROUTE_KEYS.length} static routes) plus any news articles`);
     }
   } catch {
     // already reported as missing above
@@ -193,7 +273,8 @@ async function main() {
   }
 
   // --- Summary ---
-  const total = LOCALES.length * ROUTE_KEYS.length;
+  const staticTotal = LOCALES.length * ROUTE_KEYS.length;
+  const total = staticTotal + articles.length;
   if (warnings.length) {
     for (const w of warnings) console.warn(`⚠  ${w}`);
   }
@@ -204,7 +285,10 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`✓ Prerender verified: ${total} pages, all titles and canonicals correct. SITE_ORIGIN=${SITE_ORIGIN}`);
+  console.log(
+    `✓ Prerender verified: ${total} pages (${staticTotal} static + ${articles.length} news articles), ` +
+      `all titles and canonicals correct. SITE_ORIGIN=${SITE_ORIGIN}`,
+  );
 }
 
 main().catch((err) => {

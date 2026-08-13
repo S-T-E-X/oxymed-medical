@@ -632,6 +632,11 @@ paths:
       tags: [news]
       summary: List news posts
       parameters:
+        - name: locale
+          in: query
+          description: Language to resolve each article in. Defaults to Turkish.
+          schema:
+            type: string
         - name: slug
           in: query
           schema:
@@ -743,6 +748,122 @@ paths:
       responses:
         "204":
           description: Deleted
+
+  /admin/news/translations:
+    get:
+      operationId: listAllNewsTranslations
+      tags: [news]
+      summary: List every news translation row for administration
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Translation rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsTranslation"
+
+  /news/{id}/translations:
+    get:
+      operationId: listNewsTranslations
+      tags: [news]
+      summary: List all language versions of one news post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Translation rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsTranslation"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /news/{id}/translations/{locale}:
+    put:
+      operationId: upsertNewsTranslation
+      tags: [news]
+      summary: Create or update one language version of a news post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: locale
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsTranslationInput"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsTranslation"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Slug already used in this language
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteNewsTranslation
+      tags: [news]
+      summary: Delete one language version of a news post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: locale
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   # REFERENCES
   /references:
@@ -3101,6 +3222,23 @@ components:
           type: boolean
         publishedAt:
           type: string
+        seoTitle:
+          type: ["string", "null"]
+        seoDescription:
+          type: ["string", "null"]
+        # Present on list responses, which resolve one language per item.
+        newsId:
+          type: integer
+        locale:
+          type: string
+        sourceSlug:
+          type: string
+        translationId:
+          type: ["integer", "null"]
+        alternates:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsAlternate"
         createdAt:
           type: string
         updatedAt:
@@ -3126,6 +3264,10 @@ components:
           type: boolean
         publishedAt:
           type: string
+        seoTitle:
+          type: ["string", "null"]
+        seoDescription:
+          type: ["string", "null"]
 
     NewsUpdate:
       type: object
@@ -3146,6 +3288,75 @@ components:
           type: boolean
         publishedAt:
           type: string
+        seoTitle:
+          type: ["string", "null"]
+        seoDescription:
+          type: ["string", "null"]
+
+    NewsAlternate:
+      type: object
+      required: [locale, slug]
+      properties:
+        locale:
+          type: string
+        slug:
+          type: string
+
+    NewsTranslation:
+      type: object
+      required: [id, newsId, locale, title, slug, published, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        newsId:
+          type: integer
+        locale:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        category:
+          type: ["string", "null"]
+        slug:
+          type: string
+        published:
+          type: boolean
+        publishedAt:
+          type: ["string", "null"]
+        seoTitle:
+          type: ["string", "null"]
+        seoDescription:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    NewsTranslationInput:
+      type: object
+      required: [title, slug]
+      properties:
+        title:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        category:
+          type: ["string", "null"]
+        slug:
+          type: string
+        published:
+          type: boolean
+        publishedAt:
+          type: ["string", "null"]
+        seoTitle:
+          type: ["string", "null"]
+        seoDescription:
+          type: ["string", "null"]
 
     NewsListResponse:
       type: object

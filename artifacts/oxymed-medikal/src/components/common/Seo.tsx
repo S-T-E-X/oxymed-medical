@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { LOCALE_META, LOCALES, SITE_ORIGIN } from "../../i18n/config";
 import { useI18n } from "../../i18n/I18nProvider";
-import { absoluteUrl, alternatesFor } from "../../i18n/seo";
+import { absoluteUrl, alternatesFor, type Alternate } from "../../i18n/seo";
 import type { RouteKey } from "../../i18n/routes";
 
 /**
@@ -58,6 +58,23 @@ export type SeoProps = {
   image?: string;
   /** Extra JSON-LD (e.g. a Product schema) merged in alongside the defaults. */
   jsonLd?: Record<string, unknown> | null;
+  /**
+   * Explicit canonical URL. When omitted the standard per-route canonical is
+   * used. Article detail pages supply this because two articles can share the
+   * same routeKey while having completely different URLs.
+   */
+  canonicalUrl?: string;
+  /**
+   * Explicit hreflang alternate set. When supplied it completely replaces the
+   * default alternatesFor(routeKey) list — use this for data-driven pages
+   * (e.g. news detail) where not every locale has a published version.
+   * Existing callers that do not supply this prop keep today's behaviour.
+   */
+  alternates?: Alternate[];
+  /**
+   * og:type override. Defaults to "website"; article pages supply "article".
+   */
+  ogType?: string;
 };
 
 /**
@@ -65,17 +82,30 @@ export type SeoProps = {
  * Open Graph / Twitter cards and structured data. Static crawlers additionally
  * get these values pre-baked into HTML by scripts/prerender.mjs at build time.
  */
-export default function Seo({ routeKey, title, description, image, jsonLd = null }: SeoProps) {
+export default function Seo({
+  routeKey,
+  title,
+  description,
+  image,
+  jsonLd = null,
+  canonicalUrl,
+  alternates,
+  ogType = "website",
+}: SeoProps) {
   const { locale, t } = useI18n();
 
   const resolvedTitle = title ?? t(`seo.${routeKey}.title`);
   const resolvedDescription = description ?? t(`seo.${routeKey}.description`);
-  const canonical = absoluteUrl(routeKey, locale);
+  // Explicit canonical wins; otherwise use the standard route-based URL.
+  const canonical = canonicalUrl ?? absoluteUrl(routeKey, locale);
   const shareImage = image
     ? image.startsWith("http")
       ? image
       : `${SITE_ORIGIN}${image}`
     : `${SITE_ORIGIN}/assets/images/hero-medical-suite.png`;
+
+  // Use explicit alternates when provided, otherwise generate from the route.
+  const resolvedAlternates = alternates ?? alternatesFor(routeKey);
 
   useEffect(() => {
     document.title = resolvedTitle;
@@ -85,7 +115,7 @@ export default function Seo({ routeKey, title, description, image, jsonLd = null
 
     upsertMeta("property", "og:title", resolvedTitle);
     upsertMeta("property", "og:description", resolvedDescription);
-    upsertMeta("property", "og:type", "website");
+    upsertMeta("property", "og:type", ogType);
     upsertMeta("property", "og:url", canonical);
     upsertMeta("property", "og:image", shareImage);
     upsertMeta("property", "og:site_name", "Oxymed Medikal");
@@ -114,10 +144,10 @@ export default function Seo({ routeKey, title, description, image, jsonLd = null
     document.head
       .querySelectorAll(`link[rel="alternate"][hreflang]`)
       .forEach((node) => node.remove());
-    for (const alternate of alternatesFor(routeKey)) {
+    for (const alternate of resolvedAlternates) {
       upsertLink("alternate", alternate.href, alternate.hreflang);
     }
-  }, [canonical, locale, resolvedDescription, resolvedTitle, routeKey, shareImage]);
+  }, [canonical, locale, ogType, resolvedAlternates, resolvedDescription, resolvedTitle, shareImage]);
 
   useEffect(() => {
     setJsonLd("organization", {
