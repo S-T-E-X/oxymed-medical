@@ -39,5 +39,20 @@
     "counter": "{{count}} Produkte",
     "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten. Bitte aktualisieren Sie die Seite.",
     "empty": "In dieser Kategorie sind noch keine Produkte vorhanden."
+  },
+  "detail": {
+    "loading": "Produkt wird geladen…",
+    "notFound": "Produkt nicht gefunden.",
+    "backToProducts": "Zurück zu den Produkten",
+    "brand": "OXYMED MEDİKAL",
+    "productImage": "Produktbild von {{product}}",
+    "detailImages": "Produktdetailbilder",
+    "technicalSpecifications": "TECHNISCHE DATEN",
+    "advantages": "VORTEILE",
+    "applications": "ANWENDUNGSBEREICHE",
+    "faq": "FAQ",
+    "quickQuote": "Schnellangebot anfordern",
+    "quickQuoteDescription": "Kontaktieren Sie uns für die passende Lösung und ein Preisangebot für Ihr Projekt.",
+    "requestQuote": "Angebot anfordern"
   }
 }

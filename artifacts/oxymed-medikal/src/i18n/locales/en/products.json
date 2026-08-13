@@ -39,5 +39,20 @@
     "counter": "{{count}} products",
     "loadError": "An error occurred while loading products. Please refresh the page.",
     "empty": "There are no products in this category yet."
+  },
+  "detail": {
+    "loading": "Loading product…",
+    "notFound": "Product not found.",
+    "backToProducts": "Back to products",
+    "brand": "OXYMED MEDICAL",
+    "productImage": "{{product}} product image",
+    "detailImages": "Product detail images",
+    "technicalSpecifications": "TECHNICAL SPECIFICATIONS",
+    "advantages": "ADVANTAGES",
+    "applications": "APPLICATIONS",
+    "faq": "FAQ",
+    "quickQuote": "Get a Quick Quote",
+    "quickQuoteDescription": "Contact us to receive the right solution and a quotation for your project.",
+    "requestQuote": "Request a Quote"
   }
 }

@@ -13,7 +13,7 @@ description: How per-locale name/title columns are added to products and product
 
 # Display
 - `ProductsPage.tsx`: sidebar buttons use `pickLocalizedName(category, "name", locale)`, product card titles use `pickLocalizedName(product, "title", locale)`.
-- `ProductGroups.tsx`: category name uses `pickLocalizedName(cat, "name", locale)`.
+- `ProductGroups.tsx`: curated home product card titles use `pickLocalizedName(product, "title", locale)`.
 
 # Admin editing
 - **Categories**: `admin/ProductsPage.tsx` — clicking the edit pencil on a category opens `CategoryEditModal` which shows TR name + 10 locale inputs.

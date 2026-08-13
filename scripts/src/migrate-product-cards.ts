@@ -201,6 +201,73 @@ const DENTAL_PRODUCTS: Array<{
   },
 ];
 
+/**
+ * Locale names for products that already existed in the seeded/admin database.
+ * Only empty locale columns are filled so a later admin translation always wins.
+ */
+const EXISTING_PRODUCT_TITLES: Record<string, Record<string, string>> = {
+  "Standart Yatak Başı Ünitesi": {
+    titleEn: "Standard Bed Head Unit",
+    titleDe: "Standard-Bettkopfeinheit",
+    titleFr: "Unité de tête de lit standard",
+    titleIt: "Unità testaletto standard",
+    titleAr: "وحدة رأس سرير قياسية",
+    titleRu: "Стандартная прикроватная панель",
+    titleFa: "یونیت هدبورد تخت استاندارد",
+    titleKa: "სტანდარტული საწოლთანა ბლოკი",
+    titleBg: "Стандартен болничен панел",
+    titleAz: "Standart yataq başı bloku",
+  },
+  "Kat Kontrol Panosu": {
+    titleEn: "Gas Control Panel",
+    titleDe: "Gassteuerungspanel",
+    titleFr: "Panneau de contrôle des gaz",
+    titleIt: "Pannello di controllo dei gas",
+    titleAr: "لوحة التحكم بالغاز",
+    titleRu: "Панель управления медицинскими газами",
+    titleFa: "پنل کنترل گاز",
+    titleKa: "გაზის კონტროლის პანელი",
+    titleBg: "Панел за управление на газа",
+    titleAz: "Qaz idarəetmə paneli",
+  },
+  "Anestezi Pendant Ünitesi": {
+    titleEn: "Anesthesia Pendant Unit",
+    titleDe: "Anästhesie-Pendantsystem",
+    titleFr: "Système de pendant d’anesthésie",
+    titleIt: "Sistema pensile per anestesia",
+    titleAr: "وحدة بندانت التخدير",
+    titleRu: "Анестезиологическая консоль",
+    titleFa: "پندانت بیهوشی",
+    titleKa: "ანესთეზიის პენდანტი",
+    titleBg: "Анестезиологична конзола",
+    titleAz: "Anesteziya pendant sistemi",
+  },
+  "Cerrahi Pendant Ünitesi": {
+    titleEn: "Surgical Pendant Unit",
+    titleDe: "Chirurgie-Pendantsystem",
+    titleFr: "Système de pendant chirurgical",
+    titleIt: "Sistema pensile chirurgico",
+    titleAr: "وحدة بندانت جراحية",
+    titleRu: "Хирургическая консоль",
+    titleFa: "پندانت جراحی",
+    titleKa: "ქირურგიული პენდანტი",
+    titleBg: "Хирургична конзола",
+    titleAz: "Cərrahi pendant sistemi",
+  },
+  "Yoğun Bakım Pendant Ünitesi": {
+    titleEn: "ICU Pendant Unit",
+    titleDe: "Intensivpflege-Pendantsystem",
+    titleFr: "Système de pendant de réanimation",
+    titleIt: "Sistema pensile per terapia intensiva",
+    titleAr: "وحدة بندانت العناية المركزة",
+    titleRu: "Консоль для реанимации",
+    titleFa: "پندانت بخش مراقبت ویژه",
+    titleKa: "ინტენსიური თერაპიის პენდანტი",
+    titleBg: "Конзола за интензивно отделение",
+    titleAz: "Reanimasiya pendant sistemi",
+  },
+};
+
 const DENTAL_CATEGORY_SLUG = "dental-sistemler";
 
 async function getSetting(key: string): Promise<string | null> {
@@ -306,6 +373,23 @@ async function main() {
     });
     productsInserted += 1;
     console.log(`  product "${spec.titles["title"]}" created (${spec.pageSlug})`);
+  }
+
+  const existingProducts = await db.select().from(productsTable);
+  for (const product of existingProducts) {
+    const translations = EXISTING_PRODUCT_TITLES[product.title];
+    if (!translations) continue;
+
+    const patch: Record<string, string> = {};
+    for (const [field, value] of Object.entries(translations)) {
+      const current = (product as unknown as Record<string, string | null>)[field];
+      if (!current?.trim()) patch[field] = value;
+    }
+    if (Object.keys(patch).length === 0) continue;
+
+    await db.update(productsTable).set(patch).where(eq(productsTable.id, product.id));
+    productsUpdated += 1;
+    console.log(`  product "${product.title}" ← ${Object.keys(patch).join(", ")}`);
   }
 
   // Existing installations had four home cards before product-level curation

@@ -39,5 +39,20 @@
     "counter": "{{count}} produits",
     "loadError": "Une erreur est survenue lors du chargement des produits. Veuillez actualiser la page.",
     "empty": "Aucun produit n’est encore disponible dans cette catégorie."
+  },
+  "detail": {
+    "loading": "Chargement du produit…",
+    "notFound": "Produit introuvable.",
+    "backToProducts": "Retour aux produits",
+    "brand": "OXYMED MEDİKAL",
+    "productImage": "Visuel du produit {{product}}",
+    "detailImages": "Visuels détaillés du produit",
+    "technicalSpecifications": "CARACTÉRISTIQUES TECHNIQUES",
+    "advantages": "AVANTAGES",
+    "applications": "DOMAINES D’APPLICATION",
+    "faq": "FAQ",
+    "quickQuote": "Obtenir un devis rapide",
+    "quickQuoteDescription": "Contactez-nous pour obtenir la solution adaptée et un devis pour votre projet.",
+    "requestQuote": "Demander un devis"
   }
 }

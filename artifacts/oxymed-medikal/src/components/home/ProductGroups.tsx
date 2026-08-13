@@ -2,6 +2,7 @@ import { AlertCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useListProducts } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
+import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 import { pickLocalizedName } from "../../i18n/pickLocalizedName";
 
 const FALLBACK_IMAGE = "/assets/images/hero-medical-suite.png";
@@ -12,6 +13,7 @@ export default function ProductGroups() {
     limit: 50,
   });
   const { t, locale } = useI18n();
+  const path = useLocalizedPath();
 
   // The home page is a curated product shelf, not a category list. The API
   // returns all public products; only the four admin-selected rows are shown.
@@ -47,8 +49,8 @@ export default function ProductGroups() {
               : displayed.map((product) => {
                   const name = pickLocalizedName(product, "title", locale);
                   const href = product.pageSlug
-                    ? `/urunler/${product.pageSlug}`
-                    : `/urunler/${product.id}`;
+                    ? path("products", [product.pageSlug])
+                    : path("products", [String(product.id)]);
                   return (
                     <article
                       key={product.id}

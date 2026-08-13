@@ -23,6 +23,18 @@ localized URL would likewise be redirected away from the page they were asked to
 - Never auto-redirect on detected browser language — offer it, let the visitor choose.
   Silent redirects hide the other language versions from crawlers.
 
+# Generic product detail URLs
+Database-driven product detail links keep the current locale's products prefix and the
+Turkish database slug (`/en/products/<turkish-slug>`), rather than linking to the unlocalized
+Turkish route.
+
+**Why:** the URL is the locale source of truth; an unlocalized fallback route silently changes
+an English visitor back to Turkish even when the product title is translated.
+
+**How to apply:** register a dynamic detail route under every localized products path and build
+generic product links with the localized path helper. Keep translated legacy product routes
+separate because their slugs are maintained in the route dictionary.
+
 # Verifying `lang` / `dir` in tests
 
 `<html lang>` and `dir` are set by a React effect after hydration, not by the served HTML

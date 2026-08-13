@@ -14,6 +14,7 @@ import { useGetProduct, useGetProductBySlug, useListProductCategories } from "@w
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { pickLocalizedName } from "../i18n/pickLocalizedName";
 import "./ProductDetailPage.css";
 
@@ -24,7 +25,8 @@ export default function ProductDetailPage() {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
+  const path = useLocalizedPath();
   const isNumericSlug = /^\d+$/.test(slug ?? "");
   const slugQuery = useGetProductBySlug(isNumericSlug ? "" : slug ?? "");
   const idQuery = useGetProduct(isNumericSlug ? Number(slug) : 0);
@@ -40,7 +42,7 @@ export default function ProductDetailPage() {
         <main className="pdp-main">
           <div className="pdp-state">
             <Loader2 className="pdp-spinner" aria-hidden="true" />
-            <p>Ürün yükleniyor…</p>
+            <p>{t("products.detail.loading")}</p>
           </div>
         </main>
         <Footer />
@@ -54,8 +56,8 @@ export default function ProductDetailPage() {
         <Header />
         <main className="pdp-main">
           <div className="pdp-state">
-            <p>Ürün bulunamadı.</p>
-            <Link to="/urunler" className="pdp-back-link">Ürünlere dön</Link>
+            <p>{t("products.detail.notFound")}</p>
+            <Link to={path("products")} className="pdp-back-link">{t("products.detail.backToProducts")}</Link>
           </div>
         </main>
         <Footer />
@@ -66,7 +68,7 @@ export default function ProductDetailPage() {
   const pd = product.pageData ?? {};
   const category = categories.find((c) => c.id === product.categoryId);
   const localizedTitle = pickLocalizedName(product, "title", locale);
-  const eyebrow = category ? pickLocalizedName(category, "name", locale) : "OXYMED MEDİKAL";
+  const eyebrow = category ? pickLocalizedName(category, "name", locale) : t("products.detail.brand");
   const features = (pd.features ?? []).slice(0, 4);
   const detailCards = pd.detailCards ?? [];
   const specs = product.specs ?? [];
@@ -106,7 +108,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <div className="pdp-hero__visual" aria-label={`${localizedTitle} ürün görseli`}>
+            <div className="pdp-hero__visual" aria-label={t("products.detail.productImage").replace("{{product}}", localizedTitle)}>
               {product.imageUrl ? (
                 <img src={product.imageUrl} alt={localizedTitle} />
               ) : (
@@ -117,7 +119,7 @@ export default function ProductDetailPage() {
         </section>
 
         {detailCards.length > 0 && (
-          <section className="pdp-container pdp-detail-grid" aria-label="Ürün detay görselleri">
+          <section className="pdp-container pdp-detail-grid" aria-label={t("products.detail.detailImages")}>
             {detailCards.map((card) => (
               <article key={card.title}>
                 {card.imageUrl ? (
@@ -138,7 +140,7 @@ export default function ProductDetailPage() {
               <article className="pdp-specs">
                 <header>
                   <Settings aria-hidden="true" />
-                  <h2>TEKNİK ÖZELLİKLER</h2>
+                  <h2>{t("products.detail.technicalSpecifications")}</h2>
                 </header>
                 <dl>
                   {specs.map((s) => (
@@ -155,7 +157,7 @@ export default function ProductDetailPage() {
               <article className="pdp-advantages">
                 <header>
                   <BadgeCheck aria-hidden="true" />
-                  <h2>AVANTAJLAR</h2>
+                  <h2>{t("products.detail.advantages")}</h2>
                 </header>
                 <ul>
                   {advantages.map((item) => (
@@ -169,7 +171,7 @@ export default function ProductDetailPage() {
 
         {useCases.length > 0 && (
           <section className="pdp-container pdp-usage-band">
-            <h2>KULLANIM ALANLARI</h2>
+            <h2>{t("products.detail.applications")}</h2>
             <div>
               {useCases.map((item) => (
                 <article key={item}>
@@ -197,7 +199,7 @@ export default function ProductDetailPage() {
           <section className="pdp-container pdp-faq">
             <header>
               <HelpCircle aria-hidden="true" />
-              <h2>S.S.S.</h2>
+              <h2>{t("products.detail.faq")}</h2>
             </header>
             <div className="pdp-faq__grid">
               {faq.map((item, index) => (
@@ -216,11 +218,11 @@ export default function ProductDetailPage() {
           <div className="pdp-container pdp-quote-strip__inner">
             <FileCheck2 aria-hidden="true" />
             <div>
-              <h2>Hızlı Teklif Al</h2>
-              <p>Projeniz için uygun çözüm ve fiyat teklifi almak için bizimle iletişime geçin.</p>
+                <h2>{t("products.detail.quickQuote")}</h2>
+                <p>{t("products.detail.quickQuoteDescription")}</p>
             </div>
-            <Link to="/teklif-al">
-              Teklif İste
+            <Link to={path("quote")}>
+              {t("products.detail.requestQuote")}
               <ArrowRight aria-hidden="true" />
             </Link>
           </div>

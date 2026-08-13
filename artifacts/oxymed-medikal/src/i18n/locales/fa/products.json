@@ -39,5 +39,20 @@
     "counter": "{{count}} محصول",
     "loadError": "هنگام بارگذاری محصولات خطایی رخ داد. لطفاً صفحه را تازه‌سازی کنید.",
     "empty": "هنوز محصولی در این دسته وجود ندارد."
+  },
+  "detail": {
+    "loading": "در حال بارگذاری محصول…",
+    "notFound": "محصول یافت نشد.",
+    "backToProducts": "بازگشت به محصولات",
+    "brand": "OXYMED MEDİKAL",
+    "productImage": "تصویر محصول {{product}}",
+    "detailImages": "تصاویر جزئیات محصول",
+    "technicalSpecifications": "مشخصات فنی",
+    "advantages": "مزایا",
+    "applications": "زمینه‌های کاربرد",
+    "faq": "سؤالات متداول",
+    "quickQuote": "دریافت پیش‌فاکتور سریع",
+    "quickQuoteDescription": "برای دریافت راهکار مناسب و پیش‌فاکتور برای پروژه خود، با ما تماس بگیرید.",
+    "requestQuote": "درخواست پیش‌فاکتور"
   }
 }

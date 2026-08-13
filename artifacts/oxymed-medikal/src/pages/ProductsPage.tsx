@@ -98,12 +98,12 @@ function ProductsContent() {
   });
   const products = productsData?.items ?? [];
 
-  // The API only knows Turkish slugs. Product pages that have a translated
-  // route open in the current language; anything else stays on the Turkish
-  // detail page, which is the only version that exists.
+  // The API only knows Turkish slugs. Special legacy pages have translated
+  // route slugs; generic DB-driven pages keep the Turkish product slug under
+  // the current locale so the detail page still resolves the visitor's locale.
   function productHref(slug: string): string {
     const routeKey = routeKeyForTurkishSlug(slug);
-    return routeKey ? path(routeKey) : `/urunler/${slug}`;
+    return routeKey ? path(routeKey) : path("products", [slug]);
   }
 
   const activeCategory = categories.find((c) => c.id === selectedCategoryId);

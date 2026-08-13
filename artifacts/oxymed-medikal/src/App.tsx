@@ -91,6 +91,17 @@ function localizedRoutes() {
   );
 }
 
+/** Generic DB-driven product detail pages also keep the current locale. */
+function localizedProductDetailRoutes() {
+  return LOCALES.map((locale) => (
+    <Route
+      key={`${locale}-generic-product-detail`}
+      path={`${localizedPath("products", locale)}/:slug`}
+      element={<ProductDetailPage />}
+    />
+  ));
+}
+
 /** Serial-number deep links into the service page, per language. */
 function localizedServiceSerialRoutes() {
   return LOCALES.map((locale) => (
@@ -130,6 +141,7 @@ export default function App() {
           <RouteTransitionLoader />
           <Routes>
           {localizedRoutes()}
+          {localizedProductDetailRoutes()}
           {localizedNewsDetailRoutes()}
           <Route path="/kurumsal" element={<CorporatePage />} />
            <Route path="/sertifikalar" element={<CertificatesPage />} />
@@ -141,7 +153,6 @@ export default function App() {
           {localizedServiceSerialRoutes()}
           <Route path="/servis-raporu/:recordId" element={<ServiceReportPage />} />
           <Route path="/servis-raporu" element={<ServiceReportPage />} />
-          <Route path="/urunler/:slug" element={<ProductDetailPage />} />
           <Route path="/teklif-sablonu" element={<QuoteTemplatePage />} />
           <Route path="/teklif-goruntule/:id" element={<QuotePrintPage />} />
 

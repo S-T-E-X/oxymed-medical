@@ -39,5 +39,20 @@
     "counter": "{{count}} ürün",
     "loadError": "Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.",
     "empty": "Bu kategoride henüz ürün bulunmuyor."
+  },
+  "detail": {
+    "loading": "Ürün yükleniyor…",
+    "notFound": "Ürün bulunamadı.",
+    "backToProducts": "Ürünlere dön",
+    "brand": "OXYMED MEDİKAL",
+    "productImage": "{{product}} ürün görseli",
+    "detailImages": "Ürün detay görselleri",
+    "technicalSpecifications": "TEKNİK ÖZELLİKLER",
+    "advantages": "AVANTAJLAR",
+    "applications": "KULLANIM ALANLARI",
+    "faq": "S.S.S.",
+    "quickQuote": "Hızlı Teklif Al",
+    "quickQuoteDescription": "Projeniz için uygun çözüm ve fiyat teklifi almak için bizimle iletişime geçin.",
+    "requestQuote": "Teklif İste"
   }
 }

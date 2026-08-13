@@ -72,7 +72,7 @@ export default function DentalVacuumSystemPage() {
         "@type": "Brand",
         name: "Oxymed Medikal",
       },
-      category: "Dental Vakum Sistemi",
+      category: t("dvs.category"),
     }),
     [productName, t],
   );
