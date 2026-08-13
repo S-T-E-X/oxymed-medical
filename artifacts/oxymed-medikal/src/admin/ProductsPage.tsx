@@ -9,6 +9,7 @@ import {
   useDeleteProductCategory,
   useListProductCategories,
   useListProducts,
+  useUpdateProduct,
   useUpdateProductCategory,
   type ProductCategory,
 } from "@workspace/api-client-react";
@@ -240,7 +241,10 @@ export default function ProductsPage() {
   const { data: categories = [] } = useListProductCategories();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const { data: productsData, isLoading } = useListProducts({ categoryId: selectedCategory, limit: 50 });
+  const { data: allProductsData } = useListProducts({ limit: 50 });
   const products = productsData?.items ?? [];
+  const allProducts = allProductsData?.items ?? [];
+  const homeProducts = allProducts.filter((product) => product.showOnHome === true);
 
   const [catName, setCatName] = useState("");
   const [editCat, setEditCat] = useState<ProductCategory | null>(null);
@@ -252,6 +256,15 @@ export default function ProductsPage() {
   const createCatMut = useCreateProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori oluşturuldu"); invalidateCat(); setCatName(""); }, onError: () => toast.error("Kategori eklenemedi") } });
   const deleteCatMut = useDeleteProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori silindi"); invalidateCat(); }, onError: () => toast.error("Silme başarısız") } });
   const updateCatMut = useUpdateProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori güncellendi"); invalidateCat(); setEditCat(null); }, onError: () => toast.error("Güncelleme başarısız") } });
+  const updateProductMut = useUpdateProduct({
+    mutation: {
+      onSuccess: () => {
+        toast.success("Ana sayfa ürünleri güncellendi");
+        invalidateProd();
+      },
+      onError: () => toast.error("Ana sayfada en fazla 4 ürün seçilebilir veya kayıt başarısız oldu"),
+    },
+  });
 
   function handleSaveCat(data: CategoryFields) {
     if (!editCat) return;
@@ -264,6 +277,26 @@ export default function ProductsPage() {
 
   function handleDeleteCat(id: number) {
     if (confirm("Kategoriyi silmek istediğinizden emin misiniz?")) deleteCatMut.mutate({ id });
+  }
+
+  function handleHomeToggle(productId: number, checked: boolean) {
+    if (checked && homeProducts.length >= 4) {
+      toast.error("Ana sayfada en fazla 4 ürün olabilir. Önce seçili ürünlerden birini kaldırın.");
+      return;
+    }
+    const nextOrder = checked
+      ? Math.max(0, ...homeProducts.map((product) => product.homeSortOrder ?? 0)) + 1
+      : undefined;
+    updateProductMut.mutate({
+      id: productId,
+      data: { showOnHome: checked, ...(nextOrder === undefined ? {} : { homeSortOrder: nextOrder }) },
+    });
+  }
+
+  function handleHomeOrder(productId: number, rawValue: string) {
+    const homeSortOrder = Number(rawValue);
+    if (!Number.isInteger(homeSortOrder) || homeSortOrder < 1) return;
+    updateProductMut.mutate({ id: productId, data: { homeSortOrder } });
   }
 
   function addCat() {
@@ -345,6 +378,9 @@ export default function ProductsPage() {
           <option value="">Tümü</option>
           {categories.map((c: ProductCategory) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
+        <span className="ml-auto rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
+          Ana sayfa: {homeProducts.length}/4 ürün seçili
+        </span>
       </div>
 
       {isLoading ? (
@@ -357,6 +393,7 @@ export default function ProductsPage() {
                 <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 w-52">Ürün</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 sm:table-cell">Kategori</th>
                 <th className="hidden px-4 py-3 text-left text-xs font-bold text-slate-500 md:table-cell">Slug</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">Ana sayfa</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-slate-500">Durum</th>
                 <th className="px-4 py-3 text-right text-xs font-bold text-slate-500">İşlemler</th>
               </tr>
@@ -387,6 +424,28 @@ export default function ProductsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                      <input
+                        type="checkbox"
+                        checked={p.showOnHome === true}
+                        onChange={(e) => handleHomeToggle(p.id, e.target.checked)}
+                        disabled={updateProductMut.isPending}
+                        className="h-4 w-4 rounded"
+                      />
+                      <span>Göster</span>
+                    </label>
+                    {p.showOnHome === true && (
+                      <input
+                        type="number"
+                        min="1"
+                        defaultValue={p.homeSortOrder ?? 1}
+                        onBlur={(e) => handleHomeOrder(p.id, e.currentTarget.value)}
+                        className="input mt-2 h-8 w-16 text-center text-xs"
+                        aria-label={`${p.title} ana sayfa sırası`}
+                      />
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
                     <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${p.published ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
                       {p.published ? "Yayında" : "Taslak"}
                     </span>
@@ -409,7 +468,7 @@ export default function ProductsPage() {
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-500">
                     {selectedCategory ? "Bu kategoride ürün yok." : "Henüz ürün eklenmemiş."}
                   </td>
                 </tr>

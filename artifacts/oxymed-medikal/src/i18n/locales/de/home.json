@@ -25,10 +25,10 @@
     }
   },
   "productGroups": {
-    "eyebrow": "UNSERE PRODUKTGRUPPEN",
+    "eyebrow": "AUSGEWÄHLTE PRODUKTE",
     "title": "Fortschrittliche Technologie, höchste Leistung",
-    "description": "Mit unseren innovativen Produktgruppen für Krankenhäuser, Kliniken und Gesundheitszentren gestalten wir Umgebungen sicherer und effizienter.",
-    "loadError": "Beim Laden der Produktgruppen ist ein Fehler aufgetreten.",
+    "description": "Unsere ausgewählten Produkte bieten sichere und effiziente Lösungen für Krankenhäuser, Kliniken und Gesundheitszentren.",
+    "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten.",
     "fallbackDescription": "Unsere medizinischen Geräte und Lösungen."
   },
   "stats": {

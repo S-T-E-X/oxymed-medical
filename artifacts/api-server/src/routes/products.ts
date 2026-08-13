@@ -80,6 +80,8 @@ const ProductBody = z.object({
   imageUrl: z.string().optional().nullable(),
   specs: z.array(ProductSpecSchema).optional(),
   sortOrder: z.coerce.number().int().optional(),
+  showOnHome: z.boolean().optional(),
+  homeSortOrder: z.coerce.number().int().optional(),
   published: z.boolean().optional(),
   pageSlug: z.string().optional().nullable(),
   pageData: PageDataSchema.optional().nullable(),
@@ -225,6 +227,16 @@ router.post("/products", requireAuth, async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  if (parsed.data.showOnHome === true) {
+    const [{ count: homeCount }] = await db
+      .select({ count: count() })
+      .from(productsTable)
+      .where(eq(productsTable.showOnHome, true));
+    if (homeCount >= 4) {
+      res.status(400).json({ error: "Ana sayfada en fazla 4 ürün seçilebilir." });
+      return;
+    }
+  }
   const [product] = await db.insert(productsTable).values(parsed.data).returning();
   res.status(201).json(product);
 });
@@ -257,6 +269,26 @@ router.patch("/products/:id", requireAuth, async (req, res): Promise<void> => {
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
+  }
+  if (parsed.data.showOnHome === true) {
+    const [current] = await db
+      .select({ showOnHome: productsTable.showOnHome })
+      .from(productsTable)
+      .where(eq(productsTable.id, id));
+    if (!current) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+    if (!current.showOnHome) {
+      const [{ count: homeCount }] = await db
+        .select({ count: count() })
+        .from(productsTable)
+        .where(eq(productsTable.showOnHome, true));
+      if (homeCount >= 4) {
+        res.status(400).json({ error: "Ana sayfada en fazla 4 ürün seçilebilir." });
+        return;
+      }
+    }
   }
   const [product] = await db.update(productsTable).set(parsed.data).where(eq(productsTable.id, id)).returning();
   if (!product) {

@@ -25,10 +25,10 @@
     }
   },
   "productGroups": {
-    "eyebrow": "LE NOSTRE CATEGORIE DI PRODOTTI",
+    "eyebrow": "PRODOTTI IN EVIDENZA",
     "title": "Tecnologia Avanzata, Prestazioni Superiori",
-    "description": "Con le innovative categorie di prodotti sviluppate per ospedali, cliniche e centri sanitari, rendiamo gli ambienti più sicuri ed efficienti.",
-    "loadError": "Si è verificato un errore durante il caricamento delle categorie di prodotti.",
+    "description": "I nostri prodotti selezionati offrono soluzioni sicure ed efficienti per ospedali, cliniche e centri sanitari.",
+    "loadError": "Si è verificato un errore durante il caricamento dei prodotti.",
     "fallbackDescription": "Le nostre apparecchiature e soluzioni medicali."
   },
   "stats": {

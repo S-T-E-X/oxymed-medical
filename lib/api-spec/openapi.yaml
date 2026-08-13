@@ -3098,6 +3098,10 @@ components:
             $ref: "#/components/schemas/ProductSpec"
         sortOrder:
           type: integer
+        showOnHome:
+          type: boolean
+        homeSortOrder:
+          type: integer
         published:
           type: boolean
         pageSlug:
@@ -3163,6 +3167,10 @@ components:
             $ref: "#/components/schemas/ProductSpec"
         sortOrder:
           type: integer
+        showOnHome:
+          type: boolean
+        homeSortOrder:
+          type: integer
         published:
           type: boolean
         pageSlug:
@@ -3222,6 +3230,10 @@ components:
           items:
             $ref: "#/components/schemas/ProductSpec"
         sortOrder:
+          type: integer
+        showOnHome:
+          type: boolean
+        homeSortOrder:
           type: integer
         published:
           type: boolean

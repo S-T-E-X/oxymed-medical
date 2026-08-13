@@ -10,7 +10,7 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
-import { useGetProductBySlug, useListProductCategories } from "@workspace/api-client-react";
+import { useGetProduct, useGetProductBySlug, useListProductCategories } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import { useI18n } from "../i18n/I18nProvider";
@@ -25,7 +25,12 @@ export default function ProductDetailPage() {
   }, [slug]);
 
   const { locale } = useI18n();
-  const { data: product, isLoading, isError } = useGetProductBySlug(slug ?? "");
+  const isNumericSlug = /^\d+$/.test(slug ?? "");
+  const slugQuery = useGetProductBySlug(isNumericSlug ? "" : slug ?? "");
+  const idQuery = useGetProduct(isNumericSlug ? Number(slug) : 0);
+  const product = isNumericSlug ? idQuery.data : slugQuery.data;
+  const isLoading = isNumericSlug ? idQuery.isLoading : slugQuery.isLoading;
+  const isError = isNumericSlug ? idQuery.isError : slugQuery.isError;
   const { data: categories = [] } = useListProductCategories();
 
   if (isLoading) {

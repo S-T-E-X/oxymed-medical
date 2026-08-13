@@ -25,10 +25,10 @@
     }
   },
   "productGroups": {
-    "eyebrow": "ÜRÜN GRUPLARIMIZ",
+    "eyebrow": "ÖNE ÇIKAN ÜRÜNLER",
     "title": "İleri Teknoloji, Üstün Performans",
-    "description": "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz yenilikçi ürün gruplarıyla yaşam alanlarını daha güvenli ve verimli hale getiriyoruz.",
-    "loadError": "Ürün grupları yüklenirken bir hata oluştu.",
+    "description": "Ana sayfa için seçtiğimiz ürünlerle hastaneler, klinikler ve sağlık merkezleri için güvenli ve verimli çözümler sunuyoruz.",
+    "loadError": "Ürünler yüklenirken bir hata oluştu.",
     "fallbackDescription": "Medikal ekipman ve çözümlerimiz."
   },
   "stats": {

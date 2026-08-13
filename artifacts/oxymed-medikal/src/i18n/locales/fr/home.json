@@ -25,10 +25,10 @@
     }
   },
   "productGroups": {
-    "eyebrow": "NOS GROUPES DE PRODUITS",
+    "eyebrow": "PRODUITS À LA UNE",
     "title": "Technologie avancée, performance supérieure",
-    "description": "Avec nos gammes de produits innovantes développées pour les hôpitaux, cliniques et centres de santé, nous rendons les espaces de soins plus sûrs et plus performants.",
-    "loadError": "Une erreur est survenue lors du chargement des groupes de produits.",
+    "description": "Nos produits sélectionnés offrent des solutions sûres et efficaces aux hôpitaux, cliniques et centres de santé.",
+    "loadError": "Une erreur est survenue lors du chargement des produits.",
     "fallbackDescription": "Nos équipements et solutions médicales."
   },
   "stats": {

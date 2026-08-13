@@ -622,6 +622,8 @@ export interface Product {
   imageUrl?: string | null;
   specs?: ProductSpec[];
   sortOrder: number;
+  showOnHome?: boolean;
+  homeSortOrder?: number;
   published: boolean;
   /** @nullable */
   pageSlug?: string | null;
@@ -669,6 +671,8 @@ export interface ProductInput {
   imageUrl?: string;
   specs?: ProductSpec[];
   sortOrder?: number;
+  showOnHome?: boolean;
+  homeSortOrder?: number;
   published?: boolean;
   pageSlug?: string;
   pageData?: PageData;
@@ -701,6 +705,8 @@ export interface ProductUpdate {
   imageUrl?: string | null;
   specs?: ProductSpec[];
   sortOrder?: number;
+  showOnHome?: boolean;
+  homeSortOrder?: number;
   published?: boolean;
   /** @nullable */
   pageSlug?: string | null;

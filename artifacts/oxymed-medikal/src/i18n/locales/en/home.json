@@ -25,10 +25,10 @@
     }
   },
   "productGroups": {
-    "eyebrow": "OUR PRODUCT GROUPS",
+    "eyebrow": "FEATURED PRODUCTS",
     "title": "Advanced Technology, Superior Performance",
-    "description": "With our innovative product groups developed for hospitals, clinics and healthcare centers, we make care environments safer and more efficient.",
-    "loadError": "An error occurred while loading product groups.",
+    "description": "Our selected products deliver safe and efficient solutions for hospitals, clinics and healthcare centers.",
+    "loadError": "An error occurred while loading products.",
     "fallbackDescription": "Our medical equipment and solutions."
   },
   "stats": {

@@ -308,6 +308,32 @@ async function main() {
     console.log(`  product "${spec.titles["title"]}" created (${spec.pageSlug})`);
   }
 
+  // Existing installations had four home cards before product-level curation
+  // existed. Initialize those cards from the first four published products
+  // only when no admin selection exists yet; never overwrite a selection.
+  const [existingHomeProduct] = await db
+    .select({ id: productsTable.id })
+    .from(productsTable)
+    .where(eq(productsTable.showOnHome, true))
+    .limit(1);
+  if (!existingHomeProduct) {
+    const initialHomeProducts = await db
+      .select({ id: productsTable.id })
+      .from(productsTable)
+      .where(eq(productsTable.published, true))
+      .orderBy(productsTable.sortOrder, productsTable.id)
+      .limit(4);
+    for (const [index, product] of initialHomeProducts.entries()) {
+      await db
+        .update(productsTable)
+        .set({ showOnHome: true, homeSortOrder: index + 1 })
+        .where(eq(productsTable.id, product.id));
+    }
+    if (initialHomeProducts.length > 0) {
+      console.log(`  initialized ${initialHomeProducts.length} home product cards`);
+    }
+  }
+
   console.log(
     `\nDone: ${categoriesUpdated} categories updated, ${productsInserted} products created, ${productsUpdated} products backfilled.`,
   );

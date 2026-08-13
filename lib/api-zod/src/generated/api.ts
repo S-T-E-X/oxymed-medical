@@ -793,6 +793,8 @@ export const ListProductsResponse = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number(),
+  "showOnHome": zod.boolean().optional(),
+  "homeSortOrder": zod.number().optional(),
   "published": zod.boolean(),
   "pageSlug": zod.string().nullish(),
   "pageData": zod.object({
@@ -859,6 +861,8 @@ export const CreateProductBody = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number().optional(),
+  "showOnHome": zod.boolean().optional(),
+  "homeSortOrder": zod.number().optional(),
   "published": zod.boolean().optional(),
   "pageSlug": zod.string().optional(),
   "pageData": zod.object({
@@ -926,6 +930,8 @@ export const GetProductBySlugResponse = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number(),
+  "showOnHome": zod.boolean().optional(),
+  "homeSortOrder": zod.number().optional(),
   "published": zod.boolean(),
   "pageSlug": zod.string().nullish(),
   "pageData": zod.object({
@@ -995,6 +1001,8 @@ export const GetProductResponse = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number(),
+  "showOnHome": zod.boolean().optional(),
+  "homeSortOrder": zod.number().optional(),
   "published": zod.boolean(),
   "pageSlug": zod.string().nullish(),
   "pageData": zod.object({
@@ -1063,6 +1071,8 @@ export const UpdateProductBody = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number().optional(),
+  "showOnHome": zod.boolean().optional(),
+  "homeSortOrder": zod.number().optional(),
   "published": zod.boolean().optional(),
   "pageSlug": zod.string().nullish(),
   "pageData": zod.object({
@@ -1122,6 +1132,8 @@ export const UpdateProductResponse = zod.object({
   "value": zod.string()
 })).optional(),
   "sortOrder": zod.number(),
+  "showOnHome": zod.boolean().optional(),
+  "homeSortOrder": zod.number().optional(),
   "published": zod.boolean(),
   "pageSlug": zod.string().nullish(),
   "pageData": zod.object({

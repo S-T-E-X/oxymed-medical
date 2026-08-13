@@ -1,16 +1,17 @@
 ---
 name: Product & category card data model
-description: Why home/catalog product cards must come from DB category+product rows, never positional arrays or per-product settings keys.
+description: Why home/catalog cards must come from DB product/category rows, with home curation owned by product rows.
 ---
 
 # Product and category cards are DB-driven
 
-Category cards (home page) and product cards (catalog) must render entirely from
-`product_categories` and `products` rows. Never reintroduce:
+The home page's featured cards and the catalog cards must render entirely from
+`products` rows, while category lists/details render from `product_categories`
+and their product relationships. Never reintroduce:
 
 - a positional image/description array indexed by the category's position in the
   list (`IMAGES[i]`, `descriptions[i]`),
-- a `.slice(0, N)` cap that decides which categories are "featured",
+- a `.slice(0, N)` cap that decides which products are featured,
 - hardcoded JSX cards appended next to the DB-driven ones.
 
 **Why:** all three were live at once. Because the blurb and artwork were keyed by
@@ -21,10 +22,12 @@ The hardcoded cards additionally could not be renamed, translated, reordered,
 recategorised or unpublished from the admin panel, and they duplicated rows that
 also existed in the database.
 
-**How to apply:** categories own `imageUrl`, `description` (+ per-locale
-`description*` columns), `sortOrder`, `visible` and `showOnHome`. A category with
-no artwork falls back to a *neutral* placeholder — never another category's
-image. Which categories appear on the home page is `showOnHome`, not a slice.
+**How to apply:** products own `imageUrl`, `showOnHome` and `homeSortOrder`.
+The home page filters selected products, sorts by `homeSortOrder`, and renders
+at most four. Product names use `pickLocalizedName` with Turkish fallback.
+Categories still own `imageUrl`, descriptions, `sortOrder` and `visible` for
+category/catalog contexts; a category with no artwork falls back to a neutral
+placeholder, never another category's image.
 
 ## Legacy dental/GCP pages
 

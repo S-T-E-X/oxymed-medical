@@ -19,6 +19,8 @@ export interface ProductUpdate {
   imageUrl?: string | null;
   specs?: ProductSpec[];
   sortOrder?: number;
+  showOnHome?: boolean;
+  homeSortOrder?: number;
   published?: boolean;
   /** @nullable */
   pageSlug?: string | null;

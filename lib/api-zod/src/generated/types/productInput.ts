@@ -16,6 +16,8 @@ export interface ProductInput {
   imageUrl?: string;
   specs?: ProductSpec[];
   sortOrder?: number;
+  showOnHome?: boolean;
+  homeSortOrder?: number;
   published?: boolean;
   pageSlug?: string;
   pageData?: PageData;

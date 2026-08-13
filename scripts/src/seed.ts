@@ -92,6 +92,8 @@ async function seed() {
           { label: "Uzunluk", value: "1000 - 2000 mm" },
         ],
         sortOrder: 1,
+        showOnHome: true,
+        homeSortOrder: 1,
         published: true,
       },
       {
@@ -105,6 +107,8 @@ async function seed() {
           { label: "Dönüş Açısı", value: "340°" },
         ],
         sortOrder: 2,
+        showOnHome: true,
+        homeSortOrder: 2,
         published: true,
       },
       {
@@ -118,6 +122,8 @@ async function seed() {
           { label: "Çıkış", value: "Röle + RS485" },
         ],
         sortOrder: 3,
+        showOnHome: true,
+        homeSortOrder: 3,
         published: true,
       },
       {
@@ -131,6 +137,8 @@ async function seed() {
           { label: "Montaj", value: "Duvar / Kolona" },
         ],
         sortOrder: 4,
+        showOnHome: true,
+        homeSortOrder: 4,
         published: true,
       },
     ])

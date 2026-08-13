@@ -25,10 +25,10 @@
     }
   },
   "productGroups": {
-    "eyebrow": "MƏHSUL QRUPLARIMIZ",
+    "eyebrow": "SEÇİLMİŞ MƏHSULLAR",
     "title": "Qabaqcıl Texnologiya, Üstün Performans",
-    "description": "Xəstəxanalar, klinikalar və səhiyyə mərkəzləri üçün inkişaf etdirdiyimiz innovativ məhsul qrupları ilə məkanları daha təhlükəsiz və səmərəli edirik.",
-    "loadError": "Məhsul qrupları yüklənərkən xəta baş verdi.",
+    "description": "Seçilmiş məhsullarımız xəstəxanalar, klinikalar və səhiyyə mərkəzləri üçün təhlükəsiz və səmərəli həllər təqdim edir.",
+    "loadError": "Məhsullar yüklənərkən xəta baş verdi.",
     "fallbackDescription": "Tibbi avadanlıq və həllərimiz."
   },
   "stats": {

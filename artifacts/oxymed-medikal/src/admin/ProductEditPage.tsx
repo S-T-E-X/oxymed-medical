@@ -50,6 +50,8 @@ type ProductEditForm = {
   imageUrl: string;
   categoryId: number | null;
   sortOrder: number;
+  showOnHome: boolean;
+  homeSortOrder: number;
   published: boolean;
   pageSlug: string;
   specs: SpecRow[];
@@ -88,6 +90,8 @@ const EMPTY_FORM: ProductEditForm = {
   imageUrl: "",
   categoryId: null,
   sortOrder: 0,
+  showOnHome: false,
+  homeSortOrder: 0,
   published: true,
   pageSlug: "",
   specs: [],
@@ -129,6 +133,8 @@ function productToForm(p: Product): ProductEditForm {
     imageUrl: p.imageUrl ?? "",
     categoryId: p.categoryId ?? null,
     sortOrder: p.sortOrder,
+    showOnHome: p.showOnHome === true,
+    homeSortOrder: p.homeSortOrder ?? 0,
     published: p.published,
     pageSlug: p.pageSlug ?? "",
     specs: (p.specs ?? []) as SpecRow[],
@@ -355,6 +361,8 @@ export default function ProductEditPage() {
       imageUrl: form.imageUrl || undefined,
       categoryId: form.categoryId ?? undefined,
       sortOrder: form.sortOrder,
+      showOnHome: form.showOnHome,
+      homeSortOrder: form.homeSortOrder,
       published: form.published,
       pageSlug: form.pageSlug || undefined,
       specs: form.specs.filter((s) => s.label && s.value),
@@ -555,10 +563,27 @@ export default function ProductEditPage() {
                 <label className="label">Sıra</label>
                 <input type="number" className="input" value={form.sortOrder} onChange={(e) => set("sortOrder", Number(e.target.value))} />
               </div>
+              <div>
+                <label className="label">Ana sayfa sırası</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="input"
+                  value={form.homeSortOrder}
+                  onChange={(e) => set("homeSortOrder", Number(e.target.value))}
+                  disabled={!form.showOnHome}
+                />
+              </div>
               <div className="flex items-end pb-1">
                 <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
                   <input type="checkbox" checked={form.published} onChange={(e) => set("published", e.target.checked)} className="h-4 w-4 rounded" />
                   Yayınla
+                </label>
+              </div>
+              <div className="flex items-end pb-1">
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={form.showOnHome} onChange={(e) => set("showOnHome", e.target.checked)} className="h-4 w-4 rounded" />
+                  Ana sayfada göster
                 </label>
               </div>
             </div>

@@ -1,27 +1,24 @@
 import { AlertCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useListProductCategories } from "@workspace/api-client-react";
+import { useListProducts } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
-import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 import { pickLocalizedName } from "../../i18n/pickLocalizedName";
 
-/**
- * Shown when a category has no artwork of its own. Deliberately neutral: a
- * category must never borrow another category's image, because that silently
- * mislabels the card.
- */
 const FALLBACK_IMAGE = "/assets/images/hero-medical-suite.png";
 
 export default function ProductGroups() {
-  const { data: categories = [], isLoading, isError } = useListProductCategories();
+  const { data, isLoading, isError } = useListProducts({
+    published: true,
+    limit: 50,
+  });
   const { t, locale } = useI18n();
-  const path = useLocalizedPath();
-  const productsHref = path("products");
 
-  // Which categories appear here, in what order, and with what image and blurb
-  // is entirely the admin's choice — no positional assumptions and no silent
-  // cap, so ticking "Ana sayfada gösterilsin" always shows the category.
-  const displayed = categories.filter((cat) => cat.showOnHome !== false);
+  // The home page is a curated product shelf, not a category list. The API
+  // returns all public products; only the four admin-selected rows are shown.
+  const displayed = (data?.items ?? [])
+    .filter((product) => product.showOnHome === true)
+    .sort((a, b) => (a.homeSortOrder ?? 0) - (b.homeSortOrder ?? 0) || a.id - b.id)
+    .slice(0, 4);
 
   return (
     <section id="urunler" className="bg-white py-20 sm:py-24 lg:py-28">
@@ -47,30 +44,30 @@ export default function ProductGroups() {
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="h-72 animate-pulse rounded-lg bg-steel-100" />
                 ))
-              : displayed.map((cat) => {
-                  const name = pickLocalizedName(cat, "name", locale);
-                  // Falls back to the Turkish blurb, then to a generic line, so
-                  // an untranslated category still reads as a real card.
-                  const description =
-                    pickLocalizedName(cat, "description", locale) ||
-                    t("home.productGroups.fallbackDescription");
+              : displayed.map((product) => {
+                  const name = pickLocalizedName(product, "title", locale);
+                  const href = product.pageSlug
+                    ? `/urunler/${product.pageSlug}`
+                    : `/urunler/${product.id}`;
                   return (
                     <article
-                      key={cat.id}
+                      key={product.id}
                       className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_8px_24px_rgba(2,20,35,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_35px_rgba(2,20,35,0.08)]"
                     >
                       <div className="aspect-[1.35] overflow-hidden bg-steel-100">
                         <img
-                          src={cat.imageUrl || FALLBACK_IMAGE}
+                          src={product.imageUrl || FALLBACK_IMAGE}
                           alt={name}
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
                         />
                       </div>
                       <div className="p-6">
                         <h3 className="text-base font-extrabold text-oxynavy-950">{name.toUpperCase()}</h3>
-                        <p className="mt-4 min-h-[72px] text-sm leading-6 text-steel-700">{description}</p>
+                        <p className="mt-4 min-h-[72px] text-sm leading-6 text-steel-700">
+                          {product.description || t("home.productGroups.fallbackDescription")}
+                        </p>
                         <Link
-                          to={`${productsHref}?category=${cat.id}`}
+                          to={href}
                           className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-oxynavy-900 transition hover:text-oxynavy-500"
                         >
                           {t("common.cta.reviewDetails")}

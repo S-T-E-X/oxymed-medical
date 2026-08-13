@@ -31,6 +31,10 @@ export const productsTable = pgTable("products", {
   imageUrl: text("image_url"),
   specs: jsonb("specs").$type<Array<{ label: string; value: string }>>().default([]),
   sortOrder: integer("sort_order").notNull().default(0),
+  /** Whether this product is one of the four curated home-page cards. */
+  showOnHome: boolean("show_on_home").notNull().default(false),
+  /** Independent order for the curated home-page cards. */
+  homeSortOrder: integer("home_sort_order").notNull().default(0),
   published: boolean("published").notNull().default(true),
   pageSlug: text("page_slug"),
   pageData: jsonb("page_data").$type<PageData>().default({}),
