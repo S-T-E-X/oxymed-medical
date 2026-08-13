@@ -37,11 +37,7 @@
     "allDescription": "Medizinische Lösungen für Krankenhäuser, Kliniken und Gesundheitszentren.",
     "categoryDescription": "Unsere Produkte der Kategorie {{category}}.",
     "counter": "{{count}} Produkte",
-    "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten. Bitte aktualisieren Sie die Seite."
-  },
-  "dentalCards": {
-    "amalgam-separator": "Amalgamabscheider",
-    "dental-vakum-pompasi": "Dental-Vakuumpumpe",
-    "dental-vakum-sistemi": "Dental-Vakuumsystem"
+    "loadError": "Beim Laden der Produkte ist ein Fehler aufgetreten. Bitte aktualisieren Sie die Seite.",
+    "empty": "In dieser Kategorie sind noch keine Produkte vorhanden."
   }
 }

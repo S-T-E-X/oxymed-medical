@@ -29,13 +29,7 @@
     "title": "Fortschrittliche Technologie, höchste Leistung",
     "description": "Mit unseren innovativen Produktgruppen für Krankenhäuser, Kliniken und Gesundheitszentren gestalten wir Umgebungen sicherer und effizienter.",
     "loadError": "Beim Laden der Produktgruppen ist ein Fehler aufgetreten.",
-    "fallbackDescription": "Unsere medizinischen Geräte und Lösungen.",
-    "descriptions": [
-      "Sichere und komfortable Lösungen mit Strom-, Medizin-, Gas- und Dateneinheiten.",
-      "Flexible Pendantsysteme für OP, Intensivstation und Notaufnahme.",
-      "Sauerstoff-, Vakuum-, Druckluft-, AGS- und Stickstoffgassysteme.",
-      "Unterbrechungsfreie Kommunikation mit Strom-, Schwachstrom- und Datensystemen."
-    ]
+    "fallbackDescription": "Unsere medizinischen Geräte und Lösungen."
   },
   "stats": {
     "eyebrow": "WARUM OXYMED?",

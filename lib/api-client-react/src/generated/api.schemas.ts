@@ -458,6 +458,30 @@ export interface ProductCategory {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
+  visible?: boolean;
+  showOnHome?: boolean;
+  /** @nullable */
+  descriptionEn?: string | null;
+  /** @nullable */
+  descriptionDe?: string | null;
+  /** @nullable */
+  descriptionFr?: string | null;
+  /** @nullable */
+  descriptionIt?: string | null;
+  /** @nullable */
+  descriptionAr?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionFa?: string | null;
+  /** @nullable */
+  descriptionKa?: string | null;
+  /** @nullable */
+  descriptionBg?: string | null;
+  /** @nullable */
+  descriptionAz?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -477,6 +501,19 @@ export interface ProductCategoryInput {
   nameKa?: string;
   nameBg?: string;
   nameAz?: string;
+  imageUrl?: string;
+  visible?: boolean;
+  showOnHome?: boolean;
+  descriptionEn?: string;
+  descriptionDe?: string;
+  descriptionFr?: string;
+  descriptionIt?: string;
+  descriptionAr?: string;
+  descriptionRu?: string;
+  descriptionFa?: string;
+  descriptionKa?: string;
+  descriptionBg?: string;
+  descriptionAz?: string;
 }
 
 export interface ProductCategoryUpdate {
@@ -505,6 +542,30 @@ export interface ProductCategoryUpdate {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
+  visible?: boolean;
+  showOnHome?: boolean;
+  /** @nullable */
+  descriptionEn?: string | null;
+  /** @nullable */
+  descriptionDe?: string | null;
+  /** @nullable */
+  descriptionFr?: string | null;
+  /** @nullable */
+  descriptionIt?: string | null;
+  /** @nullable */
+  descriptionAr?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionFa?: string | null;
+  /** @nullable */
+  descriptionKa?: string | null;
+  /** @nullable */
+  descriptionBg?: string | null;
+  /** @nullable */
+  descriptionAz?: string | null;
 }
 
 export interface ProductSpec {

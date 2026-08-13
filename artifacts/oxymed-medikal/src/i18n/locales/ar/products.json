@@ -37,11 +37,7 @@
     "allDescription": "حلول طبية طورناها للمستشفيات والعيادات والمراكز الصحية.",
     "categoryDescription": "منتجاتنا ضمن فئة {{category}}.",
     "counter": "{{count}} منتج",
-    "loadError": "حدث خطأ أثناء تحميل المنتجات. يرجى تحديث الصفحة."
-  },
-  "dentalCards": {
-    "amalgam-separator": "فاصل الأملغم",
-    "dental-vakum-pompasi": "مضخة تفريغ للأسنان",
-    "dental-vakum-sistemi": "نظام تفريغ للأسنان"
+    "loadError": "حدث خطأ أثناء تحميل المنتجات. يرجى تحديث الصفحة.",
+    "empty": "لا توجد منتجات في هذه الفئة حتى الآن."
   }
 }

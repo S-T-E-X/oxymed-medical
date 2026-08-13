@@ -33,6 +33,30 @@ export interface ProductCategory {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
+  visible?: boolean;
+  showOnHome?: boolean;
+  /** @nullable */
+  descriptionEn?: string | null;
+  /** @nullable */
+  descriptionDe?: string | null;
+  /** @nullable */
+  descriptionFr?: string | null;
+  /** @nullable */
+  descriptionIt?: string | null;
+  /** @nullable */
+  descriptionAr?: string | null;
+  /** @nullable */
+  descriptionRu?: string | null;
+  /** @nullable */
+  descriptionFa?: string | null;
+  /** @nullable */
+  descriptionKa?: string | null;
+  /** @nullable */
+  descriptionBg?: string | null;
+  /** @nullable */
+  descriptionAz?: string | null;
   createdAt: string;
   updatedAt: string;
 }

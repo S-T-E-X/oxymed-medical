@@ -29,13 +29,7 @@
     "title": "Tecnologia Avanzata, Prestazioni Superiori",
     "description": "Con le innovative categorie di prodotti sviluppate per ospedali, cliniche e centri sanitari, rendiamo gli ambienti più sicuri ed efficienti.",
     "loadError": "Si è verificato un errore durante il caricamento delle categorie di prodotti.",
-    "fallbackDescription": "Le nostre apparecchiature e soluzioni medicali.",
-    "descriptions": [
-      "Soluzioni sicure e confortevoli con unità elettriche, di gas medicali e dati.",
-      "Soluzioni pensili flessibili per sale operatorie, terapie intensive e pronto soccorso.",
-      "Sistemi di ossigeno, vuoto, aria, AGS e azoto.",
-      "Comunicazione ininterrotta con sistemi elettrici, a corrente debole e dati."
-    ]
+    "fallbackDescription": "Le nostre apparecchiature e soluzioni medicali."
   },
   "stats": {
     "eyebrow": "PERCHÉ OXYMED?",

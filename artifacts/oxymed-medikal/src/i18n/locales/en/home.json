@@ -29,13 +29,7 @@
     "title": "Advanced Technology, Superior Performance",
     "description": "With our innovative product groups developed for hospitals, clinics and healthcare centers, we make care environments safer and more efficient.",
     "loadError": "An error occurred while loading product groups.",
-    "fallbackDescription": "Our medical equipment and solutions.",
-    "descriptions": [
-      "Safe and comfortable solutions with electrical, medical gas and data units.",
-      "Flexible pendant solutions for operating rooms, intensive care and emergency units.",
-      "Oxygen, vacuum, air, AGS and nitrogen gas systems.",
-      "Uninterrupted communication with electrical, low-current and data systems."
-    ]
+    "fallbackDescription": "Our medical equipment and solutions."
   },
   "stats": {
     "eyebrow": "WHY OXYMED?",

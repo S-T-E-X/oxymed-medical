@@ -96,8 +96,6 @@ function ProductsContent() {
     published: true,
     limit: 50,
   });
-  const { data: rawSettings } = useListSettings();
-  const settingsMap = (rawSettings as Record<string, string> | undefined) ?? {};
   const products = productsData?.items ?? [];
 
   // The API only knows Turkish slugs. Product pages that have a translated
@@ -196,35 +194,11 @@ function ProductsContent() {
                     <div key={product.id}>{card}</div>
                   );
                 })}
-                {!selectedCategoryId && ([
-                  { slug: "amalgam-separator", settingKey: "ams_card_image" },
-                  { slug: "dental-vakum-pompasi", settingKey: "dvp_card_image" },
-                  { slug: "dental-vakum-sistemi", settingKey: "dvs_card_image" },
-                ] as const).map(({ slug, settingKey }) => ({
-                  slug,
-                  settingKey,
-                  title: t(`products.dentalCards.${slug}`),
-                })).map((p) => (
-                  <Link
-                    key={p.slug}
-                    to={productHref(p.slug)}
-                    className="block"
-                    onClick={() => trackInteraction(`Ürün: ${p.title}`)}
-                  >
-                    <article className="group overflow-hidden rounded-lg border border-steel-100 bg-white shadow-[0_12px_30px_rgba(2,20,35,0.07)] transition hover:shadow-[0_16px_40px_rgba(2,20,35,0.13)] cursor-pointer">
-                      <div className="aspect-[4/3] overflow-hidden bg-steel-100">
-                        <img
-                          src={settingsMap[p.settingKey] || "/assets/images/product-bed-head-unit.png"}
-                          alt={p.title}
-                          className="h-full w-full object-cover transition group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="p-3">
-                        <h3 className="text-sm font-bold text-oxynavy-950">{p.title}</h3>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
+                {products.length === 0 && (
+                  <p className="col-span-full rounded-lg border border-steel-100 bg-white px-5 py-8 text-center text-sm text-steel-600">
+                    {t("products.results.empty")}
+                  </p>
+                )}
               </div>
             )}
           </div>

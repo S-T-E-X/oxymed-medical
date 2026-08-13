@@ -3,6 +3,7 @@ import DentalProductAdminPage, { type DentalProductConfig } from "./DentalProduc
 const config: DentalProductConfig = {
   heading: "Amalgam Separatörü Sayfası",
   prefix: "ams",
+  pageSlug: "amalgam-separator",
   defaultHero: {
     eyebrow: "OXYMED MEDİKAL",
     title: "AMALGAM SEPARATÖRÜ",

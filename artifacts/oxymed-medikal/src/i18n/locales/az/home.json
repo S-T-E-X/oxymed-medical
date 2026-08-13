@@ -29,13 +29,7 @@
     "title": "Qabaqcıl Texnologiya, Üstün Performans",
     "description": "Xəstəxanalar, klinikalar və səhiyyə mərkəzləri üçün inkişaf etdirdiyimiz innovativ məhsul qrupları ilə məkanları daha təhlükəsiz və səmərəli edirik.",
     "loadError": "Məhsul qrupları yüklənərkən xəta baş verdi.",
-    "fallbackDescription": "Tibbi avadanlıq və həllərimiz.",
-    "descriptions": [
-      "Elektrik, tibbi qaz və data blokları ilə təhlükəsiz və komfortlu həllər.",
-      "Əməliyyatxana, intensiv terapiya və təcili yardım bölmələri üçün çevik pendant həlləri.",
-      "Oksigen, vakuum, hava, AGS və azot qaz sistemləri.",
-      "Elektrik, zəif cərəyan və data sistemləri ilə fasiləsiz rabitə."
-    ]
+    "fallbackDescription": "Tibbi avadanlıq və həllərimiz."
   },
   "stats": {
     "eyebrow": "NİYƏ OXYMED?",

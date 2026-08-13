@@ -21,4 +21,17 @@ export interface ProductCategoryInput {
   nameKa?: string;
   nameBg?: string;
   nameAz?: string;
+  imageUrl?: string;
+  visible?: boolean;
+  showOnHome?: boolean;
+  descriptionEn?: string;
+  descriptionDe?: string;
+  descriptionFr?: string;
+  descriptionIt?: string;
+  descriptionAr?: string;
+  descriptionRu?: string;
+  descriptionFa?: string;
+  descriptionKa?: string;
+  descriptionBg?: string;
+  descriptionAz?: string;
 }

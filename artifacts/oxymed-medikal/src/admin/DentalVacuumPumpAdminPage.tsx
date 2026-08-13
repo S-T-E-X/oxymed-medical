@@ -3,6 +3,7 @@ import DentalProductAdminPage, { type DentalProductConfig } from "./DentalProduc
 const config: DentalProductConfig = {
   heading: "Dental Vakum Pompası Sayfası",
   prefix: "dvp",
+  pageSlug: "dental-vakum-pompasi",
   defaultHero: {
     eyebrow: "OXY-DVP SERIES",
     title: "DENTAL VAKUM POMPASI",

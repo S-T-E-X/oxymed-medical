@@ -29,13 +29,7 @@
     "title": "Technologie avancée, performance supérieure",
     "description": "Avec nos gammes de produits innovantes développées pour les hôpitaux, cliniques et centres de santé, nous rendons les espaces de soins plus sûrs et plus performants.",
     "loadError": "Une erreur est survenue lors du chargement des groupes de produits.",
-    "fallbackDescription": "Nos équipements et solutions médicales.",
-    "descriptions": [
-      "Des solutions sûres et confortables avec unités électriques, de gaz médicaux et de données.",
-      "Des solutions de bras plafonniers flexibles pour les salles d’opération, les soins intensifs et les urgences.",
-      "Systèmes de distribution d’oxygène, de vide, d’air, d’AGS et d’azote.",
-      "Communication ininterrompue grâce aux systèmes électriques, de courants faibles et de données."
-    ]
+    "fallbackDescription": "Nos équipements et solutions médicales."
   },
   "stats": {
     "eyebrow": "POURQUOI OXYMED ?",

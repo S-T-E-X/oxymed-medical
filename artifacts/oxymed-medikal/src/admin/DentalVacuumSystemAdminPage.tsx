@@ -3,6 +3,7 @@ import DentalProductAdminPage, { type DentalProductConfig } from "./DentalProduc
 const config: DentalProductConfig = {
   heading: "Dental Vakum Sistemi Sayfası",
   prefix: "dvs",
+  pageSlug: "dental-vakum-sistemi",
   defaultHero: {
     eyebrow: "OXY-DVS SERIES",
     title: "DENTAL VAKUM SİSTEMİ",

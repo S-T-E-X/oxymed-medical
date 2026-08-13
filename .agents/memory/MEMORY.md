@@ -11,4 +11,5 @@
 - [Translation dictionaries](i18n-dictionaries.md) — TR is hand-authored source, others generated; DB-sourced copy (sliders/categories/products) is NOT covered by static dicts.
 - [Slider i18n columns](slider-i18n.md) — slider text fields are now per-locale columns (title_en, subtitle_de, etc.); 50 columns added; Hero picks locale col with TR fallback via pickSliderText().
 - [Product i18n columns](product-i18n.md) — product title and category name now have per-locale cols; pickLocalizedName() helper; admin modal/grid for editing; openapi.yaml + api.schemas.ts both updated manually.
+- [Product & category cards](product-category-cards.md) — cards come from DB rows; no positional image/description arrays, no hardcoded cards; hiding a category hides its products.
 - [News multilingual model](news-i18n.md) — news uses row-per-language (not per-locale columns); untranslated languages fail closed; article hreflang/switcher must come from API alternates, never the locale list.

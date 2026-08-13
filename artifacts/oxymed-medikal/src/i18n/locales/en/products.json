@@ -37,11 +37,7 @@
     "allDescription": "Medical solutions developed for hospitals, clinics and healthcare centers.",
     "categoryDescription": "Our products in the {{category}} category.",
     "counter": "{{count}} products",
-    "loadError": "An error occurred while loading products. Please refresh the page."
-  },
-  "dentalCards": {
-    "amalgam-separator": "Amalgam Separator",
-    "dental-vakum-pompasi": "Dental Vacuum Pump",
-    "dental-vakum-sistemi": "Dental Vacuum System"
+    "loadError": "An error occurred while loading products. Please refresh the page.",
+    "empty": "There are no products in this category yet."
   }
 }

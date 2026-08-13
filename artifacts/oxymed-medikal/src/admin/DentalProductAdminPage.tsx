@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { useListSettings, useUpsertSetting } from "@workspace/api-client-react";
+import { Link } from "react-router-dom";
+import { useGetProductBySlug, useListSettings, useUpsertSetting } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Save, Upload, X } from "lucide-react";
+import { Save, Settings, Upload, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 
 export type DentalProductConfig = {
   heading: string;
   prefix: string;
+  /** Slug of the matching product row, whose catalog card is edited elsewhere. */
+  pageSlug: string;
   defaultHero: { eyebrow: string; title: string; desc1: string; desc2: string };
   galleryCount: number;
   galleryLabel: string;
@@ -293,30 +296,30 @@ function DrawingSection({ prefix, settings }: { prefix: string; settings: Settin
   );
 }
 
-function CardImageSection({ prefix, settings }: { prefix: string; settings: SettingsMap }) {
-  const p = prefix;
-  const [image, setImage] = useState(settings[`${p}_card_image`] ?? "");
-  const [dirty, setDirty] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const upsertMut = useUpsertSetting();
-
-  useEffect(() => { setImage(settings[`${p}_card_image`] ?? ""); setDirty(false); }, [settings[`${p}_card_image`]]);
-
-  async function handleSave() {
-    setSaving(true);
-    try {
-      await upsertMut.mutateAsync({ settingKey: `${p}_card_image`, data: { settingValue: image } });
-      toast.success("Kart görseli kaydedildi");
-      setDirty(false);
-    } catch { toast.error("Kayıt başarısız"); }
-    finally { setSaving(false); }
-  }
+/**
+ * The catalog card (image, title, category, order, translations) now lives on
+ * the product row itself, so it is edited from Ürün Yönetimi. Editing it here
+ * too would write to a setting nothing reads any more.
+ */
+function CardImageNotice({ pageSlug }: { pageSlug: string }) {
+  const { data: product } = useGetProductBySlug(pageSlug);
 
   return (
-    <Section title="Ürünler Sayfası Kart Görseli" onSave={handleSave} dirty={dirty} saving={saving}>
-      <p className="text-[11px] text-slate-500">Bu görsel, <code className="rounded bg-slate-100 px-1">/urunler</code> sayfasındaki ürün kartında ve admin panelinde küçük resim olarak gösterilir.</p>
-      <ImageField label="Kart Görseli" settingKey={`${p}_card_image`} value={image} onChange={(v) => { setImage(v); setDirty(true); }} hint="Önerilen: 600 × 450 px" />
-    </Section>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-bold text-slate-900">Ürünler Sayfası Kartı</h2>
+      <p className="mt-1 text-[12px] text-slate-500">
+        Bu ürünün <code className="rounded bg-slate-100 px-1">/urunler</code> sayfasındaki kart görseli, adı,
+        kategorisi, sırası ve çevirileri artık Ürün Yönetimi ekranından düzenleniyor. Bu sayfa yalnızca ürün
+        detay sayfasının içeriğini yönetir.
+      </p>
+      <Link
+        to={product ? `/admin/products/${product.id}` : "/admin/products"}
+        className="mt-3 inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+      >
+        <Settings className="h-4 w-4" />
+        Kart ayarlarını aç
+      </Link>
+    </div>
   );
 }
 
@@ -340,7 +343,7 @@ export default function DentalProductAdminPage({ config }: { config: DentalProdu
         <p className="mt-1 text-sm text-slate-500">Sayfa içeriğini, görsellerini ve teknik özelliklerini düzenleyin</p>
       </div>
       <div className="space-y-6">
-        <CardImageSection prefix={config.prefix} settings={settings} />
+        <CardImageNotice pageSlug={config.pageSlug} />
         <HeroSection prefix={config.prefix} defaults={config.defaultHero} settings={settings} />
         <GallerySection prefix={config.prefix} count={config.galleryCount} label={config.galleryLabel} settings={settings} />
         <SpecsSection prefix={config.prefix} defaults={config.defaultSpecs} settings={settings} />

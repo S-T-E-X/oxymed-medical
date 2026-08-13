@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request } from "express";
 import { db, productsTable, productCategoriesTable } from "@workspace/db";
-import { eq, asc, count, and } from "drizzle-orm";
+import { eq, asc, count, and, or, isNull, notInArray } from "drizzle-orm";
 import { requireAuth, verifyToken } from "../lib/auth";
 import { z } from "zod/v4";
 
@@ -44,8 +44,11 @@ const PrivateDataSchema = z.object({
 const ProductCategoryBody = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
-  description: z.string().optional(),
+  description: z.string().optional().nullable(),
   sortOrder: z.coerce.number().int().optional(),
+  imageUrl: z.string().optional().nullable(),
+  visible: z.boolean().optional(),
+  showOnHome: z.boolean().optional(),
   // Locale-specific names
   nameEn: z.string().optional().nullable(),
   nameDe: z.string().optional().nullable(),
@@ -57,6 +60,17 @@ const ProductCategoryBody = z.object({
   nameKa: z.string().optional().nullable(),
   nameBg: z.string().optional().nullable(),
   nameAz: z.string().optional().nullable(),
+  // Locale-specific descriptions
+  descriptionEn: z.string().optional().nullable(),
+  descriptionDe: z.string().optional().nullable(),
+  descriptionFr: z.string().optional().nullable(),
+  descriptionIt: z.string().optional().nullable(),
+  descriptionAr: z.string().optional().nullable(),
+  descriptionRu: z.string().optional().nullable(),
+  descriptionFa: z.string().optional().nullable(),
+  descriptionKa: z.string().optional().nullable(),
+  descriptionBg: z.string().optional().nullable(),
+  descriptionAz: z.string().optional().nullable(),
 });
 
 const ProductBody = z.object({
@@ -94,8 +108,18 @@ function parseId(raw: string | string[]): number {
 }
 
 // ---- Categories ----
-router.get("/product-categories", async (_req, res): Promise<void> => {
-  const rows = await db.select().from(productCategoriesTable).orderBy(asc(productCategoriesTable.sortOrder));
+// Visitors only ever see visible categories; the admin panel needs the full
+// list to be able to unhide one, so hidden rows are gated on a valid token.
+router.get("/product-categories", async (req, res): Promise<void> => {
+  const isAdmin = checkIsAdmin(req);
+  const rows = await db
+    .select()
+    .from(productCategoriesTable)
+    .where(isAdmin ? undefined : eq(productCategoriesTable.visible, true))
+    .orderBy(asc(productCategoriesTable.sortOrder), asc(productCategoriesTable.id));
+  // The response differs by credential, so shared caches must not reuse an
+  // admin response for an anonymous visitor.
+  res.setHeader("Vary", "Authorization");
   res.json(rows);
 });
 
@@ -151,9 +175,31 @@ router.get("/products", async (req, res): Promise<void> => {
     const pub = publishedStr === "true";
     conditions.push(eq(productsTable.published, pub));
   }
+  const isAdmin = checkIsAdmin(req);
+
+  if (!isAdmin) {
+    // Hiding a category must also hide the products inside it, otherwise they
+    // stay reachable through the unfiltered catalog. Uncategorised products
+    // are unaffected.
+    const hidden = await db
+      .select({ id: productCategoriesTable.id })
+      .from(productCategoriesTable)
+      .where(eq(productCategoriesTable.visible, false));
+    const hiddenIds = hidden.map((c) => c.id);
+    if (hiddenIds.length > 0) {
+      conditions.push(
+        or(isNull(productsTable.categoryId), notInArray(productsTable.categoryId, hiddenIds))!,
+      );
+    }
+  }
+
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  let query = db.select().from(productsTable).orderBy(asc(productsTable.sortOrder)).$dynamic();
+  let query = db
+    .select()
+    .from(productsTable)
+    .orderBy(asc(productsTable.sortOrder), asc(productsTable.id))
+    .$dynamic();
   let countQuery = db.select({ count: count() }).from(productsTable).$dynamic();
 
   if (whereClause) {
@@ -166,8 +212,10 @@ router.get("/products", async (req, res): Promise<void> => {
     countQuery,
   ]);
 
-  const isAdmin = checkIsAdmin(req);
   const items = isAdmin ? rows : rows.map(stripPrivate);
+  // Hidden-category filtering and privateData stripping both depend on the
+  // caller's credentials, so shared caches must not mix the two responses.
+  res.setHeader("Vary", "Authorization");
   res.json({ items, total: totalRow?.count ?? 0 });
 });
 

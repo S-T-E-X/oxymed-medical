@@ -29,13 +29,7 @@
     "title": "İleri Teknoloji, Üstün Performans",
     "description": "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz yenilikçi ürün gruplarıyla yaşam alanlarını daha güvenli ve verimli hale getiriyoruz.",
     "loadError": "Ürün grupları yüklenirken bir hata oluştu.",
-    "fallbackDescription": "Medikal ekipman ve çözümlerimiz.",
-    "descriptions": [
-      "Elektrik, medikal gaz ve data üniteleri ile güvenli ve konforlu çözümler.",
-      "Ameliyathane, yoğun bakım ve acil üniteler için esnek pendant çözümleri.",
-      "Oksijen, vakum, hava, AGS ve azot gaz sistemleri.",
-      "Elektrik, zayıf akım ve data sistemleri ile kesintisiz iletişim."
-    ]
+    "fallbackDescription": "Medikal ekipman ve çözümlerimiz."
   },
   "stats": {
     "eyebrow": "NEDEN OXYMED?",

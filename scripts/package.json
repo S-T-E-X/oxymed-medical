@@ -9,7 +9,8 @@
     "cleanup-visitor-events": "tsx ./src/cleanup-visitor-events.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "translate-i18n": "tsx ./src/translate-i18n.ts",
-    "gen-sitemap": "tsx ./src/gen-sitemap.ts"
+    "gen-sitemap": "tsx ./src/gen-sitemap.ts",
+    "migrate-product-cards": "tsx ./src/migrate-product-cards.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",

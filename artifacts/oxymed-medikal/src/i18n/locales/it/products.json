@@ -37,11 +37,7 @@
     "allDescription": "Soluzioni medicali sviluppate per ospedali, cliniche e centri sanitari.",
     "categoryDescription": "I nostri prodotti nella categoria {{category}}.",
     "counter": "{{count}} prodotti",
-    "loadError": "Si è verificato un errore durante il caricamento dei prodotti. Aggiorna la pagina."
-  },
-  "dentalCards": {
-    "amalgam-separator": "Separatore di amalgama",
-    "dental-vakum-pompasi": "Pompa per vuoto dentale",
-    "dental-vakum-sistemi": "Sistema di aspirazione dentale"
+    "loadError": "Si è verificato un errore durante il caricamento dei prodotti. Aggiorna la pagina.",
+    "empty": "In questa categoria non ci sono ancora prodotti."
   }
 }

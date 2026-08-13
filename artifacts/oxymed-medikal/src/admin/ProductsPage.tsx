@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getListProductCategoriesQueryKey,
@@ -9,60 +9,111 @@ import {
   useDeleteProductCategory,
   useListProductCategories,
   useListProducts,
-  useListSettings,
   useUpdateProductCategory,
   type ProductCategory,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Edit2, ImageIcon, Plus, Settings, Trash2, X } from "lucide-react";
+import { Edit2, EyeOff, ImageIcon, Plus, Settings, Trash2, Upload, X } from "lucide-react";
+import { useImageUpload } from "./useImageUpload";
 
-const LOCALE_LABELS: { code: string; label: string; field: string }[] = [
-  { code: "en", label: "English", field: "nameEn" },
-  { code: "de", label: "Deutsch", field: "nameDe" },
-  { code: "fr", label: "Français", field: "nameFr" },
-  { code: "it", label: "Italiano", field: "nameIt" },
-  { code: "ar", label: "العربية", field: "nameAr" },
-  { code: "ru", label: "Русский", field: "nameRu" },
-  { code: "fa", label: "فارسی", field: "nameFa" },
-  { code: "ka", label: "ქართული", field: "nameKa" },
-  { code: "bg", label: "Български", field: "nameBg" },
-  { code: "az", label: "Azərbaycan", field: "nameAz" },
+const LOCALE_LABELS: { code: string; label: string; nameField: string; descField: string }[] = [
+  { code: "en", label: "English", nameField: "nameEn", descField: "descriptionEn" },
+  { code: "de", label: "Deutsch", nameField: "nameDe", descField: "descriptionDe" },
+  { code: "fr", label: "Français", nameField: "nameFr", descField: "descriptionFr" },
+  { code: "it", label: "Italiano", nameField: "nameIt", descField: "descriptionIt" },
+  { code: "ar", label: "العربية", nameField: "nameAr", descField: "descriptionAr" },
+  { code: "ru", label: "Русский", nameField: "nameRu", descField: "descriptionRu" },
+  { code: "fa", label: "فارسی", nameField: "nameFa", descField: "descriptionFa" },
+  { code: "ka", label: "ქართული", nameField: "nameKa", descField: "descriptionKa" },
+  { code: "bg", label: "Български", nameField: "nameBg", descField: "descriptionBg" },
+  { code: "az", label: "Azərbaycan", nameField: "nameAz", descField: "descriptionAz" },
 ];
 
-type LocaleNames = Record<string, string>;
+type CategoryFields = Record<string, string | number | boolean | null>;
+
+/** Empty strings must clear a column, not store "" — hence the null. */
+function trimmedOrNull(value: string | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+function slugify(value: string): string {
+  const map: Record<string, string> = { ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u", İ: "i" };
+  return value
+    .toLowerCase()
+    .replace(/[çğıöşüİ]/g, (ch) => map[ch] ?? ch)
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 interface CategoryEditModalProps {
   category: ProductCategory;
   onClose: () => void;
-  onSave: (data: { name: string; slug: string } & LocaleNames) => void;
+  onSave: (data: CategoryFields) => void;
   isPending: boolean;
 }
 
 function CategoryEditModal({ category, onClose, onSave, isPending }: CategoryEditModalProps) {
+  const record = category as unknown as Record<string, string | number | boolean | null>;
   const [name, setName] = useState(category.name);
-  const [localeNames, setLocaleNames] = useState<LocaleNames>(() => {
-    const init: LocaleNames = {};
+  const [description, setDescription] = useState(category.description ?? "");
+  const [imageUrl, setImageUrl] = useState(category.imageUrl ?? "");
+  const [sortOrder, setSortOrder] = useState<number>(category.sortOrder ?? 0);
+  const [visible, setVisible] = useState(category.visible !== false);
+  const [showOnHome, setShowOnHome] = useState(category.showOnHome !== false);
+  const [fields, setFields] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
     for (const lc of LOCALE_LABELS) {
-      init[lc.field] = ((category as unknown as Record<string, string | null>)[lc.field] ?? "") as string;
+      init[lc.nameField] = (record[lc.nameField] as string | null) ?? "";
+      init[lc.descField] = (record[lc.descField] as string | null) ?? "";
     }
     return init;
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadFile, uploading } = useImageUpload();
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const result = await uploadFile(file);
+      setImageUrl(result.publicUrl);
+      toast.success("Görsel yüklendi");
+    } catch {
+      toast.error("Görsel yüklenemedi");
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
 
   function handleSave() {
     if (!name.trim()) return;
-    const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    const localeData: LocaleNames = {};
+    // The slug is part of public URLs, so an existing one is never rewritten
+    // just because the display name changed.
+    const slug = category.slug || slugify(name);
+    const localeData: CategoryFields = {};
     for (const lc of LOCALE_LABELS) {
-      const val = localeNames[lc.field]?.trim();
-      localeData[lc.field] = val || null as unknown as string;
+      localeData[lc.nameField] = trimmedOrNull(fields[lc.nameField]);
+      localeData[lc.descField] = trimmedOrNull(fields[lc.descField]);
     }
-    onSave({ name: name.trim(), slug, ...localeData });
+    onSave({
+      name: name.trim(),
+      slug,
+      description: trimmedOrNull(description),
+      imageUrl: trimmedOrNull(imageUrl),
+      sortOrder,
+      visible,
+      showOnHome,
+      ...localeData,
+    });
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl"
+        className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -72,27 +123,100 @@ function CategoryEditModal({ category, onClose, onSave, isPending }: CategoryEdi
           </button>
         </div>
 
-        <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-bold text-slate-600 mb-1">Kategori Adı — Türkçe (zorunlu)</label>
+              <input
+                className="input w-full"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Kategori adı"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-600 mb-1">Sıra</label>
+              <input
+                type="number"
+                className="input w-full"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(Number(e.target.value))}
+              />
+              <p className="mt-1 text-[11px] text-slate-400">Küçük sayı önce gösterilir.</p>
+            </div>
+          </div>
+
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1">Türkçe (zorunlu)</label>
-            <input
-              className="input w-full"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Kategori adı"
-              autoFocus
+            <label className="block text-xs font-bold text-slate-600 mb-1">Kart Açıklaması — Türkçe</label>
+            <textarea
+              className="input min-h-[70px] w-full resize-y text-sm"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Ana sayfadaki kategori kartında görünen kısa açıklama"
             />
           </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 space-y-2">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Diğer Diller (boş bırakılırsa Türkçe gösterilir)</p>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-600 mb-1">Kart Görseli</label>
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt={name}
+                className="mb-2 h-32 w-full rounded-lg border border-slate-200 object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            )}
+            <div className="flex gap-2">
+              <input
+                className="input flex-1 text-sm"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://…"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+              >
+                <Upload className="h-4 w-4" />
+                {uploading ? "Yükleniyor…" : "Yükle"}
+              </button>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400">Boş bırakılırsa varsayılan görsel kullanılır. Önerilen: 600 × 450 px</p>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
+              <input type="checkbox" checked={visible} onChange={(e) => setVisible(e.target.checked)} />
+              Sitede görünsün
+            </label>
+            <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
+              <input type="checkbox" checked={showOnHome} onChange={(e) => setShowOnHome(e.target.checked)} />
+              Ana sayfada gösterilsin
+            </label>
+          </div>
+
+          <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 space-y-3">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+              Diğer Diller (boş bırakılırsa Türkçe gösterilir)
+            </p>
             {LOCALE_LABELS.map((lc) => (
-              <div key={lc.code}>
-                <label className="block text-xs font-semibold text-slate-500 mb-0.5">{lc.label}</label>
+              <div key={lc.code} className="rounded-lg bg-white p-2.5">
+                <p className="mb-1.5 text-xs font-bold text-slate-600">{lc.label}</p>
                 <input
-                  className="input w-full text-sm"
-                  value={localeNames[lc.field] ?? ""}
-                  onChange={(e) => setLocaleNames((prev) => ({ ...prev, [lc.field]: e.target.value }))}
-                  placeholder={`${lc.label} adı`}
+                  className="input mb-1.5 w-full text-sm"
+                  value={fields[lc.nameField] ?? ""}
+                  onChange={(e) => setFields((prev) => ({ ...prev, [lc.nameField]: e.target.value }))}
+                  placeholder={`${lc.label} kategori adı`}
+                />
+                <textarea
+                  className="input min-h-[52px] w-full resize-y text-sm"
+                  value={fields[lc.descField] ?? ""}
+                  onChange={(e) => setFields((prev) => ({ ...prev, [lc.descField]: e.target.value }))}
+                  placeholder={`${lc.label} kart açıklaması`}
                 />
               </div>
             ))}
@@ -116,8 +240,6 @@ export default function ProductsPage() {
   const { data: categories = [] } = useListProductCategories();
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const { data: productsData, isLoading } = useListProducts({ categoryId: selectedCategory, limit: 50 });
-  const { data: rawSettings } = useListSettings();
-  const settingsMap = (rawSettings as Record<string, string> | undefined) ?? {};
   const products = productsData?.items ?? [];
 
   const [catName, setCatName] = useState("");
@@ -131,7 +253,7 @@ export default function ProductsPage() {
   const deleteCatMut = useDeleteProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori silindi"); invalidateCat(); }, onError: () => toast.error("Silme başarısız") } });
   const updateCatMut = useUpdateProductCategory({ mutation: { onSuccess: () => { toast.success("Kategori güncellendi"); invalidateCat(); setEditCat(null); }, onError: () => toast.error("Güncelleme başarısız") } });
 
-  function handleSaveCat(data: { name: string; slug: string } & LocaleNames) {
+  function handleSaveCat(data: CategoryFields) {
     if (!editCat) return;
     updateCatMut.mutate({ id: editCat.id, data });
   }
@@ -146,8 +268,15 @@ export default function ProductsPage() {
 
   function addCat() {
     if (!catName.trim()) return;
-    const slug = catName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    createCatMut.mutate({ data: { name: catName.trim(), slug } });
+    const slug = slugify(catName);
+    if (!slug) {
+      toast.error("Kategori adından geçerli bir adres oluşturulamadı");
+      return;
+    }
+    // New categories land at the end rather than colliding on sortOrder 0,
+    // which would otherwise reshuffle the existing card order.
+    const nextSort = categories.reduce((max, c) => Math.max(max, c.sortOrder ?? 0), 0) + 1;
+    createCatMut.mutate({ data: { name: catName.trim(), slug, sortOrder: nextSort } });
   }
 
   return (
@@ -172,12 +301,24 @@ export default function ProductsPage() {
       </div>
 
       <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-bold text-slate-900">Kategoriler</h2>
+        <h2 className="mb-1 text-sm font-bold text-slate-900">Kategoriler</h2>
+        <p className="mb-4 text-xs text-slate-500">
+          Sıralama, görsel, açıklama ve çevirileri düzenlemek için kalem simgesine tıklayın. Kategoriler sıra numarasına göre listelenir.
+        </p>
         <div className="flex flex-wrap gap-2">
           {categories.map((c: ProductCategory) => (
-            <div key={c.id} className="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-3 pr-1.5 py-1 text-sm font-semibold text-slate-700">
+            <div
+              key={c.id}
+              className={`flex items-center gap-1 rounded-full border py-1 pl-3 pr-1.5 text-sm font-semibold ${
+                c.visible === false
+                  ? "border-slate-200 bg-slate-100 text-slate-400"
+                  : "border-slate-200 bg-slate-50 text-slate-700"
+              }`}
+            >
+              <span className="mr-0.5 font-mono text-[10px] text-slate-400">{c.sortOrder ?? 0}</span>
               {c.name}
-              <button onClick={() => setEditCat(c)} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-blue-100 hover:text-blue-500" title="Çeviri dahil düzenle">
+              {c.visible === false && <EyeOff className="h-3 w-3 text-slate-400" aria-label="Sitede gizli" />}
+              <button onClick={() => setEditCat(c)} className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-blue-100 hover:text-blue-500" title="Sıra, görsel, açıklama ve çevirileri düzenle">
                 <Edit2 className="h-2.5 w-2.5" />
               </button>
               <button onClick={() => handleDeleteCat(c.id)} className="flex h-5 w-5 items-center justify-center rounded-full text-slate-400 hover:bg-red-100 hover:text-red-500">
@@ -266,48 +407,13 @@ export default function ProductsPage() {
                   </td>
                 </tr>
               ))}
-              {([
-                { slug: "amalgam-separator", title: "Amalgam Separatörü", adminPath: "/admin/urunler/amalgam-separator", category: "Diş Kliniği", imgKey: "ams_card_image" },
-                { slug: "dental-vakum-pompasi", title: "Dental Vakum Pompası", adminPath: "/admin/urunler/dental-vakum-pompasi", category: "Diş Kliniği", imgKey: "dvp_card_image" },
-                { slug: "dental-vakum-sistemi", title: "Dental Vakum Sistemi", adminPath: "/admin/urunler/dental-vakum-sistemi", category: "Diş Kliniği", imgKey: "dvs_card_image" },
-                { slug: "kat-kontrol-panosu", title: "3 Gazlı Kat Kontrol Panosu", adminPath: "/admin/urunler/kat-kontrol-panosu", category: "Medikal Gaz", imgKey: "gcp_card_image" },
-              ] as const).map((p) => {
-                const cardImg = settingsMap[p.imgKey];
-                return (
-                  <tr key={p.slug} className="hover:bg-slate-50">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        {cardImg ? (
-                          <img src={cardImg} alt={p.title} className="h-[180px] w-[180px] shrink-0 rounded-lg object-cover bg-slate-50" />
-                        ) : (
-                          <div className="flex h-[180px] w-[180px] shrink-0 items-center justify-center rounded-lg bg-slate-100">
-                            <ImageIcon className="h-8 w-8 text-slate-300" />
-                          </div>
-                        )}
-                        <p className="font-semibold text-slate-900">{p.title}</p>
-                      </div>
-                    </td>
-                    <td className="hidden px-4 py-3 text-sm text-slate-500 sm:table-cell">{p.category}</td>
-                    <td className="hidden px-4 py-3 md:table-cell">
-                      <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">{p.slug}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">Yayında</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
-                        <Link
-                          to={p.adminPath}
-                          className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
-                        >
-                          <Settings className="h-3.5 w-3.5" />
-                          Ayarlar
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {products.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-10 text-center text-sm text-slate-500">
+                    {selectedCategory ? "Bu kategoride ürün yok." : "Henüz ürün eklenmemiş."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

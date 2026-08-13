@@ -37,11 +37,7 @@
     "allDescription": "Hastaneler, klinikler ve sağlık merkezleri için geliştirdiğimiz medikal çözümler.",
     "categoryDescription": "{{category}} kategorisindeki ürünlerimiz.",
     "counter": "{{count}} ürün",
-    "loadError": "Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
-  },
-  "dentalCards": {
-    "amalgam-separator": "Amalgam Separatörü",
-    "dental-vakum-pompasi": "Dental Vakum Pompası",
-    "dental-vakum-sistemi": "Dental Vakum Sistemi"
+    "loadError": "Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.",
+    "empty": "Bu kategoride henüz ürün bulunmuyor."
   }
 }

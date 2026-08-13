@@ -639,6 +639,19 @@ export const ListProductCategoriesResponseItem = zod.object({
   "nameKa": zod.string().nullish(),
   "nameBg": zod.string().nullish(),
   "nameAz": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "visible": zod.boolean().optional(),
+  "showOnHome": zod.boolean().optional(),
+  "descriptionEn": zod.string().nullish(),
+  "descriptionDe": zod.string().nullish(),
+  "descriptionFr": zod.string().nullish(),
+  "descriptionIt": zod.string().nullish(),
+  "descriptionAr": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionFa": zod.string().nullish(),
+  "descriptionKa": zod.string().nullish(),
+  "descriptionBg": zod.string().nullish(),
+  "descriptionAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -662,7 +675,20 @@ export const CreateProductCategoryBody = zod.object({
   "nameFa": zod.string().optional(),
   "nameKa": zod.string().optional(),
   "nameBg": zod.string().optional(),
-  "nameAz": zod.string().optional()
+  "nameAz": zod.string().optional(),
+  "imageUrl": zod.string().optional(),
+  "visible": zod.boolean().optional(),
+  "showOnHome": zod.boolean().optional(),
+  "descriptionEn": zod.string().optional(),
+  "descriptionDe": zod.string().optional(),
+  "descriptionFr": zod.string().optional(),
+  "descriptionIt": zod.string().optional(),
+  "descriptionAr": zod.string().optional(),
+  "descriptionRu": zod.string().optional(),
+  "descriptionFa": zod.string().optional(),
+  "descriptionKa": zod.string().optional(),
+  "descriptionBg": zod.string().optional(),
+  "descriptionAz": zod.string().optional()
 })
 
 
@@ -687,7 +713,20 @@ export const UpdateProductCategoryBody = zod.object({
   "nameFa": zod.string().nullish(),
   "nameKa": zod.string().nullish(),
   "nameBg": zod.string().nullish(),
-  "nameAz": zod.string().nullish()
+  "nameAz": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "visible": zod.boolean().optional(),
+  "showOnHome": zod.boolean().optional(),
+  "descriptionEn": zod.string().nullish(),
+  "descriptionDe": zod.string().nullish(),
+  "descriptionFr": zod.string().nullish(),
+  "descriptionIt": zod.string().nullish(),
+  "descriptionAr": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionFa": zod.string().nullish(),
+  "descriptionKa": zod.string().nullish(),
+  "descriptionBg": zod.string().nullish(),
+  "descriptionAz": zod.string().nullish()
 })
 
 export const UpdateProductCategoryResponse = zod.object({
@@ -706,6 +745,19 @@ export const UpdateProductCategoryResponse = zod.object({
   "nameKa": zod.string().nullish(),
   "nameBg": zod.string().nullish(),
   "nameAz": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "visible": zod.boolean().optional(),
+  "showOnHome": zod.boolean().optional(),
+  "descriptionEn": zod.string().nullish(),
+  "descriptionDe": zod.string().nullish(),
+  "descriptionFr": zod.string().nullish(),
+  "descriptionIt": zod.string().nullish(),
+  "descriptionAr": zod.string().nullish(),
+  "descriptionRu": zod.string().nullish(),
+  "descriptionFa": zod.string().nullish(),
+  "descriptionKa": zod.string().nullish(),
+  "descriptionBg": zod.string().nullish(),
+  "descriptionAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
