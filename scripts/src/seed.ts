@@ -219,22 +219,20 @@ async function seed() {
     .values([
       {
         sectionKey: "about",
-        title: "Hakkımızda",
-        subtitle: "2009'dan Bu Yana",
-        content: "Oxymed Medikal, 2009 yılında İzmir'de kurulmuş, medikal gaz sistemleri, yatak başı üniteleri ve pendant sistemleri alanında Türkiye'nin önde gelen yerli üreticilerinden biridir.",
-        imageUrl: "/assets/images/corporate-production-floor.png",
-      },
-      {
-        sectionKey: "vision",
-        title: "Vizyonumuz",
-        subtitle: "Geleceğe Bakışımız",
-        content: "Medikal ekipman sektöründe küresel ölçekte tanınan, inovasyonu ve kaliteyi merkeze alan öncü bir Türk markası olmak.",
-      },
-      {
-        sectionKey: "mission",
-        title: "Misyonumuz",
-        subtitle: "Temel Değerlerimiz",
-        content: "Sağlık kuruluşlarına güvenli, kaliteli ve ekonomik medikal altyapı çözümleri sunmak; satış öncesi ve sonrası kesintisiz teknik destek ile müşteri memnuniyetini her zaman ön planda tutmak.",
+        title: "Sağlık İçin Güvenilir Sistemler",
+        subtitle: "",
+        content: `1999 yılında kurulan firmamız, medikal gaz sistemleri ve tıbbi cihazların üretimi, satışı, projelendirilmesi ve uygulaması alanlarında faaliyet göstermektedir. Kurulduğumuz günden bu yana sağlık sektörünün ihtiyaçlarını doğru analiz eden, güvenilir ve sürdürülebilir çözümler geliştiren bir anlayışla çalışmalarımızı sürdürmekteyiz.
+
+Faaliyetlerimizin ilk yıllarından itibaren üretimini gerçekleştirdiğimiz medikal gaz sistemi ekipmanları ve hayata geçirdiğimiz sağlık tesisi projeleriyle kalite, güvenilirlik ve teknik yeterlilik konularında sektörde güçlü bir konum elde ettik. Hastaneler, klinikler ve çeşitli sağlık kuruluşlarında tamamladığımız uygulamalar sayesinde markamız, yüksek ürün kalitesi ve mühendislik yaklaşımıyla anılan bir yapıya kavuşmuştur.
+
+Yıllar içerisinde üretim ve proje faaliyetlerimizin yanı sıra ithalat ve ihracat alanlarında da faaliyet göstererek hizmet ağımızı genişlettik. Ulusal ve uluslararası pazarlarda geliştirdiğimiz iş birlikleriyle ürün ve çözümlerimizi farklı coğrafyalardaki sağlık projelerine ulaştırmaya devam ediyoruz.
+
+Teknik bilgi birikimimiz, deneyimli ekibimiz ve yıllar içerisinde başarıyla tamamladığımız projeler, bugün sahip olduğumuz mühendislik gücünün temelini oluşturmaktadır. Üretimden projelendirmeye, montajdan devreye almaya, satış sonrası teknik destekten periyodik bakım hizmetlerine kadar tüm süreçlerde kalite ve sürekliliği ön planda tutuyoruz.
+
+Amacımız; geçmişten gelen tecrübemizi günümüz teknolojileriyle birleştirerek sağlık sektörüne güvenilir, verimli ve uzun ömürlü çözümler sunmaktır. Sürekli gelişimi esas alan yaklaşımımızla ürün kalitemizi, mühendislik kabiliyetimizi ve hizmet standartlarımızı her geçen gün daha ileriye taşımayı hedefliyoruz.
+
+25 yılı aşkın tecrübemizle, sağlık tesisleri için güvenilir sistemler geliştiriyor; iş ortaklarımıza yalnızca ürün değil, uzun vadeli çözüm ortaklığı sunuyoruz.`,
+        imageUrl: "/assets/images/corporate-hero-facility.png",
       },
     ])
     .onConflictDoNothing();

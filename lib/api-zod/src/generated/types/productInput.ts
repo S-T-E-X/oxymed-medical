@@ -26,4 +26,14 @@ export interface ProductInput {
   quoteImageUrl?: string;
   quoteUnit?: string;
   quoteUnitPrice?: string;
+  titleEn?: string;
+  titleDe?: string;
+  titleFr?: string;
+  titleIt?: string;
+  titleAr?: string;
+  titleRu?: string;
+  titleFa?: string;
+  titleKa?: string;
+  titleBg?: string;
+  titleAz?: string;
 }

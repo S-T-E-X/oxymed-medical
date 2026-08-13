@@ -30,6 +30,8 @@ tags:
     description: Media library and file uploads
   - name: catalogs
     description: Product catalogs
+  - name: certificates
+    description: Corporate certificates
   - name: warranty
     description: Warranty and service management
   - name: production
@@ -258,6 +260,106 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Catalog"
+
+  # CERTIFICATES
+  /certificates:
+    get:
+      operationId: listCertificates
+      tags: [certificates]
+      summary: List active certificates
+      responses:
+        "200":
+          description: Certificate list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Certificate"
+    post:
+      operationId: createCertificate
+      tags: [certificates]
+      summary: Create a certificate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+
+  /admin/certificates:
+    get:
+      operationId: listAdminCertificates
+      tags: [certificates]
+      summary: List all certificates for administration
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Certificate list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Certificate"
+
+  /certificates/{id}:
+    patch:
+      operationId: updateCertificate
+      tags: [certificates]
+      summary: Update a certificate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteCertificate
+      tags: [certificates]
+      summary: Delete a certificate
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
 
   /catalogs/{id}:
     parameters:
@@ -2542,6 +2644,55 @@ components:
           type: ["string", "null"]
         pdfUrl:
           type: string
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    # CERTIFICATES
+    Certificate:
+      type: object
+      required: [id, title, fileUrl, sortOrder, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        fileUrl:
+          type: string
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    CertificateInput:
+      type: object
+      required: [title, fileUrl]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        fileUrl:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    CertificateUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        fileUrl:
+          type: string
+          minLength: 1
         sortOrder:
           type: integer
         isActive:

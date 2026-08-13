@@ -351,16 +351,6 @@ export default function ProductEditPage() {
     if (!form.title.trim()) { toast.error("Ürün adı zorunlu"); return; }
     const payload = {
       title: form.title,
-      titleEn: form.titleEn.trim() || null,
-      titleDe: form.titleDe.trim() || null,
-      titleFr: form.titleFr.trim() || null,
-      titleIt: form.titleIt.trim() || null,
-      titleAr: form.titleAr.trim() || null,
-      titleRu: form.titleRu.trim() || null,
-      titleFa: form.titleFa.trim() || null,
-      titleKa: form.titleKa.trim() || null,
-      titleBg: form.titleBg.trim() || null,
-      titleAz: form.titleAz.trim() || null,
       description: form.description || undefined,
       imageUrl: form.imageUrl || undefined,
       categoryId: form.categoryId ?? undefined,
@@ -391,9 +381,38 @@ export default function ProductEditPage() {
       quoteUnitPrice: form.quoteUnitPrice || undefined,
     };
     if (isNew) {
-      createMut.mutate({ data: payload });
+      createMut.mutate({
+        data: {
+          ...payload,
+          titleEn: form.titleEn.trim() || undefined,
+          titleDe: form.titleDe.trim() || undefined,
+          titleFr: form.titleFr.trim() || undefined,
+          titleIt: form.titleIt.trim() || undefined,
+          titleAr: form.titleAr.trim() || undefined,
+          titleRu: form.titleRu.trim() || undefined,
+          titleFa: form.titleFa.trim() || undefined,
+          titleKa: form.titleKa.trim() || undefined,
+          titleBg: form.titleBg.trim() || undefined,
+          titleAz: form.titleAz.trim() || undefined,
+        },
+      });
     } else {
-      updateMut.mutate({ id: productId, data: payload });
+      updateMut.mutate({
+        id: productId,
+        data: {
+          ...payload,
+          titleEn: form.titleEn.trim() || null,
+          titleDe: form.titleDe.trim() || null,
+          titleFr: form.titleFr.trim() || null,
+          titleIt: form.titleIt.trim() || null,
+          titleAr: form.titleAr.trim() || null,
+          titleRu: form.titleRu.trim() || null,
+          titleFa: form.titleFa.trim() || null,
+          titleKa: form.titleKa.trim() || null,
+          titleBg: form.titleBg.trim() || null,
+          titleAz: form.titleAz.trim() || null,
+        },
+      });
     }
   }
 

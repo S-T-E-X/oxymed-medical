@@ -18,6 +18,7 @@ import SettingsPage from "./admin/SettingsPage";
 import QuotesPage from "./admin/QuotesPage";
 import MediaPage from "./admin/MediaPage";
 import CatalogsPage from "./admin/CatalogsPage";
+import AdminCertificatesPage from "./admin/CertificatesPage";
 import ProductStockPage from "./admin/ProductStockPage";
 import MaterialStockPage from "./admin/MaterialStockPage";
 import QuoteFormsPage from "./admin/QuoteFormsPage";
@@ -43,6 +44,7 @@ import ServisCihazPage from "./pages/ServisCihazPage";
 import ServisRaporDogrulamaPage from "./pages/ServisRaporDogrulamaPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
 import CorporatePage from "./pages/CorporatePage";
+import CertificatesPage from "./pages/CertificatesPage";
 import HomePage from "./pages/HomePage";
 import NewsPage from "./pages/NewsPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
@@ -110,6 +112,7 @@ export default function App() {
           <Routes>
           {localizedRoutes()}
           <Route path="/kurumsal" element={<CorporatePage />} />
+           <Route path="/sertifikalar" element={<CertificatesPage />} />
           <Route path="/referanslar" element={<ReferencesPage />} />
           <Route path="/haberler" element={<NewsPage />} />
           <Route path="/haberler/:slug" element={<NewsDetailPage />} />
@@ -142,6 +145,7 @@ export default function App() {
             <Route path="haberler" element={<AdminNewsPage />} />
             <Route path="referanslar" element={<AdminReferencesPage />} />
             <Route path="kurumsal" element={<AdminCorporatePage />} />
+            <Route path="sertifikalar" element={<AdminCertificatesPage />} />
             <Route path="ayarlar" element={<SettingsPage />} />
             <Route path="teklifler" element={<QuotesPage />} />
             <Route path="medya" element={<MediaPage />} />

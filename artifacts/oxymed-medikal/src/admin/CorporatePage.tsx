@@ -13,12 +13,20 @@ import { useImageUpload } from "./useImageUpload";
 
 const SECTION_LABELS: Record<string, string> = {
   about: "Hakkımızda",
-  mission: "Misyon",
-  vision: "Vizyon",
-  values: "Değerlerimiz",
-  history: "Tarihçemiz",
-  team: "Ekibimiz",
 };
+
+const DEFAULT_ABOUT_TITLE = "Sağlık İçin Güvenilir Sistemler";
+const DEFAULT_ABOUT_CONTENT = `1999 yılında kurulan firmamız, medikal gaz sistemleri ve tıbbi cihazların üretimi, satışı, projelendirilmesi ve uygulaması alanlarında faaliyet göstermektedir. Kurulduğumuz günden bu yana sağlık sektörünün ihtiyaçlarını doğru analiz eden, güvenilir ve sürdürülebilir çözümler geliştiren bir anlayışla çalışmalarımızı sürdürmekteyiz.
+
+Faaliyetlerimizin ilk yıllarından itibaren üretimini gerçekleştirdiğimiz medikal gaz sistemi ekipmanları ve hayata geçirdiğimiz sağlık tesisi projeleriyle kalite, güvenilirlik ve teknik yeterlilik konularında sektörde güçlü bir konum elde ettik. Hastaneler, klinikler ve çeşitli sağlık kuruluşlarında tamamladığımız uygulamalar sayesinde markamız, yüksek ürün kalitesi ve mühendislik yaklaşımıyla anılan bir yapıya kavuşmuştur.
+
+Yıllar içerisinde üretim ve proje faaliyetlerimizin yanı sıra ithalat ve ihracat alanlarında da faaliyet göstererek hizmet ağımızı genişlettik. Ulusal ve uluslararası pazarlarda geliştirdiğimiz iş birlikleriyle ürün ve çözümlerimizi farklı coğrafyalardaki sağlık projelerine ulaştırmaya devam ediyoruz.
+
+Teknik bilgi birikimimiz, deneyimli ekibimiz ve yıllar içerisinde başarıyla tamamladığımız projeler, bugün sahip olduğumuz mühendislik gücünün temelini oluşturmaktadır. Üretimden projelendirmeye, montajdan devreye almaya, satış sonrası teknik destekten periyodik bakım hizmetlerine kadar tüm süreçlerde kalite ve sürekliliği ön planda tutuyoruz.
+
+Amacımız; geçmişten gelen tecrübemizi günümüz teknolojileriyle birleştirerek sağlık sektörüne güvenilir, verimli ve uzun ömürlü çözümler sunmaktır. Sürekli gelişimi esas alan yaklaşımımızla ürün kalitemizi, mühendislik kabiliyetimizi ve hizmet standartlarımızı her geçen gün daha ileriye taşımayı hedefliyoruz.
+
+25 yılı aşkın tecrübemizle, sağlık tesisleri için güvenilir sistemler geliştiriyor; iş ortaklarımıza yalnızca ürün değil, uzun vadeli çözüm ortaklığı sunuyoruz.`;
 
 type SectionForm = {
   title: string;
@@ -82,7 +90,7 @@ function SectionCard({ sectionKey, initialData }: { sectionKey: string; initialD
   }
 
   const label = SECTION_LABELS[sectionKey] ?? sectionKey;
-  const showImage = ["about"].includes(sectionKey);
+  const showImage = false;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -336,15 +344,17 @@ export default function CorporatePage() {
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
 
-  const KNOWN_KEYS = ["about", "mission", "vision", "values", "history", "team"];
-  const allKeys = [...new Set([...KNOWN_KEYS, ...sections.map((s) => s.sectionKey)])];
+  // Kurumsal sayfasında yalnızca "Hakkımızda" bölümü yayınlanıyor.
+  // Yönetim panelinde de sadece bu bölüm düzenlenebilir olmalı ki
+  // yöneticinin gördüğü içerik ziyaretçinin gördüğüyle birebir aynı olsun.
+  const EDITABLE_KEYS = ["about"];
   const sectionMap = Object.fromEntries(sections.map((s) => [s.sectionKey, s]));
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-950">Kurumsal İçerik</h1>
-        <p className="mt-1 text-sm text-slate-500">Kurumsal sayfa hero banner, hakkımızda, misyon, vizyon ve değerler bölümlerini düzenleyin</p>
+        <p className="mt-1 text-sm text-slate-500">Kurumsal sayfa hero banner, istatistikler ve hakkımızda bölümünü düzenleyin</p>
       </div>
 
       <div className="space-y-8">
@@ -369,18 +379,22 @@ export default function CorporatePage() {
         </div>
 
         <div>
-          <h2 className="mb-3 text-xs font-extrabold uppercase tracking-widest text-slate-400">Hakkımızda Butonu</h2>
+          <h2 className="mb-3 text-xs font-extrabold uppercase tracking-widest text-slate-400">İstatistikler</h2>
           {settings !== undefined && (
             <SettingsSection
-              heading="CTA Butonu"
-              subheading="Hakkımızda bölümünün altındaki çağrı-aksiyon butonu"
+              heading="Kurumsal İstatistikler"
+              subheading="Kurumsal sayfasında gösterilen dört bilgi kartı"
               fields={[
-                { key: "corporate_about_button_text", label: "Buton Metni", placeholder: "Daha Fazla Bilgi" },
-                { key: "corporate_about_button_url", label: "Buton Bağlantısı", placeholder: "#kalite veya /kurumsal/..." },
+                { key: "corporate_years_experience", label: "Yıllık Tecrübe", placeholder: "15+" },
+                { key: "corporate_completed_projects", label: "Tamamlanan Proje", placeholder: "200+" },
+                { key: "corporate_expert_team", label: "Uzman Ekip", placeholder: "100+" },
+                { key: "corporate_export_countries", label: "Ülkeye İhracat", placeholder: "10+" },
               ]}
               initialValues={{
-                corporate_about_button_text: settings?.["corporate_about_button_text"] ?? "",
-                corporate_about_button_url: settings?.["corporate_about_button_url"] ?? "",
+                corporate_years_experience: settings?.["corporate_years_experience"] ?? "15+",
+                corporate_completed_projects: settings?.["corporate_completed_projects"] ?? "200+",
+                corporate_expert_team: settings?.["corporate_expert_team"] ?? "100+",
+                corporate_export_countries: settings?.["corporate_export_countries"] ?? "10+",
               }}
             />
           )}
@@ -394,16 +408,16 @@ export default function CorporatePage() {
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {allKeys.map((key) => {
+              {EDITABLE_KEYS.map((key) => {
                 const sec = sectionMap[key];
                 return (
                   <SectionCard
                     key={key}
                     sectionKey={key}
                     initialData={{
-                      title: sec?.title ?? "",
+                      title: sec?.title ?? (key === "about" ? DEFAULT_ABOUT_TITLE : ""),
                       subtitle: sec?.subtitle ?? "",
-                      content: sec?.content ?? "",
+                      content: sec?.content ?? (key === "about" ? DEFAULT_ABOUT_CONTENT : ""),
                       imageUrl: sec?.imageUrl ?? "",
                     }}
                   />

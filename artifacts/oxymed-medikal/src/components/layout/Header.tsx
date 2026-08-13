@@ -27,7 +27,9 @@ function isActivePath(currentPath: string, href: string) {
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [urunlerOpen, setUrunlerOpen] = useState(false);
+  const [corporateOpen, setCorporateOpen] = useState(false);
   const urunlerTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const corporateTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { pathname } = useLocation();
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
@@ -59,6 +61,15 @@ export default function Header() {
 
   function closeUrunler() {
     urunlerTimeout.current = setTimeout(() => setUrunlerOpen(false), 120);
+  }
+
+  function openCorporate() {
+    if (corporateTimeout.current) clearTimeout(corporateTimeout.current);
+    setCorporateOpen(true);
+  }
+
+  function closeCorporate() {
+    corporateTimeout.current = setTimeout(() => setCorporateOpen(false), 120);
   }
 
   return (
@@ -113,6 +124,36 @@ export default function Header() {
                 ? "border-oxynavy-900 text-oxynavy-950"
                 : "border-transparent text-oxynavy-950 hover:border-oxynavy-200 hover:text-oxynavy-500"
             }`;
+
+            if (item.dropdown === "corporate") {
+              return (
+                <div
+                  key={item.key}
+                  className="relative"
+                  onMouseEnter={openCorporate}
+                  onMouseLeave={closeCorporate}
+                >
+                  <Link to={href} className={baseClass}>
+                    {label}
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${corporateOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+                  </Link>
+                  {corporateOpen && (
+                    <div
+                      className="absolute start-0 top-full z-50 min-w-[210px] rounded-xl border border-steel-100 bg-white py-2 shadow-[0_14px_35px_rgba(2,20,35,0.12)]"
+                      onMouseEnter={openCorporate}
+                      onMouseLeave={closeCorporate}
+                    >
+                      <Link to="/kurumsal" className="flex px-4 py-2.5 text-[13px] font-bold text-oxynavy-950 hover:bg-steel-50" onClick={() => setCorporateOpen(false)}>
+                        Hakkımızda
+                      </Link>
+                      <Link to="/sertifikalar" className="flex px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950" onClick={() => setCorporateOpen(false)}>
+                        Sertifikalar
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              );
+            }
 
             if (item.dropdown === "categories") {
               return (
@@ -198,7 +239,18 @@ export default function Header() {
       {isOpen ? (
         <div className="absolute start-0 top-full w-full border-t border-steel-100 bg-white px-4 pb-6 shadow-[0_14px_35px_rgba(2,20,35,0.08)] lg:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col py-3" aria-label={t("common.nav.mobileMenu")}>
-            {navItems.map((item) => (
+            {navItems.map((item) => item.dropdown === "corporate" ? (
+              <div key={item.key} className="border-b border-steel-100">
+                <Link to="/kurumsal" className="flex items-center justify-between py-4 text-sm font-bold text-oxynavy-950" onClick={() => setIsOpen(false)}>
+                  {t(`common.nav.${item.key}`)}
+                  <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <div className="mb-3 space-y-1 border-s border-steel-200 ps-4">
+                  <Link to="/kurumsal" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>Hakkımızda</Link>
+                  <Link to="/sertifikalar" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>Sertifikalar</Link>
+                </div>
+              </div>
+            ) : (
               <Link
                 key={item.key}
                 to={hrefFor(item)}

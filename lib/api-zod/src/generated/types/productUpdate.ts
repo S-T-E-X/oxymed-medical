@@ -35,4 +35,24 @@ export interface ProductUpdate {
   quoteUnit?: string | null;
   /** @nullable */
   quoteUnitPrice?: string | null;
+  /** @nullable */
+  titleEn?: string | null;
+  /** @nullable */
+  titleDe?: string | null;
+  /** @nullable */
+  titleFr?: string | null;
+  /** @nullable */
+  titleIt?: string | null;
+  /** @nullable */
+  titleAr?: string | null;
+  /** @nullable */
+  titleRu?: string | null;
+  /** @nullable */
+  titleFa?: string | null;
+  /** @nullable */
+  titleKa?: string | null;
+  /** @nullable */
+  titleBg?: string | null;
+  /** @nullable */
+  titleAz?: string | null;
 }

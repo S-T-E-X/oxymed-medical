@@ -18,12 +18,12 @@ export type NavItemDef = {
   /** Route key for translated pages, or a raw href for Turkish-only pages. */
   route?: "home" | "products" | "service" | "quote";
   href?: string;
-  dropdown?: "categories";
+  dropdown?: "categories" | "corporate";
 };
 
 export const navItems: NavItemDef[] = [
   { key: "home", route: "home" },
-  { key: "corporate", href: "/kurumsal" },
+  { key: "corporate", href: "/kurumsal", dropdown: "corporate" },
   { key: "products", route: "products", dropdown: "categories" },
   { key: "references", href: "/referanslar" },
   { key: "news", href: "/haberler" },
@@ -44,7 +44,7 @@ export const footerColumns: FooterColumnDef[] = [
     key: "corporate",
     links: [
       { key: "about", href: "/kurumsal" },
-      { key: "vision", href: "/kurumsal#vizyon" },
+      { key: "vision", href: "/kurumsal" },
       { key: "quality", href: "/kurumsal#kalite" },
       { key: "hr", href: "/kurumsal#insan-kaynaklari" },
     ],

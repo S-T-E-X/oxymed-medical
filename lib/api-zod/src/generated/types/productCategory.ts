@@ -13,6 +13,26 @@ export interface ProductCategory {
   /** @nullable */
   description?: string | null;
   sortOrder: number;
+  /** @nullable */
+  nameEn?: string | null;
+  /** @nullable */
+  nameDe?: string | null;
+  /** @nullable */
+  nameFr?: string | null;
+  /** @nullable */
+  nameIt?: string | null;
+  /** @nullable */
+  nameAr?: string | null;
+  /** @nullable */
+  nameRu?: string | null;
+  /** @nullable */
+  nameFa?: string | null;
+  /** @nullable */
+  nameKa?: string | null;
+  /** @nullable */
+  nameBg?: string | null;
+  /** @nullable */
+  nameAz?: string | null;
   createdAt: string;
   updatedAt: string;
 }

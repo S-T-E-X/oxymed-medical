@@ -403,6 +403,34 @@ export interface CatalogUpdate {
   isActive?: boolean;
 }
 
+export interface Certificate {
+  id: number;
+  title: string;
+  fileUrl: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CertificateInput {
+  /** @minLength 1 */
+  title: string;
+  /** @minLength 1 */
+  fileUrl: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CertificateUpdate {
+  /** @minLength 1 */
+  title?: string;
+  /** @minLength 1 */
+  fileUrl?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
 export interface ProductCategory {
   id: number;
   name: string;
@@ -590,26 +618,16 @@ export interface ProductInput {
   quoteImageUrl?: string;
   quoteUnit?: string;
   quoteUnitPrice?: string;
-  /** @nullable */
-  titleEn?: string | null;
-  /** @nullable */
-  titleDe?: string | null;
-  /** @nullable */
-  titleFr?: string | null;
-  /** @nullable */
-  titleIt?: string | null;
-  /** @nullable */
-  titleAr?: string | null;
-  /** @nullable */
-  titleRu?: string | null;
-  /** @nullable */
-  titleFa?: string | null;
-  /** @nullable */
-  titleKa?: string | null;
-  /** @nullable */
-  titleBg?: string | null;
-  /** @nullable */
-  titleAz?: string | null;
+  titleEn?: string;
+  titleDe?: string;
+  titleFr?: string;
+  titleIt?: string;
+  titleAr?: string;
+  titleRu?: string;
+  titleFa?: string;
+  titleKa?: string;
+  titleBg?: string;
+  titleAz?: string;
 }
 
 export interface ProductUpdate {

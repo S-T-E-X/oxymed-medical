@@ -9,6 +9,7 @@ export * from "./corporateSections";
 export * from "./siteSettings";
 export * from "./mediaFiles";
 export * from "./catalogs";
+export * from "./certificates";
 export * from "./productStock";
 export * from "./materialStock";
 export * from "./quoteForms";

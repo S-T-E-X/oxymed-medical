@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import {
   Bell,
+  Award,
   BookOpen,
   Box,
   Building2,
@@ -43,6 +44,7 @@ const navItems = [
   { label: "Haberler", icon: Newspaper, to: "/admin/haberler" },
   { label: "Referanslar", icon: Wrench, to: "/admin/referanslar" },
   { label: "Kurumsal", icon: Building2, to: "/admin/kurumsal" },
+  { label: "Sertifikalar", icon: Award, to: "/admin/sertifikalar" },
   { label: "Medya", icon: Package, to: "/admin/medya" },
   { label: "Site Ayarları", icon: Settings, to: "/admin/ayarlar" },
   { label: "Kat Kontrol Panosu", icon: Gauge, to: "/admin/kat-kontrol-panosu" },

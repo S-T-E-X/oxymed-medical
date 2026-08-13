@@ -482,6 +482,88 @@ export const CreateCatalogBody = zod.object({
 
 
 /**
+ * @summary List active certificates
+ */
+export const ListCertificatesResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "fileUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListCertificatesResponse = zod.array(ListCertificatesResponseItem)
+
+
+/**
+ * @summary Create a certificate
+ */
+
+
+
+
+export const CreateCertificateBody = zod.object({
+  "title": zod.string().min(1),
+  "fileUrl": zod.string().min(1),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+
+/**
+ * @summary List all certificates for administration
+ */
+export const ListAdminCertificatesResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "fileUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListAdminCertificatesResponse = zod.array(ListAdminCertificatesResponseItem)
+
+
+/**
+ * @summary Update a certificate
+ */
+export const UpdateCertificateParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const UpdateCertificateBody = zod.object({
+  "title": zod.string().min(1).optional(),
+  "fileUrl": zod.string().min(1).optional(),
+  "sortOrder": zod.number().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateCertificateResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "fileUrl": zod.string(),
+  "sortOrder": zod.number(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a certificate
+ */
+export const DeleteCertificateParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
  * @summary Get catalog by id
  */
 export const GetCatalogParams = zod.object({
@@ -547,6 +629,16 @@ export const ListProductCategoriesResponseItem = zod.object({
   "slug": zod.string(),
   "description": zod.string().nullish(),
   "sortOrder": zod.number(),
+  "nameEn": zod.string().nullish(),
+  "nameDe": zod.string().nullish(),
+  "nameFr": zod.string().nullish(),
+  "nameIt": zod.string().nullish(),
+  "nameAr": zod.string().nullish(),
+  "nameRu": zod.string().nullish(),
+  "nameFa": zod.string().nullish(),
+  "nameKa": zod.string().nullish(),
+  "nameBg": zod.string().nullish(),
+  "nameAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -560,7 +652,17 @@ export const CreateProductCategoryBody = zod.object({
   "name": zod.string(),
   "slug": zod.string(),
   "description": zod.string().optional(),
-  "sortOrder": zod.number().optional()
+  "sortOrder": zod.number().optional(),
+  "nameEn": zod.string().optional(),
+  "nameDe": zod.string().optional(),
+  "nameFr": zod.string().optional(),
+  "nameIt": zod.string().optional(),
+  "nameAr": zod.string().optional(),
+  "nameRu": zod.string().optional(),
+  "nameFa": zod.string().optional(),
+  "nameKa": zod.string().optional(),
+  "nameBg": zod.string().optional(),
+  "nameAz": zod.string().optional()
 })
 
 
@@ -575,7 +677,17 @@ export const UpdateProductCategoryBody = zod.object({
   "name": zod.string().optional(),
   "slug": zod.string().optional(),
   "description": zod.string().nullish(),
-  "sortOrder": zod.number().optional()
+  "sortOrder": zod.number().optional(),
+  "nameEn": zod.string().nullish(),
+  "nameDe": zod.string().nullish(),
+  "nameFr": zod.string().nullish(),
+  "nameIt": zod.string().nullish(),
+  "nameAr": zod.string().nullish(),
+  "nameRu": zod.string().nullish(),
+  "nameFa": zod.string().nullish(),
+  "nameKa": zod.string().nullish(),
+  "nameBg": zod.string().nullish(),
+  "nameAz": zod.string().nullish()
 })
 
 export const UpdateProductCategoryResponse = zod.object({
@@ -584,6 +696,16 @@ export const UpdateProductCategoryResponse = zod.object({
   "slug": zod.string(),
   "description": zod.string().nullish(),
   "sortOrder": zod.number(),
+  "nameEn": zod.string().nullish(),
+  "nameDe": zod.string().nullish(),
+  "nameFr": zod.string().nullish(),
+  "nameIt": zod.string().nullish(),
+  "nameAr": zod.string().nullish(),
+  "nameRu": zod.string().nullish(),
+  "nameFa": zod.string().nullish(),
+  "nameKa": zod.string().nullish(),
+  "nameBg": zod.string().nullish(),
+  "nameAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -655,6 +777,16 @@ export const ListProductsResponse = zod.object({
   "quoteImageUrl": zod.string().nullish(),
   "quoteUnit": zod.string().nullish(),
   "quoteUnitPrice": zod.string().nullish(),
+  "titleEn": zod.string().nullish(),
+  "titleDe": zod.string().nullish(),
+  "titleFr": zod.string().nullish(),
+  "titleIt": zod.string().nullish(),
+  "titleAr": zod.string().nullish(),
+  "titleRu": zod.string().nullish(),
+  "titleFa": zod.string().nullish(),
+  "titleKa": zod.string().nullish(),
+  "titleBg": zod.string().nullish(),
+  "titleAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })),
@@ -710,7 +842,17 @@ export const CreateProductBody = zod.object({
   "quoteModelCode": zod.string().optional(),
   "quoteImageUrl": zod.string().optional(),
   "quoteUnit": zod.string().optional(),
-  "quoteUnitPrice": zod.string().optional()
+  "quoteUnitPrice": zod.string().optional(),
+  "titleEn": zod.string().optional(),
+  "titleDe": zod.string().optional(),
+  "titleFr": zod.string().optional(),
+  "titleIt": zod.string().optional(),
+  "titleAr": zod.string().optional(),
+  "titleRu": zod.string().optional(),
+  "titleFa": zod.string().optional(),
+  "titleKa": zod.string().optional(),
+  "titleBg": zod.string().optional(),
+  "titleAz": zod.string().optional()
 })
 
 
@@ -768,6 +910,16 @@ export const GetProductBySlugResponse = zod.object({
   "quoteImageUrl": zod.string().nullish(),
   "quoteUnit": zod.string().nullish(),
   "quoteUnitPrice": zod.string().nullish(),
+  "titleEn": zod.string().nullish(),
+  "titleDe": zod.string().nullish(),
+  "titleFr": zod.string().nullish(),
+  "titleIt": zod.string().nullish(),
+  "titleAr": zod.string().nullish(),
+  "titleRu": zod.string().nullish(),
+  "titleFa": zod.string().nullish(),
+  "titleKa": zod.string().nullish(),
+  "titleBg": zod.string().nullish(),
+  "titleAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -827,6 +979,16 @@ export const GetProductResponse = zod.object({
   "quoteImageUrl": zod.string().nullish(),
   "quoteUnit": zod.string().nullish(),
   "quoteUnitPrice": zod.string().nullish(),
+  "titleEn": zod.string().nullish(),
+  "titleDe": zod.string().nullish(),
+  "titleFr": zod.string().nullish(),
+  "titleIt": zod.string().nullish(),
+  "titleAr": zod.string().nullish(),
+  "titleRu": zod.string().nullish(),
+  "titleFa": zod.string().nullish(),
+  "titleKa": zod.string().nullish(),
+  "titleBg": zod.string().nullish(),
+  "titleAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -884,7 +1046,17 @@ export const UpdateProductBody = zod.object({
   "quoteModelCode": zod.string().nullish(),
   "quoteImageUrl": zod.string().nullish(),
   "quoteUnit": zod.string().nullish(),
-  "quoteUnitPrice": zod.string().nullish()
+  "quoteUnitPrice": zod.string().nullish(),
+  "titleEn": zod.string().nullish(),
+  "titleDe": zod.string().nullish(),
+  "titleFr": zod.string().nullish(),
+  "titleIt": zod.string().nullish(),
+  "titleAr": zod.string().nullish(),
+  "titleRu": zod.string().nullish(),
+  "titleFa": zod.string().nullish(),
+  "titleKa": zod.string().nullish(),
+  "titleBg": zod.string().nullish(),
+  "titleAz": zod.string().nullish()
 })
 
 export const UpdateProductResponse = zod.object({
@@ -934,6 +1106,16 @@ export const UpdateProductResponse = zod.object({
   "quoteImageUrl": zod.string().nullish(),
   "quoteUnit": zod.string().nullish(),
   "quoteUnitPrice": zod.string().nullish(),
+  "titleEn": zod.string().nullish(),
+  "titleDe": zod.string().nullish(),
+  "titleFr": zod.string().nullish(),
+  "titleIt": zod.string().nullish(),
+  "titleAr": zod.string().nullish(),
+  "titleRu": zod.string().nullish(),
+  "titleFa": zod.string().nullish(),
+  "titleKa": zod.string().nullish(),
+  "titleBg": zod.string().nullish(),
+  "titleAz": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

@@ -11,4 +11,14 @@ export interface ProductCategoryInput {
   slug: string;
   description?: string;
   sortOrder?: number;
+  nameEn?: string;
+  nameDe?: string;
+  nameFr?: string;
+  nameIt?: string;
+  nameAr?: string;
+  nameRu?: string;
+  nameFa?: string;
+  nameKa?: string;
+  nameBg?: string;
+  nameAz?: string;
 }
