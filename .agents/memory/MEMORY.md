@@ -13,3 +13,4 @@
 - [Product i18n columns](product-i18n.md) — product title and category name now have per-locale cols; pickLocalizedName() helper; admin modal/grid for editing; openapi.yaml + api.schemas.ts both updated manually.
 - [Product & category cards](product-category-cards.md) — cards come from DB rows; no positional image/description arrays, no hardcoded cards; hiding a category hides its products.
 - [News multilingual model](news-i18n.md) — news uses row-per-language (not per-locale columns); untranslated languages fail closed; article hreflang/switcher must come from API alternates, never the locale list.
+- [DB product page localization](db-product-page-localization.md) — generic pageData overlays and legacy settings must resolve by locale; never leak Turkish admin overrides into other URLs.

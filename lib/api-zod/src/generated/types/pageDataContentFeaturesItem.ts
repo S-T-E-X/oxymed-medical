@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type PageDataFaqItem = {
-  question?: string;
-  answer?: string;
+export type PageDataContentFeaturesItem = {
+  title?: string;
+  text?: string;
 };

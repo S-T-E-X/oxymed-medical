@@ -5,8 +5,6 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { PageDataContent } from './pageDataContent';
 
-export type PageDataFeaturesItem = {
-  title?: string;
-  text?: string;
-};
+export type PageDataLocales = {[key: string]: PageDataContent};

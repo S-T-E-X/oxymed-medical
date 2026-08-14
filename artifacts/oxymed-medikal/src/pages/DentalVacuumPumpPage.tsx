@@ -19,6 +19,7 @@ import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import { localizedSetting } from "../i18n/settingsI18n";
 import "./DentalVacuumPumpPage.css";
 
 const heroFeatureIcons = [ShieldCheck, VolumeX, BadgeCheck, Wrench];
@@ -36,16 +37,16 @@ export default function DentalVacuumPumpPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const { t, tv } = useI18n();
+  const { t, tv, locale } = useI18n();
   const path = useLocalizedPath();
 
   const { data: rawSettings } = useListSettings();
   const s = (rawSettings as Record<string, string> | undefined) ?? {};
 
-  const eyebrow = s["dvp_hero_eyebrow"] || t("dvp.hero.eyebrow");
-  const heroTitle = s["dvp_hero_title"];
-  const desc1 = s["dvp_hero_desc1"] || t("dvp.hero.desc1");
-  const desc2 = s["dvp_hero_desc2"] || t("dvp.hero.desc2");
+  const eyebrow = localizedSetting(s, "dvp_hero_eyebrow", locale, t("dvp.hero.eyebrow"));
+  const heroTitle = localizedSetting(s, "dvp_hero_title", locale, "");
+  const desc1 = localizedSetting(s, "dvp_hero_desc1", locale, t("dvp.hero.desc1"));
+  const desc2 = localizedSetting(s, "dvp_hero_desc2", locale, t("dvp.hero.desc2"));
   const heroImage = s["dvp_hero_image"];
   const heroMobileImage = s["dvp_hero_mobile_image"];
   const galleryImages = [0, 1, 2].map((i) => s[`dvp_img_${i}`]);
@@ -55,8 +56,9 @@ export default function DentalVacuumPumpPage() {
   const imageCards = tv<Array<{ title: string; text: string; ariaLabel: string }>>("dvp.imageCards", []);
   const specRows = tv<Array<[string, string]>>("dvp.specs.rows", []);
 
-  const displaySpecs: [string, string][] = s["dvp_specs_text"]
-    ? parseDvpSpecsText(s["dvp_specs_text"])
+  const specsText = localizedSetting(s, "dvp_specs_text", locale, "");
+  const displaySpecs: [string, string][] = specsText
+    ? parseDvpSpecsText(specsText)
     : (specRows as [string, string][]);
 
   const useCaseItems = tv<string[]>("dvp.useCases.items", []);

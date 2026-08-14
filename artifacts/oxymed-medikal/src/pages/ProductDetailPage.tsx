@@ -10,13 +10,28 @@ import {
   Settings,
   Sparkles,
 } from "lucide-react";
-import { useGetProduct, useGetProductBySlug, useListProductCategories } from "@workspace/api-client-react";
+import {
+  useGetProduct,
+  useGetProductBySlug,
+  useListProductCategories,
+  type PageData,
+  type PageDataContent,
+} from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { pickLocalizedName } from "../i18n/pickLocalizedName";
 import "./ProductDetailPage.css";
+
+function localizedPageData(pageData: PageData | undefined, locale: string): PageDataContent {
+  if (!pageData) return {};
+  const { locales, ...base } = pageData;
+  return {
+    ...base,
+    ...(locale === "tr" ? undefined : locales?.[locale]),
+  };
+}
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -65,13 +80,13 @@ export default function ProductDetailPage() {
     );
   }
 
-  const pd = product.pageData ?? {};
+  const pd = localizedPageData(product.pageData, locale);
   const category = categories.find((c) => c.id === product.categoryId);
   const localizedTitle = pickLocalizedName(product, "title", locale);
   const eyebrow = category ? pickLocalizedName(category, "name", locale) : t("products.detail.brand");
   const features = (pd.features ?? []).slice(0, 4);
   const detailCards = pd.detailCards ?? [];
-  const specs = product.specs ?? [];
+  const specs = pd.specs ?? product.specs ?? [];
   const useCases = pd.useCases ?? [];
   const advantages = pd.advantages ?? [];
   const featureTiles = pd.featureTiles ?? [];

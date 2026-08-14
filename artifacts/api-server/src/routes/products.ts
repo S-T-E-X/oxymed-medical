@@ -24,7 +24,7 @@ function stripPrivate(p: ProductRow): Omit<ProductRow, "privateData"> & { privat
 
 const ProductSpecSchema = z.object({ label: z.string(), value: z.string() });
 
-const PageDataSchema = z.object({
+const PageDataContentSchema = z.object({
   heroSubtitle: z.string().optional(),
   heroDescription: z.string().optional(),
   features: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
@@ -33,6 +33,11 @@ const PageDataSchema = z.object({
   advantages: z.array(z.string()).optional(),
   featureTiles: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
   faq: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
+  specs: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+});
+
+const PageDataSchema = PageDataContentSchema.extend({
+  locales: z.record(z.string(), PageDataContentSchema).optional(),
 });
 
 const PrivateDataSchema = z.object({

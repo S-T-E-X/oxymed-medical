@@ -19,6 +19,7 @@ import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import { localizedSetting } from "../i18n/settingsI18n";
 import "./DentalVacuumSystemPage.css";
 
 const heroFeatureIcons = [ShieldCheck, Volume2, Settings, BadgeCheck];
@@ -36,16 +37,16 @@ export default function DentalVacuumSystemPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const { t, tv } = useI18n();
+  const { t, tv, locale } = useI18n();
   const path = useLocalizedPath();
 
   const { data: rawSettings } = useListSettings();
   const s = (rawSettings as Record<string, string> | undefined) ?? {};
 
-  const eyebrow = s["dvs_hero_eyebrow"] || t("dvs.hero.eyebrow");
-  const heroTitle = s["dvs_hero_title"];
-  const desc1 = s["dvs_hero_desc1"] || t("dvs.hero.desc1");
-  const desc2 = s["dvs_hero_desc2"] || t("dvs.hero.desc2");
+  const eyebrow = localizedSetting(s, "dvs_hero_eyebrow", locale, t("dvs.hero.eyebrow"));
+  const heroTitle = localizedSetting(s, "dvs_hero_title", locale, "");
+  const desc1 = localizedSetting(s, "dvs_hero_desc1", locale, t("dvs.hero.desc1"));
+  const desc2 = localizedSetting(s, "dvs_hero_desc2", locale, t("dvs.hero.desc2"));
   const heroImage = s["dvs_hero_image"];
   const heroMobileImage = s["dvs_hero_mobile_image"];
   const imageCards_imgs = [0, 1, 2].map((i) => s[`dvs_img_${i}`]);
@@ -55,8 +56,9 @@ export default function DentalVacuumSystemPage() {
   const imageCards = tv<Array<{ title: string; text: string; ariaLabel: string }>>("dvs.imageCards", []);
   const specRows = tv<Array<[string, string]>>("dvs.specs.rows", []);
 
-  const displaySpecs: [string, string][] = s["dvs_specs_text"]
-    ? parseDvsSpecsText(s["dvs_specs_text"])
+  const specsText = localizedSetting(s, "dvs_specs_text", locale, "");
+  const displaySpecs: [string, string][] = specsText
+    ? parseDvsSpecsText(specsText)
     : (specRows as [string, string][]);
 
   const useCaseItems = tv<string[]>("dvs.useCases.items", []);

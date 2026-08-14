@@ -270,6 +270,20 @@ const EXISTING_PRODUCT_TITLES: Record<string, Record<string, string>> = {
 
 const DENTAL_CATEGORY_SLUG = "dental-sistemler";
 
+const BED_HEAD_REPLACEMENT_TITLES = {
+  title: "Yatak Başı Ünitesi",
+  titleEn: "Bed Head Unit",
+  titleDe: "Bettkopfeinheit",
+  titleFr: "Unité de tête de lit",
+  titleIt: "Unità testaletto",
+  titleAr: "وحدة رأس السرير",
+  titleRu: "Прикроватная панель",
+  titleFa: "یونیت هدبورد تخت",
+  titleKa: "საწოლთანა ბლოკი",
+  titleBg: "Болничен панел",
+  titleAz: "Yataq başı bloku",
+} as const;
+
 async function getSetting(key: string): Promise<string | null> {
   const [row] = await db
     .select()
@@ -278,10 +292,64 @@ async function getSetting(key: string): Promise<string | null> {
   return row?.settingValue ?? null;
 }
 
+async function replaceLegacyBedHeadProduct(): Promise<boolean> {
+  const [legacy] = await db
+    .select()
+    .from(productsTable)
+    .where(eq(productsTable.title, "Standart Yatak Başı Ünitesi"));
+  if (!legacy) return false;
+
+  const [replacement] = await db
+    .select()
+    .from(productsTable)
+    .where(eq(productsTable.title, BED_HEAD_REPLACEMENT_TITLES.title));
+
+  if (replacement) {
+    if (legacy.showOnHome && !replacement.showOnHome) {
+      await db
+        .update(productsTable)
+        .set({ showOnHome: true, homeSortOrder: legacy.homeSortOrder })
+        .where(eq(productsTable.id, replacement.id));
+    }
+    await db.delete(productsTable).where(eq(productsTable.id, legacy.id));
+    console.log(`  product "${legacy.title}" deleted; existing replacement kept`);
+    return true;
+  }
+
+  const [created] = await db
+    .insert(productsTable)
+    .values({
+      ...BED_HEAD_REPLACEMENT_TITLES,
+      categoryId: legacy.categoryId,
+      description: legacy.description,
+      imageUrl: legacy.imageUrl,
+      specs: legacy.specs,
+      sortOrder: legacy.sortOrder,
+      showOnHome: legacy.showOnHome,
+      homeSortOrder: legacy.homeSortOrder,
+      published: legacy.published,
+      pageSlug: legacy.pageSlug,
+      pageData: legacy.pageData,
+      privateData: legacy.privateData,
+      quoteTitle: legacy.quoteTitle,
+      quoteBullets: legacy.quoteBullets,
+      quoteModelCode: legacy.quoteModelCode,
+      quoteImageUrl: legacy.quoteImageUrl,
+      quoteUnit: legacy.quoteUnit,
+      quoteUnitPrice: legacy.quoteUnitPrice,
+    })
+    .returning();
+  await db.delete(productsTable).where(eq(productsTable.id, legacy.id));
+  console.log(`  product "${legacy.title}" deleted; "${created?.title}" created`);
+  return true;
+}
+
 async function main() {
   let categoriesUpdated = 0;
   let productsInserted = 0;
   let productsUpdated = 0;
+
+  if (await replaceLegacyBedHeadProduct()) productsUpdated += 1;
 
   const categories = await db.select().from(productCategoriesTable);
 

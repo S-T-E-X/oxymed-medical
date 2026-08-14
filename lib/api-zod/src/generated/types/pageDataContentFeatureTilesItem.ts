@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type PageDataFeatureTilesItem = {
+export type PageDataContentFeatureTilesItem = {
   title?: string;
   text?: string;
 };

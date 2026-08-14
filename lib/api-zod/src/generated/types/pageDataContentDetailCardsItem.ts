@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type PageDataDetailCardsItem = {
+export type PageDataContentDetailCardsItem = {
   title?: string;
   text?: string;
   imageUrl?: string;

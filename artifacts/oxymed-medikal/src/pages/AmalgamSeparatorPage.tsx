@@ -22,6 +22,7 @@ import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import { localizedSetting } from "../i18n/settingsI18n";
 import "./AmalgamSeparatorPage.css";
 
 const HERO_FEATURE_ICONS = [ShieldCheck, Droplets, Puzzle, Clock3];
@@ -35,7 +36,7 @@ function parseSpecsText(text: string): [string, string][] {
 }
 
 export default function AmalgamSeparatorPage() {
-  const { t, tv } = useI18n();
+  const { t, tv, locale } = useI18n();
   const path = useLocalizedPath();
 
   useEffect(() => {
@@ -45,10 +46,10 @@ export default function AmalgamSeparatorPage() {
   const { data: rawSettings } = useListSettings();
   const s = (rawSettings as Record<string, string> | undefined) ?? {};
 
-  const eyebrow = s["ams_hero_eyebrow"] || t("ams.hero.eyebrow");
-  const heroTitle = s["ams_hero_title"];
-  const desc1 = s["ams_hero_desc1"] || t("ams.hero.desc1");
-  const desc2 = s["ams_hero_desc2"] || t("ams.hero.desc2");
+  const eyebrow = localizedSetting(s, "ams_hero_eyebrow", locale, t("ams.hero.eyebrow"));
+  const heroTitle = localizedSetting(s, "ams_hero_title", locale, "");
+  const desc1 = localizedSetting(s, "ams_hero_desc1", locale, t("ams.hero.desc1"));
+  const desc2 = localizedSetting(s, "ams_hero_desc2", locale, t("ams.hero.desc2"));
   const heroImage = s["ams_hero_image"];
   const detailImages = [0, 1, 2, 3].map((i) => s[`ams_img_${i}`]);
   const drawingImage = s["ams_drawing_image"];
@@ -59,8 +60,9 @@ export default function AmalgamSeparatorPage() {
   const useCases = tv<Array<{ title: string; text: string }>>("ams.useCases.items", []);
   const defaultSpecRows = tv<Array<{ k: string; v: string }>>("ams.specs.rows", []);
 
-  const displaySpecs: [string, string][] = s["ams_specs_text"]
-    ? parseSpecsText(s["ams_specs_text"])
+  const specsText = localizedSetting(s, "ams_specs_text", locale, "");
+  const displaySpecs: [string, string][] = specsText
+    ? parseSpecsText(specsText)
     : defaultSpecRows.map((row) => [row.k, row.v]);
 
   const jsonLd = useMemo(() => ({

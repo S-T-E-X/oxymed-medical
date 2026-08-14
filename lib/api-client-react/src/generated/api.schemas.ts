@@ -573,37 +573,44 @@ export interface ProductSpec {
   value: string;
 }
 
-export type PageDataFeaturesItem = {
+export type PageDataContentFeaturesItem = {
   title?: string;
   text?: string;
 };
 
-export type PageDataDetailCardsItem = {
+export type PageDataContentDetailCardsItem = {
   title?: string;
   text?: string;
   imageUrl?: string;
 };
 
-export type PageDataFeatureTilesItem = {
+export type PageDataContentFeatureTilesItem = {
   title?: string;
   text?: string;
 };
 
-export type PageDataFaqItem = {
+export type PageDataContentFaqItem = {
   question?: string;
   answer?: string;
 };
 
-export interface PageData {
+export interface PageDataContent {
   heroSubtitle?: string;
   heroDescription?: string;
-  features?: PageDataFeaturesItem[];
-  detailCards?: PageDataDetailCardsItem[];
+  features?: PageDataContentFeaturesItem[];
+  detailCards?: PageDataContentDetailCardsItem[];
   useCases?: string[];
   advantages?: string[];
-  featureTiles?: PageDataFeatureTilesItem[];
-  faq?: PageDataFaqItem[];
+  featureTiles?: PageDataContentFeatureTilesItem[];
+  faq?: PageDataContentFaqItem[];
+  specs?: ProductSpec[];
 }
+
+export type PageDataLocales = {[key: string]: PageDataContent};
+
+export type PageData = PageDataContent & {
+  locales?: PageDataLocales;
+};
 
 export interface PrivateData {
   costPrice?: string;

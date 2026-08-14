@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "translate-i18n": "tsx ./src/translate-i18n.ts",
     "gen-sitemap": "tsx ./src/gen-sitemap.ts",
-    "migrate-product-cards": "tsx ./src/migrate-product-cards.ts"
+    "migrate-product-cards": "tsx ./src/migrate-product-cards.ts",
+    "translate-product-page-data": "tsx ./src/translate-product-page-data.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",

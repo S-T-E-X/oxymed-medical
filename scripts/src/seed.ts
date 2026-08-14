@@ -83,7 +83,7 @@ async function seed() {
     .values([
       {
         categoryId: catId1,
-        title: "Standart Yatak Başı Ünitesi",
+        title: "Yatak Başı Ünitesi",
         titleEn: "Standard Bed Head Unit",
         titleDe: "Standard-Bettkopfeinheit",
         titleFr: "Unité de tête de lit standard",

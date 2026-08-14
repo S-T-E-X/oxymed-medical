@@ -5,18 +5,9 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { PageDataDetailCardsItem } from './pageDataDetailCardsItem';
-import type { PageDataFaqItem } from './pageDataFaqItem';
-import type { PageDataFeaturesItem } from './pageDataFeaturesItem';
-import type { PageDataFeatureTilesItem } from './pageDataFeatureTilesItem';
+import type { PageDataContent } from './pageDataContent';
+import type { PageDataLocales } from './pageDataLocales';
 
-export interface PageData {
-  heroSubtitle?: string;
-  heroDescription?: string;
-  features?: PageDataFeaturesItem[];
-  detailCards?: PageDataDetailCardsItem[];
-  useCases?: string[];
-  advantages?: string[];
-  featureTiles?: PageDataFeatureTilesItem[];
-  faq?: PageDataFaqItem[];
-}
+export type PageData = PageDataContent & {
+  locales?: PageDataLocales;
+};

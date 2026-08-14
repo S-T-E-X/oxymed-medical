@@ -3012,7 +3012,7 @@ components:
         value:
           type: string
 
-    PageData:
+    PageDataContent:
       type: object
       properties:
         heroSubtitle:
@@ -3065,6 +3065,20 @@ components:
                 type: string
               answer:
                 type: string
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSpec"
+
+    PageData:
+      allOf:
+        - $ref: "#/components/schemas/PageDataContent"
+        - type: object
+          properties:
+            locales:
+              type: object
+              additionalProperties:
+                $ref: "#/components/schemas/PageDataContent"
 
     PrivateData:
       type: object

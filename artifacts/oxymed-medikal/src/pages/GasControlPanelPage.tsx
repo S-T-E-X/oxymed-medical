@@ -23,6 +23,7 @@ import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import { localizedJsonSetting } from "../i18n/settingsI18n";
 import "./GasControlPanelPage.css";
 
 const USE_CASE_ICONS = [Hospital, HeartPulse, Stethoscope, Building2, FileCheck2];
@@ -31,20 +32,15 @@ const FEATURE_TILE_ICONS = [Layers3, Gauge, Bell, Zap];
 
 function useGCPContent() {
   const { data: rawSettings } = useListSettings();
-  const { tv } = useI18n();
+  const { tv, locale } = useI18n();
   const s = (rawSettings as Record<string, string>) ?? {};
 
   function parse<T>(key: string, fallback: T): T {
-    try {
-      const raw = s[key];
-      if (raw) {
-        const parsed = JSON.parse(raw) as T;
-        if (Array.isArray(fallback) ? Array.isArray(parsed) && (parsed as unknown[]).length > 0 : typeof parsed === "object" && parsed !== null) {
-          return parsed;
-        }
-      }
-    } catch {}
-    return fallback;
+    const parsed = localizedJsonSetting(s, key, locale, fallback);
+    if (Array.isArray(fallback)) {
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : fallback;
+    }
+    return typeof parsed === "object" && parsed !== null ? parsed : fallback;
   }
 
   return {

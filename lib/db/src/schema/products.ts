@@ -7,7 +7,7 @@ export type PageFeature = { title: string; text: string };
 export type DetailCard = { title: string; text: string; imageUrl?: string };
 export type FeatureTile = { title: string; text: string };
 export type FaqItem = { question: string; answer: string };
-export type PageData = {
+export type PageDataContent = {
   heroSubtitle?: string;
   heroDescription?: string;
   features?: PageFeature[];
@@ -16,6 +16,11 @@ export type PageData = {
   advantages?: string[];
   featureTiles?: FeatureTile[];
   faq?: FaqItem[];
+  specs?: Array<{ label: string; value: string }>;
+};
+export type PageData = PageDataContent & {
+  /** Locale-specific content for the generic DB-driven detail page. */
+  locales?: Partial<Record<"en" | "de" | "fr" | "it" | "ar" | "ru" | "fa" | "ka" | "bg" | "az", PageDataContent>>;
 };
 export type PrivateData = {
   costPrice?: string;

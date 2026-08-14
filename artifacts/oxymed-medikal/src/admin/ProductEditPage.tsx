@@ -375,6 +375,9 @@ export default function ProductEditPage() {
         advantages: form.advantages.filter(Boolean),
         featureTiles: form.featureTiles.filter((f) => f.title),
         faq: form.faq.filter((f) => f.question),
+        // Keep the AI-generated locale variants when the Turkish editor saves
+        // the base content. They are regenerated separately when requested.
+        locales: product?.pageData?.locales,
       },
       privateData: {
         costPrice: form.costPrice || undefined,
