@@ -378,6 +378,8 @@ export interface Catalog {
   /** @nullable */
   category?: string | null;
   pdfUrl: string;
+  /** @nullable */
+  coverUrl?: string | null;
   sortOrder: number;
   isActive: boolean;
   createdAt: string;
@@ -389,6 +391,8 @@ export interface CatalogInput {
   language?: string;
   category?: string;
   pdfUrl: string;
+  /** @nullable */
+  coverUrl?: string | null;
   sortOrder?: number;
   isActive?: boolean;
 }
@@ -399,6 +403,8 @@ export interface CatalogUpdate {
   /** @nullable */
   category?: string | null;
   pdfUrl?: string;
+  /** @nullable */
+  coverUrl?: string | null;
   sortOrder?: number;
   isActive?: boolean;
 }

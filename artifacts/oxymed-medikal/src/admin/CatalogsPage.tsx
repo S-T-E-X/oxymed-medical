@@ -9,8 +9,9 @@ import {
   type Catalog,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { BookOpen, Edit2, Plus, Trash2, X } from "lucide-react";
+import { BookOpen, Edit2, ImageIcon, Plus, Trash2, UploadCloud, X } from "lucide-react";
 import { resolvePublicDocumentUrl } from "../lib/documentUrl";
+import { useImageUpload } from "./useImageUpload";
 
 const LANGUAGES = ["TR", "EN", "DE", "FR", "AR"];
 
@@ -19,6 +20,7 @@ type CatalogFormData = {
   language: string;
   category: string;
   pdfUrl: string;
+  coverUrl: string;
   sortOrder: number;
   isActive: boolean;
 };
@@ -28,6 +30,7 @@ const EMPTY: CatalogFormData = {
   language: "TR",
   category: "",
   pdfUrl: "",
+  coverUrl: "",
   sortOrder: 0,
   isActive: true,
 };
@@ -44,9 +47,31 @@ function CatalogModal({
   saving: boolean;
 }) {
   const [form, setForm] = useState<CatalogFormData>(initial);
+  const { uploadFile, uploading } = useImageUpload();
 
   function set(field: keyof CatalogFormData, value: string | boolean | number) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  async function handleCoverUpload(file: File | undefined) {
+    if (!file) return;
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Kapak görseli JPG, PNG veya WebP formatında olmalıdır.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Kapak görseli en fazla 5 MB olabilir.");
+      return;
+    }
+
+    try {
+      const result = await uploadFile(file);
+      set("coverUrl", result.publicUrl);
+      toast.success("Kapak görseli yüklendi");
+    } catch {
+      toast.error("Kapak görseli yüklenemedi");
+    }
   }
 
   return (
@@ -109,6 +134,58 @@ function CatalogModal({
             )}
           </div>
           <div>
+            <label className="label">Katalog Kapak Görseli</label>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              {form.coverUrl ? (
+                <div className="mb-3 flex items-start gap-3">
+                  <img
+                    src={form.coverUrl}
+                    alt={`${form.title || "Katalog"} kapak önizlemesi`}
+                    className="h-36 w-28 rounded-md border border-slate-200 bg-white object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="break-all text-xs text-slate-500">{form.coverUrl}</p>
+                    <button
+                      type="button"
+                      onClick={() => set("coverUrl", "")}
+                      className="mt-2 text-xs font-semibold text-red-600 hover:underline"
+                    >
+                      Kapak görselini kaldır
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-3 flex items-center gap-2 text-xs text-slate-500">
+                  <ImageIcon className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                  Henüz özel kapak görseli seçilmedi. Public sayfada PDF kapağı kullanılır.
+                </div>
+              )}
+              <label className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-100 ${uploading ? "pointer-events-none opacity-60" : ""}`}>
+                <UploadCloud className="h-4 w-4" aria-hidden="true" />
+                {uploading ? "Yükleniyor…" : form.coverUrl ? "Görseli değiştir" : "Kapak görseli seç"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    void handleCoverUpload(e.target.files?.[0]);
+                    e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            <div className="mt-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2.5 text-[11px] leading-5 text-blue-900">
+              <p className="font-bold">Kapak görseli için öneriler</p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-4 text-blue-800">
+                <li>Dikey 3:4 oran; ideal ölçü 1200 × 1600 px.</li>
+                <li>JPG, PNG veya WebP formatı; maksimum dosya boyutu 5 MB.</li>
+                <li>Net, yüksek çözünürlüklü ve katalog başlığı okunabilir bir görsel kullanın.</li>
+                <li>Yatay veya çok küçük görseller kartta kırpılabilir ya da bulanık görünebilir.</li>
+              </ul>
+            </div>
+          </div>
+          <div>
             <label className="label">Sıra</label>
             <input
               className="input"
@@ -133,7 +210,7 @@ function CatalogModal({
           <button onClick={onClose} className="btn-secondary">İptal</button>
           <button
             onClick={() => onSave(form)}
-            disabled={saving || !form.title || !form.pdfUrl}
+            disabled={saving || uploading || !form.title || !form.pdfUrl}
             className="btn-primary"
           >
             {saving ? "Kaydediliyor…" : "Kaydet"}
@@ -186,6 +263,7 @@ export default function CatalogsPage() {
       language: data.language,
       category: data.category || undefined,
       pdfUrl: data.pdfUrl,
+      coverUrl: data.coverUrl || null,
       sortOrder: data.sortOrder,
       isActive: data.isActive,
     };
@@ -258,12 +336,16 @@ export default function CatalogsPage() {
               </h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {items.sort((a, b) => a.sortOrder - b.sortOrder).map((c) => (
-                  <div
+                    <div
                     key={c.id}
                     className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-oxynavy-50 text-oxynavy-700">
-                      <BookOpen className="h-5 w-5" />
+                      <div className="flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-oxynavy-50 text-oxynavy-700">
+                        {c.coverUrl ? (
+                          <img src={c.coverUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <BookOpen className="h-5 w-5" />
+                        )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-slate-900">{c.title}</p>
@@ -322,6 +404,7 @@ export default function CatalogsPage() {
                   language: modal.catalog.language,
                   category: modal.catalog.category ?? "",
                   pdfUrl: modal.catalog.pdfUrl,
+                  coverUrl: modal.catalog.coverUrl ?? "",
                   sortOrder: modal.catalog.sortOrder,
                   isActive: modal.catalog.isActive,
                 }

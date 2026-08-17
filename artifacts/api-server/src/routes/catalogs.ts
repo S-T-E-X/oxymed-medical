@@ -11,6 +11,7 @@ const CatalogBody = z.object({
   language: z.string().min(1).default("TR"),
   category: z.string().optional().nullable(),
   pdfUrl: z.string().min(1),
+  coverUrl: z.string().optional().nullable(),
   sortOrder: z.coerce.number().int().optional(),
   isActive: z.boolean().optional(),
 });

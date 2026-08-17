@@ -12,6 +12,8 @@ export interface CatalogUpdate {
   /** @nullable */
   category?: string | null;
   pdfUrl?: string;
+  /** @nullable */
+  coverUrl?: string | null;
   sortOrder?: number;
   isActive?: boolean;
 }

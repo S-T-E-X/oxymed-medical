@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BookOpen, Download, FileText } from "lucide-react";
 import { useListCatalogs } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
@@ -19,6 +20,44 @@ const LANGUAGE_LABELS: Record<string, string> = {
   BG: "Български",
   AZ: "Azərbaycan",
 };
+
+function CatalogCover({
+  title,
+  coverUrl,
+  documentUrl,
+  previewLabel,
+}: {
+  title: string;
+  coverUrl: string | null | undefined;
+  documentUrl: string;
+  previewLabel: string;
+}) {
+  const [showCover, setShowCover] = useState(Boolean(coverUrl?.trim()));
+
+  return (
+    <div className="relative aspect-[3/4] overflow-hidden bg-steel-100">
+      {showCover && coverUrl ? (
+        <img
+          src={coverUrl}
+          alt={`${title} kapak görseli`}
+          className="h-full w-full object-cover"
+          onError={() => setShowCover(false)}
+        />
+      ) : (
+        <iframe
+          title={`${title} — ${previewLabel}`}
+          src={`${documentUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
+          className="pointer-events-none h-[calc(100%+44px)] w-full -translate-y-1 bg-white"
+          loading="lazy"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-oxynavy-950/25 via-transparent to-transparent" />
+      <div className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-oxynavy-800 shadow-sm">
+        <FileText className="h-5 w-5" aria-hidden="true" />
+      </div>
+    </div>
+  );
+}
 
 export default function CatalogsPage() {
   const { t } = useI18n();
@@ -70,18 +109,12 @@ export default function CatalogsPage() {
                         const documentUrl = resolvePublicDocumentUrl(catalog.pdfUrl);
                         return (
                           <article key={catalog.id} className="group overflow-hidden rounded-2xl border border-steel-200 bg-white shadow-[0_14px_35px_rgba(2,20,35,0.06)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(2,20,35,0.12)]">
-                            <div className="relative aspect-[3/4] overflow-hidden bg-steel-100">
-                              <iframe
-                                title={`${catalog.title} — ${t("common.catalog.preview")}`}
-                                src={`${documentUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-                                className="pointer-events-none h-[calc(100%+44px)] w-full -translate-y-1 bg-white"
-                                loading="lazy"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-oxynavy-950/25 via-transparent to-transparent" />
-                              <div className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-oxynavy-800 shadow-sm">
-                                <FileText className="h-5 w-5" aria-hidden="true" />
-                              </div>
-                            </div>
+                            <CatalogCover
+                              title={catalog.title}
+                              coverUrl={catalog.coverUrl}
+                              documentUrl={documentUrl}
+                              previewLabel={t("common.catalog.preview")}
+                            />
                             <div className="p-5">
                               <h3 className="min-h-12 text-base font-extrabold leading-6 text-oxynavy-950">{catalog.title}</h3>
                               {catalog.category && <p className="mt-1 text-xs text-steel-500">{catalog.category}</p>}

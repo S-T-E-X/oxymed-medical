@@ -239,28 +239,56 @@ export default function Header() {
       {isOpen ? (
         <div className="absolute start-0 top-full w-full border-t border-steel-100 bg-white px-4 pb-6 shadow-[0_14px_35px_rgba(2,20,35,0.08)] lg:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col py-3" aria-label={t("common.nav.mobileMenu")}>
-            {navItems.map((item) => item.dropdown === "corporate" ? (
-              <div key={item.key} className="border-b border-steel-100">
-                <Link to="/kurumsal" className="flex items-center justify-between py-4 text-sm font-bold text-oxynavy-950" onClick={() => setIsOpen(false)}>
+            {navItems.map((item) => {
+              if (item.dropdown === "corporate") {
+                return (
+                  <div key={item.key} className="border-b border-steel-100">
+                    <Link to="/kurumsal" className="flex items-center justify-between py-4 text-sm font-bold text-oxynavy-950" onClick={() => setIsOpen(false)}>
+                      {t(`common.nav.${item.key}`)}
+                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                    <div className="mb-3 space-y-1 border-s border-steel-200 ps-4">
+                      <Link to="/kurumsal" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateAbout")}</Link>
+                      <Link to="/sertifikalar" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateCertificates")}</Link>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (item.dropdown === "categories") {
+                return (
+                  <div key={item.key} className="border-b border-steel-100">
+                    <Link to={productsHref} className="flex items-center justify-between py-4 text-sm font-bold text-oxynavy-950" onClick={() => setIsOpen(false)}>
+                      {t(`common.nav.${item.key}`)}
+                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                    <div className="mb-3 space-y-1 border-s border-steel-200 ps-4">
+                      {categories.map((cat) => (
+                        <Link
+                          key={cat.id}
+                          to={`${productsHref}?category=${cat.id}`}
+                          className="block py-2 text-sm font-semibold text-steel-700"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {pickLocalizedName(cat, "name", locale)}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.key}
+                  to={hrefFor(item)}
+                  className="flex items-center justify-between border-b border-steel-100 py-4 text-sm font-bold text-oxynavy-950"
+                  onClick={() => setIsOpen(false)}
+                >
                   {t(`common.nav.${item.key}`)}
-                  <ChevronDown className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <div className="mb-3 space-y-1 border-s border-steel-200 ps-4">
-                  <Link to="/kurumsal" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateAbout")}</Link>
-                  <Link to="/sertifikalar" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateCertificates")}</Link>
-                </div>
-              </div>
-            ) : (
-              <Link
-                key={item.key}
-                to={hrefFor(item)}
-                className="flex items-center justify-between border-b border-steel-100 py-4 text-sm font-bold text-oxynavy-950"
-                onClick={() => setIsOpen(false)}
-              >
-                {t(`common.nav.${item.key}`)}
-                {item.dropdown === "categories" ? <ChevronDown className="h-4 w-4" aria-hidden="true" /> : null}
-              </Link>
-            ))}
+              );
+            })}
 
             <div className="border-b border-steel-100">
               <p className="pt-4 text-[11px] font-extrabold text-steel-600">{t("common.nav.language")}</p>

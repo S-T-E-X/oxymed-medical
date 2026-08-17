@@ -11,6 +11,8 @@ export interface CatalogInput {
   language?: string;
   category?: string;
   pdfUrl: string;
+  /** @nullable */
+  coverUrl?: string | null;
   sortOrder?: number;
   isActive?: boolean;
 }

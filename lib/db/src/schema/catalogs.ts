@@ -8,6 +8,7 @@ export const catalogsTable = pgTable("catalogs", {
   language: text("language").notNull().default("TR"),
   category: text("category"),
   pdfUrl: text("pdf_url").notNull(),
+  coverUrl: text("cover_url"),
   sortOrder: integer("sort_order").notNull().default(0),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

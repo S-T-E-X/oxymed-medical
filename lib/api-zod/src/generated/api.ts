@@ -460,6 +460,7 @@ export const ListCatalogsResponseItem = zod.object({
   "language": zod.string(),
   "category": zod.string().nullish(),
   "pdfUrl": zod.string(),
+  "coverUrl": zod.string().nullish(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
   "createdAt": zod.string(),
@@ -476,6 +477,7 @@ export const CreateCatalogBody = zod.object({
   "language": zod.string().optional(),
   "category": zod.string().optional(),
   "pdfUrl": zod.string(),
+  "coverUrl": zod.string().nullish(),
   "sortOrder": zod.number().optional(),
   "isActive": zod.boolean().optional()
 })
@@ -576,6 +578,7 @@ export const GetCatalogResponse = zod.object({
   "language": zod.string(),
   "category": zod.string().nullish(),
   "pdfUrl": zod.string(),
+  "coverUrl": zod.string().nullish(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
   "createdAt": zod.string(),
@@ -595,6 +598,7 @@ export const UpdateCatalogBody = zod.object({
   "language": zod.string().optional(),
   "category": zod.string().nullish(),
   "pdfUrl": zod.string().optional(),
+  "coverUrl": zod.string().nullish(),
   "sortOrder": zod.number().optional(),
   "isActive": zod.boolean().optional()
 })
@@ -605,6 +609,7 @@ export const UpdateCatalogResponse = zod.object({
   "language": zod.string(),
   "category": zod.string().nullish(),
   "pdfUrl": zod.string(),
+  "coverUrl": zod.string().nullish(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
   "createdAt": zod.string(),
