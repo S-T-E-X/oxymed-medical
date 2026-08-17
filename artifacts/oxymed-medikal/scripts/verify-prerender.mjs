@@ -22,6 +22,8 @@ const SITE_DIR = path.resolve(HERE, "..");
 const DIST_DIR = path.join(SITE_DIR, "dist/public");
 /** Build input written by gen-sitemap; the list of pages prerender should have produced. */
 const NEWS_SEO_FILE = path.join(SITE_DIR, ".news-seo.json");
+/** Same, for the DB-driven generic product detail pages. */
+const PRODUCT_SEO_FILE = path.join(SITE_DIR, ".product-seo.json");
 
 const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymed.com.tr").replace(/\/$/, "");
 
@@ -97,6 +99,14 @@ function extractCanonical(html) {
 function extractLang(html) {
   const m = html.match(/<html[^>]+lang="([^"]+)"/i);
   return m ? m[1].trim() : null;
+}
+
+function extractHreflangs(html) {
+  return [...html.matchAll(/<link\s+rel="alternate"\s+hreflang="([^"]+)"/gi)].map((m) => m[1]);
+}
+
+function extractOgLocaleAlternates(html) {
+  return [...html.matchAll(/<meta\s+property="og:locale:alternate"\s+content="([^"]+)"/gi)].map((m) => m[1]);
 }
 
 async function main() {
@@ -236,6 +246,95 @@ async function main() {
     }
   }
 
+  // --- Generic product detail pages ---
+  let products = [];
+  try {
+    products = JSON.parse(await readFile(PRODUCT_SEO_FILE, "utf8"));
+  } catch {
+    errors.push(
+      `Missing or unreadable ${path.basename(PRODUCT_SEO_FILE)} — the gen-sitemap step must run before prerender.`,
+    );
+  }
+
+  for (const product of products) {
+    const label = `[${product.locale}/product:${product.slug}]`;
+    const filePath = path.join(DIST_DIR, product.path.replace(/^\//, ""), "index.html");
+
+    let html;
+    try {
+      html = await readFile(filePath, "utf8");
+    } catch {
+      errors.push(`${label} Missing prerendered product file: ${filePath}`);
+      continue;
+    }
+
+    const title = extractTitle(html);
+    if (!title) {
+      errors.push(`${label} No <title> found`);
+    } else if (title === "Oxymed Medikal") {
+      errors.push(`${label} Title is the generic fallback — product metadata was not baked in`);
+    }
+
+    const canonical = extractCanonical(html);
+    const expectedCanonical = `${SITE_ORIGIN}${product.path}`;
+    if (canonical !== expectedCanonical) {
+      errors.push(`${label} Canonical mismatch:\n    expected: ${expectedCanonical}\n    got:      ${canonical}`);
+    }
+
+    const lang = extractLang(html);
+    if (lang !== product.locale) {
+      errors.push(`${label} <html lang="${lang}"> but expected "${product.locale}"`);
+    }
+
+    if (canonical) {
+      if (canonicalsSeen.has(canonical)) {
+        errors.push(`${label} Duplicate canonical "${canonical}" also used by ${canonicalsSeen.get(canonical)}`);
+      } else {
+        canonicalsSeen.set(canonical, label);
+      }
+    }
+
+    if (!html.includes('"@type":"Product"')) {
+      errors.push(`${label} No Product JSON-LD in the prerendered HTML`);
+    }
+
+    // The baked hreflang set must be EXACTLY the handoff set — not a superset.
+    // An extra tag means we are advertising a language version that has no
+    // content and was never prerendered; a missing one means a real
+    // translation is invisible to crawlers.
+    const expectedHreflangs = new Set((product.alternates ?? []).map((a) => a.hreflang));
+    const actualHreflangs = new Set(extractHreflangs(html));
+    for (const extra of [...actualHreflangs].filter((h) => !expectedHreflangs.has(h))) {
+      errors.push(`${label} Baked hreflang="${extra}" is not in the sitemap alternate set for this product`);
+    }
+    for (const missing of [...expectedHreflangs].filter((h) => !actualHreflangs.has(h))) {
+      errors.push(`${label} Sitemap advertises hreflang="${missing}" but it is missing from the baked <head>`);
+    }
+
+    // og:locale:alternate must describe the same language set (minus self).
+    const expectedOgAlternates = new Set(
+      [...expectedHreflangs].filter((h) => h !== "x-default" && h !== product.locale),
+    );
+    const actualOgAlternateCount = extractOgLocaleAlternates(html).length;
+    if (actualOgAlternateCount !== expectedOgAlternates.size) {
+      errors.push(
+        `${label} og:locale:alternate count is ${actualOgAlternateCount}, expected ${expectedOgAlternates.size} ` +
+          `(social crawlers would see language versions that do not exist)`,
+      );
+    }
+
+    // Every advertised hreflang must itself have been prerendered.
+    for (const alt of product.alternates ?? []) {
+      if (alt.hreflang === "x-default") continue;
+      const altFile = path.join(DIST_DIR, alt.path.replace(/^\//, ""), "index.html");
+      try {
+        await access(altFile);
+      } catch {
+        errors.push(`${label} hreflang="${alt.hreflang}" points at ${alt.path}, which was not prerendered`);
+      }
+    }
+  }
+
   // --- sitemap.xml and robots.txt must exist ---
   for (const staticFile of ["sitemap.xml", "robots.txt"]) {
     try {
@@ -274,7 +373,7 @@ async function main() {
 
   // --- Summary ---
   const staticTotal = LOCALES.length * ROUTE_KEYS.length;
-  const total = staticTotal + articles.length;
+  const total = staticTotal + articles.length + products.length;
   if (warnings.length) {
     for (const w of warnings) console.warn(`⚠  ${w}`);
   }
@@ -286,8 +385,8 @@ async function main() {
   }
 
   console.log(
-    `✓ Prerender verified: ${total} pages (${staticTotal} static + ${articles.length} news articles), ` +
-      `all titles and canonicals correct. SITE_ORIGIN=${SITE_ORIGIN}`,
+    `✓ Prerender verified: ${total} pages (${staticTotal} static + ${articles.length} news articles + ` +
+      `${products.length} product pages), all titles and canonicals correct. SITE_ORIGIN=${SITE_ORIGIN}`,
   );
 }
 

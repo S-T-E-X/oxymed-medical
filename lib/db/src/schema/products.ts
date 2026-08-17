@@ -19,6 +19,11 @@ export type PageDataContent = {
   specs?: Array<{ label: string; value: string }>;
 };
 export type PageData = PageDataContent & {
+  /** Version marker for the reusable, admin-managed generic product template. */
+  templateVersion?: 1;
+  /** Sections can be reordered or hidden without creating a bespoke page. */
+  sectionOrder?: Array<"detailCards" | "technical" | "useCases" | "featureTiles" | "faq">;
+  hiddenSections?: Array<"detailCards" | "technical" | "useCases" | "featureTiles" | "faq">;
   /** Locale-specific content for the generic DB-driven detail page. */
   locales?: Partial<Record<"en" | "de" | "fr" | "it" | "ar" | "ru" | "fa" | "ka" | "bg" | "az", PageDataContent>>;
 };

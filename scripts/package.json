@@ -20,9 +20,10 @@
   "dependencies": {
     "@types/bcryptjs": "^3.0.0",
     "@workspace/db": "workspace:*",
+    "@workspace/integrations-openai-ai-server": "workspace:*",
+    "@workspace/product-content": "workspace:*",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "catalog:",
-    "@workspace/integrations-openai-ai-server": "workspace:*",
     "p-limit": "^7.3.0",
     "p-retry": "^7.1.1"
   }

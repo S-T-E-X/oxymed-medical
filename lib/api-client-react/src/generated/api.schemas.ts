@@ -606,9 +606,41 @@ export interface PageDataContent {
   specs?: ProductSpec[];
 }
 
+export type PageDataTemplateVersion = typeof PageDataTemplateVersion[keyof typeof PageDataTemplateVersion];
+
+
+export const PageDataTemplateVersion = {
+  NUMBER_1: 1,
+} as const;
+
+export type PageDataSectionOrderItem = typeof PageDataSectionOrderItem[keyof typeof PageDataSectionOrderItem];
+
+
+export const PageDataSectionOrderItem = {
+  detailCards: 'detailCards',
+  technical: 'technical',
+  useCases: 'useCases',
+  featureTiles: 'featureTiles',
+  faq: 'faq',
+} as const;
+
+export type PageDataHiddenSectionsItem = typeof PageDataHiddenSectionsItem[keyof typeof PageDataHiddenSectionsItem];
+
+
+export const PageDataHiddenSectionsItem = {
+  detailCards: 'detailCards',
+  technical: 'technical',
+  useCases: 'useCases',
+  featureTiles: 'featureTiles',
+  faq: 'faq',
+} as const;
+
 export type PageDataLocales = {[key: string]: PageDataContent};
 
 export type PageData = PageDataContent & {
+  templateVersion?: PageDataTemplateVersion;
+  sectionOrder?: PageDataSectionOrderItem[];
+  hiddenSections?: PageDataHiddenSectionsItem[];
   locales?: PageDataLocales;
 };
 

@@ -10,7 +10,7 @@ import {
   type Product,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { ArrowLeft, Box, ImageIcon, Lock, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ArrowDown, Box, Check, Eye, EyeOff, ImageIcon, Languages, Lock, Plus, Save, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 import { useAuth } from "./AuthContext";
 
@@ -18,6 +18,22 @@ type SpecRow = { label: string; value: string };
 type FeatureRow = { title: string; text: string };
 type DetailCard = { title: string; text: string; imageUrl: string };
 type FaqRow = { question: string; answer: string };
+type LocalizedPageContent = {
+  heroSubtitle: string;
+  heroDescription: string;
+  features: FeatureRow[];
+  detailCards: DetailCard[];
+  specs: SpecRow[];
+  useCases: string[];
+  advantages: string[];
+  featureTiles: FeatureRow[];
+  faq: FaqRow[];
+};
+
+const EMPTY_LOCALIZED_CONTENT: LocalizedPageContent = {
+  heroSubtitle: "", heroDescription: "", features: [], detailCards: [], specs: [],
+  useCases: [], advantages: [], featureTiles: [], faq: [],
+};
 
 const TITLE_LOCALES = [
   { code: "en", label: "English", field: "titleEn" },
@@ -33,6 +49,53 @@ const TITLE_LOCALES = [
 ] as const;
 
 type TitleLocaleField = typeof TITLE_LOCALES[number]["field"];
+
+type SectionKey = "detailCards" | "technical" | "useCases" | "featureTiles" | "faq";
+
+const ALL_SECTIONS: SectionKey[] = ["detailCards", "technical", "useCases", "featureTiles", "faq"];
+
+const SECTION_LABELS: Record<SectionKey, string> = {
+  detailCards: "Detay Kartları",
+  technical: "Teknik Özellikler & Avantajlar",
+  useCases: "Kullanım Alanları",
+  featureTiles: "Özellik Blokları",
+  faq: "SSS",
+};
+
+function normalizeSectionOrder(order: string[] | undefined): SectionKey[] {
+  const known = (order ?? []).filter((s): s is SectionKey => (ALL_SECTIONS as string[]).includes(s));
+  const deduped = Array.from(new Set(known));
+  return [...deduped, ...ALL_SECTIONS.filter((s) => !deduped.includes(s))];
+}
+
+function hasLocalizedContent(c: LocalizedPageContent | undefined): boolean {
+  if (!c) return false;
+  return Boolean(
+    c.heroSubtitle.trim() || c.heroDescription.trim() ||
+    c.features.length || c.detailCards.length || c.specs.length ||
+    c.useCases.length || c.advantages.length || c.featureTiles.length || c.faq.length,
+  );
+}
+
+function cleanLocalizedContent(c: LocalizedPageContent) {
+  const specs = c.specs.filter((s) => s.label && s.value);
+  const out = {
+    heroSubtitle: c.heroSubtitle.trim() || undefined,
+    heroDescription: c.heroDescription.trim() || undefined,
+    features: c.features.filter((f) => f.title),
+    detailCards: c.detailCards.filter((d) => d.title),
+    specs,
+    useCases: c.useCases.filter(Boolean),
+    advantages: c.advantages.filter(Boolean),
+    featureTiles: c.featureTiles.filter((f) => f.title),
+    faq: c.faq.filter((f) => f.question),
+  };
+  const isEmpty =
+    !out.heroSubtitle && !out.heroDescription && out.features.length === 0 &&
+    out.detailCards.length === 0 && out.specs.length === 0 && out.useCases.length === 0 &&
+    out.advantages.length === 0 && out.featureTiles.length === 0 && out.faq.length === 0;
+  return isEmpty ? null : out;
+}
 
 type ProductEditForm = {
   title: string;
@@ -72,6 +135,9 @@ type ProductEditForm = {
   quoteImageUrl: string;
   quoteUnit: string;
   quoteUnitPrice: string;
+  localePageData: Record<string, LocalizedPageContent>;
+  sectionOrder: SectionKey[];
+  hiddenSections: SectionKey[];
 };
 
 const EMPTY_FORM: ProductEditForm = {
@@ -112,6 +178,9 @@ const EMPTY_FORM: ProductEditForm = {
   quoteImageUrl: "",
   quoteUnit: "ADET",
   quoteUnitPrice: "",
+  localePageData: {},
+  sectionOrder: [...ALL_SECTIONS],
+  hiddenSections: [],
 };
 
 function productToForm(p: Product): ProductEditForm {
@@ -155,10 +224,25 @@ function productToForm(p: Product): ProductEditForm {
     quoteImageUrl: p.quoteImageUrl ?? "",
     quoteUnit: p.quoteUnit ?? "ADET",
     quoteUnitPrice: p.quoteUnitPrice ?? "",
+    localePageData: Object.fromEntries(
+      Object.entries(pd.locales ?? {}).map(([locale, content]) => [locale, {
+        heroSubtitle: content.heroSubtitle ?? "",
+        heroDescription: content.heroDescription ?? "",
+        features: (content.features ?? []) as FeatureRow[],
+        detailCards: (content.detailCards ?? []).map((d) => ({ title: d.title ?? "", text: d.text ?? "", imageUrl: d.imageUrl ?? "" })),
+        specs: (content.specs ?? []) as SpecRow[],
+        useCases: content.useCases ?? [],
+        advantages: content.advantages ?? [],
+        featureTiles: (content.featureTiles ?? []) as FeatureRow[],
+        faq: (content.faq ?? []) as FaqRow[],
+      }]),
+    ),
+    sectionOrder: normalizeSectionOrder(pd.sectionOrder),
+    hiddenSections: (pd.hiddenSections ?? []).filter((s): s is SectionKey => (ALL_SECTIONS as string[]).includes(s)),
   };
 }
 
-type Tab = "temel" | "sayfa" | "gizli" | "teklif" | "bom";
+type Tab = "temel" | "sayfa" | "diller" | "gizli" | "teklif" | "bom";
 
 function StringList({ label, items, onChange }: { label: string; items: string[]; onChange: (v: string[]) => void }) {
   return (
@@ -225,11 +309,11 @@ function FaqList({ items, onChange }: { items: FaqRow[]; onChange: (v: FaqRow[])
   );
 }
 
-function DetailCardList({ items, onChange, uploadFile, uploading }: { items: DetailCard[]; onChange: (v: DetailCard[]) => void; uploadFile: (f: File) => Promise<{ publicUrl: string }>; uploading: boolean }) {
+function DetailCardList({ items, onChange, uploadFile, uploading, label = "Detay Kartları" }: { items: DetailCard[]; onChange: (v: DetailCard[]) => void; uploadFile: (f: File) => Promise<{ publicUrl: string }>; uploading: boolean; label?: string }) {
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <label className="label mb-0">Detay Kartları</label>
+        <label className="label mb-0">{label}</label>
         <button type="button" onClick={() => onChange([...items, { title: "", text: "", imageUrl: "" }])} className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
           <Plus className="h-3 w-3" /> Ekle
         </button>
@@ -256,6 +340,39 @@ function DetailCardList({ items, onChange, uploadFile, uploading }: { items: Det
           {item.imageUrl && <img src={item.imageUrl} alt="" className="mt-2 h-16 w-full rounded object-cover" />}
         </div>
       ))}
+    </div>
+  );
+}
+
+function LocalizedContentEditor({
+  localeLabel, value, onChange, uploadFile, uploading,
+}: {
+  localeLabel: string;
+  value: LocalizedPageContent;
+  onChange: (next: LocalizedPageContent) => void;
+  uploadFile: (f: File) => Promise<{ publicUrl: string }>;
+  uploading: boolean;
+}) {
+  const set = <K extends keyof LocalizedPageContent>(key: K, next: LocalizedPageContent[K]) =>
+    onChange({ ...value, [key]: next });
+  return (
+    <div className="space-y-5 rounded-xl border border-indigo-100 bg-indigo-50/40 p-4">
+      <div>
+        <p className="text-sm font-bold text-indigo-950">{localeLabel} sayfa içeriği</p>
+        <p className="mt-1 text-xs text-indigo-700">Bu dilde boş bırakılan detay bölümleri ziyaretçiye gösterilmez; Türkçe içerik otomatik kopyalanmaz.</p>
+      </div>
+      <div><label className="label">Hero alt başlığı</label><input className="input" value={value.heroSubtitle} onChange={(e) => set("heroSubtitle", e.target.value)} /></div>
+      <div><label className="label">Hero açıklaması</label><textarea className="input min-h-[90px] resize-y" value={value.heroDescription} onChange={(e) => set("heroDescription", e.target.value)} /></div>
+      <FeatureList label="Hero özellikleri" items={value.features} onChange={(v) => set("features", v)} />
+      <DetailCardList label="Detay kartları" items={value.detailCards} onChange={(v) => set("detailCards", v)} uploadFile={uploadFile} uploading={uploading} />
+      <div>
+        <div className="mb-2 flex items-center justify-between"><label className="label mb-0">Teknik özellikler</label><button type="button" onClick={() => set("specs", [...value.specs, { label: "", value: "" }])} className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline"><Plus className="h-3 w-3" /> Ekle</button></div>
+        {value.specs.map((row, index) => <div key={index} className="mb-2 flex gap-2"><input className="input flex-1" value={row.label} onChange={(e) => { const rows = [...value.specs]; rows[index] = { ...row, label: e.target.value }; set("specs", rows); }} placeholder="Özellik" /><input className="input flex-1" value={row.value} onChange={(e) => { const rows = [...value.specs]; rows[index] = { ...row, value: e.target.value }; set("specs", rows); }} placeholder="Değer" /><button type="button" onClick={() => set("specs", value.specs.filter((_, i) => i !== index))} className="flex h-10 w-10 items-center justify-center rounded-lg border border-red-100 text-red-400"><X className="h-4 w-4" /></button></div>)}
+      </div>
+      <StringList label="Kullanım alanları" items={value.useCases} onChange={(v) => set("useCases", v)} />
+      <StringList label="Avantajlar" items={value.advantages} onChange={(v) => set("advantages", v)} />
+      <FeatureList label="Özellik blokları" items={value.featureTiles} onChange={(v) => set("featureTiles", v)} />
+      <FaqList items={value.faq} onChange={(v) => set("faq", v)} />
     </div>
   );
 }
@@ -319,6 +436,7 @@ export default function ProductEditPage() {
 
   const [form, setForm] = useState<ProductEditForm>(EMPTY_FORM);
   const [tab, setTab] = useState<Tab>("temel");
+  const [activeLocale, setActiveLocale] = useState<string>(TITLE_LOCALES[0].code);
   const [initialized, setInitialized] = useState(isNew);
 
   const { data: categories = [] } = useListProductCategories();
@@ -367,6 +485,7 @@ export default function ProductEditPage() {
       pageSlug: form.pageSlug || undefined,
       specs: form.specs.filter((s) => s.label && s.value),
       pageData: {
+        templateVersion: 1 as const,
         heroSubtitle: form.heroSubtitle || undefined,
         heroDescription: form.heroDescription || undefined,
         features: form.features.filter((f) => f.title),
@@ -375,9 +494,18 @@ export default function ProductEditPage() {
         advantages: form.advantages.filter(Boolean),
         featureTiles: form.featureTiles.filter((f) => f.title),
         faq: form.faq.filter((f) => f.question),
-        // Keep the AI-generated locale variants when the Turkish editor saves
-        // the base content. They are regenerated separately when requested.
-        locales: product?.pageData?.locales,
+        specs: form.specs.filter((s) => s.label && s.value),
+        sectionOrder: normalizeSectionOrder(form.sectionOrder),
+        hiddenSections: form.hiddenSections,
+        // Locale content is edited per language in the "Diller" tab. A locale
+        // whose editor is left empty is dropped entirely so the public page
+        // fails closed instead of inheriting Turkish copy.
+        locales: Object.fromEntries(
+          Object.entries(form.localePageData).flatMap(([locale, content]) => {
+            const cleaned = cleanLocalizedContent(content);
+            return cleaned ? [[locale, cleaned] as const] : [];
+          }),
+        ),
       },
       privateData: {
         costPrice: form.costPrice || undefined,
@@ -457,6 +585,7 @@ export default function ProductEditPage() {
   const tabs: { key: Tab; label: string; icon?: React.ReactNode }[] = [
     { key: "temel", label: "Temel Bilgiler" },
     { key: "sayfa", label: "Sayfa İçeriği" },
+    { key: "diller", label: "Diller", icon: <Languages className="h-3.5 w-3.5" /> },
     { key: "gizli", label: "Gizli Bilgiler", icon: <Lock className="h-3.5 w-3.5" /> },
     { key: "teklif", label: "Teklif Formu" },
     ...(!isNew ? [{ key: "bom" as Tab, label: "Malzeme (BOM)", icon: <Box className="h-3.5 w-3.5" /> }] : []),
@@ -619,6 +748,88 @@ export default function ProductEditPage() {
             <FeatureList label="Özellik Blokları (Alt Bant)" items={form.featureTiles} onChange={(v) => set("featureTiles", v)} />
             <hr className="border-slate-100" />
             <FaqList items={form.faq} onChange={(v) => set("faq", v)} />
+            <hr className="border-slate-100" />
+            <div>
+              <p className="text-sm font-bold text-slate-800">Bölüm Sırası ve Görünürlüğü</p>
+              <p className="mt-0.5 mb-3 text-xs text-slate-500">Detay sayfasındaki bölümlerin sırasını değiştirin veya gizleyin. Boş bölümler zaten gösterilmez.</p>
+              <div className="space-y-2">
+                {form.sectionOrder.map((section, i) => {
+                  const hidden = form.hiddenSections.includes(section);
+                  return (
+                    <div key={section} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                      <span className="w-5 text-xs font-bold text-slate-400">{i + 1}</span>
+                      <span className={`flex-1 text-sm font-semibold ${hidden ? "text-slate-400 line-through" : "text-slate-700"}`}>{SECTION_LABELS[section]}</span>
+                      <button type="button" title="Yukarı taşı" disabled={i === 0} onClick={() => { const n = [...form.sectionOrder]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; set("sectionOrder", n); }} className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-100 disabled:opacity-30"><ArrowUp className="h-3.5 w-3.5" /></button>
+                      <button type="button" title="Aşağı taşı" disabled={i === form.sectionOrder.length - 1} onClick={() => { const n = [...form.sectionOrder]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; set("sectionOrder", n); }} className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-100 disabled:opacity-30"><ArrowDown className="h-3.5 w-3.5" /></button>
+                      <button type="button" title={hidden ? "Göster" : "Gizle"} onClick={() => set("hiddenSections", hidden ? form.hiddenSections.filter((s) => s !== section) : [...form.hiddenSections, section])} className={`flex h-8 w-8 items-center justify-center rounded-lg border bg-white ${hidden ? "border-amber-200 text-amber-500" : "border-slate-200 text-slate-500"} hover:bg-slate-100`}>{hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}</button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === "diller" && (
+          <div className="space-y-5">
+            <div className="rounded-lg border border-indigo-100 bg-indigo-50 p-4">
+              <p className="text-sm font-semibold text-indigo-900">Dil Bazlı Sayfa İçeriği</p>
+              <p className="mt-0.5 text-xs text-indigo-700">Her dil için hero, detay kartları, teknik özellikler ve diğer bölümler ayrı düzenlenir. Bir dilde boş bırakılan bölüm o dilde <strong>gösterilmez</strong> — Türkçe içerik diğer dillere kopyalanmaz.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {TITLE_LOCALES.map((lc) => {
+                const filled = hasLocalizedContent(form.localePageData[lc.code]);
+                const active = activeLocale === lc.code;
+                return (
+                  <button
+                    key={lc.code}
+                    type="button"
+                    onClick={() => setActiveLocale(lc.code)}
+                    className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
+                      active ? "border-oxynavy-700 bg-oxynavy-700 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    {lc.label}
+                    {filled
+                      ? <Check className={`h-3.5 w-3.5 ${active ? "text-white" : "text-emerald-500"}`} />
+                      : <span className={`h-2 w-2 rounded-full ${active ? "bg-amber-300" : "bg-amber-400"}`} title="İçerik eksik" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+              <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" /> içerik girilmiş</span>
+              <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> içerik eksik</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const base: LocalizedPageContent = {
+                    heroSubtitle: form.heroSubtitle,
+                    heroDescription: form.heroDescription,
+                    features: form.features.map((f) => ({ ...f })),
+                    detailCards: form.detailCards.map((d) => ({ ...d })),
+                    specs: form.specs.map((s) => ({ ...s })),
+                    useCases: [...form.useCases],
+                    advantages: [...form.advantages],
+                    featureTiles: form.featureTiles.map((f) => ({ ...f })),
+                    faq: form.faq.map((f) => ({ ...f })),
+                  };
+                  set("localePageData", { ...form.localePageData, [activeLocale]: base });
+                  toast.success("Türkçe içerik bu dile kopyalandı — çevirmeyi unutmayın");
+                }}
+                className="ml-auto rounded-lg border border-slate-300 bg-white px-2.5 py-1 font-semibold text-slate-600 hover:bg-slate-100"
+              >
+                Türkçe içeriği bu dile kopyala
+              </button>
+            </div>
+            <LocalizedContentEditor
+              key={activeLocale}
+              localeLabel={TITLE_LOCALES.find((l) => l.code === activeLocale)?.label ?? activeLocale}
+              value={form.localePageData[activeLocale] ?? EMPTY_LOCALIZED_CONTENT}
+              onChange={(next) => set("localePageData", { ...form.localePageData, [activeLocale]: next })}
+              uploadFile={uploadFile}
+              uploading={uploading}
+            />
           </div>
         )}
 

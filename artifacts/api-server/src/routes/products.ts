@@ -2,6 +2,11 @@ import { Router, type IRouter, type Request } from "express";
 import { db, productsTable, productCategoriesTable } from "@workspace/db";
 import { eq, asc, count, and, or, isNull, notInArray } from "drizzle-orm";
 import { requireAuth, verifyToken } from "../lib/auth";
+import {
+  PRODUCT_SLUG_MAX_LENGTH,
+  isProductPubliclyVisible,
+  isValidProductSlug,
+} from "@workspace/product-content";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
@@ -24,6 +29,20 @@ function stripPrivate(p: ProductRow): Omit<ProductRow, "privateData"> & { privat
 
 const ProductSpecSchema = z.object({ label: z.string(), value: z.string() });
 
+/**
+ * `pageSlug` becomes a directory name at build time (`dist/public/.../<slug>/
+ * index.html`) and a single-segment `:slug` route in the client, so it must be
+ * one plain lowercase URL segment. Anything with path separators or `..` could
+ * write outside the build output directory.
+ */
+const PageSlugSchema = z
+  .string()
+  .max(PRODUCT_SLUG_MAX_LENGTH)
+  .refine(isValidProductSlug, {
+    message:
+      "URL uzantısı yalnızca küçük harf, rakam ve tire içerebilir (örn. dental-vakum-pompasi).",
+  });
+
 const PageDataContentSchema = z.object({
   heroSubtitle: z.string().optional(),
   heroDescription: z.string().optional(),
@@ -37,6 +56,9 @@ const PageDataContentSchema = z.object({
 });
 
 const PageDataSchema = PageDataContentSchema.extend({
+  templateVersion: z.literal(1).optional(),
+  sectionOrder: z.array(z.enum(["detailCards", "technical", "useCases", "featureTiles", "faq"])).optional(),
+  hiddenSections: z.array(z.enum(["detailCards", "technical", "useCases", "featureTiles", "faq"])).optional(),
   locales: z.record(z.string(), PageDataContentSchema).optional(),
 });
 
@@ -88,7 +110,7 @@ const ProductBody = z.object({
   showOnHome: z.boolean().optional(),
   homeSortOrder: z.coerce.number().int().optional(),
   published: z.boolean().optional(),
-  pageSlug: z.string().optional().nullable(),
+  pageSlug: PageSlugSchema.optional().nullable(),
   pageData: PageDataSchema.optional().nullable(),
   privateData: PrivateDataSchema.optional().nullable(),
   quoteTitle: z.string().optional().nullable(),
@@ -246,6 +268,27 @@ router.post("/products", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(product);
 });
 
+/**
+ * Public detail reads must not disclose withdrawn content.
+ *
+ * Unpublishing a product removes it from the catalogue, the sitemap and the
+ * prerendered output, but the row keeps its slug and id — so without this the
+ * page stays fully readable to anyone who kept the URL, and the SPA would
+ * render it with an indexable self-canonical. Admins keep full access so the
+ * editor can still load drafts.
+ *
+ * A hidden category hides the products inside it, matching the list endpoint.
+ */
+async function isPubliclyVisible(product: ProductRow): Promise<boolean> {
+  if (product.published !== true) return false;
+  if (product.categoryId == null) return isProductPubliclyVisible(product);
+  const [category] = await db
+    .select({ visible: productCategoriesTable.visible })
+    .from(productCategoriesTable)
+    .where(eq(productCategoriesTable.id, product.categoryId));
+  return isProductPubliclyVisible(product, { categoryVisible: category?.visible ?? null });
+}
+
 router.get("/products/by-slug/:slug", async (req, res): Promise<void> => {
   const slug = req.params["slug"]!;
   const [product] = await db.select().from(productsTable).where(eq(productsTable.pageSlug, slug));
@@ -254,6 +297,11 @@ router.get("/products/by-slug/:slug", async (req, res): Promise<void> => {
     return;
   }
   const isAdmin = checkIsAdmin(req);
+  if (!isAdmin && !(await isPubliclyVisible(product))) {
+    res.status(404).json({ error: "Product not found" });
+    return;
+  }
+  res.setHeader("Vary", "Authorization");
   res.json(isAdmin ? product : stripPrivate(product));
 });
 
@@ -265,6 +313,11 @@ router.get("/products/:id", async (req, res): Promise<void> => {
     return;
   }
   const isAdmin = checkIsAdmin(req);
+  if (!isAdmin && !(await isPubliclyVisible(product))) {
+    res.status(404).json({ error: "Product not found" });
+    return;
+  }
+  res.setHeader("Vary", "Authorization");
   res.json(isAdmin ? product : stripPrivate(product));
 });
 

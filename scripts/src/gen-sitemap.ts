@@ -25,7 +25,21 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { eq, and } from "drizzle-orm";
-import { db, pool, newsTable, newsTranslationsTable } from "@workspace/db";
+import {
+  db,
+  pool,
+  newsTable,
+  newsTranslationsTable,
+  productsTable,
+  type PageData,
+  type PageDataContent,
+} from "@workspace/db";
+import {
+  availableProductLocales,
+  contentForLocale,
+  isValidProductSlug,
+  localizedName,
+} from "@workspace/product-content";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SITE_DIR = path.resolve(HERE, "../../artifacts/oxymed-medikal");
@@ -36,6 +50,9 @@ const PUBLIC_DIR = path.join(SITE_DIR, "public");
  * regenerated from the database on every build.
  */
 const NEWS_SEO_FILE = ".news-seo.json";
+
+/** Same handoff, for the DB-driven generic product detail pages. */
+const PRODUCT_SEO_FILE = ".product-seo.json";
 
 const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymed.com.tr").replace(/\/$/, "");
 
@@ -241,6 +258,108 @@ async function loadPublishedNewsGroups(): Promise<ArticleGroup[]> {
   return [...groupMap.values()];
 }
 
+/**
+ * The four dental/gas products predate the DB-driven template and have their
+ * own hand-built routes with per-locale slugs (gcp/ams/dvp/dvs). They must not
+ * also be emitted as generic /urunler/<slug> URLs or two pages would compete
+ * for the same content.
+ */
+const LEGACY_PRODUCT_SLUGS = new Set([
+  "kat-kontrol-panosu",
+  "amalgam-separator",
+  "dental-vakum-pompasi",
+  "dental-vakum-sistemi",
+]);
+
+function productDetailPath(locale: Locale, slug: string): string {
+  const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+  return `${prefix}/${PRODUCTS_SLUG[locale]}/${slug}`;
+}
+
+function productDetailUrl(locale: Locale, slug: string): string {
+  return `${SITE_ORIGIN}${productDetailPath(locale, slug)}`;
+}
+
+interface ProductVersion {
+  locale: Locale;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  updatedAt: Date;
+}
+
+interface ProductGroup {
+  slug: string;
+  versions: ProductVersion[];
+}
+
+/**
+ * Published, generic-template products and the languages they actually exist
+ * in. Eligibility comes from the shared `availableProductLocales` helper — the
+ * same one the public page uses to build its hreflang set — so the sitemap,
+ * the prerendered <head>, and the hydrated page can never disagree about which
+ * language versions exist.
+ */
+async function loadPublishedProductGroups(): Promise<ProductGroup[]> {
+  const rows = await db.select().from(productsTable).where(eq(productsTable.published, true));
+
+  const groups: ProductGroup[] = [];
+
+  for (const row of rows) {
+    const slug = row.pageSlug?.trim();
+    if (!slug || LEGACY_PRODUCT_SLUGS.has(slug)) continue;
+
+    // Published data reaching the build must satisfy the same single-segment
+    // contract the API enforces on write. A slug like `../en` would otherwise
+    // be emitted as the route /urunler/../en, which the prerenderer resolves
+    // to dist/public/en/index.html and overwrites the English home page. Fail
+    // the build loudly rather than silently skipping: invalid published data
+    // means something wrote to the database outside the API.
+    if (!isValidProductSlug(slug)) {
+      throw new Error(
+        `Invalid pageSlug on published product #${row.id}: ${JSON.stringify(slug)}. ` +
+          `Expected a single lowercase URL segment (e.g. "dental-vakum-pompasi").`,
+      );
+    }
+
+    const pageData = (row.pageData ?? {}) as PageData;
+    // Passing the row makes a translated title part of the eligibility
+    // contract, matching the public page: a language whose heading would still
+    // be Turkish is not a published translation.
+    const locales = availableProductLocales(pageData, {
+      fallbackDescription: row.description,
+      product: row as unknown as Record<string, unknown>,
+    });
+
+    const versions: ProductVersion[] = locales.map((locale) => {
+      const content = contentForLocale(pageData, locale) as PageDataContent | undefined;
+      const localizedTitle =
+        localizedName(row as unknown as Record<string, unknown>, "title", locale) ?? firstText(row.title);
+
+      // Turkish may fall back to the product's short card description; other
+      // languages only ever describe themselves.
+      const description =
+        locale === DEFAULT_LOCALE
+          ? toDescription(firstText(content?.heroDescription, row.description, content?.heroSubtitle))
+          : toDescription(firstText(content?.heroDescription, content?.heroSubtitle));
+
+      return {
+        locale: locale as Locale,
+        title: localizedTitle,
+        description,
+        imageUrl: row.imageUrl,
+        updatedAt: row.updatedAt,
+      };
+    });
+
+    if (versions.length === 0) continue;
+
+    groups.push({ slug, versions });
+  }
+
+  return groups;
+}
+
 async function main() {
   const todayLastmod = new Date().toISOString().slice(0, 10);
 
@@ -309,7 +428,39 @@ async function main() {
     }
   }
 
-  const allEntries = [...staticEntries, ...newsEntries];
+  // ── Dynamic product detail URLs (generic DB-driven template) ──────────────
+  const productGroups = await loadPublishedProductGroups();
+  const productEntries: string[] = [];
+
+  for (const group of productGroups) {
+    const alternates: Array<{ hreflang: string; href: string }> = group.versions.map((v) => ({
+      hreflang: v.locale,
+      href: productDetailUrl(v.locale, group.slug),
+    }));
+    if (group.versions.some((v) => v.locale === DEFAULT_LOCALE)) {
+      alternates.push({ hreflang: "x-default", href: productDetailUrl(DEFAULT_LOCALE, group.slug) });
+    }
+
+    for (const version of group.versions) {
+      const links = alternates
+        .map((a) => `    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${xmlEscape(a.href)}" />`)
+        .join("\n");
+
+      productEntries.push(
+        [
+          "  <url>",
+          `    <loc>${xmlEscape(productDetailUrl(version.locale, group.slug))}</loc>`,
+          `    <lastmod>${isoDate(version.updatedAt, new Date())}</lastmod>`,
+          `    <changefreq>monthly</changefreq>`,
+          `    <priority>0.8</priority>`,
+          links,
+          "  </url>",
+        ].join("\n"),
+      );
+    }
+  }
+
+  const allEntries = [...staticEntries, ...newsEntries, ...productEntries];
 
   const sitemap = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -358,14 +509,39 @@ async function main() {
     }));
   });
 
+  // ── Product metadata for the prerender step ───────────────────────────────
+  // Same shape and same reciprocal alternate set as the sitemap entries above,
+  // so a baked <head> can never advertise a language the sitemap omits.
+  const seoProducts = productGroups.flatMap((group) => {
+    const hasTr = group.versions.some((v) => v.locale === DEFAULT_LOCALE);
+    const alternates = [
+      ...group.versions.map((v) => ({ hreflang: v.locale as string, path: productDetailPath(v.locale, group.slug) })),
+      ...(hasTr ? [{ hreflang: "x-default", path: productDetailPath(DEFAULT_LOCALE, group.slug) }] : []),
+    ];
+
+    return group.versions.map((version) => ({
+      locale: version.locale,
+      slug: group.slug,
+      path: productDetailPath(version.locale, group.slug),
+      title: version.title,
+      description: version.description,
+      imageUrl: version.imageUrl,
+      updatedAt: version.updatedAt.toISOString(),
+      alternates,
+    }));
+  });
+
   await writeFile(path.join(PUBLIC_DIR, "sitemap.xml"), sitemap, "utf8");
   await writeFile(path.join(PUBLIC_DIR, "robots.txt"), robots, "utf8");
   await writeFile(path.join(SITE_DIR, NEWS_SEO_FILE), `${JSON.stringify(seoArticles, null, 2)}\n`, "utf8");
+  await writeFile(path.join(SITE_DIR, PRODUCT_SEO_FILE), `${JSON.stringify(seoProducts, null, 2)}\n`, "utf8");
 
   const staticCount = staticEntries.length;
   const newsCount = newsEntries.length;
+  const productCount = productEntries.length;
   console.log(
-    `Wrote sitemap.xml (${staticCount} static URLs + ${newsCount} news article URLs = ${staticCount + newsCount} total), robots.txt and ${NEWS_SEO_FILE} (${seoArticles.length} article versions) for ${SITE_ORIGIN}`,
+    `Wrote sitemap.xml (${staticCount} static URLs + ${newsCount} news article URLs + ${productCount} product URLs = ${staticCount + newsCount + productCount} total), ` +
+      `robots.txt, ${NEWS_SEO_FILE} (${seoArticles.length} article versions) and ${PRODUCT_SEO_FILE} (${seoProducts.length} product versions) for ${SITE_ORIGIN}`,
   );
 
   // Close the pg pool so the process exits cleanly instead of hanging in CI.

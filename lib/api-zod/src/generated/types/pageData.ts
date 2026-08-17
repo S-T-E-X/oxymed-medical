@@ -6,8 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PageDataContent } from './pageDataContent';
+import type { PageDataHiddenSectionsItem } from './pageDataHiddenSectionsItem';
 import type { PageDataLocales } from './pageDataLocales';
+import type { PageDataSectionOrderItem } from './pageDataSectionOrderItem';
+import type { PageDataTemplateVersion } from './pageDataTemplateVersion';
 
 export type PageData = PageDataContent & {
+  templateVersion?: PageDataTemplateVersion;
+  sectionOrder?: PageDataSectionOrderItem[];
+  hiddenSections?: PageDataHiddenSectionsItem[];
   locales?: PageDataLocales;
 };

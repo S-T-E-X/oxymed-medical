@@ -3075,6 +3075,19 @@ components:
         - $ref: "#/components/schemas/PageDataContent"
         - type: object
           properties:
+            templateVersion:
+              type: integer
+              enum: [1]
+            sectionOrder:
+              type: array
+              items:
+                type: string
+                enum: [detailCards, technical, useCases, featureTiles, faq]
+            hiddenSections:
+              type: array
+              items:
+                type: string
+                enum: [detailCards, technical, useCases, featureTiles, faq]
             locales:
               type: object
               additionalProperties:

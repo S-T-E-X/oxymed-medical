@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { LOCALE_META, LOCALES, SITE_ORIGIN } from "../../i18n/config";
+import { LOCALE_META, LOCALES, SITE_ORIGIN, type Locale } from "../../i18n/config";
 import { useI18n } from "../../i18n/I18nProvider";
 import { absoluteUrl, alternatesFor, type Alternate } from "../../i18n/seo";
 import type { RouteKey } from "../../i18n/routes";
@@ -75,6 +75,12 @@ export type SeoProps = {
    * og:type override. Defaults to "website"; article pages supply "article".
    */
   ogType?: string;
+  /**
+   * Keep this URL out of search results. Data-driven pages set this when the
+   * requested locale has no published content, so a directly-visited URL that
+   * the sitemap deliberately omits cannot be indexed anyway.
+   */
+  noindex?: boolean;
 };
 
 /**
@@ -91,6 +97,7 @@ export default function Seo({
   canonicalUrl,
   alternates,
   ogType = "website",
+  noindex = false,
 }: SeoProps) {
   const { locale, t } = useI18n();
 
@@ -111,7 +118,7 @@ export default function Seo({
     document.title = resolvedTitle;
 
     upsertMeta("name", "description", resolvedDescription);
-    upsertMeta("name", "robots", "index, follow");
+    upsertMeta("name", "robots", noindex ? "noindex, follow" : "index, follow");
 
     upsertMeta("property", "og:title", resolvedTitle);
     upsertMeta("property", "og:description", resolvedDescription);
@@ -121,11 +128,18 @@ export default function Seo({
     upsertMeta("property", "og:site_name", "Oxymed Medikal");
     upsertMeta("property", "og:locale", LOCALE_META[locale].ogLocale);
 
-    // Tell social crawlers which other languages exist for this page.
+    // Tell social crawlers which other languages exist for THIS page. Derived
+    // from the resolved alternate set, never the full locale list: a
+    // data-driven page (news, DB products) only exists in the languages that
+    // actually have content, and advertising the rest points crawlers at
+    // pages that were never published.
     document.head
       .querySelectorAll('meta[property="og:locale:alternate"]')
       .forEach((node) => node.remove());
-    for (const alternate of LOCALES.filter((candidate) => candidate !== locale)) {
+    const alternateLocales = resolvedAlternates
+      .map((alternate) => alternate.hreflang)
+      .filter((hreflang): hreflang is Locale => hreflang !== locale && hreflang in LOCALE_META);
+    for (const alternate of new Set(alternateLocales)) {
       const element = document.createElement("meta");
       element.setAttribute("property", "og:locale:alternate");
       element.setAttribute("content", LOCALE_META[alternate].ogLocale);
@@ -138,7 +152,14 @@ export default function Seo({
     upsertMeta("name", "twitter:description", resolvedDescription);
     upsertMeta("name", "twitter:image", shareImage);
 
-    upsertLink("canonical", canonical);
+    // A noindex page must not self-canonicalise: pointing a canonical at an
+    // unpublished locale URL would nominate it as the indexable version of
+    // content the sitemap deliberately omits.
+    if (noindex) {
+      document.head.querySelectorAll('link[rel="canonical"]').forEach((node) => node.remove());
+    } else {
+      upsertLink("canonical", canonical);
+    }
     // Drop stale alternates before writing this page's set, otherwise a
     // navigation would leave the previous page's hreflang URLs behind.
     document.head
@@ -147,7 +168,7 @@ export default function Seo({
     for (const alternate of resolvedAlternates) {
       upsertLink("alternate", alternate.href, alternate.hreflang);
     }
-  }, [canonical, locale, ogType, resolvedAlternates, resolvedDescription, resolvedTitle, shareImage]);
+  }, [canonical, locale, noindex, ogType, resolvedAlternates, resolvedDescription, resolvedTitle, shareImage]);
 
   useEffect(() => {
     setJsonLd("organization", {

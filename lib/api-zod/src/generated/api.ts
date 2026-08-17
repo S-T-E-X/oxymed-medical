@@ -824,6 +824,9 @@ export const ListProductsResponse = zod.object({
   "value": zod.string()
 })).optional()
 }).and(zod.object({
+  "templateVersion": zod.literal(1).optional(),
+  "sectionOrder": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
+  "hiddenSections": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
   "locales": zod.record(zod.string(), zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroDescription": zod.string().optional(),
@@ -924,6 +927,9 @@ export const CreateProductBody = zod.object({
   "value": zod.string()
 })).optional()
 }).and(zod.object({
+  "templateVersion": zod.literal(1).optional(),
+  "sectionOrder": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
+  "hiddenSections": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
   "locales": zod.record(zod.string(), zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroDescription": zod.string().optional(),
@@ -1025,6 +1031,9 @@ export const GetProductBySlugResponse = zod.object({
   "value": zod.string()
 })).optional()
 }).and(zod.object({
+  "templateVersion": zod.literal(1).optional(),
+  "sectionOrder": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
+  "hiddenSections": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
   "locales": zod.record(zod.string(), zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroDescription": zod.string().optional(),
@@ -1128,6 +1137,9 @@ export const GetProductResponse = zod.object({
   "value": zod.string()
 })).optional()
 }).and(zod.object({
+  "templateVersion": zod.literal(1).optional(),
+  "sectionOrder": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
+  "hiddenSections": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
   "locales": zod.record(zod.string(), zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroDescription": zod.string().optional(),
@@ -1230,6 +1242,9 @@ export const UpdateProductBody = zod.object({
   "value": zod.string()
 })).optional()
 }).and(zod.object({
+  "templateVersion": zod.literal(1).optional(),
+  "sectionOrder": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
+  "hiddenSections": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
   "locales": zod.record(zod.string(), zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroDescription": zod.string().optional(),
@@ -1323,6 +1338,9 @@ export const UpdateProductResponse = zod.object({
   "value": zod.string()
 })).optional()
 }).and(zod.object({
+  "templateVersion": zod.literal(1).optional(),
+  "sectionOrder": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
+  "hiddenSections": zod.array(zod.enum(['detailCards', 'technical', 'useCases', 'featureTiles', 'faq'])).optional(),
   "locales": zod.record(zod.string(), zod.object({
   "heroSubtitle": zod.string().optional(),
   "heroDescription": zod.string().optional(),
