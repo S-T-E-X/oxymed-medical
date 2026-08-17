@@ -1217,18 +1217,16 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>{t.phone}</span><b>:</b><em>{data.hazirlayanTelefon}</em>
             <span>{t.email}</span><b>:</b><em>{data.hazirlayanEmail}</em>
           </div>
-          {data.hazirlayanImzaUrl ? (
-            <>
-              <strong>{t.signature}</strong>
-              <div className="qt-signature-image-slot" style={{ background: "none", border: "none", padding: "1.5mm" }}>
-                <img
-                  src={data.hazirlayanImzaUrl}
-                  alt={t.signature}
-                  style={{ display: "block", width: "auto", height: "auto", maxWidth: "100%", maxHeight: "20mm", objectFit: "contain" }}
-                />
-              </div>
-            </>
-          ) : null}
+          <strong>{t.signature}</strong>
+          <div className={`qt-signature-image-slot${data.hazirlayanImzaUrl ? "" : " qt-signature-signing-space"}`} style={data.hazirlayanImzaUrl ? { background: "none", border: "none", padding: "1.5mm" } : undefined}>
+            {data.hazirlayanImzaUrl ? (
+              <img
+                src={data.hazirlayanImzaUrl}
+                alt={t.signature}
+                style={{ display: "block", width: "auto", height: "auto", maxWidth: "100%", maxHeight: "20mm", objectFit: "contain" }}
+              />
+            ) : null}
+          </div>
           <img className="qt-sign-watermark" src="/assets/brand/oxymed-logo.webp" alt="" aria-hidden="true" />
         </article>
 
@@ -1240,6 +1238,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>{t.approvalDate}</span><b>:</b><em>{data.onayTarihi}</em>
           </div>
           <strong>{t.signature}</strong>
+          <div className="qt-signature-image-slot qt-signature-signing-space" aria-hidden="true" />
           {data.quoteNo === COUNTERPARTY_LOGO_QUOTE_NO && data.karsiFirmaLogoUrl ? (
             <img
               className="qt-approval-logo-watermark"

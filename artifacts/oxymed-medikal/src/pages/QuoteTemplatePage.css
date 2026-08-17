@@ -26,7 +26,7 @@
 }
 
 .qt-top-info {
-  height: 94mm;
+  height: auto;
   padding: 4.5mm 4mm 0;
   box-sizing: border-box;
 }
@@ -177,7 +177,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3mm;
-  height: 52mm;
+  height: auto;
   margin-top: 2mm;
 }
 
@@ -726,6 +726,12 @@
   background: rgba(248, 251, 255, 0.78);
   color: #7890ad;
   text-align: center;
+}
+
+.qt-signature-signing-space {
+  min-height: 20mm;
+  border-color: transparent;
+  background: transparent;
 }
 
 .qt-signature-image-slot span,
