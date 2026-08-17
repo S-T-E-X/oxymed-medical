@@ -9,6 +9,7 @@ import type { PageDataContentDetailCardsItem } from './pageDataContentDetailCard
 import type { PageDataContentFaqItem } from './pageDataContentFaqItem';
 import type { PageDataContentFeaturesItem } from './pageDataContentFeaturesItem';
 import type { PageDataContentFeatureTilesItem } from './pageDataContentFeatureTilesItem';
+import type { PageDataContentUseCasesItem } from './pageDataContentUseCasesItem';
 import type { ProductSpec } from './productSpec';
 
 export interface PageDataContent {
@@ -16,7 +17,7 @@ export interface PageDataContent {
   heroDescription?: string;
   features?: PageDataContentFeaturesItem[];
   detailCards?: PageDataContentDetailCardsItem[];
-  useCases?: string[];
+  useCases?: PageDataContentUseCasesItem[];
   advantages?: string[];
   featureTiles?: PageDataContentFeatureTilesItem[];
   faq?: PageDataContentFaqItem[];

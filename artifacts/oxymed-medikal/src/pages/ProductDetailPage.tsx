@@ -5,10 +5,8 @@ import {
   BadgeCheck,
   FileCheck2,
   HelpCircle,
-  Layers,
   Loader2,
   Settings,
-  Sparkles,
 } from "lucide-react";
 import {
   useGetProduct,
@@ -25,6 +23,7 @@ import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { DEFAULT_LOCALE, LOCALE_META, SITE_ORIGIN, type Locale } from "../i18n/config";
 import { localizedPath } from "../i18n/routes";
 import type { Alternate } from "../i18n/seo";
+import { getProductIcon } from "../data/productPageIcons";
 import {
   availableProductLocales,
   contentForLocale,
@@ -197,7 +196,16 @@ export default function ProductDetailPage() {
       </section>
     ),
     useCases: useCases.length > 0 && !hiddenSections.includes("useCases") && (
-      <section key="useCases" className="pdp-container pdp-usage-band"><h2>{t("products.detail.applications")}</h2><div>{useCases.map((item) => <article key={item}><Layers aria-hidden="true" /><p>{item}</p></article>)}</div></section>
+      <section key="useCases" className="pdp-container pdp-usage-band">
+        <h2>{t("products.detail.applications")}</h2>
+        <div>
+          {useCases.map((item, index) => {
+            const text = typeof item === "string" ? item : item.text ?? "";
+            const Icon = getProductIcon(typeof item === "string" ? undefined : item.icon, "layers");
+            return <article key={`${text}-${index}`}><Icon aria-hidden="true" /><p>{text}</p></article>;
+          })}
+        </div>
+      </section>
     ),
     featureTiles: featureTiles.length > 0 && !hiddenSections.includes("featureTiles") && (
       <section key="featureTiles" className="pdp-container pdp-tiles">{featureTiles.map((tile) => <article key={tile.title}><BadgeCheck aria-hidden="true" /><h3>{tile.title}</h3><p>{tile.text}</p></article>)}</section>
@@ -273,7 +281,10 @@ export default function ProductDetailPage() {
                 <div className="pdp-hero-features">
                   {features.map((feature) => (
                     <article key={feature.title}>
-                      <Sparkles aria-hidden="true" />
+                      {(() => {
+                        const Icon = getProductIcon(feature.icon, "sparkles");
+                        return <Icon aria-hidden="true" />;
+                      })()}
                       <div>
                         <h2>{feature.title}</h2>
                         <span>{feature.text}</span>

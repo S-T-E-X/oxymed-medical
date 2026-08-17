@@ -3018,6 +3018,35 @@ components:
         value:
           type: string
 
+    ProductPageIconKey:
+      type: string
+      enum:
+        - sparkles
+        - layers
+        - hospital
+        - stethoscope
+        - bed
+        - building
+        - heart-pulse
+        - activity
+        - shield-check
+        - badge-check
+        - lightbulb
+        - settings
+        - wrench
+        - gauge
+        - zap
+        - plug-zap
+        - cable
+        - monitor
+        - droplets
+        - wind
+        - thermometer
+        - syringe
+        - microscope
+        - box
+        - cpu
+
     PageDataContent:
       type: object
       properties:
@@ -3034,6 +3063,8 @@ components:
                 type: string
               text:
                 type: string
+              icon:
+                $ref: "#/components/schemas/ProductPageIconKey"
         detailCards:
           type: array
           items:
@@ -3048,7 +3079,15 @@ components:
         useCases:
           type: array
           items:
-            type: string
+            oneOf:
+              - type: string
+              - type: object
+                required: [text]
+                properties:
+                  text:
+                    type: string
+                  icon:
+                    $ref: "#/components/schemas/ProductPageIconKey"
         advantages:
           type: array
           items:

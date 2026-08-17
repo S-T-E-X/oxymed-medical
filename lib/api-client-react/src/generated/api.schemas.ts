@@ -579,15 +579,52 @@ export interface ProductSpec {
   value: string;
 }
 
+export type ProductPageIconKey = typeof ProductPageIconKey[keyof typeof ProductPageIconKey];
+
+
+export const ProductPageIconKey = {
+  sparkles: 'sparkles',
+  layers: 'layers',
+  hospital: 'hospital',
+  stethoscope: 'stethoscope',
+  bed: 'bed',
+  building: 'building',
+  'heart-pulse': 'heart-pulse',
+  activity: 'activity',
+  'shield-check': 'shield-check',
+  'badge-check': 'badge-check',
+  lightbulb: 'lightbulb',
+  settings: 'settings',
+  wrench: 'wrench',
+  gauge: 'gauge',
+  zap: 'zap',
+  'plug-zap': 'plug-zap',
+  cable: 'cable',
+  monitor: 'monitor',
+  droplets: 'droplets',
+  wind: 'wind',
+  thermometer: 'thermometer',
+  syringe: 'syringe',
+  microscope: 'microscope',
+  box: 'box',
+  cpu: 'cpu',
+} as const;
+
 export type PageDataContentFeaturesItem = {
   title?: string;
   text?: string;
+  icon?: ProductPageIconKey;
 };
 
 export type PageDataContentDetailCardsItem = {
   title?: string;
   text?: string;
   imageUrl?: string;
+};
+
+export type PageDataContentUseCasesItem = string | {
+  text: string;
+  icon?: ProductPageIconKey;
 };
 
 export type PageDataContentFeatureTilesItem = {
@@ -605,7 +642,7 @@ export interface PageDataContent {
   heroDescription?: string;
   features?: PageDataContentFeaturesItem[];
   detailCards?: PageDataContentDetailCardsItem[];
-  useCases?: string[];
+  useCases?: PageDataContentUseCasesItem[];
   advantages?: string[];
   featureTiles?: PageDataContentFeatureTilesItem[];
   faq?: PageDataContentFaqItem[];

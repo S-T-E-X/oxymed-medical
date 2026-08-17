@@ -807,14 +807,18 @@ export const ListProductsResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -837,14 +841,18 @@ export const ListProductsResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -910,14 +918,18 @@ export const CreateProductBody = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -940,14 +952,18 @@ export const CreateProductBody = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1014,14 +1030,18 @@ export const GetProductBySlugResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1044,14 +1064,18 @@ export const GetProductBySlugResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1120,14 +1144,18 @@ export const GetProductResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1150,14 +1178,18 @@ export const GetProductResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1225,14 +1257,18 @@ export const UpdateProductBody = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1255,14 +1291,18 @@ export const UpdateProductBody = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1321,14 +1361,18 @@ export const UpdateProductResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),
@@ -1351,14 +1395,18 @@ export const UpdateProductResponse = zod.object({
   "heroDescription": zod.string().optional(),
   "features": zod.array(zod.object({
   "title": zod.string().optional(),
-  "text": zod.string().optional()
+  "text": zod.string().optional(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
 })).optional(),
   "detailCards": zod.array(zod.object({
   "title": zod.string().optional(),
   "text": zod.string().optional(),
   "imageUrl": zod.string().optional()
 })).optional(),
-  "useCases": zod.array(zod.string()).optional(),
+  "useCases": zod.array(zod.union([zod.string(),zod.object({
+  "text": zod.string(),
+  "icon": zod.enum(['sparkles', 'layers', 'hospital', 'stethoscope', 'bed', 'building', 'heart-pulse', 'activity', 'shield-check', 'badge-check', 'lightbulb', 'settings', 'wrench', 'gauge', 'zap', 'plug-zap', 'cable', 'monitor', 'droplets', 'wind', 'thermometer', 'syringe', 'microscope', 'box', 'cpu']).optional()
+})])).optional(),
   "advantages": zod.array(zod.string()).optional(),
   "featureTiles": zod.array(zod.object({
   "title": zod.string().optional(),

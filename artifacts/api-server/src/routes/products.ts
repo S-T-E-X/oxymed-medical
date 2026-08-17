@@ -1,5 +1,5 @@
 import { Router, type IRouter, type Request } from "express";
-import { db, productsTable, productCategoriesTable } from "@workspace/db";
+import { db, productsTable, productCategoriesTable, PRODUCT_PAGE_ICON_KEYS } from "@workspace/db";
 import { eq, asc, count, and, or, isNull, notInArray } from "drizzle-orm";
 import { requireAuth, verifyToken } from "../lib/auth";
 import {
@@ -29,6 +29,11 @@ function stripPrivate(p: ProductRow): Omit<ProductRow, "privateData"> & { privat
 }
 
 const ProductSpecSchema = z.object({ label: z.string(), value: z.string() });
+const ProductPageIconSchema = z.enum(PRODUCT_PAGE_ICON_KEYS);
+const PageUseCaseSchema = z.union([
+  z.string(),
+  z.object({ text: z.string(), icon: ProductPageIconSchema.optional() }),
+]);
 
 /**
  * `pageSlug` becomes a directory name at build time (`dist/public/.../<slug>/
@@ -47,9 +52,9 @@ const PageSlugSchema = z
 const PageDataContentSchema = z.object({
   heroSubtitle: z.string().optional(),
   heroDescription: z.string().optional(),
-  features: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
+  features: z.array(z.object({ title: z.string(), text: z.string(), icon: ProductPageIconSchema.optional() })).optional(),
   detailCards: z.array(z.object({ title: z.string(), text: z.string(), imageUrl: z.string().optional() })).optional(),
-  useCases: z.array(z.string()).optional(),
+  useCases: z.array(PageUseCaseSchema).optional(),
   advantages: z.array(z.string()).optional(),
   featureTiles: z.array(z.object({ title: z.string(), text: z.string() })).optional(),
   faq: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
@@ -176,7 +181,7 @@ function validateTranslatedContent(source: PageContent, translated: unknown): st
     c.heroDescription ?? "",
     ...(c.features ?? []).flatMap((f) => [f.title, f.text]),
     ...(c.detailCards ?? []).flatMap((d) => [d.title, d.text]),
-    ...(c.useCases ?? []),
+    ...(c.useCases ?? []).map((item) => (typeof item === "string" ? item : item.text)),
     ...(c.advantages ?? []),
     ...(c.featureTiles ?? []).flatMap((f) => [f.title, f.text]),
     ...(c.faq ?? []).flatMap((f) => [f.question, f.answer]),
@@ -227,6 +232,7 @@ router.post("/products/translate-page-content", requireAuth, async (req, res): P
             `Translate the given Turkish product detail page JSON into ${target.name}. ` +
             `Return ONLY a JSON object with exactly the same keys, nesting and array lengths as the input. ` +
             `Translate string VALUES only, never keys. ` +
+             `Icon values are stable identifiers, not language: preserve every feature and use-case icon value exactly as-is. ` +
             `Preserve image URLs, model codes, standards, certifications, gas symbols, units, dimensions and technical numbers exactly as-is. ` +
             `If a value is an empty string, keep it as an empty string. ` +
             `Use accurate, natural B2B hospital-equipment terminology; keep short labels concise.`,
@@ -262,10 +268,22 @@ router.post("/products/translate-page-content", requireAuth, async (req, res): P
   const t = PageDataContentSchema.parse(translated);
   const result: PageContent = {
     ...t,
+    features: (t.features ?? []).map((feature, i) => ({
+      ...feature,
+      icon: content.features?.[i] && typeof content.features[i] !== "string"
+        ? content.features[i].icon
+        : feature.icon,
+    })),
     detailCards: (t.detailCards ?? []).map((d, i) => ({
       ...d,
       imageUrl: source.detailCards?.[i]?.imageUrl ?? "",
     })),
+    useCases: (t.useCases ?? []).map((item, i) => {
+      const sourceItem = source.useCases?.[i];
+      const sourceIcon = sourceItem && typeof sourceItem !== "string" ? sourceItem.icon : undefined;
+      if (typeof item === "string") return sourceIcon ? { text: item, icon: sourceIcon } : item;
+      return sourceIcon ? { ...item, icon: sourceIcon } : item;
+    }),
   };
   res.json({ targetLocale, content: result });
 });

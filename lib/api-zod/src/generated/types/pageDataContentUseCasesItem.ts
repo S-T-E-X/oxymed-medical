@@ -7,8 +7,7 @@
  */
 import type { ProductPageIconKey } from './productPageIconKey';
 
-export type PageDataContentFeaturesItem = {
-  title?: string;
-  text?: string;
+export type PageDataContentUseCasesItem = string | {
+  text: string;
   icon?: ProductPageIconKey;
 };

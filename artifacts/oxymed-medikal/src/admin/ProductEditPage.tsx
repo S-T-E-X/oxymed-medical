@@ -11,20 +11,22 @@ import {
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowUp, ArrowDown, Box, Check, Eye, EyeOff, ImageIcon, Languages, Loader2, Lock, Plus, Save, Sparkles, X } from "lucide-react";
+import { PRODUCT_ICON_OPTIONS, type ProductIconKey } from "../data/productPageIcons";
 import { useImageUpload } from "./useImageUpload";
 import { useAuth } from "./AuthContext";
 
 type SpecRow = { label: string; value: string };
-type FeatureRow = { title: string; text: string };
+type FeatureRow = { title: string; text: string; icon?: ProductIconKey };
 type DetailCard = { title: string; text: string; imageUrl: string };
 type FaqRow = { question: string; answer: string };
+type UseCaseRow = { text: string; icon: ProductIconKey };
 type LocalizedPageContent = {
   heroSubtitle: string;
   heroDescription: string;
   features: FeatureRow[];
   detailCards: DetailCard[];
   specs: SpecRow[];
-  useCases: string[];
+  useCases: UseCaseRow[];
   advantages: string[];
   featureTiles: FeatureRow[];
   faq: FaqRow[];
@@ -34,6 +36,34 @@ const EMPTY_LOCALIZED_CONTENT: LocalizedPageContent = {
   heroSubtitle: "", heroDescription: "", features: [], detailCards: [], specs: [],
   useCases: [], advantages: [], featureTiles: [], faq: [],
 };
+
+const PRODUCT_ICON_KEY_SET = new Set<string>(PRODUCT_ICON_OPTIONS.map((option) => option.key));
+
+function normalizeIcon(value: unknown, fallback: ProductIconKey): ProductIconKey {
+  return typeof value === "string" && PRODUCT_ICON_KEY_SET.has(value)
+    ? value as ProductIconKey
+    : fallback;
+}
+
+function normalizeFeature(value: { title?: string; text?: string; icon?: string }): FeatureRow {
+  return {
+    title: value.title ?? "",
+    text: value.text ?? "",
+    icon: normalizeIcon(value.icon, "sparkles"),
+  };
+}
+
+function normalizeUseCase(value: unknown): UseCaseRow {
+  if (typeof value === "string") return { text: value, icon: "layers" };
+  if (value && typeof value === "object") {
+    const item = value as { text?: unknown; icon?: unknown };
+    return {
+      text: typeof item.text === "string" ? item.text : "",
+      icon: normalizeIcon(item.icon, "layers"),
+    };
+  }
+  return { text: "", icon: "layers" };
+}
 
 const TITLE_LOCALES = [
   { code: "en", label: "English", field: "titleEn" },
@@ -82,12 +112,12 @@ function cleanLocalizedContent(c: LocalizedPageContent) {
   const out = {
     heroSubtitle: c.heroSubtitle.trim() || undefined,
     heroDescription: c.heroDescription.trim() || undefined,
-    features: c.features.filter((f) => f.title),
+    features: c.features.filter((f) => f.title).map((f) => ({ title: f.title, text: f.text, icon: f.icon })),
     detailCards: c.detailCards.filter((d) => d.title),
     specs,
-    useCases: c.useCases.filter(Boolean),
+    useCases: c.useCases.filter((item) => item.text).map((item) => ({ text: item.text, icon: item.icon })),
     advantages: c.advantages.filter(Boolean),
-    featureTiles: c.featureTiles.filter((f) => f.title),
+    featureTiles: c.featureTiles.filter((f) => f.title).map((f) => ({ title: f.title, text: f.text })),
     faq: c.faq.filter((f) => f.question),
   };
   const isEmpty =
@@ -122,7 +152,7 @@ type ProductEditForm = {
   heroDescription: string;
   features: FeatureRow[];
   detailCards: DetailCard[];
-  useCases: string[];
+  useCases: UseCaseRow[];
   advantages: string[];
   featureTiles: FeatureRow[];
   faq: FaqRow[];
@@ -209,11 +239,11 @@ function productToForm(p: Product): ProductEditForm {
     specs: (p.specs ?? []) as SpecRow[],
     heroSubtitle: pd.heroSubtitle ?? "",
     heroDescription: pd.heroDescription ?? "",
-    features: (pd.features ?? []) as FeatureRow[],
+    features: (pd.features ?? []).map((item) => normalizeFeature(item)),
     detailCards: (pd.detailCards ?? []).map((d) => ({ title: d.title ?? "", text: d.text ?? "", imageUrl: d.imageUrl ?? "" })),
-    useCases: pd.useCases ?? [],
+    useCases: (pd.useCases ?? []).map((item) => normalizeUseCase(item)),
     advantages: pd.advantages ?? [],
-    featureTiles: (pd.featureTiles ?? []) as FeatureRow[],
+    featureTiles: (pd.featureTiles ?? []).map((item) => ({ title: item.title ?? "", text: item.text ?? "" })),
     faq: (pd.faq ?? []) as FaqRow[],
     costPrice: priv.costPrice ?? "",
     salePrice: priv.salePrice ?? "",
@@ -228,12 +258,12 @@ function productToForm(p: Product): ProductEditForm {
       Object.entries(pd.locales ?? {}).map(([locale, content]) => [locale, {
         heroSubtitle: content.heroSubtitle ?? "",
         heroDescription: content.heroDescription ?? "",
-        features: (content.features ?? []) as FeatureRow[],
+         features: (content.features ?? []).map((item) => normalizeFeature(item)),
         detailCards: (content.detailCards ?? []).map((d) => ({ title: d.title ?? "", text: d.text ?? "", imageUrl: d.imageUrl ?? "" })),
         specs: (content.specs ?? []) as SpecRow[],
-        useCases: content.useCases ?? [],
+         useCases: (content.useCases ?? []).map((item) => normalizeUseCase(item)),
         advantages: content.advantages ?? [],
-        featureTiles: (content.featureTiles ?? []) as FeatureRow[],
+         featureTiles: (content.featureTiles ?? []).map((item) => ({ title: item.title ?? "", text: item.text ?? "" })),
         faq: (content.faq ?? []) as FaqRow[],
       }]),
     ),
@@ -263,12 +293,54 @@ function StringList({ label, items, onChange }: { label: string; items: string[]
   );
 }
 
-function FeatureList({ label, items, onChange }: { label: string; items: FeatureRow[]; onChange: (v: FeatureRow[]) => void }) {
+function IconPicker({ value, fallback, onChange }: { value: ProductIconKey; fallback: ProductIconKey; onChange: (value: ProductIconKey) => void }) {
+  const selected = PRODUCT_ICON_OPTIONS.find((option) => option.key === value)
+    ?? PRODUCT_ICON_OPTIONS.find((option) => option.key === fallback)
+    ?? PRODUCT_ICON_OPTIONS[0];
+  const SelectedIcon = selected.Icon;
+
+  return (
+    <details className="relative mt-2">
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+        <SelectedIcon className="h-4 w-4 text-oxynavy-700" />
+        <span>İkon: {selected.label}</span>
+        <span className="ml-auto text-[11px] text-slate-400">Seç</span>
+      </summary>
+      <div className="absolute left-0 top-full z-30 mt-1 grid w-full min-w-[300px] grid-cols-5 gap-1 rounded-lg border border-slate-200 bg-white p-2 shadow-xl sm:grid-cols-7">
+        {PRODUCT_ICON_OPTIONS.map((option) => {
+          const Icon = option.Icon;
+          const active = option.key === value;
+          return (
+            <button
+              key={option.key}
+              type="button"
+              title={option.label}
+              aria-label={`${option.label} ikonunu seç`}
+              onClick={(event) => {
+                onChange(option.key);
+                (event.currentTarget.closest("details") as HTMLDetailsElement | null)?.removeAttribute("open");
+              }}
+              className={`flex h-10 items-center justify-center rounded-md border transition-colors ${
+                active
+                  ? "border-oxynavy-700 bg-oxynavy-700 text-white"
+                  : "border-slate-100 text-slate-500 hover:border-blue-200 hover:bg-blue-50 hover:text-oxynavy-700"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+            </button>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
+
+function FeatureList({ label, items, onChange, withIcon = true }: { label: string; items: FeatureRow[]; onChange: (v: FeatureRow[]) => void; withIcon?: boolean }) {
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
         <label className="label mb-0">{label}</label>
-        <button type="button" onClick={() => onChange([...items, { title: "", text: "" }])} className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+        <button type="button" onClick={() => onChange([...items, { title: "", text: "", ...(withIcon ? { icon: "sparkles" as const } : {}) }])} className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
           <Plus className="h-3 w-3" /> Ekle
         </button>
       </div>
@@ -280,6 +352,30 @@ function FeatureList({ label, items, onChange }: { label: string; items: Feature
           </div>
           <input className="input mb-2" value={item.title} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], title: e.target.value }; onChange(n); }} placeholder="Başlık" />
           <textarea className="input min-h-[60px] resize-y" value={item.text} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], text: e.target.value }; onChange(n); }} placeholder="Açıklama" />
+          {withIcon && <IconPicker value={item.icon ?? "sparkles"} fallback="sparkles" onChange={(icon) => { const n = [...items]; n[i] = { ...n[i], icon }; onChange(n); }} />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function UseCaseList({ label, items, onChange }: { label: string; items: UseCaseRow[]; onChange: (v: UseCaseRow[]) => void }) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <label className="label mb-0">{label}</label>
+        <button type="button" onClick={() => onChange([...items, { text: "", icon: "layers" }])} className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+          <Plus className="h-3 w-3" /> Ekle
+        </button>
+      </div>
+      {items.map((item, i) => (
+        <div key={i} className="mb-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500">#{i + 1}</span>
+            <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="flex h-6 w-6 items-center justify-center rounded text-red-400 hover:bg-red-50"><X className="h-3.5 w-3.5" /></button>
+          </div>
+          <input className="input" value={item.text} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], text: e.target.value }; onChange(n); }} placeholder="Kullanım alanı" />
+          <IconPicker value={item.icon} fallback="layers" onChange={(icon) => { const n = [...items]; n[i] = { ...n[i], icon }; onChange(n); }} />
         </div>
       ))}
     </div>
@@ -369,9 +465,9 @@ function LocalizedContentEditor({
         <div className="mb-2 flex items-center justify-between"><label className="label mb-0">Teknik özellikler</label><button type="button" onClick={() => set("specs", [...value.specs, { label: "", value: "" }])} className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline"><Plus className="h-3 w-3" /> Ekle</button></div>
         {value.specs.map((row, index) => <div key={index} className="mb-2 flex gap-2"><input className="input flex-1" value={row.label} onChange={(e) => { const rows = [...value.specs]; rows[index] = { ...row, label: e.target.value }; set("specs", rows); }} placeholder="Özellik" /><input className="input flex-1" value={row.value} onChange={(e) => { const rows = [...value.specs]; rows[index] = { ...row, value: e.target.value }; set("specs", rows); }} placeholder="Değer" /><button type="button" onClick={() => set("specs", value.specs.filter((_, i) => i !== index))} className="flex h-10 w-10 items-center justify-center rounded-lg border border-red-100 text-red-400"><X className="h-4 w-4" /></button></div>)}
       </div>
-      <StringList label="Kullanım alanları" items={value.useCases} onChange={(v) => set("useCases", v)} />
+      <UseCaseList label="Kullanım alanları" items={value.useCases} onChange={(v) => set("useCases", v)} />
       <StringList label="Avantajlar" items={value.advantages} onChange={(v) => set("advantages", v)} />
-      <FeatureList label="Özellik blokları" items={value.featureTiles} onChange={(v) => set("featureTiles", v)} />
+      <FeatureList label="Özellik blokları" items={value.featureTiles} onChange={(v) => set("featureTiles", v)} withIcon={false} />
       <FaqList items={value.faq} onChange={(v) => set("faq", v)} />
     </div>
   );
@@ -489,11 +585,11 @@ export default function ProductEditPage() {
         templateVersion: 1 as const,
         heroSubtitle: form.heroSubtitle || undefined,
         heroDescription: form.heroDescription || undefined,
-        features: form.features.filter((f) => f.title),
+         features: form.features.filter((f) => f.title).map((f) => ({ title: f.title, text: f.text, icon: f.icon })),
         detailCards: form.detailCards.filter((d) => d.title),
-        useCases: form.useCases.filter(Boolean),
+         useCases: form.useCases.filter((item) => item.text).map((item) => ({ text: item.text, icon: item.icon })),
         advantages: form.advantages.filter(Boolean),
-        featureTiles: form.featureTiles.filter((f) => f.title),
+         featureTiles: form.featureTiles.filter((f) => f.title).map((f) => ({ title: f.title, text: f.text })),
         faq: form.faq.filter((f) => f.question),
         specs: form.specs.filter((s) => s.label && s.value),
         sectionOrder: normalizeSectionOrder(form.sectionOrder),
@@ -563,7 +659,7 @@ export default function ProductEditPage() {
       features: form.features.filter((f) => f.title),
       detailCards: form.detailCards.filter((d) => d.title),
       specs: form.specs.filter((s) => s.label && s.value),
-      useCases: form.useCases.filter(Boolean),
+      useCases: form.useCases.filter((item) => item.text),
       advantages: form.advantages.filter(Boolean),
       featureTiles: form.featureTiles.filter((f) => f.title),
       faq: form.faq.filter((f) => f.question),
@@ -602,12 +698,12 @@ export default function ProductEditPage() {
       const next: LocalizedPageContent = {
         heroSubtitle: c.heroSubtitle ?? "",
         heroDescription: c.heroDescription ?? "",
-        features: (c.features ?? []) as FeatureRow[],
+        features: (c.features ?? []).map((item: { title?: string; text?: string; icon?: string }) => normalizeFeature(item)),
         detailCards: ((c.detailCards ?? []) as DetailCard[]).map((d) => ({ title: d.title ?? "", text: d.text ?? "", imageUrl: d.imageUrl ?? "" })),
         specs: (c.specs ?? []) as SpecRow[],
-        useCases: c.useCases ?? [],
+        useCases: (c.useCases ?? []).map((item: unknown) => normalizeUseCase(item)),
         advantages: c.advantages ?? [],
-        featureTiles: (c.featureTiles ?? []) as FeatureRow[],
+        featureTiles: (c.featureTiles ?? []).map((item: { title?: string; text?: string; icon?: string }) => normalizeFeature(item)),
         faq: (c.faq ?? []) as FaqRow[],
       };
       set("localePageData", { ...form.localePageData, [activeLocale]: next });
@@ -805,11 +901,11 @@ export default function ProductEditPage() {
             <hr className="border-slate-100" />
             <DetailCardList items={form.detailCards} onChange={(v) => set("detailCards", v)} uploadFile={uploadFile} uploading={uploading} />
             <hr className="border-slate-100" />
-            <StringList label="Kullanım Alanları" items={form.useCases} onChange={(v) => set("useCases", v)} />
+            <UseCaseList label="Kullanım Alanları" items={form.useCases} onChange={(v) => set("useCases", v)} />
             <hr className="border-slate-100" />
             <StringList label="Avantajlar" items={form.advantages} onChange={(v) => set("advantages", v)} />
             <hr className="border-slate-100" />
-            <FeatureList label="Özellik Blokları (Alt Bant)" items={form.featureTiles} onChange={(v) => set("featureTiles", v)} />
+            <FeatureList label="Özellik Blokları (Alt Bant)" items={form.featureTiles} onChange={(v) => set("featureTiles", v)} withIcon={false} />
             <hr className="border-slate-100" />
             <FaqList items={form.faq} onChange={(v) => set("faq", v)} />
             <hr className="border-slate-100" />

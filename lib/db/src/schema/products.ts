@@ -3,16 +3,46 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { productCategoriesTable } from "./productCategories";
 
-export type PageFeature = { title: string; text: string };
+export const PRODUCT_PAGE_ICON_KEYS = [
+  "sparkles",
+  "layers",
+  "hospital",
+  "stethoscope",
+  "bed",
+  "building",
+  "heart-pulse",
+  "activity",
+  "shield-check",
+  "badge-check",
+  "lightbulb",
+  "settings",
+  "wrench",
+  "gauge",
+  "zap",
+  "plug-zap",
+  "cable",
+  "monitor",
+  "droplets",
+  "wind",
+  "thermometer",
+  "syringe",
+  "microscope",
+  "box",
+  "cpu",
+] as const;
+
+export type ProductPageIconKey = (typeof PRODUCT_PAGE_ICON_KEYS)[number];
+export type PageFeature = { title: string; text: string; icon?: ProductPageIconKey };
 export type DetailCard = { title: string; text: string; imageUrl?: string };
 export type FeatureTile = { title: string; text: string };
 export type FaqItem = { question: string; answer: string };
+export type PageUseCase = string | { text: string; icon?: ProductPageIconKey };
 export type PageDataContent = {
   heroSubtitle?: string;
   heroDescription?: string;
   features?: PageFeature[];
   detailCards?: DetailCard[];
-  useCases?: string[];
+  useCases?: PageUseCase[];
   advantages?: string[];
   featureTiles?: FeatureTile[];
   faq?: FaqItem[];
