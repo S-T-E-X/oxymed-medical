@@ -34,5 +34,9 @@
   "news": {
     "title": "News | Medical Gas and Hospital Equipment | Oxymed Medikal",
     "description": "Industry news, product updates and technical content from Oxymed Medikal on medical gas systems, dental vacuum solutions and hospital equipment."
+  },
+  "catalogs": {
+    "title": "Product Catalogues | Oxymed Medikal",
+    "description": "Explore Oxymed Medikal product and solution groups through our catalogues; view and download the latest catalogues."
   }
 }

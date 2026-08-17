@@ -34,5 +34,9 @@
   "news": {
     "title": "Haberler | Medikal Gaz ve Hastane Ekipmanları | Oxymed Medikal",
     "description": "Oxymed Medikal'den sektör haberleri, ürün güncellemeleri ve medikal gaz sistemleri, dental vakum çözümleri ile hastane donanımlarına ilişkin teknik içerikler."
+  },
+  "catalogs": {
+    "title": "Ürün Katalogları | Oxymed Medikal",
+    "description": "Oxymed Medikal ürün ve çözüm gruplarını kataloglarımız üzerinden inceleyin; güncel katalogları görüntüleyin ve indirin."
   }
 }

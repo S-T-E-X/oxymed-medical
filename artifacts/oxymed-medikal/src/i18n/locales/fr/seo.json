@@ -34,5 +34,9 @@
   "news": {
     "title": "Actualités | Gaz médicaux et équipements hospitaliers | Oxymed Medikal",
     "description": "Actualités du secteur, mises à jour produits et contenus techniques d'Oxymed Medikal sur les systèmes de gaz médicaux, les solutions de vide dentaire et les équipements hospitaliers."
+  },
+  "catalogs": {
+    "title": "Catalogues de produits | Oxymed Medikal",
+    "description": "Découvrez les gammes de produits et solutions d’Oxymed Medikal à travers nos catalogues ; consultez et téléchargez les catalogues actualisés."
   }
 }

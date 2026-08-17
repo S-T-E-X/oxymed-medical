@@ -4,7 +4,7 @@ import { DEFAULT_LOCALE, isLocale, LOCALES, type Locale } from "./config";
  * Pages that exist in every language. Each one has a locale-specific slug so
  * search engines see a native URL per market (e.g. /de/produkte/dental-vakuumpumpe).
  */
-export const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"] as const;
+export const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs"] as const;
 
 export type RouteKey = (typeof ROUTE_KEYS)[number];
 
@@ -114,6 +114,19 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "fasis-motkhovna",
     bg: "zapitvane-za-oferta",
     az: "teklif-al",
+  },
+  catalogs: {
+    tr: "kataloglar",
+    en: "catalogs",
+    de: "kataloge",
+    fr: "catalogues",
+    it: "cataloghi",
+    ar: "katalujat",
+    ru: "katalogi",
+    fa: "katalog-ha",
+    ka: "katalogebi",
+    bg: "katalozi",
+    az: "kataloqlar",
   },
 };
 

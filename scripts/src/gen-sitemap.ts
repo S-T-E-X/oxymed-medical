@@ -67,7 +67,7 @@ const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az
 type Locale = (typeof LOCALES)[number];
 const DEFAULT_LOCALE: Locale = "tr";
 
-const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"] as const;
+const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs"] as const;
 type RouteKey = (typeof ROUTE_KEYS)[number];
 
 // Mirrors artifacts/oxymed-medikal/src/i18n/routes.ts — keep the two in sync.
@@ -111,6 +111,10 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products" | "news">, Record
     it: "richiedi-preventivo", ar: "talab-arad-siar", ru: "zapros-predlozheniya",
     fa: "darkhast-gheymat", ka: "fasis-motkhovna", bg: "zapitvane-za-oferta", az: "teklif-al",
   },
+  catalogs: {
+    tr: "kataloglar", en: "catalogs", de: "kataloge", fr: "catalogues", it: "cataloghi",
+    ar: "katalujat", ru: "katalogi", fa: "katalog-ha", ka: "katalogebi", bg: "katalozi", az: "kataloqlar",
+  },
 };
 
 const NESTED_UNDER_PRODUCTS = new Set<RouteKey>(["gcp", "ams", "dvp", "dvs"]);
@@ -119,6 +123,7 @@ const NESTED_UNDER_PRODUCTS = new Set<RouteKey>(["gcp", "ams", "dvp", "dvs"]);
 const PRIORITY: Record<RouteKey, string> = {
   home: "1.0", products: "0.9", gcp: "0.8", ams: "0.8",
   dvp: "0.8", dvs: "0.8", service: "0.7", quote: "0.7", news: "0.8",
+  catalogs: "0.7",
 };
 
 function localizedPath(routeKey: RouteKey, locale: Locale): string {

@@ -9,6 +9,8 @@
     "service": "SERVİS",
     "contact": "İLETİŞİM",
     "allProducts": "Tüm Ürünler",
+    "corporateAbout": "Hakkımızda",
+    "corporateCertificates": "Sertifikalar",
     "mainMenu": "Ana menü",
     "mobileMenu": "Mobil ana menü",
     "openMenu": "Menüyü aç",
@@ -39,7 +41,7 @@
         "about": "Hakkımızda",
         "vision": "Vizyon & Misyon",
         "quality": "Kalite Belgelerimiz",
-        "hr": "İnsan Kaynakları"
+        "catalogs": "Kataloglar"
       },
       "products": {
         "title": "ÜRÜNLER",
@@ -74,7 +76,14 @@
     "title": "Katalog İndir",
     "subtitle": "Dil seçerek kataloğu indirin",
     "empty": "Henüz katalog eklenmemiş.",
-    "trackLabel": "Katalog İndir"
+    "trackLabel": "Katalog İndir",
+    "pageTitle": "Ürün Katalogları",
+    "pageSubtitle": "Ürünlerimizi ve çözüm gruplarımızı kataloglarımız üzerinden inceleyin.",
+    "pageEyebrow": "ÜRÜN KATALOGLARI",
+    "preview": "Kapak önizlemesi",
+    "download": "Kataloğu indir",
+    "loading": "Kataloglar yükleniyor...",
+    "error": "Kataloglar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
   },
   "cookies": {
     "ariaLabel": "Çerez bildirimi",

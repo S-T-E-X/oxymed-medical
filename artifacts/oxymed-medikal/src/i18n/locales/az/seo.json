@@ -34,5 +34,9 @@
   "news": {
     "title": "Xəbərlər | Tibbi Qaz və Xəstəxana Avadanlıqları | Oxymed Medikal",
     "description": "Oxymed Medikal-dan sənaye xəbərləri, məhsul yeniləmələri və tibbi qaz sistemləri, dental vakuum həlləri ilə xəstəxana avadanlıqlarına dair texniki məzmunlar."
+  },
+  "catalogs": {
+    "title": "Məhsul Kataloqları | Oxymed Medikal",
+    "description": "Oxymed Medikal məhsul və həll qruplarını kataloqlarımız vasitəsilə nəzərdən keçirin; aktual kataloqları görüntüləyin və yükləyin."
   }
 }

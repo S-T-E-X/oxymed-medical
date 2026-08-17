@@ -9,6 +9,8 @@
     "service": "ASSISTENZA",
     "contact": "CONTATTI",
     "allProducts": "Tutti i prodotti",
+    "corporateAbout": "Chi siamo",
+    "corporateCertificates": "Certificati",
     "mainMenu": "Menu principale",
     "mobileMenu": "Menu principale mobile",
     "openMenu": "Apri menu",
@@ -39,7 +41,7 @@
         "about": "Chi siamo",
         "vision": "Visione e missione",
         "quality": "Certificazioni di qualità",
-        "hr": "Risorse umane"
+        "catalogs": "Cataloghi"
       },
       "products": {
         "title": "PRODOTTI",
@@ -74,7 +76,14 @@
     "title": "Scarica il catalogo",
     "subtitle": "Seleziona la lingua e scarica il catalogo",
     "empty": "Nessun catalogo ancora disponibile.",
-    "trackLabel": "Scarica il catalogo"
+    "trackLabel": "Scarica il catalogo",
+    "pageTitle": "Cataloghi prodotti",
+    "pageSubtitle": "Scoprite i nostri prodotti e le nostre soluzioni attraverso i cataloghi.",
+    "pageEyebrow": "CATALOGHI PRODOTTI",
+    "preview": "Anteprima copertina",
+    "download": "Scarica il catalogo",
+    "loading": "Caricamento cataloghi...",
+    "error": "Si è verificato un errore durante il caricamento dei cataloghi. Aggiornare la pagina."
   },
   "cookies": {
     "ariaLabel": "Informativa sui cookie",

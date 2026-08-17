@@ -9,6 +9,8 @@
     "service": "SERVİS",
     "contact": "ƏLAQƏ",
     "allProducts": "Bütün Məhsullar",
+    "corporateAbout": "Haqqımızda",
+    "corporateCertificates": "Sertifikatlar",
     "mainMenu": "Əsas menyu",
     "mobileMenu": "Mobil əsas menyu",
     "openMenu": "Menyunu aç",
@@ -39,7 +41,7 @@
         "about": "Haqqımızda",
         "vision": "Vizyon və Missiya",
         "quality": "Keyfiyyət Sertifikatlarımız",
-        "hr": "İnsan Resursları"
+        "catalogs": "Kataloqlar"
       },
       "products": {
         "title": "MƏHSULLAR",
@@ -74,7 +76,14 @@
     "title": "Kataloqu yüklə",
     "subtitle": "Dili seçərək kataloqu yükləyin",
     "empty": "Hələ kataloq əlavə edilməyib.",
-    "trackLabel": "Kataloqu yüklə"
+    "trackLabel": "Kataloqu yüklə",
+    "pageTitle": "Məhsul Kataloqları",
+    "pageSubtitle": "Məhsullarımızı və həll qruplarımızı kataloqlarımız vasitəsilə nəzərdən keçirin.",
+    "pageEyebrow": "MƏHSUL KATALOQLARI",
+    "preview": "Üz qabığının önizləməsi",
+    "download": "Kataloqu yükləyin",
+    "loading": "Kataloqlar yüklənir...",
+    "error": "Kataloqlar yüklənərkən xəta baş verdi. Zəhmət olmasa səhifəni yeniləyin."
   },
   "cookies": {
     "ariaLabel": "Çərəz bildirişi",

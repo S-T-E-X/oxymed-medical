@@ -29,7 +29,7 @@ const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymed.com.tr").rep
 
 const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"];
 const DEFAULT_LOCALE = "tr";
-const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"];
+const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs"];
 
 const PRODUCTS_SLUG = {
   tr: "urunler", en: "products", de: "produkte", fr: "produits", it: "prodotti",
@@ -69,6 +69,10 @@ const LEAF_SLUGS = {
     tr: "teklif-al", en: "get-a-quote", de: "angebot-anfordern", fr: "demander-un-devis",
     it: "richiedi-preventivo", ar: "talab-arad-siar", ru: "zapros-predlozheniya",
     fa: "darkhast-gheymat", ka: "fasis-motkhovna", bg: "zapitvane-za-oferta", az: "teklif-al",
+  },
+  catalogs: {
+    tr: "kataloglar", en: "catalogs", de: "kataloge", fr: "catalogues", it: "cataloghi",
+    ar: "katalujat", ru: "katalogi", fa: "katalog-ha", ka: "katalogebi", bg: "katalozi", az: "kataloqlar",
   },
 };
 

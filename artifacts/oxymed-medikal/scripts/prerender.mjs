@@ -112,7 +112,7 @@ const LOCALE_META = {
   az: { dir: "ltr", ogLocale: "az_AZ" },
 };
 
-const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news"];
+const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs"];
 
 // Mirrors src/i18n/routes.ts — keep in sync when a slug changes.
 const PRODUCTS_SLUG = {
@@ -154,6 +154,10 @@ const LEAF_SLUGS = {
     tr: "teklif-al", en: "get-a-quote", de: "angebot-anfordern", fr: "demander-un-devis",
     it: "richiedi-preventivo", ar: "talab-arad-siar", ru: "zapros-predlozheniya",
     fa: "darkhast-gheymat", ka: "fasis-motkhovna", bg: "zapitvane-za-oferta", az: "teklif-al",
+  },
+  catalogs: {
+    tr: "kataloglar", en: "catalogs", de: "kataloge", fr: "catalogues", it: "cataloghi",
+    ar: "katalujat", ru: "katalogi", fa: "katalog-ha", ka: "katalogebi", bg: "katalozi", az: "kataloqlar",
   },
 };
 

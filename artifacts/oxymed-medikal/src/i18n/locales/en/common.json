@@ -9,6 +9,8 @@
     "service": "SERVICE",
     "contact": "CONTACT",
     "allProducts": "All Products",
+    "corporateAbout": "About Us",
+    "corporateCertificates": "Certificates",
     "mainMenu": "Main menu",
     "mobileMenu": "Mobile main menu",
     "openMenu": "Open menu",
@@ -39,7 +41,7 @@
         "about": "About Us",
         "vision": "Vision & Mission",
         "quality": "Quality Certifications",
-        "hr": "Human Resources"
+        "catalogs": "Catalogues"
       },
       "products": {
         "title": "PRODUCTS",
@@ -74,7 +76,14 @@
     "title": "Download Catalogue",
     "subtitle": "Select a language to download the catalogue",
     "empty": "No catalogue has been added yet.",
-    "trackLabel": "Download Catalogue"
+    "trackLabel": "Download Catalogue",
+    "pageTitle": "Product Catalogues",
+    "pageSubtitle": "Explore our products and solution groups through our catalogues.",
+    "pageEyebrow": "PRODUCT CATALOGUES",
+    "preview": "Cover preview",
+    "download": "Download catalogue",
+    "loading": "Loading catalogues...",
+    "error": "An error occurred while loading the catalogues. Please refresh the page."
   },
   "cookies": {
     "ariaLabel": "Cookie notice",

@@ -34,6 +34,7 @@ export default function Footer({ compact = false }: FooterProps) {
   ];
 
   const productsPath = path("products");
+  const catalogsPath = path("catalogs");
 
   return (
     <footer id="iletisim" className="bg-oxynavy-950 text-white">
@@ -68,7 +69,13 @@ export default function Footer({ compact = false }: FooterProps) {
                       <Link
                         // Product anchors follow the visitor's language; the
                         // remaining pages are Turkish-only for now.
-                        to={column.key === "products" ? `${productsPath}${link.href}` : link.href}
+                        to={
+                          column.key === "products"
+                            ? `${productsPath}${link.href}`
+                            : link.key === "catalogs"
+                              ? catalogsPath
+                              : link.href
+                        }
                         className="transition hover:text-white"
                       >
                         {t(`common.footer.columns.${column.key}.${link.key}`)}

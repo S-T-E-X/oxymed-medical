@@ -144,10 +144,10 @@ export default function Header() {
                       onMouseLeave={closeCorporate}
                     >
                       <Link to="/kurumsal" className="flex px-4 py-2.5 text-[13px] font-bold text-oxynavy-950 hover:bg-steel-50" onClick={() => setCorporateOpen(false)}>
-                        Hakkımızda
+                        {t("common.nav.corporateAbout")}
                       </Link>
                       <Link to="/sertifikalar" className="flex px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950" onClick={() => setCorporateOpen(false)}>
-                        Sertifikalar
+                        {t("common.nav.corporateCertificates")}
                       </Link>
                     </div>
                   )}
@@ -246,8 +246,8 @@ export default function Header() {
                   <ChevronDown className="h-4 w-4" aria-hidden="true" />
                 </Link>
                 <div className="mb-3 space-y-1 border-s border-steel-200 ps-4">
-                  <Link to="/kurumsal" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>Hakkımızda</Link>
-                  <Link to="/sertifikalar" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>Sertifikalar</Link>
+                  <Link to="/kurumsal" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateAbout")}</Link>
+                  <Link to="/sertifikalar" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateCertificates")}</Link>
                 </div>
               </div>
             ) : (

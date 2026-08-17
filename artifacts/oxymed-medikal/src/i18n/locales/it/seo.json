@@ -34,5 +34,9 @@
   "news": {
     "title": "Notizie | Gas Medicali e Apparecchiature Ospedaliere | Oxymed Medikal",
     "description": "Notizie di settore, aggiornamenti sui prodotti e contenuti tecnici di Oxymed Medikal su sistemi di gas medicali, soluzioni per vuoto dentale e apparecchiature ospedaliere."
+  },
+  "catalogs": {
+    "title": "Cataloghi Prodotti | Oxymed Medikal",
+    "description": "Scoprite le gamme di prodotti e soluzioni Oxymed Medikal attraverso i nostri cataloghi; visualizzate e scaricate i cataloghi aggiornati."
   }
 }

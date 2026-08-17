@@ -17,7 +17,7 @@ import AdminCorporatePage from "./admin/CorporatePage";
 import SettingsPage from "./admin/SettingsPage";
 import QuotesPage from "./admin/QuotesPage";
 import MediaPage from "./admin/MediaPage";
-import CatalogsPage from "./admin/CatalogsPage";
+import AdminCatalogsPage from "./admin/CatalogsPage";
 import AdminCertificatesPage from "./admin/CertificatesPage";
 import ProductStockPage from "./admin/ProductStockPage";
 import MaterialStockPage from "./admin/MaterialStockPage";
@@ -45,6 +45,7 @@ import ServisRaporDogrulamaPage from "./pages/ServisRaporDogrulamaPage";
 import QuotePrintPage from "./pages/QuotePrintPage";
 import CorporatePage from "./pages/CorporatePage";
 import CertificatesPage from "./pages/CertificatesPage";
+import CatalogsPage from "./pages/CatalogsPage";
 import HomePage from "./pages/HomePage";
 import NewsPage from "./pages/NewsPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
@@ -76,6 +77,7 @@ const TRANSLATED_PAGES: Array<{ routeKey: RouteKey; element: ReactElement }> = [
   // News list page is translated; detail routes are registered separately
   // because they carry a dynamic :slug segment.
   { routeKey: "news", element: <NewsPage /> },
+  { routeKey: "catalogs", element: <CatalogsPage /> },
 ];
 
 /**
@@ -178,7 +180,7 @@ export default function App() {
             <Route path="ayarlar" element={<SettingsPage />} />
             <Route path="teklifler" element={<QuotesPage />} />
             <Route path="medya" element={<MediaPage />} />
-            <Route path="kataloglar" element={<CatalogsPage />} />
+            <Route path="kataloglar" element={<AdminCatalogsPage />} />
             <Route path="stok/urunler" element={<ProductStockPage />} />
             <Route path="stok/malzeme" element={<MaterialStockPage />} />
             <Route path="teklif-formlari" element={<QuoteFormsPage />} />

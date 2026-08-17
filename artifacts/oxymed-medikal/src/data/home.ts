@@ -47,7 +47,7 @@ export const footerColumns: FooterColumnDef[] = [
       { key: "about", href: "/kurumsal" },
       { key: "vision", href: "/kurumsal" },
       { key: "quality", href: "/kurumsal#kalite" },
-      { key: "hr", href: "/kurumsal#insan-kaynaklari" },
+      { key: "catalogs", href: "/kataloglar" },
     ],
   },
   {
