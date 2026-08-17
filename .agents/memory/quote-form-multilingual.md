@@ -39,6 +39,18 @@ item titles/bullets) as a flat JSON manifest keyed by item id. Proper nouns —
 company name/address, preparer's name, signature — are intentionally excluded
 and just copied over unchanged by the duplicate.
 
+Controlled quote units (ADET, METRE, KG, etc.) are not sent to OpenAI. They are
+translated through a deterministic per-language unit dictionary during
+duplication, and the print view applies the same mapping as a display fallback
+for older translated quotes.
+
+**Why:** units are controlled vocabulary and model translation can inconsistently
+expand abbreviations or leave Turkish labels unchanged.
+
+**How to apply:** when adding a supported quote unit or language, update the
+backend and frontend unit dictionaries together; preserve unknown/custom units
+instead of guessing.
+
 **RTL support (ar/fa):** the print/template view (`QuoteTemplateView.tsx`) sets
 `dir="rtl"` on its root `<main>` (via `isRtlLanguage()` in `quoteLanguages.ts`)
 and the CSS (`QuoteTemplatePage.css`) uses logical properties

@@ -7,7 +7,7 @@ import { openai } from "@workspace/integrations-openai-ai-server";
 import { z } from "zod/v4";
 import path from "path";
 import { readFile } from "fs/promises";
-import { QUOTE_LANGUAGE_CODES, quoteLanguageEnglishName } from "../lib/quoteLanguages";
+import { QUOTE_LANGUAGE_CODES, quoteLanguageEnglishName, translateQuoteUnit } from "../lib/quoteLanguages";
 
 const router: IRouter = Router();
 
@@ -451,6 +451,7 @@ router.post("/quote-forms/:id/translate", requireAuth, async (req, res): Promise
           title: t.title || item.title,
           bullets: Array.isArray(t.bullets) ? t.bullets : item.bullets,
           modelCode: t.modelCode || item.modelCode,
+          unit: translateQuoteUnit(item.unit, targetLanguage),
         })
         .where(eq(quoteFormItems.id, item.id));
     }

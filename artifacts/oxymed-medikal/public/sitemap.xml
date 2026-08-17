@@ -2007,6 +2007,14 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/urunler/cerrahi-pendant-unitesi" />
   </url>
   <url>
+    <loc>https://www.oxymed.com.tr/urunler/yatak-basi-unitesi</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.oxymed.com.tr/urunler/yatak-basi-unitesi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/urunler/yatak-basi-unitesi" />
+  </url>
+  <url>
     <loc>https://www.oxymed.com.tr/urunler/anestezi-pendant-unitesi</loc>
     <lastmod>2026-08-14</lastmod>
     <changefreq>monthly</changefreq>

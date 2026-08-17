@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { isRtlLanguage, type QuoteLanguage } from "../lib/quoteLanguages";
+import { isRtlLanguage, translateQuoteUnit, type QuoteLanguage } from "../lib/quoteLanguages";
 import "./QuoteTemplatePage.css";
 
 export type { QuoteLanguage };
@@ -1126,7 +1126,7 @@ function ItemsTable({
                   )}
                 </td>
                 <td>{item.quantity > 0 ? item.quantity : ""}</td>
-                <td>{item.unit}</td>
+                <td>{translateQuoteUnit(item.unit, language ?? "tr")}</td>
                 <td>{item.quantity > 0 ? fmtPrice(item.unitPrice, currency, language) : ""}</td>
                 <td>{item.quantity > 0 ? fmtPrice(total, currency, language) : ""}</td>
               </tr>
