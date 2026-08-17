@@ -1,4 +1,4 @@
-import { AlertCircle, Award, Building2, Globe2, UsersRound } from "lucide-react";
+import { AlertCircle, Award, Building2, Globe2 } from "lucide-react";
 import { useListCorporateSections, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
@@ -96,7 +96,6 @@ function CorporateStats() {
   const stats = [
     { value: settings?.["corporate_years_experience"] || "15+", label: "Yıllık Tecrübe", Icon: Building2 },
     { value: settings?.["corporate_completed_projects"] || "200+", label: "Tamamlanan Proje", Icon: Award },
-    { value: settings?.["corporate_expert_team"] || "100+", label: "Uzman Ekip", Icon: UsersRound },
     { value: settings?.["corporate_export_countries"] || "10+", label: "Ülkeye İhracat", Icon: Globe2 },
   ];
 

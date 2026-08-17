@@ -387,13 +387,11 @@ export default function CorporatePage() {
               fields={[
                 { key: "corporate_years_experience", label: "Yıllık Tecrübe", placeholder: "15+" },
                 { key: "corporate_completed_projects", label: "Tamamlanan Proje", placeholder: "200+" },
-                { key: "corporate_expert_team", label: "Uzman Ekip", placeholder: "100+" },
                 { key: "corporate_export_countries", label: "Ülkeye İhracat", placeholder: "10+" },
               ]}
               initialValues={{
                 corporate_years_experience: settings?.["corporate_years_experience"] ?? "15+",
                 corporate_completed_projects: settings?.["corporate_completed_projects"] ?? "200+",
-                corporate_expert_team: settings?.["corporate_expert_team"] ?? "100+",
                 corporate_export_countries: settings?.["corporate_export_countries"] ?? "10+",
               }}
             />
