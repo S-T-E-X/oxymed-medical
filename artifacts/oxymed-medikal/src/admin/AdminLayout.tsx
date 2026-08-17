@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import {
   Bell,
   Award,
@@ -28,6 +28,10 @@ import {
   Users,
   SlidersHorizontal,
   FlaskConical,
+  ChevronDown,
+  ChevronRight,
+  PanelBottom,
+  Search,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
@@ -37,6 +41,7 @@ const navItems = [
   { label: "Slider Yönetimi", icon: ImageIcon, to: "/admin/sliders" },
   { label: "Sayfa Bannerları", icon: SlidersHorizontal, to: "/admin/sayfa-bannerlari" },
   { label: "Kataloglar", icon: BookOpen, to: "/admin/kataloglar" },
+  { label: "Footer Yönetimi", icon: PanelBottom, to: "/admin/footer" },
   { label: "Ürünler", icon: Box, to: "/admin/products" },
   { label: "Amalgam Separatörü", icon: Settings, to: "/admin/urunler/amalgam-separator" },
   { label: "Dental Vakum Pompası", icon: Settings, to: "/admin/urunler/dental-vakum-pompasi" },
@@ -71,9 +76,38 @@ const quoteNavItems = [
   { label: "E-posta Logları", icon: Mail, to: "/admin/eposta-loglari" },
 ];
 
+const sidebarSections = [
+  {
+    key: "main",
+    label: "Ana Menü",
+    items: [
+      ...navItems,
+      { label: "E-posta Ayarları", icon: Mail, to: "/admin/ayarlar#smtp" },
+    ],
+  },
+  { key: "warranty", label: "Garanti & Servis", items: warrantyNavItems },
+  { key: "quotes", label: "Teklif Sistemi", items: quoteNavItems },
+  { key: "production", label: "Üretim", items: productionNavItems },
+  { key: "stock", label: "Stok Durumu", items: stockNavItems },
+  {
+    key: "system",
+    label: "Sistem",
+    items: [{ label: "Yönetici Hesapları", icon: Users, to: "/admin/kullanicilar" }],
+  },
+];
+
 function Sidebar({ onClose }: { onClose?: () => void }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({
+    main: true,
+    warranty: true,
+    quotes: true,
+    production: true,
+    stock: true,
+    system: true,
+  });
 
   function handleLogout() {
     logout();
@@ -93,135 +127,82 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
           </button>
         )}
       </div>
-      <nav className="admin-sidebar-scroll flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
-        <p className="mb-2 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Ana Menü</p>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:bg-white/6 hover:text-white"
-                }`
-              }
+      <div className="border-b border-white/8 px-3 py-3">
+        <div className="flex h-9 items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2.5">
+          <Search className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Menüde ara..."
+            aria-label="Admin menüsünde ara"
+            className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-slate-500"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="text-slate-500 hover:text-white"
+              aria-label="Aramayı temizle"
             >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+      <nav className="admin-sidebar-scroll flex-1 space-y-1 overflow-y-auto px-3 py-3">
+        {sidebarSections.map((section) => {
+          const query = search.trim().toLocaleLowerCase("tr-TR");
+          const visibleItems = query
+            ? section.items.filter((item) => item.label.toLocaleLowerCase("tr-TR").includes(query))
+            : section.items;
+          if (query && visibleItems.length === 0) return null;
+          const isExpanded = query ? true : expanded[section.key] ?? true;
+
+          return (
+            <div key={section.key} className="pt-1">
+              <button
+                type="button"
+                onClick={() => setExpanded((current) => ({ ...current, [section.key]: !isExpanded }))}
+                className="mb-1 flex h-8 w-full items-center gap-1.5 rounded-lg px-2 text-left text-[10px] font-extrabold uppercase tracking-widest text-slate-500 transition hover:bg-white/5 hover:text-slate-300"
+                aria-expanded={isExpanded}
+              >
+                {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                <span>{section.label}</span>
+                <span className="ml-auto text-[9px] font-semibold tracking-normal text-slate-600">{visibleItems.length}</span>
+              </button>
+              {isExpanded && (
+                <div className="space-y-0.5">
+                  {visibleItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        onClick={onClose}
+                        className={({ isActive }) =>
+                          `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
+                            isActive
+                              ? "bg-blue-600 text-white"
+                              : "text-slate-400 hover:bg-white/6 hover:text-white"
+                          }`
+                        }
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
-        <Link
-          to="/admin/ayarlar#smtp"
-          onClick={onClose}
-          className="flex h-9 items-center gap-3 rounded-lg pl-8 pr-3 text-[12px] font-semibold text-slate-500 transition hover:bg-white/6 hover:text-white"
-        >
-          <Mail className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">E-posta Ayarları</span>
-        </Link>
-        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Garanti &amp; Servis</p>
-        {warrantyNavItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:bg-white/6 hover:text-white"
-                }`
-              }
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
-          );
-        })}
-        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Teklif Sistemi</p>
-        {quoteNavItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:bg-white/6 hover:text-white"
-                }`
-              }
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
-          );
-        })}
-        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Üretim</p>
-        {productionNavItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:bg-white/6 hover:text-white"
-                }`
-              }
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
-          );
-        })}
-        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Stok Durumu</p>
-        {stockNavItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:bg-white/6 hover:text-white"
-                }`
-              }
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
-          );
-        })}
-        <p className="mb-2 mt-5 px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Sistem</p>
-        <NavLink
-          to="/admin/kullanicilar"
-          onClick={onClose}
-          className={({ isActive }) =>
-            `flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "text-slate-400 hover:bg-white/6 hover:text-white"
-            }`
-          }
-        >
-          <Users className="h-4 w-4 shrink-0" />
-          <span className="truncate">Yönetici Hesapları</span>
-        </NavLink>
+        {search.trim() && sidebarSections.every((section) =>
+          !section.items.some((item) => item.label.toLocaleLowerCase("tr-TR").includes(search.trim().toLocaleLowerCase("tr-TR"))),
+        ) && (
+          <p className="px-2 py-5 text-center text-xs text-slate-500">Sonuç bulunamadı</p>
+        )}
       </nav>
       <div className="border-t border-white/8 p-4">
         <div className="flex items-center gap-3">

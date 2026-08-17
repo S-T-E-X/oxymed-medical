@@ -18,6 +18,7 @@ import SettingsPage from "./admin/SettingsPage";
 import QuotesPage from "./admin/QuotesPage";
 import MediaPage from "./admin/MediaPage";
 import AdminCatalogsPage from "./admin/CatalogsPage";
+import FooterPage from "./admin/FooterPage";
 import AdminCertificatesPage from "./admin/CertificatesPage";
 import ProductStockPage from "./admin/ProductStockPage";
 import MaterialStockPage from "./admin/MaterialStockPage";
@@ -181,6 +182,7 @@ export default function App() {
             <Route path="teklifler" element={<QuotesPage />} />
             <Route path="medya" element={<MediaPage />} />
             <Route path="kataloglar" element={<AdminCatalogsPage />} />
+            <Route path="footer" element={<FooterPage />} />
             <Route path="stok/urunler" element={<ProductStockPage />} />
             <Route path="stok/malzeme" element={<MaterialStockPage />} />
             <Route path="teklif-formlari" element={<QuoteFormsPage />} />
