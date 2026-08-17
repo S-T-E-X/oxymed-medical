@@ -109,32 +109,36 @@ export default function Hero() {
 
   return (
     <>
-      <section className="relative isolate h-[620px] overflow-hidden bg-oxynavy-950 sm:h-[600px] lg:h-[570px]">
-        {hero?.imageUrl ? (
-          <img
-            key={hero.id}
-            src={hero.imageUrl}
-            alt={heroTitle ?? hero.title}
-            className="absolute inset-0 h-full w-full object-cover object-[63%_center] transition-opacity duration-700"
-          />
-        ) : (
-          <img
-            src="/assets/images/hero-medical-suite.png"
-            alt={t("common.hero.fallbackImageAlt")}
-            className="absolute inset-0 h-full w-full object-cover object-[63%_center]"
-          />
-        )}
+      <section className="relative isolate overflow-hidden bg-oxynavy-950 lg:h-[570px]">
+        <div className="relative h-[270px] overflow-hidden sm:h-[390px] lg:absolute lg:inset-0 lg:h-full">
+          {hero?.imageUrl ? (
+            <img
+              key={hero.id}
+              src={hero.imageUrl}
+              alt={heroTitle ?? hero.title}
+              className="absolute inset-0 h-full w-full object-cover object-[63%_center] transition-opacity duration-700"
+            />
+          ) : (
+            <img
+              src="/assets/images/hero-medical-suite.png"
+              alt={t("common.hero.fallbackImageAlt")}
+              className="absolute inset-0 h-full w-full object-cover object-[63%_center]"
+            />
+          )}
 
-        {!showFallback && hero ? (
-          <div className="absolute inset-0" style={buildOverlayStyle(hero)} />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950/92 via-oxynavy-950/58 to-oxynavy-950/12" />
-        )}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(255,255,255,0.22),transparent_26%),linear-gradient(180deg,rgba(2,20,35,0.08),rgba(2,20,35,0.25))]" />
+          <div className="absolute inset-0 hidden lg:block">
+            {!showFallback && hero ? (
+              <div className="absolute inset-0" style={buildOverlayStyle(hero)} />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950/92 via-oxynavy-950/58 to-oxynavy-950/12" />
+            )}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(255,255,255,0.22),transparent_26%),linear-gradient(180deg,rgba(2,20,35,0.08),rgba(2,20,35,0.25))]" />
+          </div>
+        </div>
 
-        <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-14 lg:h-full lg:px-8 lg:py-16">
           {!showFallback && hero ? (
-            <div className="max-w-[590px] pt-6" style={{ color: heroTextColor }}>
+            <div className="max-w-[590px] lg:pt-6" style={{ color: heroTextColor }}>
               {heroSubtitle && (
                 <p className="text-sm font-bold uppercase tracking-widest" style={{ opacity: 0.78 }}>
                   {heroSubtitle}
@@ -188,7 +192,7 @@ export default function Hero() {
               </div>
             </div>
           ) : (
-            <div className="max-w-[590px] pt-6 text-white">
+            <div className="max-w-[590px] text-white lg:pt-6">
               <h1 className="text-[44px] font-extrabold leading-[1.08] sm:text-6xl lg:text-[68px]">
                 {t("common.hero.fallbackTitleLine1")}
                 <span className="block">{t("common.hero.fallbackTitleLine2")}</span>
@@ -218,7 +222,7 @@ export default function Hero() {
         </div>
 
         {sliders.length > 1 && (
-          <div className="absolute bottom-6 right-6 flex items-center gap-3">
+          <div className="relative flex items-center justify-center gap-3 bg-oxynavy-950 px-4 pb-6 lg:absolute lg:bottom-6 lg:right-6 lg:justify-start lg:bg-transparent lg:px-0 lg:pb-0">
             <button
               onClick={() => setCurrent((c) => (c - 1 + sliders.length) % sliders.length)}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm hover:bg-white/28"
