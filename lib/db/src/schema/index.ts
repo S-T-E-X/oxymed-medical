@@ -1,4 +1,5 @@
 export * from "./adminUsers";
+export * from "./adminAuditLogs";
 export * from "./sliders";
 export * from "./productCategories";
 export * from "./products";

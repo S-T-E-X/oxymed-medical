@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
 import { db, catalogsTable } from "@workspace/db";
 import { eq, asc } from "drizzle-orm";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, isAdminRequest } from "../lib/auth";
+import { writeAdminAuditLog } from "../lib/audit";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
@@ -19,12 +20,20 @@ const CatalogBody = z.object({
 const CatalogUpdateBody = CatalogBody.partial();
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 router.get("/catalogs", async (req, res): Promise<void> => {
   const rows = await db.select().from(catalogsTable).orderBy(asc(catalogsTable.sortOrder));
-  const activeOnly = req.query["activeOnly"] === "true";
+
+  // Inactive catalogs are unpublished PDFs; only the admin panel may list them.
+  res.setHeader("Vary", "Authorization");
+  const activeOnly = req.query["activeOnly"] === "true" || !(await isAdminRequest(req));
   const language = req.query["language"] as string | undefined;
   const category = req.query["category"] as string | undefined;
 
@@ -78,6 +87,12 @@ router.delete("/catalogs/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Catalog not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "catalog.delete",
+    targetType: "catalog",
+    targetId: id,
+    details: { title: deleted.title },
+  });
   res.sendStatus(204);
 });
 

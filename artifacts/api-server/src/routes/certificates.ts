@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { asc, eq } from "drizzle-orm";
 import { db, certificatesTable } from "@workspace/db";
 import { requireAuth } from "../lib/auth";
+import { writeAdminAuditLog } from "../lib/audit";
 import {
   CreateCertificateBody,
   UpdateCertificateBody,
@@ -10,7 +11,12 @@ import {
 const router: IRouter = Router();
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 router.get("/certificates", async (req, res): Promise<void> => {
@@ -64,6 +70,12 @@ router.delete("/certificates/:id", requireAuth, async (req, res): Promise<void> 
     res.status(404).json({ error: "Certificate not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "certificate.delete",
+    targetType: "certificate",
+    targetId: certificate.id,
+    details: { title: certificate.title },
+  });
   res.sendStatus(204);
 });
 

@@ -12,6 +12,7 @@ import {
 } from "@workspace/db";
 import { eq, desc, and, sql, asc } from "drizzle-orm";
 import { requireAuth, type JwtPayload } from "../lib/auth";
+import { publicLookupRateLimiter } from "../lib/security";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 import { buildReportHtml, type ServiceReportPdfData } from "../lib/serviceReportHtml";
@@ -19,9 +20,15 @@ import { sendServiceReportEmail } from "../lib/mailer";
 
 const router: IRouter = Router();
 
+/**
+ * Strict positive-integer id parsing. Malformed input yields 0, which matches
+ * no serial primary key, so callers fall through to their normal 404 path
+ * instead of passing NaN into a SQL query.
+ */
 function parseId(raw: string | string[] | undefined): number {
   const s = Array.isArray(raw) ? raw[0] : raw;
-  return parseInt(s ?? "", 10);
+  const parsed = z.coerce.number().int().positive().safeParse(s);
+  return parsed.success ? parsed.data : 0;
 }
 
 // ─── Report number generation (atomic, race-safe via sequence table) ──────────
@@ -318,7 +325,7 @@ router.post("/service-reports/preview-html", requireAuth, async (req, res): Prom
 
 router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]);
-  if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
+  if (id === 0) { res.status(400).json({ error: "Geçersiz ID" }); return; }
 
   const full = await loadFullReport(id);
   if (!full) { res.status(404).json({ error: "Rapor bulunamadı" }); return; }
@@ -408,7 +415,7 @@ router.post("/service-reports/:id/generate-pdf", requireAuth, async (req, res): 
 
 router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]);
-  if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
+  if (id === 0) { res.status(400).json({ error: "Geçersiz ID" }); return; }
 
   const bodyParsed = z.object({
     email: z.string().email("Geçerli bir e-posta adresi girin"),
@@ -554,7 +561,7 @@ router.post("/service-reports/:id/send-email", requireAuth, async (req, res): Pr
 
 router.get("/service-reports/:id/email-logs", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]);
-  if (isNaN(id)) { res.status(400).json({ error: "Geçersiz ID" }); return; }
+  if (id === 0) { res.status(400).json({ error: "Geçersiz ID" }); return; }
 
   const logs = await db
     .select()
@@ -567,8 +574,12 @@ router.get("/service-reports/:id/email-logs", requireAuth, async (req, res): Pro
 
 // ─── Routes: Public ───────────────────────────────────────────────────────────
 
-router.get("/service-reports/public/device/:qrToken", async (req, res): Promise<void> => {
-  const qrToken = req.params["qrToken"]!;
+router.get("/service-reports/public/device/:qrToken", publicLookupRateLimiter, async (req, res): Promise<void> => {
+  const qrToken = String(req.params["qrToken"] ?? "");
+  if (qrToken.length === 0 || qrToken.length > 120) {
+    res.status(404).json({ error: "Cihaz bulunamadı" });
+    return;
+  }
   const [device] = await db
     .select()
     .from(warrantyDevicesTable)
@@ -615,8 +626,12 @@ router.get("/service-reports/public/device/:qrToken", async (req, res): Promise<
   });
 });
 
-router.get("/service-reports/public/verify/:verificationToken", async (req, res): Promise<void> => {
-  const token = req.params["verificationToken"]!;
+router.get("/service-reports/public/verify/:verificationToken", publicLookupRateLimiter, async (req, res): Promise<void> => {
+  const token = String(req.params["verificationToken"] ?? "");
+  if (token.length === 0 || token.length > 120) {
+    res.status(404).json({ error: "Rapor bulunamadı veya geçersiz doğrulama kodu" });
+    return;
+  }
   const [report] = await db
     .select()
     .from(serviceReportsTable)

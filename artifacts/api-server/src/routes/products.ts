@@ -1,7 +1,9 @@
 import { Router, type IRouter, type Request } from "express";
 import { db, productsTable, productCategoriesTable, PRODUCT_PAGE_ICON_KEYS } from "@workspace/db";
 import { eq, asc, count, and, or, isNull, notInArray } from "drizzle-orm";
-import { requireAuth, verifyToken } from "../lib/auth";
+import { requireAuth, isAdminRequest } from "../lib/auth";
+import { parsePageLimit } from "../lib/security";
+import { writeAdminAuditLog } from "../lib/audit";
 import {
   PRODUCT_SLUG_MAX_LENGTH,
   isProductPubliclyVisible,
@@ -11,17 +13,6 @@ import { z } from "zod/v4";
 import { openai } from "@workspace/integrations-openai-ai-server";
 
 const router: IRouter = Router();
-
-function checkIsAdmin(req: Request): boolean {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) return false;
-  try {
-    verifyToken(authHeader.slice(7));
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 type ProductRow = typeof productsTable.$inferSelect;
 function stripPrivate(p: ProductRow): Omit<ProductRow, "privateData"> & { privateData: null } {
@@ -289,14 +280,19 @@ router.post("/products/translate-page-content", requireAuth, async (req, res): P
 });
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 // ---- Categories ----
 // Visitors only ever see visible categories; the admin panel needs the full
 // list to be able to unhide one, so hidden rows are gated on a valid token.
 router.get("/product-categories", async (req, res): Promise<void> => {
-  const isAdmin = checkIsAdmin(req);
+  const isAdmin = await isAdminRequest(req);
   const rows = await db
     .select()
     .from(productCategoriesTable)
@@ -340,27 +336,36 @@ router.delete("/product-categories/:id", requireAuth, async (req, res): Promise<
     res.status(404).json({ error: "Category not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "product-category.delete",
+    targetType: "product_category",
+    targetId: id,
+    details: { name: deleted.name },
+  });
   res.sendStatus(204);
 });
 
 // ---- Products ----
 router.get("/products", async (req, res): Promise<void> => {
-  const page = parseInt((req.query["page"] as string) ?? "1", 10);
-  const limit = parseInt((req.query["limit"] as string) ?? "50", 10);
-  const offset = (page - 1) * limit;
+  const { limit, offset } = parsePageLimit(req.query as Record<string, unknown>, 50);
   const categoryIdStr = req.query["categoryId"] as string | undefined;
   const publishedStr = req.query["published"] as string | undefined;
+  const isAdmin = await isAdminRequest(req);
+
+  // Drafts are admin-only: an anonymous caller always gets the published view,
+  // whatever it asks for in the query string. The response therefore varies by
+  // credentials and must never be served from a shared cache entry.
+  res.setHeader("Vary", "Authorization");
+  const publishedFilter = isAdmin ? publishedStr : "true";
 
   const conditions = [];
   if (categoryIdStr) {
-    const catId = parseInt(categoryIdStr, 10);
+    const catId = parseId(categoryIdStr);
     conditions.push(eq(productsTable.categoryId, catId));
   }
-  if (publishedStr !== undefined) {
-    const pub = publishedStr === "true";
-    conditions.push(eq(productsTable.published, pub));
+  if (publishedFilter !== undefined) {
+    conditions.push(eq(productsTable.published, publishedFilter === "true"));
   }
-  const isAdmin = checkIsAdmin(req);
 
   if (!isAdmin) {
     // Hiding a category must also hide the products inside it, otherwise they
@@ -452,7 +457,7 @@ router.get("/products/by-slug/:slug", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-  const isAdmin = checkIsAdmin(req);
+  const isAdmin = await isAdminRequest(req);
   if (!isAdmin && !(await isPubliclyVisible(product))) {
     res.status(404).json({ error: "Product not found" });
     return;
@@ -468,7 +473,7 @@ router.get("/products/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-  const isAdmin = checkIsAdmin(req);
+  const isAdmin = await isAdminRequest(req);
   if (!isAdmin && !(await isPubliclyVisible(product))) {
     res.status(404).json({ error: "Product not found" });
     return;
@@ -519,6 +524,12 @@ router.delete("/products/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Product not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "product.delete",
+    targetType: "product",
+    targetId: id,
+    details: { title: deleted.title },
+  });
   res.sendStatus(204);
 });
 

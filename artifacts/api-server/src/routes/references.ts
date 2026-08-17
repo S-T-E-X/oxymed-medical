@@ -2,6 +2,8 @@ import { Router, type IRouter } from "express";
 import { db, referencesTable } from "@workspace/db";
 import { eq, desc, count } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
+import { parsePageLimit } from "../lib/security";
+import { writeAdminAuditLog } from "../lib/audit";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
@@ -18,13 +20,16 @@ const ReferenceBody = z.object({
 });
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 router.get("/references", async (req, res): Promise<void> => {
-  const page = parseInt((req.query["page"] as string) ?? "1", 10);
-  const limit = parseInt((req.query["limit"] as string) ?? "50", 10);
-  const offset = (page - 1) * limit;
+  const { limit, offset } = parsePageLimit(req.query as Record<string, unknown>, 50);
   const category = req.query["category"] as string | undefined;
   const showInMarquee = req.query["showInMarquee"] === "true";
 
@@ -90,6 +95,12 @@ router.delete("/references/:id", requireAuth, async (req, res): Promise<void> =>
     res.status(404).json({ error: "Reference not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "reference.delete",
+    targetType: "reference",
+    targetId: id,
+    details: { title: deleted.title },
+  });
   res.sendStatus(204);
 });
 

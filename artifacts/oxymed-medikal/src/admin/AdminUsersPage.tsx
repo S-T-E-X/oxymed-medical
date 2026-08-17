@@ -88,11 +88,14 @@ function AddUserModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
-              placeholder="En az 8 karakter"
+              minLength={12}
+              autoComplete="new-password"
+              placeholder="En az 12 karakter"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
-            <p className="mt-1 text-xs text-slate-400">En az 8 karakter olmalıdır.</p>
+            <p className="mt-1 text-xs text-slate-400">
+              En az 12 karakter; büyük harf, küçük harf ve rakam içermeli.
+            </p>
           </div>
           <div className="flex gap-3 pt-2">
             <button
@@ -127,6 +130,7 @@ function ChangePasswordModal({
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   onClose: () => void;
 }) {
+  const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [saving, setSaving] = useState(false);
@@ -142,7 +146,7 @@ function ChangePasswordModal({
       const r = await authFetch(`/api/admin/users/${user.id}/password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword: password }),
+        body: JSON.stringify({ currentPassword, newPassword: password }),
       });
       if (!r.ok) {
         const e = await r.json().catch(() => null) as { error?: string } | null;
@@ -169,16 +173,32 @@ function ChangePasswordModal({
         </div>
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">Mevcut Şifreniz</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              placeholder="Şu anki şifreniz"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+          </div>
+          <div>
             <label className="mb-1.5 block text-sm font-semibold text-slate-700">Yeni Şifre</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
-              placeholder="En az 8 karakter"
+              minLength={12}
+              autoComplete="new-password"
+              placeholder="En az 12 karakter"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
+            <p className="mt-1 text-xs text-slate-400">
+              En az 12 karakter; büyük harf, küçük harf ve rakam içermeli.
+            </p>
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-slate-700">Şifre Tekrar</label>
@@ -187,7 +207,8 @@ function ChangePasswordModal({
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               required
-              minLength={8}
+              minLength={12}
+              autoComplete="new-password"
               placeholder="Şifreyi tekrar girin"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
@@ -325,8 +346,13 @@ export default function AdminUsersPage() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setPasswordTarget(u)}
-                        title="Şifre Değiştir"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-blue-50 hover:text-blue-600"
+                        disabled={currentUser?.id !== u.id}
+                        title={
+                          currentUser?.id === u.id
+                            ? "Şifre Değiştir"
+                            : "Yalnızca kendi şifrenizi değiştirebilirsiniz"
+                        }
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
                       >
                         <KeyRound className="h-4 w-4" />
                       </button>

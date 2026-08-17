@@ -35,7 +35,7 @@ router.put("/corporate/:sectionKey", requireAuth, async (req, res): Promise<void
   const sectionKey = Array.isArray(req.params["sectionKey"]) ? req.params["sectionKey"][0] : req.params["sectionKey"];
   const parsed = CorporateSectionBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: "Geçersiz istek gövdesi" });
     return;
   }
 

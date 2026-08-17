@@ -2,14 +2,25 @@ import { Router, type IRouter } from "express";
 import { db, warrantyDevicesTable, serviceRecordsTable, warrantyClaimsTable, maintenanceKitsTable } from "@workspace/db";
 import { eq, desc, ilike, or, and, sql, inArray } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
+import {
+  parseLimitOffset,
+  publicLookupRateLimiter,
+  publicSubmissionRateLimiter,
+} from "../lib/security";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 
 const router: IRouter = Router();
 
+/**
+ * Strict positive-integer id parsing. Malformed input yields 0, which never
+ * matches a serial primary key, so the caller falls through to its normal
+ * 404 path instead of passing NaN into a SQL query.
+ */
 function parseId(raw: string | string[] | undefined): number {
   const s = Array.isArray(raw) ? raw[0] : raw;
-  return parseInt(s ?? "", 10);
+  const parsed = z.coerce.number().int().positive().safeParse(s);
+  return parsed.success ? parsed.data : 0;
 }
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -58,14 +69,15 @@ const ServiceRecordBody = z.object({
   })).optional(),
 });
 
+// Anonymous customers post this from the QR landing page — bound every field.
 const ClaimPublicBody = z.object({
-  faultType: z.string().min(1),
-  faultDescription: z.string().min(1),
-  photoUrls: z.array(z.string()).optional(),
-  workHours: z.string().optional().nullable(),
-  claimantName: z.string().optional().nullable(),
-  claimantPhone: z.string().optional().nullable(),
-  claimantEmail: z.string().optional().nullable(),
+  faultType: z.string().min(1).max(120),
+  faultDescription: z.string().min(1).max(5000),
+  photoUrls: z.array(z.string().max(2048)).max(10).optional(),
+  workHours: z.string().max(40).optional().nullable(),
+  claimantName: z.string().max(160).optional().nullable(),
+  claimantPhone: z.string().max(40).optional().nullable(),
+  claimantEmail: z.string().max(254).optional().nullable(),
 });
 
 const ClaimDecisionBody = z.object({
@@ -159,8 +171,12 @@ function computeAlerts(devices: typeof warrantyDevicesTable.$inferSelect[]) {
 
 // ─── Routes: Devices (public) ─────────────────────────────────────────────────
 
-router.get("/warranty/devices/by-serial/:serialNo", async (req, res): Promise<void> => {
-  const serialNo = req.params["serialNo"]!;
+router.get("/warranty/devices/by-serial/:serialNo", publicLookupRateLimiter, async (req, res): Promise<void> => {
+  const serialNo = String(req.params["serialNo"] ?? "");
+  if (serialNo.length === 0 || serialNo.length > 120) {
+    res.status(404).json({ error: "Cihaz bulunamadı" });
+    return;
+  }
   const [device] = await db
     .select()
     .from(warrantyDevicesTable)
@@ -196,8 +212,12 @@ router.get("/warranty/devices/by-serial/:serialNo", async (req, res): Promise<vo
   });
 });
 
-router.get("/warranty/devices/by-qr/:qrToken", async (req, res): Promise<void> => {
-  const qrToken = req.params["qrToken"]!;
+router.get("/warranty/devices/by-qr/:qrToken", publicLookupRateLimiter, async (req, res): Promise<void> => {
+  const qrToken = String(req.params["qrToken"] ?? "");
+  if (qrToken.length === 0 || qrToken.length > 120) {
+    res.status(404).json({ error: "Cihaz bulunamadı" });
+    return;
+  }
   const [device] = await db
     .select()
     .from(warrantyDevicesTable)
@@ -235,7 +255,7 @@ router.get("/warranty/devices/by-qr/:qrToken", async (req, res): Promise<void> =
 
 // ─── Public: Get service record report by recordId ────────────────────────────
 
-router.get("/warranty/records/:recordId", async (req, res): Promise<void> => {
+router.get("/warranty/records/:recordId", publicLookupRateLimiter, async (req, res): Promise<void> => {
   const recordId = parseId(req.params["recordId"]);
   const [record] = await db
     .select()
@@ -283,8 +303,7 @@ router.get("/warranty/records/:recordId", async (req, res): Promise<void> => {
 router.get("/warranty/devices", requireAuth, async (req, res): Promise<void> => {
   const status = req.query["status"] as string | undefined;
   const search = req.query["search"] as string | undefined;
-  const limit = parseInt((req.query["limit"] as string) ?? "100", 10);
-  const offset = parseInt((req.query["offset"] as string) ?? "0", 10);
+  const { limit, offset } = parseLimitOffset(req.query as Record<string, unknown>, 100);
 
   const conditions = [];
   if (status) conditions.push(eq(warrantyDevicesTable.status, status));
@@ -458,13 +477,25 @@ router.get("/warranty/devices/:id/claims", requireAuth, async (req, res): Promis
   res.json({ items: claims });
 });
 
-router.post("/warranty/devices/:id/claims", async (req, res): Promise<void> => {
+router.post("/warranty/devices/:id/claims", publicSubmissionRateLimiter, async (req, res): Promise<void> => {
   const deviceId = parseId(req.params["id"]);
   const parsed = ClaimPublicBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: "Gönderilen bilgiler geçersiz. Lütfen formu kontrol edin." });
     return;
   }
+
+  // A claim must reference a real device; otherwise the table can be filled
+  // with rows pointing at ids that never existed.
+  const [device] = await db
+    .select({ id: warrantyDevicesTable.id })
+    .from(warrantyDevicesTable)
+    .where(eq(warrantyDevicesTable.id, deviceId));
+  if (!device) {
+    res.status(404).json({ error: "Cihaz bulunamadı" });
+    return;
+  }
+
   const [claim] = await db
     .insert(warrantyClaimsTable)
     .values({ ...parsed.data, deviceId, decisionStatus: "incelemede" })

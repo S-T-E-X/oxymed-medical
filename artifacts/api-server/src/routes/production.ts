@@ -17,13 +17,19 @@ import {
 } from "@workspace/db";
 import { eq, and, desc, asc, sql, like, inArray, isNotNull } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
+import { parseLimitOffset } from "../lib/security";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 
 const router: IRouter = Router();
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 // ── Order number generation ────────────────────────────────────────────────────
@@ -93,8 +99,7 @@ router.get("/production/dashboard", requireAuth, async (req, res): Promise<void>
 
 router.get("/production/orders", requireAuth, async (req, res): Promise<void> => {
   const status = req.query["status"] as string | undefined;
-  const limit = parseInt((req.query["limit"] as string) ?? "100", 10);
-  const offset = parseInt((req.query["offset"] as string) ?? "0", 10);
+  const { limit, offset } = parseLimitOffset(req.query as Record<string, unknown>, 100);
 
   const rows = await db
     .select()

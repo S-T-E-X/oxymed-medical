@@ -52,7 +52,8 @@ router.post("/analytics/track", async (req, res): Promise<void> => {
   }
   const parsed = TrackBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    // Anonymous endpoint: never echo parser internals back to the caller.
+    res.status(400).end();
     return;
   }
   const { visitorId, sessionId, path, eventType, label, referrerSource, deviceType } = parsed.data;

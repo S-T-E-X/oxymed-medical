@@ -3,6 +3,12 @@ import { db, mediaFilesTable } from "@workspace/db";
 import { eq, desc, count, inArray } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
+import {
+  expensiveAdminRateLimiter,
+  mediaUploadRateLimiter,
+  validateMediaUploadMetadata,
+} from "../lib/security";
+import { writeAdminAuditLog } from "../lib/audit";
 import { z } from "zod/v4";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -24,17 +30,17 @@ const execFileAsync = promisify(execFile);
  */
 
 const MediaRegisterBody = z.object({
-  filename: z.string().min(1),
-  objectPath: z.string().min(1).startsWith("/objects/"),
-  mimeType: z.string().optional(),
+  filename: z.string().min(1).max(180),
+  objectPath: z.string().min(1).max(512).startsWith("/objects/"),
+  mimeType: z.string().max(120).optional(),
   size: z.number().int().positive().optional(),
-  alt: z.string().optional(),
+  alt: z.string().max(500).optional(),
 });
 
 const PresignedUrlBody = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1).max(180),
   size: z.number().int().positive(),
-  contentType: z.string().min(1),
+  contentType: z.string().min(1).max(120),
 });
 
 const MediaConversionBody = z.object({
@@ -59,8 +65,28 @@ type ConversionItem = {
   error: string | null;
 };
 
+/**
+ * Clamp client-supplied paging so a single request cannot ask the database for
+ * an unbounded result set.
+ */
+function parsePagination(
+  query: Record<string, unknown>,
+  defaultLimit: number,
+): { limit: number; offset: number } {
+  const pageRaw = Number.parseInt(String(query["page"] ?? "1"), 10);
+  const limitRaw = Number.parseInt(String(query["limit"] ?? String(defaultLimit)), 10);
+  const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+  const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : defaultLimit;
+  return { limit, offset: (page - 1) * limit };
+}
+
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 function isJpegMedia(filename: string, mimeType?: string | null): boolean {
@@ -199,9 +225,7 @@ async function convertMediaFile(
 }
 
 router.get("/media", requireAuth, async (req, res): Promise<void> => {
-  const page = parseInt((req.query["page"] as string) ?? "1", 10);
-  const limit = parseInt((req.query["limit"] as string) ?? "20", 10);
-  const offset = (page - 1) * limit;
+  const { limit, offset } = parsePagination(req.query as Record<string, unknown>, 20);
 
   const [items, [totalRow]] = await Promise.all([
     db.select().from(mediaFilesTable).orderBy(desc(mediaFilesTable.createdAt)).limit(limit).offset(offset),
@@ -210,7 +234,7 @@ router.get("/media", requireAuth, async (req, res): Promise<void> => {
   res.json({ items, total: totalRow?.count ?? 0 });
 });
 
-router.post("/media/convert-opaque", requireAuth, async (req, res): Promise<void> => {
+router.post("/media/convert-opaque", requireAuth, expensiveAdminRateLimiter, async (req, res): Promise<void> => {
   const parsed = MediaConversionBody.safeParse(req.body ?? {});
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -251,10 +275,15 @@ router.post("/media/convert-opaque", requireAuth, async (req, res): Promise<void
  * Step 1: Request a GCS presigned upload URL.
  * Returns { uploadURL, objectPath } — client must PUT file bytes to uploadURL.
  */
-router.post("/media/request-upload-url", requireAuth, async (req, res): Promise<void> => {
+router.post("/media/request-upload-url", requireAuth, mediaUploadRateLimiter, async (req, res): Promise<void> => {
   const parsed = PresignedUrlBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const validation = validateMediaUploadMetadata(parsed.data);
+  if (!validation.ok) {
+    res.status(400).json({ error: validation.error });
     return;
   }
   const uploadURL = await storage.getObjectEntityUploadURL();
@@ -301,6 +330,12 @@ router.delete("/media/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Media file not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "media.delete",
+    targetType: "media_file",
+    targetId: id,
+    details: { objectPath: deleted.objectPath },
+  });
   res.sendStatus(204);
 });
 

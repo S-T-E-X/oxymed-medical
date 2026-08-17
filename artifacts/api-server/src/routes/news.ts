@@ -1,8 +1,9 @@
 import { Router, type IRouter } from "express";
 import { db, newsTable, newsTranslationsTable } from "@workspace/db";
 import { and, eq, desc, count, sql, inArray, ne } from "drizzle-orm";
-import { requireAuth, verifyToken } from "../lib/auth";
-import type { Request } from "express";
+import { requireAuth, isAdminRequest } from "../lib/auth";
+import { parsePageLimit } from "../lib/security";
+import { writeAdminAuditLog } from "../lib/audit";
 import { z } from "zod/v4";
 
 const router: IRouter = Router();
@@ -42,23 +43,12 @@ const TranslationBody = z.object({
 });
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
-}
-
-/**
- * Whether the caller is a signed-in admin. Only admins may read drafts; for
- * everyone else the news list is forced to published-only, so an unpublished
- * article or a draft translation is never reachable through the public API.
- */
-function isAdminRequest(req: Request): boolean {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) return false;
-  try {
-    verifyToken(authHeader.slice(7));
-    return true;
-  } catch {
-    return false;
-  }
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 type NewsRow = typeof newsTable.$inferSelect;
@@ -153,9 +143,7 @@ async function publishedAlternatesByNewsId(newsIds: number[]): Promise<Map<numbe
 }
 
 router.get("/news", async (req, res): Promise<void> => {
-  const page = parseInt((req.query["page"] as string) ?? "1", 10);
-  const limit = parseInt((req.query["limit"] as string) ?? "20", 10);
-  const offset = (page - 1) * limit;
+  const { limit, offset } = parsePageLimit(req.query as Record<string, unknown>, 20);
   const category = req.query["category"] as string | undefined;
   const publishedStr = req.query["published"] as string | undefined;
   const slug = req.query["slug"] as string | undefined;
@@ -171,7 +159,7 @@ router.get("/news", async (req, res): Promise<void> => {
   // whatever they ask for in the query string. The response therefore differs
   // by credentials, so it must never be served from a shared cache entry.
   res.setHeader("Vary", "Authorization");
-  const publishedFilter = isAdminRequest(req) ? publishedStr : "true";
+  const publishedFilter = (await isAdminRequest(req)) ? publishedStr : "true";
 
   if (locale === DEFAULT_LOCALE) {
     const conditions = [];
@@ -287,7 +275,7 @@ router.get("/news/:id", async (req, res): Promise<void> => {
     return;
   }
   // An unpublished article is invisible to anyone but an admin.
-  if (!item.published && !isAdminRequest(req)) {
+  if (!item.published && !(await isAdminRequest(req))) {
     res.status(404).json({ error: "News item not found" });
     return;
   }
@@ -332,6 +320,12 @@ router.delete("/news/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "News item not found" });
     return;
   }
+  await writeAdminAuditLog(req, {
+    action: "news.delete",
+    targetType: "news",
+    targetId: id,
+    details: { title: deleted.title },
+  });
   res.sendStatus(204);
 });
 

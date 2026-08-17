@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { requireAuth } from "../lib/auth";
+import { expensiveAdminRateLimiter } from "../lib/security";
 import { z } from "zod/v4";
 import nodemailer from "nodemailer";
 
@@ -23,7 +24,7 @@ router.get("/settings/smtp/status", requireAuth, (req, res): void => {
   });
 });
 
-router.post("/settings/smtp/test", requireAuth, async (req, res): Promise<void> => {
+router.post("/settings/smtp/test", requireAuth, expensiveAdminRateLimiter, async (req, res): Promise<void> => {
   const parsed = z.object({ to: z.email() }).safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ success: false, message: "Geçerli bir e-posta adresi giriniz." });

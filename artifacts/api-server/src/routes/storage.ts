@@ -4,9 +4,11 @@ import {
   RequestMediaUploadUrlBody,
   RequestMediaUploadUrlResponse,
 } from "@workspace/api-zod";
+import { db, mediaFilesTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
-import { ObjectPermission } from "../lib/objectAcl";
 import { requireAuth } from "../lib/auth";
+import { mediaUploadRateLimiter, validateMediaUploadMetadata } from "../lib/security";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -17,32 +19,45 @@ const objectStorageService = new ObjectStorageService();
  * Request a presigned URL for file upload.
  * The client sends JSON metadata (name, size, contentType) — NOT the file.
  * Then uploads the file directly to the returned presigned URL.
+ *
+ * Admin-only: a presigned PUT URL is a write capability against the project's
+ * bucket, so it must never be handed out to anonymous callers.
  */
-router.post("/storage/uploads/request-url", async (req: Request, res: Response) => {
-  const parsed = RequestMediaUploadUrlBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: "Missing or invalid required fields" });
-    return;
-  }
+router.post(
+  "/storage/uploads/request-url",
+  requireAuth,
+  mediaUploadRateLimiter,
+  async (req: Request, res: Response) => {
+    const parsed = RequestMediaUploadUrlBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Missing or invalid required fields" });
+      return;
+    }
 
-  try {
     const { name, size, contentType } = parsed.data;
+    const validation = validateMediaUploadMetadata({ name, size, contentType });
+    if (!validation.ok) {
+      res.status(400).json({ error: validation.error });
+      return;
+    }
 
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+    try {
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
 
-    res.json(
-      RequestMediaUploadUrlResponse.parse({
-        uploadURL,
-        objectPath,
-        metadata: { name, size, contentType },
-      }),
-    );
-  } catch (error) {
-    req.log.error({ err: error }, "Error generating upload URL");
-    res.status(500).json({ error: "Failed to generate upload URL" });
-  }
-});
+      res.json(
+        RequestMediaUploadUrlResponse.parse({
+          uploadURL,
+          objectPath,
+          metadata: { name, size, contentType },
+        }),
+      );
+    } catch (error) {
+      req.log.error({ err: error }, "Error generating upload URL");
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  },
+);
 
 /**
  * GET /storage/public-objects/*
@@ -56,16 +71,33 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
     const raw = req.params.filePath;
     const filePath = Array.isArray(raw) ? raw.join("/") : raw;
 
-    // First try public search paths, then fall back to private object dir
-    // (admin-uploaded site content is public by intent even if stored in private dir)
+    // Reject traversal attempts before they reach the storage layer.
+    if (filePath.includes("..") || filePath.includes("\0")) {
+      res.status(400).json({ error: "Invalid path" });
+      return;
+    }
+
+    // First try the genuinely public search paths.
     let file = await objectStorageService.searchPublicObject(filePath);
+
     if (!file) {
+      // Fall back to the private object dir ONLY for objects the admin has
+      // explicitly registered as site media. Without this allowlist the public
+      // route would expose every object in the private bucket to anyone who
+      // can guess a path.
       const normalizedPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
       if (normalizedPath.startsWith("/objects/")) {
-        try {
-          file = await objectStorageService.getObjectEntityFile(normalizedPath);
-        } catch {
-          // not found in private dir either
+        const [registered] = await db
+          .select({ id: mediaFilesTable.id })
+          .from(mediaFilesTable)
+          .where(eq(mediaFilesTable.objectPath, normalizedPath));
+
+        if (registered) {
+          try {
+            file = await objectStorageService.getObjectEntityFile(normalizedPath);
+          } catch {
+            // not found in private dir either
+          }
         }
       }
     }
@@ -105,6 +137,10 @@ router.get("/storage/objects/*path", requireAuth, async (req: Request, res: Resp
   try {
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
+    if (wildcardPath.includes("..") || wildcardPath.includes("\0")) {
+      res.status(400).json({ error: "Invalid path" });
+      return;
+    }
     const objectPath = `/objects/${wildcardPath}`;
     const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
 

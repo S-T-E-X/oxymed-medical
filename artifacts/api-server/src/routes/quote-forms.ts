@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { db, quoteForms, quoteFormItems, quoteGroupTemplates, productionOrdersTable, emailLogsTable, templateBomItemsTable } from "@workspace/db";
 import { eq, desc, like } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
+import { parseLimitOffset } from "../lib/security";
 import { sendQuoteFormEmail } from "../lib/mailer";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { z } from "zod/v4";
@@ -12,7 +13,12 @@ import { QUOTE_LANGUAGE_CODES, quoteLanguageEnglishName, translateQuoteUnit } fr
 const router: IRouter = Router();
 
 function parseId(raw: string | string[]): number {
-  return parseInt(Array.isArray(raw) ? raw[0] : raw, 10);
+  // Strict positive-integer parsing: malformed input yields 0, which matches
+  // no serial primary key, so callers fall through to their normal 404 path
+  // instead of passing NaN into a SQL query.
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(str);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
 }
 
 
@@ -98,8 +104,7 @@ function normalizePageFlags<T extends { pageBreakBefore?: boolean; keepWithPrevi
 
 // List quote forms
 router.get("/quote-forms", requireAuth, async (req, res): Promise<void> => {
-  const limit = parseInt((req.query["limit"] as string) ?? "50", 10);
-  const offset = parseInt((req.query["offset"] as string) ?? "0", 10);
+  const { limit, offset } = parseLimitOffset(req.query as Record<string, unknown>, 50);
 
   const rows = await db
     .select()
