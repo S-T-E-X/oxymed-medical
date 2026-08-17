@@ -6,7 +6,7 @@ const config: DentalProductConfig = {
   pageSlug: "dental-vakum-sistemi",
   defaultHero: {
     eyebrow: "OXY-DVS SERIES",
-    title: "DENTAL VAKUM SİSTEMİ",
+    title: "MERKEZİ DENTAL VAKUM SİSTEMİ",
     desc1: "Dental kliniklerin merkezi vakum ihtiyacını karşılamak için tasarlanmış, yüksek performanslı ve güvenilir sistem çözümü.",
     desc2: "Kesintisiz vakum gücü, sessiz çalışma ve uzun ömürlü yapı ile sağlık tesislerinde maksimum verimlilik sağlar.",
   },
