@@ -11,6 +11,7 @@ export interface SliderInput {
   subtitle?: string;
   description?: string;
   imageUrl?: string;
+  mobileImageUrl?: string;
   ctaPrimaryText?: string;
   ctaPrimaryHref?: string;
   ctaSecondaryText?: string;

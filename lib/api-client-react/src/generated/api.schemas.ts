@@ -39,6 +39,8 @@ export interface Slider {
   /** @nullable */
   imageUrl?: string | null;
   /** @nullable */
+  mobileImageUrl?: string | null;
+  /** @nullable */
   ctaPrimaryText?: string | null;
   /** @nullable */
   ctaPrimaryHref?: string | null;
@@ -171,6 +173,7 @@ export interface SliderInput {
   subtitle?: string;
   description?: string;
   imageUrl?: string;
+  mobileImageUrl?: string;
   ctaPrimaryText?: string;
   ctaPrimaryHref?: string;
   ctaSecondaryText?: string;
@@ -245,6 +248,8 @@ export interface SliderUpdate {
   description?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  mobileImageUrl?: string | null;
   /** @nullable */
   ctaPrimaryText?: string | null;
   /** @nullable */

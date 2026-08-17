@@ -106,25 +106,22 @@ export default function Hero() {
   const heroDescription = hero ? pickSliderText(hero, "description", locale) : null;
   const heroPrimaryText = hero ? pickSliderText(hero, "ctaPrimaryText", locale) : null;
   const heroSecondaryText = hero ? pickSliderText(hero, "ctaSecondaryText", locale) : null;
+  const desktopImageUrl = hero?.imageUrl ?? "/assets/images/hero-medical-suite.png";
+  const mobileImageUrl = hero?.mobileImageUrl ?? desktopImageUrl;
 
   return (
     <>
       <section className="relative isolate overflow-hidden bg-oxynavy-950 lg:h-[570px]">
         <div className="relative h-[270px] overflow-hidden sm:h-[390px] lg:absolute lg:inset-0 lg:h-full">
-          {hero?.imageUrl ? (
+          <picture className="absolute inset-0 block">
+            <source media="(max-width: 1023px)" srcSet={mobileImageUrl} />
             <img
-              key={hero.id}
-              src={hero.imageUrl}
-              alt={heroTitle ?? hero.title}
-              className="absolute inset-0 h-full w-full object-cover object-[63%_center] transition-opacity duration-700"
+              key={hero?.id ?? "fallback"}
+              src={desktopImageUrl}
+              alt={hero ? (heroTitle ?? hero.title) : t("common.hero.fallbackImageAlt")}
+              className="h-full w-full object-cover object-[63%_center] transition-opacity duration-700"
             />
-          ) : (
-            <img
-              src="/assets/images/hero-medical-suite.png"
-              alt={t("common.hero.fallbackImageAlt")}
-              className="absolute inset-0 h-full w-full object-cover object-[63%_center]"
-            />
-          )}
+          </picture>
 
           <div className="absolute inset-0 hidden lg:block">
             {!showFallback && hero ? (

@@ -56,7 +56,7 @@ export const footerColumns: FooterColumnDef[] = [
       { key: "bedHead", href: "#yatak-basi-uniteleri" },
       { key: "pendant", href: "#pendant-sistemleri" },
       { key: "medicalGas", href: "#medikal-gaz-sistemleri" },
-      { key: "electrical", href: "#elektrik-data-sistemleri" },
+      { key: "alarmMonitoring", href: "#alarm-izleme-sistemleri" },
     ],
   },
   {

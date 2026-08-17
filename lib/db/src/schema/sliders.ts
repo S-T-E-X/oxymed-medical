@@ -8,6 +8,7 @@ export const slidersTable = pgTable("sliders", {
   subtitle: text("subtitle"),
   description: text("description"),
   imageUrl: text("image_url"),
+  mobileImageUrl: text("mobile_image_url"),
   ctaPrimaryText: text("cta_primary_text"),
   ctaPrimaryHref: text("cta_primary_href"),
   ctaSecondaryText: text("cta_secondary_text"),

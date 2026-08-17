@@ -49,6 +49,7 @@ type SliderFormData = {
   subtitle: string;
   description: string;
   imageUrl: string;
+  mobileImageUrl: string;
   ctaPrimaryText: string;
   ctaPrimaryHref: string;
   ctaSecondaryText: string;
@@ -83,6 +84,7 @@ const EMPTY: SliderFormData = {
   subtitle: "",
   description: "",
   imageUrl: "",
+  mobileImageUrl: "",
   ctaPrimaryText: "",
   ctaPrimaryHref: "",
   ctaSecondaryText: "",
@@ -283,12 +285,15 @@ function SliderModal({
     }
   }
 
-  async function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImagePick(
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: "imageUrl" | "mobileImageUrl",
+  ) {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
       const { publicUrl } = await uploadFile(file);
-      set("imageUrl", publicUrl);
+      set(field, publicUrl);
       toast.success("Görsel yüklendi");
     } catch {
       toast.error("Görsel yüklenemedi");
@@ -406,17 +411,32 @@ function SliderModal({
 
           {/* Image URL — only on TR tab */}
           {activeLang === "tr" && (
-            <div>
-              <label className="label">Görsel URL</label>
-              <div className="flex gap-2">
-                <input className="input flex-1" value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://... veya dosya yükle" />
-                <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-                  <ImageIcon className="h-4 w-4" />
-                  {uploading ? "…" : "Yükle"}
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
-                </label>
+            <div className="space-y-4">
+              <div>
+                <label className="label">Masaüstü Görsel URL</label>
+                <div className="flex gap-2">
+                  <input className="input flex-1" value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://... veya dosya yükle" />
+                  <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                    <ImageIcon className="h-4 w-4" />
+                    {uploading ? "…" : "Yükle"}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImagePick(e, "imageUrl")} />
+                  </label>
+                </div>
+                {form.imageUrl && <img src={form.imageUrl} alt="" className="mt-2 h-24 w-full rounded object-cover" />}
               </div>
-              {form.imageUrl && <img src={form.imageUrl} alt="" className="mt-2 h-24 w-full rounded object-cover" />}
+              <div>
+                <label className="label">Mobil Görsel URL <span className="font-normal text-slate-400">(opsiyonel)</span></label>
+                <p className="mb-1 text-[11px] text-slate-400">Mobilde bu görsel kullanılır; boş bırakılırsa masaüstü görseli kullanılır.</p>
+                <div className="flex gap-2">
+                  <input className="input flex-1" value={form.mobileImageUrl} onChange={(e) => set("mobileImageUrl", e.target.value)} placeholder="https://... veya dosya yükle" />
+                  <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                    <ImageIcon className="h-4 w-4" />
+                    {uploading ? "…" : "Yükle"}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImagePick(e, "mobileImageUrl")} />
+                  </label>
+                </div>
+                {form.mobileImageUrl && <img src={form.mobileImageUrl} alt="" className="mt-2 h-24 w-full rounded object-cover" />}
+              </div>
             </div>
           )}
 
@@ -589,6 +609,7 @@ export default function SlidersPage() {
       subtitle: s.subtitle ?? "",
       description: s.description ?? "",
       imageUrl: s.imageUrl ?? "",
+      mobileImageUrl: s.mobileImageUrl ?? "",
       ctaPrimaryText: s.ctaPrimaryText ?? "",
       ctaPrimaryHref: s.ctaPrimaryHref ?? "",
       ctaSecondaryText: s.ctaSecondaryText ?? "",
@@ -633,6 +654,7 @@ export default function SlidersPage() {
       subtitle: data.subtitle || undefined,
       description: data.description || undefined,
       imageUrl: data.imageUrl || undefined,
+      mobileImageUrl: data.mobileImageUrl || undefined,
       ctaPrimaryText: data.ctaPrimaryText || undefined,
       ctaPrimaryHref: data.ctaPrimaryHref || undefined,
       ctaSecondaryText: data.ctaSecondaryText || undefined,

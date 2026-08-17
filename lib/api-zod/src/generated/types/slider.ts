@@ -16,6 +16,8 @@ export interface Slider {
   /** @nullable */
   imageUrl?: string | null;
   /** @nullable */
+  mobileImageUrl?: string | null;
+  /** @nullable */
   ctaPrimaryText?: string | null;
   /** @nullable */
   ctaPrimaryHref?: string | null;

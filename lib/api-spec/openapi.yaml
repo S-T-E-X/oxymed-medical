@@ -2299,6 +2299,8 @@ components:
           type: ["string", "null"]
         imageUrl:
           type: ["string", "null"]
+        mobileImageUrl:
+          type: ["string", "null"]
         ctaPrimaryText:
           type: ["string", "null"]
         ctaPrimaryHref:
@@ -2444,6 +2446,8 @@ components:
           type: string
         imageUrl:
           type: string
+        mobileImageUrl:
+          type: string
         ctaPrimaryText:
           type: string
         ctaPrimaryHref:
@@ -2583,6 +2587,8 @@ components:
         description:
           type: ["string", "null"]
         imageUrl:
+          type: ["string", "null"]
+        mobileImageUrl:
           type: ["string", "null"]
         ctaPrimaryText:
           type: ["string", "null"]

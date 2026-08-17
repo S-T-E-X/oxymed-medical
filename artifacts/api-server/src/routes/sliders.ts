@@ -65,6 +65,7 @@ const SliderBody = z.object({
   subtitle: z.string().optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
+  mobileImageUrl: z.string().optional(),
   ctaPrimaryText: z.string().optional(),
   ctaPrimaryHref: z.string().optional(),
   ctaSecondaryText: z.string().optional(),
