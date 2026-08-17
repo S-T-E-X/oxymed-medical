@@ -1,11 +1,11 @@
 {
   "hero": {
-    "eyebrow": "OXY-DVP SERIES",
-    "titleLine1": "DENTAL",
-    "titleLine2": "VAKUM POMPASI",
-    "desc1": "Oxymed Dental Vakum Pompası, diş klinikleri ve sağlık kuruluşlarında güvenilir, sessiz ve kesintisiz vakum çözümü sunar.",
+    "eyebrow": "OXYMED MEDİKAL",
+    "titleLine1": "MEDİKAL",
+    "titleLine2": "VAKUM SANTRALİ",
+    "desc1": "Oxymed Medikal Vakum Santrali, hastaneler ve sağlık tesisleri için güvenilir, sessiz ve kesintisiz merkezi vakum çözümü sunar.",
     "desc2": "Yüksek performanslı motor yapısı ve dayanıklı tasarımıyla uzun ömürlü, ekonomik ve hijyenik bir kullanım sağlar.",
-    "visualAriaLabel": "Dental vakum pompası ana WEBP görsel alanı"
+    "visualAriaLabel": "Medikal vakum santrali ana WEBP görsel alanı"
   },
   "heroFeatures": [
     {
@@ -47,7 +47,7 @@
     "rows": [
       [
         "Ürün Adı",
-        "Dental Vakum Pompası"
+        "Medikal Vakum Santrali"
       ],
       [
         "Pompa Adedi",
@@ -79,7 +79,7 @@
       ],
       [
         "Kullanım Alanı",
-        "Diş klinikleri, poliklinikler ve hastaneler"
+        "Hastaneler, poliklinikler ve sağlık tesisleri"
       ],
       [
         "Bakım Kolaylığı",
@@ -95,16 +95,16 @@
   "useCases": {
     "heading": "KULLANIM ALANLARI",
     "items": [
-      "Diş Klinikleri",
-      "Ağız ve Diş Sağlığı Merkezleri",
+      "Hastaneler",
+      "Sağlık Tesisleri",
       "Poliklinikler",
-      "Hastaneler"
+      "Ameliyathaneler"
     ]
   },
   "quickQuote": {
-    "strong": "Dental vakum pompası için hızlı teklif alın.",
+    "strong": "Medikal vakum santrali için hızlı teklif alın.",
     "small": "Projenize uygun kapasite ve kurulum seçeneğini birlikte netleştirelim.",
     "cta": "TEKLİF AL"
   },
-  "category": "Dental Vakum Pompası"
+  "category": "Medikal Vakum Santrali"
 }

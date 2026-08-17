@@ -44,7 +44,7 @@ const navItems = [
   { label: "Footer Yönetimi", icon: PanelBottom, to: "/admin/footer" },
   { label: "Ürünler", icon: Box, to: "/admin/products" },
   { label: "Amalgam Separatörü", icon: Settings, to: "/admin/urunler/amalgam-separator" },
-  { label: "Dental Vakum Pompası", icon: Settings, to: "/admin/urunler/dental-vakum-pompasi" },
+  { label: "Medikal Vakum Santrali", icon: Settings, to: "/admin/urunler/dental-vakum-pompasi" },
   { label: "Dental Vakum Sistemi", icon: Settings, to: "/admin/urunler/dental-vakum-sistemi" },
   { label: "Haberler", icon: Newspaper, to: "/admin/haberler" },
   { label: "Referanslar", icon: Wrench, to: "/admin/referanslar" },
