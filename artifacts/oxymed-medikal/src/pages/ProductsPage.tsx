@@ -181,17 +181,16 @@ function ProductsContent() {
                       </div>
                     </article>
                   );
-                  return product.pageSlug ? (
+                  const productSlug = product.pageSlug || String(product.id);
+                  return (
                     <Link
                       key={product.id}
-                      to={productHref(product.pageSlug)}
+                      to={product.pageSlug ? productHref(product.pageSlug) : path("products", [productSlug])}
                       className="block"
                       onClick={() => trackInteraction(`Ürün: ${product.title}`)}
                     >
                       {card}
                     </Link>
-                  ) : (
-                    <div key={product.id}>{card}</div>
                   );
                 })}
                 {products.length === 0 && (
