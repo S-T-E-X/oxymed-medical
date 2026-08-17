@@ -244,39 +244,4 @@ select.input {
       0 0 0 1px rgba(255, 255, 255, 0.38),
       0 0 14px rgba(91, 196, 255, 0.58);
   }
-
-  .home-slider-mobile-glow::before {
-    content: "";
-    position: absolute;
-    inset: -3px;
-    z-index: -1;
-    border-radius: inherit;
-    padding: 2px;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg 95deg,
-      rgba(93, 202, 255, 0.95) 135deg,
-      rgba(255, 255, 255, 0.95) 165deg,
-      transparent 205deg 360deg
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: home-slider-glow-rotate 2.4s linear infinite;
-    filter: drop-shadow(0 0 5px rgba(93, 202, 255, 0.8));
-  }
-}
-
-@keyframes home-slider-glow-rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-slider-mobile-glow::before {
-    animation: none;
-  }
 }
