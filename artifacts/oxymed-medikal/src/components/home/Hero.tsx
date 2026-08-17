@@ -138,7 +138,7 @@ export default function Hero() {
 
         <div className="relative mx-auto flex max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-14 lg:h-full lg:px-8 lg:py-16">
           {!showFallback && hero ? (
-            <div className="max-w-[590px] lg:pt-6" style={{ color: heroTextColor }}>
+            <div className="home-slider-copy max-w-[590px] lg:pt-6" style={{ color: heroTextColor }}>
               {heroSubtitle && (
                 <p className="text-sm font-bold uppercase tracking-widest" style={{ opacity: 0.78 }}>
                   {heroSubtitle}
@@ -153,7 +153,7 @@ export default function Hero() {
                   )
                 )}
               </h1>
-              <div className="mt-8 h-1 w-16" style={{ background: heroTextColor }} />
+              <div className="home-slider-divider mt-8 h-1 w-16" style={{ background: heroTextColor }} />
               {heroDescription && (
                 <p className="mt-8 max-w-[420px] text-base font-medium leading-8 sm:text-lg" style={{ opacity: 0.88 }}>
                   {heroDescription}
@@ -164,7 +164,7 @@ export default function Hero() {
                   <a
                     href={hero.ctaPrimaryHref}
                     style={{ backgroundColor: primaryBg }}
-                    className="inline-flex items-center justify-center gap-2 rounded px-7 py-4 text-xs font-extrabold text-white shadow-[0_10px_30px_rgba(2,20,35,0.22)] transition hover:opacity-90"
+                    className="home-slider-mobile-cta home-slider-mobile-glow inline-flex items-center justify-center gap-2 rounded px-7 py-4 text-xs font-extrabold text-white shadow-[0_10px_30px_rgba(2,20,35,0.22)] transition hover:opacity-90"
                   >
                     {heroPrimaryText}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -174,7 +174,7 @@ export default function Hero() {
                   <a
                     href={hero.ctaSecondaryHref}
                     style={{ backgroundColor: secondaryBg }}
-                    className="inline-flex items-center justify-center gap-2 rounded border border-white/72 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:opacity-90"
+                    className="home-slider-mobile-cta home-slider-mobile-glow inline-flex items-center justify-center gap-2 rounded border border-white/72 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:opacity-90"
                   >
                     {heroSecondaryText}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -183,7 +183,7 @@ export default function Hero() {
                 {hero.showCatalogButton && (
                   <button
                     onClick={() => setCatalogOpen(true)}
-                    className="inline-flex items-center justify-center gap-2 rounded border border-white/72 bg-white/6 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:bg-white/14"
+                    className="home-slider-mobile-cta home-slider-mobile-glow inline-flex items-center justify-center gap-2 rounded border border-white/72 bg-white/6 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:bg-white/14"
                   >
                     {t("common.cta.downloadCatalog")}
                     <ArrowDownToLine className="h-4 w-4" aria-hidden="true" />
@@ -204,14 +204,14 @@ export default function Hero() {
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <a
                   href={path("products")}
-                  className="inline-flex items-center justify-center gap-2 rounded bg-oxynavy-950 px-7 py-4 text-xs font-extrabold text-white shadow-[0_10px_30px_rgba(2,20,35,0.22)] transition hover:bg-oxynavy-800"
+                  className="home-slider-mobile-cta home-slider-mobile-glow inline-flex items-center justify-center gap-2 rounded bg-oxynavy-950 px-7 py-4 text-xs font-extrabold text-white shadow-[0_10px_30px_rgba(2,20,35,0.22)] transition hover:bg-oxynavy-800"
                 >
                   {t("common.hero.ourProducts")}
                   <ArrowRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
                 </a>
                 <button
                   onClick={() => setCatalogOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 rounded border border-white/72 bg-white/6 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:bg-white/14"
+                  className="home-slider-mobile-cta home-slider-mobile-glow inline-flex items-center justify-center gap-2 rounded border border-white/72 bg-white/6 px-7 py-4 text-xs font-extrabold text-white backdrop-blur-sm transition hover:bg-white/14"
                 >
                   {t("common.cta.downloadCatalog")}
                   <ArrowDownToLine className="h-4 w-4" aria-hidden="true" />
