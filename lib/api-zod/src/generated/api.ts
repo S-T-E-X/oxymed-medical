@@ -2009,6 +2009,34 @@ export const ListMediaFilesResponse = zod.object({
 
 
 /**
+ * @summary Convert opaque PNG and WebP media files to JPEG
+ */
+
+export const convertOpaqueMediaBodyDryRunDefault = false;
+
+export const ConvertOpaqueMediaBody = zod.object({
+  "ids": zod.array(zod.number()).min(1).optional(),
+  "dryRun": zod.boolean().default(convertOpaqueMediaBodyDryRunDefault)
+})
+
+export const ConvertOpaqueMediaResponse = zod.object({
+  "inspected": zod.number(),
+  "convertible": zod.number(),
+  "converted": zod.number(),
+  "skipped": zod.number(),
+  "failed": zod.number(),
+  "items": zod.array(zod.object({
+  "id": zod.number(),
+  "filename": zod.string(),
+  "status": zod.enum(['convertible', 'converted', 'skipped-transparent', 'skipped-animated', 'skipped-jpeg', 'failed']),
+  "previousSize": zod.number().nullish(),
+  "size": zod.number().nullish(),
+  "error": zod.string().nullish()
+}))
+})
+
+
+/**
  * @summary Upload a media file (admin only)
  */
 export const UploadMediaBody = zod.object({

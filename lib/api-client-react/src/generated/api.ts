@@ -55,6 +55,8 @@ import type {
   ListServiceReportsParams,
   ListSlidersParams,
   ListWarrantyDevicesParams,
+  MediaConversionInput,
+  MediaConversionResponse,
   MediaFile,
   MediaListResponse,
   MediaUploadInput,
@@ -4095,6 +4097,77 @@ export function useListMediaFiles<TData = Awaited<ReturnType<typeof listMediaFil
 
 
 
+
+export const getConvertOpaqueMediaUrl = () => {
+
+
+
+
+  return `/api/media/convert-opaque`
+}
+
+/**
+ * @summary Convert opaque PNG and WebP media files to JPEG
+ */
+export const convertOpaqueMedia = async (mediaConversionInput?: MediaConversionInput, options?: RequestInit): Promise<MediaConversionResponse> => {
+
+  return customFetch<MediaConversionResponse>(getConvertOpaqueMediaUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      mediaConversionInput,)
+  }
+);}
+
+
+
+
+export const getConvertOpaqueMediaMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof convertOpaqueMedia>>, TError,{data?: BodyType<MediaConversionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof convertOpaqueMedia>>, TError,{data?: BodyType<MediaConversionInput>}, TContext> => {
+
+const mutationKey = ['convertOpaqueMedia'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof convertOpaqueMedia>>, {data?: BodyType<MediaConversionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  convertOpaqueMedia(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConvertOpaqueMediaMutationResult = NonNullable<Awaited<ReturnType<typeof convertOpaqueMedia>>>
+    export type ConvertOpaqueMediaMutationBody = BodyType<MediaConversionInput> | undefined
+    export type ConvertOpaqueMediaMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Convert opaque PNG and WebP media files to JPEG
+ */
+export const useConvertOpaqueMedia = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof convertOpaqueMedia>>, TError,{data?: BodyType<MediaConversionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof convertOpaqueMedia>>,
+        TError,
+        {data?: BodyType<MediaConversionInput>},
+        TContext
+      > => {
+      return useMutation(getConvertOpaqueMediaMutationOptions(options));
+    }
 
 export const getUploadMediaUrl = () => {
 

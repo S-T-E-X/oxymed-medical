@@ -1219,6 +1219,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/MediaListResponse"
 
+  /media/convert-opaque:
+    post:
+      operationId: convertOpaqueMedia
+      tags: [media]
+      summary: Convert opaque PNG and WebP media files to JPEG
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaConversionInput"
+      responses:
+        "200":
+          description: Conversion inspection and result summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaConversionResponse"
+
   /media/upload:
     post:
       operationId: uploadMedia
@@ -3787,6 +3808,55 @@ components:
             $ref: "#/components/schemas/MediaFile"
         total:
           type: integer
+
+    MediaConversionInput:
+      type: object
+      properties:
+        ids:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+        dryRun:
+          type: boolean
+          default: false
+
+    MediaConversionItem:
+      type: object
+      required: [id, filename, status]
+      properties:
+        id:
+          type: integer
+        filename:
+          type: string
+        status:
+          type: string
+          enum: [convertible, converted, skipped-transparent, skipped-animated, skipped-jpeg, failed]
+        previousSize:
+          type: ["integer", "null"]
+        size:
+          type: ["integer", "null"]
+        error:
+          type: ["string", "null"]
+
+    MediaConversionResponse:
+      type: object
+      required: [inspected, convertible, converted, skipped, failed, items]
+      properties:
+        inspected:
+          type: integer
+        convertible:
+          type: integer
+        converted:
+          type: integer
+        skipped:
+          type: integer
+        failed:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MediaConversionItem"
 
     PresignedUrlInput:
       type: object

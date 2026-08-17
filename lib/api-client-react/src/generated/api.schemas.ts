@@ -1097,6 +1097,45 @@ export interface MediaListResponse {
   total: number;
 }
 
+export interface MediaConversionInput {
+  /** @minItems 1 */
+  ids?: number[];
+  dryRun?: boolean;
+}
+
+export type MediaConversionItemStatus = typeof MediaConversionItemStatus[keyof typeof MediaConversionItemStatus];
+
+
+export const MediaConversionItemStatus = {
+  convertible: 'convertible',
+  converted: 'converted',
+  'skipped-transparent': 'skipped-transparent',
+  'skipped-animated': 'skipped-animated',
+  'skipped-jpeg': 'skipped-jpeg',
+  failed: 'failed',
+} as const;
+
+export interface MediaConversionItem {
+  id: number;
+  filename: string;
+  status: MediaConversionItemStatus;
+  /** @nullable */
+  previousSize?: number | null;
+  /** @nullable */
+  size?: number | null;
+  /** @nullable */
+  error?: string | null;
+}
+
+export interface MediaConversionResponse {
+  inspected: number;
+  convertible: number;
+  converted: number;
+  skipped: number;
+  failed: number;
+  items: MediaConversionItem[];
+}
+
 export interface PresignedUrlInput {
   name: string;
   size: number;

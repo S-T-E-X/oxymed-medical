@@ -15,3 +15,4 @@
 - [News multilingual model](news-i18n.md) — news uses row-per-language (not per-locale columns); untranslated languages fail closed; article hreflang/switcher must come from API alternates, never the locale list.
 - [Static SEO / prerender pipeline](seo-prerender-pipeline.md) — extend gen-sitemap + handoff + prerender + verifier together; runtime & build must share ONE locale-eligibility rule or hydration overwrites the baked head.
 - [DB product page localization](db-product-page-localization.md) — locale overlays must resolve per-locale and fail closed; never leak Turkish into other URLs; CMS text is untrusted at path and HTML sinks.
+- [Media conversion runtime](media-conversion-runtime.md) — server-side raster conversion can use the preinstalled ImageMagick `magick` CLI when native Node packages cannot be installed.

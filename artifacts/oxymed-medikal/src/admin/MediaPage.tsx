@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  convertOpaqueMedia,
   getListMediaFilesQueryKey,
   listMediaFiles,
+  type MediaConversionResponse,
   useDeleteMediaFile,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Check, Copy, ImageIcon, Trash2, Upload } from "lucide-react";
+import { Check, Copy, ImageIcon, RefreshCw, Trash2, Upload } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 
 function formatSize(bytes?: number | null) {
@@ -45,6 +47,8 @@ export default function MediaPage() {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const dropRef = useRef<HTMLLabelElement>(null);
   const [dragging, setDragging] = useState(false);
+  const [converting, setConverting] = useState(false);
+  const [conversionPreview, setConversionPreview] = useState<MediaConversionResponse | null>(null);
 
   const { uploadFile, uploading } = useImageUpload();
 
@@ -72,6 +76,7 @@ export default function MediaPage() {
     }
     if (success > 0) {
       toast.success(`${success} dosya yüklendi`);
+      setConversionPreview(null);
       invalidate();
     }
   }
@@ -86,18 +91,85 @@ export default function MediaPage() {
     if (confirm("Bu dosyayı silmek istediğinizden emin misiniz?")) deleteMut.mutate({ id });
   }
 
+  async function handleConvertOpaqueMedia() {
+    if (converting) return;
+
+    setConverting(true);
+    try {
+      if (!conversionPreview) {
+        const preview = await convertOpaqueMedia({ dryRun: true });
+        setConversionPreview(preview);
+        if (preview.convertible > 0) {
+          toast.info(`${preview.convertible} dosya JPG’ye dönüştürülebilir. Şeffaf dosyalar korunacak.`);
+        } else {
+          toast.info("Dönüştürülecek şeffaf olmayan PNG/WebP bulunamadı.");
+        }
+        return;
+      }
+
+      if (conversionPreview.convertible === 0) {
+        setConversionPreview(null);
+        return;
+      }
+      if (!confirm(`${conversionPreview.convertible} şeffaf olmayan PNG/WebP dosyası JPG olarak dönüştürülsün mü? JPG dosyaları, şeffaf görseller ve animasyonlu WebP’ler korunur.`)) {
+        return;
+      }
+
+      const result = await convertOpaqueMedia({});
+      const savedBytes = result.items.reduce((total, item) => {
+        if (item.status !== "converted" || item.previousSize == null || item.size == null) return total;
+        return total + Math.max(0, item.previousSize - item.size);
+      }, 0);
+      if (result.failed > 0) {
+        toast.error(`${result.failed} dosya dönüştürülemedi; diğer sonuçlar uygulandı.`);
+      }
+      if (result.converted > 0) {
+        toast.success(`${result.converted} dosya JPG oldu${savedBytes > 0 ? ` · ${formatSize(savedBytes)} kazanıldı` : ""}`);
+      } else {
+        toast.info("Dönüştürülebilecek dosya kalmadı.");
+      }
+      setConversionPreview(null);
+      invalidate();
+    } catch {
+      toast.error("Görsel dönüşümü başarısız oldu");
+    } finally {
+      setConverting(false);
+    }
+  }
+
   const publicUrlOf = (objectPath: string) => `/api/storage/public-objects/${objectPath}`;
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-950">Medya Kütüphanesi</h1>
           <p className="mt-1 text-sm text-slate-500">
             {totalFiles} dosya yüklü{files.length < totalFiles ? ` · ${files.length} gösteriliyor` : ""}
           </p>
         </div>
+        <button
+          type="button"
+          onClick={handleConvertOpaqueMedia}
+          disabled={converting || uploading || isLoading}
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100 disabled:cursor-wait disabled:opacity-60"
+        >
+          <RefreshCw className={`h-4 w-4 ${converting ? "animate-spin" : ""}`} />
+          {converting
+            ? "İşleniyor…"
+            : conversionPreview
+              ? `${conversionPreview.convertible} dosyayı JPG yap`
+              : "PNG/WebP analiz et"}
+        </button>
       </div>
+      <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-3 text-xs leading-5 text-blue-900">
+        Şeffaf olmayan PNG ve WebP dosyaları JPG’ye dönüştürülür. Mevcut JPG’ler, gerçek şeffaflığı olan dosyalar ve animasyonlu WebP’ler korunur. Dosya URL’leri değişmez.
+      </div>
+      {conversionPreview && (
+        <div className="mb-6 rounded-lg border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-xs leading-5 text-emerald-900">
+          Analiz: <strong>{conversionPreview.convertible}</strong> dosya dönüştürülebilir; şeffaf veya animasyonlu olduğu için <strong>{conversionPreview.skipped}</strong> dosya korunacak. Dönüşümü başlatmak için üstteki butona tekrar tıklayın.
+        </div>
+      )}
 
       <label
         ref={dropRef}
@@ -142,7 +214,7 @@ export default function MediaPage() {
               <div key={f.id} className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div className="aspect-square overflow-hidden bg-slate-50">
                   {f.mimeType?.startsWith("image/") ? (
-                    <img src={url} alt={f.alt ?? f.filename} className="h-full w-full object-cover" />
+                    <img src={url} alt={f.alt ?? f.filename} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <ImageIcon className="h-8 w-8 text-slate-300" />

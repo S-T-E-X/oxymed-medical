@@ -186,9 +186,13 @@ export default function ProductDetailPage() {
   const sections: Record<SectionKey, React.ReactNode> = {
     detailCards: detailCards.length > 0 && !hiddenSections.includes("detailCards") && (
       <section key="detailCards" className="pdp-container pdp-detail-grid" aria-label={t("products.detail.detailImages")}>
-        {detailCards.map((card) => (
+            {detailCards.map((card) => (
           <article key={card.title}>
-            {card.imageUrl ? <div className="pdp-image-slot" style={{ backgroundImage: `url(${card.imageUrl})` }} /> : <div className="pdp-image-slot" />}
+                {card.imageUrl ? (
+                  <div className="pdp-image-slot">
+                    <img src={card.imageUrl} alt="" loading="lazy" decoding="async" />
+                  </div>
+                ) : <div className="pdp-image-slot" />}
             <h2>{card.title}</h2><p>{card.text}</p>
           </article>
         ))}
@@ -302,7 +306,7 @@ export default function ProductDetailPage() {
 
             <div className="pdp-hero__visual" aria-label={t("products.detail.productImage").replace("{{product}}", localizedTitle)}>
               {product.imageUrl ? (
-                <img src={product.imageUrl} alt={localizedTitle} />
+                <img src={product.imageUrl} alt={localizedTitle} decoding="async" fetchPriority="high" />
               ) : (
                 <div className="pdp-hero-photo-slot" />
               )}

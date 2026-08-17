@@ -217,6 +217,14 @@
   background-color: #eef2f7;
 }
 
+.pdp-image-slot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
 .pdp-detail-grid h2 {
   margin-top: 13px;
   color: #082653;
