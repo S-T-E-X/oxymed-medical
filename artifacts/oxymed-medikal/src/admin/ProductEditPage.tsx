@@ -10,7 +10,7 @@ import {
   type Product,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowUp, ArrowDown, Box, Check, Eye, EyeOff, ImageIcon, Languages, Lock, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ArrowDown, Box, Check, Eye, EyeOff, ImageIcon, Languages, Loader2, Lock, Plus, Save, Sparkles, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
 import { useAuth } from "./AuthContext";
 
@@ -437,6 +437,7 @@ export default function ProductEditPage() {
   const [form, setForm] = useState<ProductEditForm>(EMPTY_FORM);
   const [tab, setTab] = useState<Tab>("temel");
   const [activeLocale, setActiveLocale] = useState<string>(TITLE_LOCALES[0].code);
+  const [translating, setTranslating] = useState(false);
   const [initialized, setInitialized] = useState(isNew);
 
   const { data: categories = [] } = useListProductCategories();
@@ -552,6 +553,69 @@ export default function ProductEditPage() {
           titleAz: form.titleAz.trim() || null,
         },
       });
+    }
+  }
+
+  function turkishSourceContent(): LocalizedPageContent {
+    return {
+      heroSubtitle: form.heroSubtitle,
+      heroDescription: form.heroDescription,
+      features: form.features.filter((f) => f.title),
+      detailCards: form.detailCards.filter((d) => d.title),
+      specs: form.specs.filter((s) => s.label && s.value),
+      useCases: form.useCases.filter(Boolean),
+      advantages: form.advantages.filter(Boolean),
+      featureTiles: form.featureTiles.filter((f) => f.title),
+      faq: form.faq.filter((f) => f.question),
+    };
+  }
+
+  async function handleAiTranslate() {
+    const localeLabel = TITLE_LOCALES.find((l) => l.code === activeLocale)?.label ?? activeLocale;
+    const source = turkishSourceContent();
+    if (!hasLocalizedContent(source)) {
+      toast.error("Çevrilecek Türkçe sayfa içeriği yok — önce 'Sayfa İçeriği' sekmesini doldurun");
+      return;
+    }
+    if (hasLocalizedContent(form.localePageData[activeLocale])) {
+      const ok = window.confirm(`${localeLabel} için mevcut içerik var. AI çevirisi bu içeriğin ÜZERİNE YAZILACAK. Devam edilsin mi?`);
+      if (!ok) return;
+    }
+    setTranslating(true);
+    try {
+      const res = await authFetch("/api/products/translate-page-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetLocale: activeLocale, content: source }),
+      });
+      if (!res.ok) {
+        let message = "Çeviri başarısız oldu";
+        try {
+          const data = await res.json();
+          if (typeof data?.error === "string") message = data.error;
+        } catch { /* keep generic message */ }
+        toast.error(message);
+        return;
+      }
+      const data = await res.json();
+      const c = data.content ?? {};
+      const next: LocalizedPageContent = {
+        heroSubtitle: c.heroSubtitle ?? "",
+        heroDescription: c.heroDescription ?? "",
+        features: (c.features ?? []) as FeatureRow[],
+        detailCards: ((c.detailCards ?? []) as DetailCard[]).map((d) => ({ title: d.title ?? "", text: d.text ?? "", imageUrl: d.imageUrl ?? "" })),
+        specs: (c.specs ?? []) as SpecRow[],
+        useCases: c.useCases ?? [],
+        advantages: c.advantages ?? [],
+        featureTiles: (c.featureTiles ?? []) as FeatureRow[],
+        faq: (c.faq ?? []) as FaqRow[],
+      };
+      set("localePageData", { ...form.localePageData, [activeLocale]: next });
+      toast.success(`${localeLabel} çevirisi hazır — kontrol edip Kaydet'e basmayı unutmayın`);
+    } catch {
+      toast.error("Çeviri servisine ulaşılamadı");
+    } finally {
+      setTranslating(false);
     }
   }
 
@@ -820,6 +884,15 @@ export default function ProductEditPage() {
                 className="ml-auto rounded-lg border border-slate-300 bg-white px-2.5 py-1 font-semibold text-slate-600 hover:bg-slate-100"
               >
                 Türkçe içeriği bu dile kopyala
+              </button>
+              <button
+                type="button"
+                onClick={handleAiTranslate}
+                disabled={translating}
+                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-2.5 py-1 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
+              >
+                {translating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                {translating ? "Çevriliyor…" : "AI ile Türkçeden çevir"}
               </button>
             </div>
             <LocalizedContentEditor

@@ -8,6 +8,7 @@ import {
   isValidProductSlug,
 } from "@workspace/product-content";
 import { z } from "zod/v4";
+import { openai } from "@workspace/integrations-openai-ai-server";
 
 const router: IRouter = Router();
 
@@ -130,6 +131,143 @@ const ProductBody = z.object({
   titleKa: z.string().optional().nullable(),
   titleBg: z.string().optional().nullable(),
   titleAz: z.string().optional().nullable(),
+});
+
+// ---- AI translation of product page content ----
+
+const PAGE_TRANSLATION_TARGETS = [
+  { code: "en", name: "English" },
+  { code: "de", name: "German" },
+  { code: "fr", name: "French" },
+  { code: "it", name: "Italian" },
+  { code: "ar", name: "Arabic" },
+  { code: "ru", name: "Russian" },
+  { code: "fa", name: "Persian (Farsi)" },
+  { code: "ka", name: "Georgian" },
+  { code: "bg", name: "Bulgarian" },
+  { code: "az", name: "Azerbaijani" },
+] as const;
+
+const TranslatePageContentBody = z.object({
+  targetLocale: z.enum(PAGE_TRANSLATION_TARGETS.map((t) => t.code) as [string, ...string[]]),
+  content: PageDataContentSchema,
+});
+
+type PageContent = z.infer<typeof PageDataContentSchema>;
+
+/**
+ * Structural validation of the model output against the Turkish source:
+ * same array lengths, and every non-empty source string must come back as a
+ * non-empty string. On any mismatch we fail the whole request — the admin UI
+ * must never silently store Turkish (or partial) copy as a "translation".
+ */
+function validateTranslatedContent(source: PageContent, translated: unknown): string | null {
+  const parsed = PageDataContentSchema.safeParse(translated);
+  if (!parsed.success) return "yanıt beklenen yapıda değil";
+  const t = parsed.data;
+  const arrayKeys = ["features", "detailCards", "useCases", "advantages", "featureTiles", "faq", "specs"] as const;
+  for (const key of arrayKeys) {
+    const srcLen = (source[key] ?? []).length;
+    const outLen = (t[key] ?? []).length;
+    if (srcLen !== outLen) return `"${key}" bölümünde öğe sayısı uyuşmuyor`;
+  }
+  const flatten = (c: PageContent): string[] => [
+    c.heroSubtitle ?? "",
+    c.heroDescription ?? "",
+    ...(c.features ?? []).flatMap((f) => [f.title, f.text]),
+    ...(c.detailCards ?? []).flatMap((d) => [d.title, d.text]),
+    ...(c.useCases ?? []),
+    ...(c.advantages ?? []),
+    ...(c.featureTiles ?? []).flatMap((f) => [f.title, f.text]),
+    ...(c.faq ?? []).flatMap((f) => [f.question, f.answer]),
+    ...(c.specs ?? []).flatMap((s) => [s.label, s.value]),
+  ];
+  const srcStrings = flatten(source);
+  const outStrings = flatten(t);
+  for (let i = 0; i < srcStrings.length; i++) {
+    if (srcStrings[i].trim() !== "" && (outStrings[i] ?? "").trim() === "") {
+      return "bazı metinler boş döndü";
+    }
+  }
+  return null;
+}
+
+router.post("/products/translate-page-content", requireAuth, async (req, res): Promise<void> => {
+  const parsed = TranslatePageContentBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const { targetLocale, content } = parsed.data;
+  const target = PAGE_TRANSLATION_TARGETS.find((t) => t.code === targetLocale)!;
+
+  const source: PageContent = {
+    heroSubtitle: content.heroSubtitle ?? "",
+    heroDescription: content.heroDescription ?? "",
+    features: content.features ?? [],
+    detailCards: (content.detailCards ?? []).map((d) => ({ title: d.title, text: d.text, imageUrl: d.imageUrl ?? "" })),
+    useCases: content.useCases ?? [],
+    advantages: content.advantages ?? [],
+    featureTiles: content.featureTiles ?? [],
+    faq: content.faq ?? [],
+    specs: content.specs ?? [],
+  };
+
+  let completion;
+  try {
+    completion = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      max_completion_tokens: 16384,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            `You are a professional medical-device translator for a hospital equipment company's website. ` +
+            `Translate the given Turkish product detail page JSON into ${target.name}. ` +
+            `Return ONLY a JSON object with exactly the same keys, nesting and array lengths as the input. ` +
+            `Translate string VALUES only, never keys. ` +
+            `Preserve image URLs, model codes, standards, certifications, gas symbols, units, dimensions and technical numbers exactly as-is. ` +
+            `If a value is an empty string, keep it as an empty string. ` +
+            `Use accurate, natural B2B hospital-equipment terminology; keep short labels concise.`,
+        },
+        { role: "user", content: JSON.stringify(source) },
+      ],
+    });
+  } catch {
+    res.status(502).json({ error: "Çeviri servisine ulaşılamadı" });
+    return;
+  }
+
+  const raw = completion.choices[0]?.message?.content;
+  if (!raw) {
+    res.status(502).json({ error: "Çeviri servisinden yanıt alınamadı" });
+    return;
+  }
+  let translated: unknown;
+  try {
+    translated = JSON.parse(raw);
+  } catch {
+    res.status(502).json({ error: "Çeviri servisi geçersiz bir yanıt döndürdü" });
+    return;
+  }
+  const problem = validateTranslatedContent(source, translated);
+  if (problem) {
+    res.status(502).json({ error: `Çeviri doğrulanamadı: ${problem}` });
+    return;
+  }
+
+  // Image URLs are not translatable content — always restore them from the
+  // source so a model paraphrase can never break an image reference.
+  const t = PageDataContentSchema.parse(translated);
+  const result: PageContent = {
+    ...t,
+    detailCards: (t.detailCards ?? []).map((d, i) => ({
+      ...d,
+      imageUrl: source.detailCards?.[i]?.imageUrl ?? "",
+    })),
+  };
+  res.json({ targetLocale, content: result });
 });
 
 function parseId(raw: string | string[]): number {
