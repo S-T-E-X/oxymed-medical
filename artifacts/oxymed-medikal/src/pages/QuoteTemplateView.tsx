@@ -63,8 +63,11 @@ export type QuoteViewData = {
   onaylayan: string;
   onaytayanGorev: string;
   onayTarihi: string;
+  karsiFirmaLogoUrl?: string;
   items: QuoteViewItem[];
 };
+
+const COUNTERPARTY_LOGO_QUOTE_NO = "OXM-TFL-2026-170804";
 
 const trustItemsByLang: Record<QuoteLanguage, { icon: LucideIcon; title: string; text: string }[]> = {
   tr: [
@@ -1229,7 +1232,7 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
           <img className="qt-sign-watermark" src="/assets/brand/oxymed-logo.webp" alt="" aria-hidden="true" />
         </article>
 
-        <article>
+        <article className="qt-approved-signature">
           <h2>{t.approvedBy}</h2>
           <div className="qt-sign-grid">
             <span>{t.nameSurname}</span><b>:</b><em>{data.onaylayan}</em>
@@ -1237,6 +1240,14 @@ function FooterBlocks({ data }: { data: QuoteViewData }) {
             <span>{t.approvalDate}</span><b>:</b><em>{data.onayTarihi}</em>
           </div>
           <strong>{t.signature}</strong>
+          {data.quoteNo === COUNTERPARTY_LOGO_QUOTE_NO && data.karsiFirmaLogoUrl ? (
+            <img
+              className="qt-approval-logo-watermark"
+              src={data.karsiFirmaLogoUrl}
+              alt=""
+              aria-hidden="true"
+            />
+          ) : null}
         </article>
       </div>
 

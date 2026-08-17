@@ -144,8 +144,9 @@
 
 .qt-contact-strip {
   display: grid;
-  grid-template-columns: 33mm 43mm 48mm 1fr;
+  grid-template-columns: auto auto auto auto;
   align-items: center;
+  justify-content: center;
   gap: 3.5mm;
   height: 10.5mm;
   margin-top: 2.2mm;
@@ -752,6 +753,19 @@
   top: 11mm;
   width: 35mm;
   opacity: 0.18;
+}
+
+.qt-approval-logo-watermark {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 2.5mm;
+  width: 38mm;
+  max-height: 20mm;
+  transform: translateX(-50%);
+  object-fit: contain;
+  opacity: 0.16;
+  pointer-events: none;
 }
 
 .qt-trust-row {

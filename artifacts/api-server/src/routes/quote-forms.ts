@@ -67,6 +67,7 @@ const QuoteFormBody = z.object({
   onaylayan: z.string().optional().nullable(),
   onaytayanGorev: z.string().optional().nullable(),
   onayTarihi: z.string().optional().nullable(),
+  karsiFirmaLogoUrl: z.string().optional().nullable(),
 });
 
 const QuoteFormItemBody = z.object({

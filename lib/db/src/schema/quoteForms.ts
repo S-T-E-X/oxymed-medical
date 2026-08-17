@@ -30,6 +30,7 @@ export const quoteForms = pgTable("quote_forms", {
   onaylayan: text("onaylayan"),
   onaytayanGorev: text("onaylayan_gorev"),
   onayTarihi: text("onay_tarihi"),
+  karsiFirmaLogoUrl: text("karsi_firma_logo_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

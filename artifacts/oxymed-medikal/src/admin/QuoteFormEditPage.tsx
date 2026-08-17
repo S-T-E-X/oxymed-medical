@@ -163,6 +163,7 @@ type FormDraft = {
   onaylayan: string;
   onaytayanGorev: string;
   onayTarihi: string;
+  karsiFirmaLogoUrl: string;
 };
 
 const STATUS_OPTIONS = [
@@ -1880,6 +1881,7 @@ export default function QuoteFormEditPage() {
   const { authFetch } = useAuth();
   const { uploadFile, uploading } = useImageUpload();
   const imzaInputRef = useRef<HTMLInputElement>(null);
+  const karsiFirmaLogoInputRef = useRef<HTMLInputElement>(null);
   const { data: settings } = useListSettings();
   const preparers = parsePreparers((settings as Record<string, string> | undefined)?.["hazirlayan_kisiler"]);
   const translateMut = useTranslateQuoteForm();
@@ -1924,6 +1926,7 @@ export default function QuoteFormEditPage() {
     onaylayan: "",
     onaytayanGorev: "",
     onayTarihi: "",
+    karsiFirmaLogoUrl: "",
   });
 
   useEffect(() => {
@@ -1979,6 +1982,7 @@ export default function QuoteFormEditPage() {
           onaylayan: data.onaylayan ?? "",
           onaytayanGorev: data.onaytayanGorev ?? "",
           onayTarihi: data.onayTarihi ?? "",
+          karsiFirmaLogoUrl: data.karsiFirmaLogoUrl ?? "",
         }));
       })
       .catch((err: Error) => {
@@ -2224,6 +2228,7 @@ export default function QuoteFormEditPage() {
         onaylayan: form.onaylayan || null,
         onaytayanGorev: form.onaytayanGorev || null,
         onayTarihi: form.onayTarihi || null,
+        karsiFirmaLogoUrl: form.karsiFirmaLogoUrl || null,
       };
       const r = await authFetch(`/api/quote-forms/${id}`, {
         method: "PATCH",
@@ -2884,6 +2889,65 @@ export default function QuoteFormEditPage() {
                   <input value={form.onayTarihi} onChange={setField("onayTarihi")} className="input w-full text-sm" placeholder="24.05.2026" />
                 </div>
               </div>
+              {quoteNo === "OXM-TFL-2026-170804" && (
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <label className="label">Karşı Firma Logosu</label>
+                  <div className="flex items-center gap-3">
+                    {form.karsiFirmaLogoUrl ? (
+                      <div className="relative">
+                        <img
+                          src={form.karsiFirmaLogoUrl}
+                          alt="Karşı firma logosu"
+                          className="h-16 w-32 rounded border border-slate-200 bg-white object-contain px-2"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setForm((p) => ({ ...p, karsiFirmaLogoUrl: "" }))}
+                          className="absolute -right-2 -top-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
+                          title="Kaldır"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex h-16 w-32 items-center justify-center rounded border border-dashed border-slate-300 text-xs text-slate-400">
+                        Görsel yok
+                      </div>
+                    )}
+                    <input
+                      ref={karsiFirmaLogoInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const { publicUrl } = await uploadFile(file);
+                          setForm((p) => ({ ...p, karsiFirmaLogoUrl: publicUrl }));
+                          toast.success("Karşı firma logosu yüklendi");
+                        } catch {
+                          toast.error("Logo yükleme başarısız");
+                        } finally {
+                          if (karsiFirmaLogoInputRef.current) karsiFirmaLogoInputRef.current.value = "";
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => karsiFirmaLogoInputRef.current?.click()}
+                      disabled={uploading}
+                      className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                    >
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                      {form.karsiFirmaLogoUrl ? "Değiştir" : "Yükle"}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Yalnızca OXM-TFL-2026-170804 teklifinde kullanılır. PNG, JPG veya WebP; şeffaf arka planlı logo önerilir.
+                  </p>
+                </div>
+              )}
             </section>
 
             <div className="flex justify-end pb-6">

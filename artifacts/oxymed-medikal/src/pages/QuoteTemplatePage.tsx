@@ -43,6 +43,7 @@ const DEMO_DATA: QuoteViewData = {
   onaylayan: "Mehmet Kaya",
   onaytayanGorev: "Proje Müdürü",
   onayTarihi: "24.05.2026",
+  karsiFirmaLogoUrl: "",
   items: [
     { no: "1", itemType: "single", title: "OXY-DVS Dental Vakum Sistemi", bullets: ["Yağsız, sessiz çalışan vakum pompaları", "Otomatik çalışma panosu", "300 L vakum tankı", "Basınç şalteri ve emniyet valfleri", "CE uygunluk"], code: "OXM-DVS-300", quantity: 1, unit: "ADET", unitPrice: 4850 },
     { no: "2", itemType: "single", title: "OXY-MGS Medikal Gaz Santrali", bullets: ["Oksijen, Azot ve Hava üretim sistemi", "PSA teknolojisi ile yüksek saflıkta gaz üretimi", "Otomatik kontrol ve izleme sistemi", "CE uygunluk"], code: "OXM-MGS-20", quantity: 1, unit: "ADET", unitPrice: 7900 },

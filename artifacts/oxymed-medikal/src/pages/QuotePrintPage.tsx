@@ -34,6 +34,7 @@ type ApiForm = {
   onaylayan?: string | null;
   onaytayanGorev?: string | null;
   onayTarihi?: string | null;
+  karsiFirmaLogoUrl?: string | null;
   createdAt: string;
   items: Array<{
     id: number;
@@ -156,6 +157,7 @@ function toViewData(form: ApiForm): QuoteViewData {
     onaylayan: form.onaylayan ?? "",
     onaytayanGorev: form.onaytayanGorev ?? "",
     onayTarihi: form.onayTarihi ?? "",
+    karsiFirmaLogoUrl: form.karsiFirmaLogoUrl ?? "",
     items: numberedItems,
   };
 }
