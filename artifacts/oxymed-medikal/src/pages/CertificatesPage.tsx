@@ -2,6 +2,7 @@ import { Award, Download, FileText } from "lucide-react";
 import { useListCertificates } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import { resolvePublicDocumentUrl } from "../lib/documentUrl";
 
 export default function CertificatesPage() {
   const { data: certificates = [], isLoading, isError } = useListCertificates();
@@ -41,7 +42,7 @@ export default function CertificatesPage() {
                 {certificates.map((certificate, index) => (
                   <a
                     key={certificate.id}
-                    href={certificate.fileUrl}
+                    href={resolvePublicDocumentUrl(certificate.fileUrl)}
                     download
                     className={`group flex items-center gap-4 px-5 py-5 transition hover:bg-steel-50 sm:px-7 ${
                       index > 0 ? "border-t border-steel-100" : ""

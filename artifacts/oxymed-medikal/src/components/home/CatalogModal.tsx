@@ -3,6 +3,7 @@ import { useListCatalogs } from "@workspace/api-client-react";
 import { BookOpen, ExternalLink, X } from "lucide-react";
 import { trackInteraction } from "../common/VisitorTracker";
 import { useI18n } from "../../i18n/I18nProvider";
+import { resolvePublicDocumentUrl } from "../../lib/documentUrl";
 
 const LANG_LABELS: Record<string, string> = {
   TR: "Türkçe",
@@ -75,7 +76,7 @@ export default function CatalogModal({ onClose }: { onClose: () => void }) {
                       .map((catalog) => (
                         <a
                           key={catalog.id}
-                          href={catalog.pdfUrl}
+                          href={resolvePublicDocumentUrl(catalog.pdfUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => trackInteraction(`Katalog İndir: ${catalog.title}`)}

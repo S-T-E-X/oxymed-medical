@@ -10,6 +10,7 @@ import {
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { BookOpen, Edit2, Plus, Trash2, X } from "lucide-react";
+import { resolvePublicDocumentUrl } from "../lib/documentUrl";
 
 const LANGUAGES = ["TR", "EN", "DE", "FR", "AR"];
 
@@ -98,7 +99,7 @@ function CatalogModal({
             />
             {form.pdfUrl && (
               <a
-                href={form.pdfUrl}
+                href={resolvePublicDocumentUrl(form.pdfUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-1 inline-block text-xs text-blue-600 underline"
@@ -270,7 +271,7 @@ export default function CatalogsPage() {
                         <p className="mt-0.5 text-[11px] font-semibold text-slate-400">{c.category}</p>
                       )}
                       <a
-                        href={c.pdfUrl}
+                        href={resolvePublicDocumentUrl(c.pdfUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-1 inline-block truncate text-[11px] text-blue-500 hover:underline max-w-[180px]"

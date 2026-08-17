@@ -11,6 +11,7 @@ import {
 import { Check, Edit2, FileUp, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useImageUpload } from "./useImageUpload";
+import { resolvePublicDocumentUrl } from "../lib/documentUrl";
 
 type CertificateForm = {
   title: string;
@@ -194,7 +195,7 @@ export default function CertificatesPage() {
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><FileUp className="h-5 w-5" /></span>
               <div className="min-w-[200px] flex-1">
                 <strong className="block text-sm text-slate-900">{certificate.title}</strong>
-                <a href={certificate.fileUrl} target="_blank" rel="noreferrer" className="mt-1 block max-w-md truncate text-xs text-blue-600 hover:underline">{certificate.fileUrl}</a>
+                <a href={resolvePublicDocumentUrl(certificate.fileUrl)} target="_blank" rel="noreferrer" className="mt-1 block max-w-md truncate text-xs text-blue-600 hover:underline">{certificate.fileUrl}</a>
               </div>
               <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${certificate.isActive ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
                 {certificate.isActive ? "Aktif" : "Pasif"}
