@@ -91,7 +91,7 @@ export default function DentalVacuumSystemPage() {
             heroImage
               ? {
                   backgroundImage: `url(${heroImage})`,
-                      backgroundSize: "contain",
+                      backgroundSize: "cover",
                       backgroundPosition: "center top",
                   backgroundRepeat: "no-repeat",
                 }
