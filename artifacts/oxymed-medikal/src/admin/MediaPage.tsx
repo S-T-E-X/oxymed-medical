@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getListMediaFilesQueryKey,
+  listMediaFiles,
   useDeleteMediaFile,
-  useListMediaFiles,
 } from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { Check, Copy, ImageIcon, Trash2, Upload } from "lucide-react";
@@ -20,10 +20,28 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("tr-TR");
 }
 
+const MEDIA_PAGE_SIZE = 100;
+
 export default function MediaPage() {
   const qc = useQueryClient();
-  const { data: mediaData, isLoading } = useListMediaFiles({ limit: 100 });
-  const files = mediaData?.items ?? [];
+  const {
+    data: mediaData,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["/api/media", "admin-library"],
+    queryFn: ({ pageParam, signal }) =>
+      listMediaFiles({ page: pageParam, limit: MEDIA_PAGE_SIZE }, { signal }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((total, page) => total + page.items.length, 0);
+      return loaded < lastPage.total ? allPages.length + 1 : undefined;
+    },
+  });
+  const files = mediaData?.pages.flatMap((page) => page.items) ?? [];
+  const totalFiles = mediaData?.pages[0]?.total ?? 0;
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const dropRef = useRef<HTMLLabelElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -75,7 +93,9 @@ export default function MediaPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-950">Medya Kütüphanesi</h1>
-          <p className="mt-1 text-sm text-slate-500">{files.length} dosya yüklü</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {totalFiles} dosya yüklü{files.length < totalFiles ? ` · ${files.length} gösteriliyor` : ""}
+          </p>
         </div>
       </div>
 
@@ -151,6 +171,19 @@ export default function MediaPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {hasNextPage && (
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 disabled:cursor-wait disabled:opacity-60"
+          >
+            {isFetchingNextPage ? "Yükleniyor…" : "Daha fazla göster"}
+          </button>
         </div>
       )}
     </section>
