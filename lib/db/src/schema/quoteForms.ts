@@ -63,6 +63,7 @@ export const quoteGroupTemplates = pgTable("quote_group_templates", {
   descriptionEn: text("description_en"),
   modelCode: text("model_code"),
   imageUrl: text("image_url"),
+  adminNotes: text("admin_notes"),
   children: jsonb("children").$type<Array<{
     title: string;
     titleEn?: string;

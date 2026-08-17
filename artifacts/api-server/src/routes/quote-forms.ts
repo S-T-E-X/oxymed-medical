@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db, quoteForms, quoteFormItems, quoteGroupTemplates, productionOrdersTable, emailLogsTable } from "@workspace/db";
+import { db, quoteForms, quoteFormItems, quoteGroupTemplates, productionOrdersTable, emailLogsTable, templateBomItemsTable } from "@workspace/db";
 import { eq, desc, like } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { sendQuoteFormEmail } from "../lib/mailer";
@@ -688,6 +688,7 @@ const GroupTemplateBody = z.object({
   descriptionEn: z.string().optional().nullable(),
   modelCode: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
+  adminNotes: z.string().optional().nullable(),
   children: z.array(z.object({
     title: z.string().min(1),
     titleEn: z.string().optional(),
@@ -733,6 +734,7 @@ router.put("/quote-group-templates/:id", requireAuth, async (req, res): Promise<
 // Delete template
 router.delete("/quote-group-templates/:id", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
+  await db.delete(templateBomItemsTable).where(eq(templateBomItemsTable.templateId, id));
   const [deleted] = await db.delete(quoteGroupTemplates).where(eq(quoteGroupTemplates.id, id)).returning();
   if (!deleted) { res.status(404).json({ error: "Template not found" }); return; }
   res.sendStatus(204);

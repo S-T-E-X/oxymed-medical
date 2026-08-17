@@ -24,6 +24,7 @@ import ProductStockPage from "./admin/ProductStockPage";
 import MaterialStockPage from "./admin/MaterialStockPage";
 import QuoteFormsPage from "./admin/QuoteFormsPage";
 import QuoteFormEditPage from "./admin/QuoteFormEditPage";
+import QuoteProductTemplatesPage from "./admin/QuoteProductTemplatesPage";
 import GasControlPanelAdminPage from "./admin/GasControlPanelAdminPage";
 import WarrantyPage from "./admin/WarrantyPage";
 import WarrantyDeviceDetailPage from "./admin/WarrantyDeviceDetailPage";
@@ -187,6 +188,7 @@ export default function App() {
             <Route path="stok/malzeme" element={<MaterialStockPage />} />
             <Route path="teklif-formlari" element={<QuoteFormsPage />} />
             <Route path="teklif-formlari/:id" element={<QuoteFormEditPage />} />
+            <Route path="urun-teklif-sablonlari" element={<QuoteProductTemplatesPage />} />
             <Route path="kat-kontrol-panosu" element={<GasControlPanelAdminPage />} />
             <Route path="garanti" element={<WarrantyPage />} />
             <Route path="garanti/:id" element={<WarrantyDeviceDetailPage />} />

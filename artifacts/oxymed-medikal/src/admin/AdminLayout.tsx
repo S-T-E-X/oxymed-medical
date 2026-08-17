@@ -72,6 +72,7 @@ const productionNavItems = [
 
 const quoteNavItems = [
   { label: "Teklif Formları", icon: FileText, to: "/admin/teklif-formlari" },
+  { label: "Ürün Teklif Şablonları", icon: ClipboardList, to: "/admin/urun-teklif-sablonlari" },
   { label: "Teklif Talepleri", icon: UserRound, to: "/admin/teklifler" },
   { label: "E-posta Logları", icon: Mail, to: "/admin/eposta-loglari" },
 ];
