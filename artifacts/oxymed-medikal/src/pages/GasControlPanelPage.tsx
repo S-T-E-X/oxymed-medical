@@ -3,7 +3,6 @@ import {
   Bell,
   Building2,
   Check,
-  ChevronDown,
   FileCheck2,
   Gauge,
   HeartPulse,
@@ -20,6 +19,7 @@ import { Link } from "react-router-dom";
 import { useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import AnimatedFaq from "../components/common/AnimatedFaq";
 import Seo from "../components/common/Seo";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
@@ -241,17 +241,10 @@ export default function GasControlPanelPage() {
 
         <section className="gcp-container gcp-faq">
           <h2>{t("gcp.faqs.title")}</h2>
-          <div className="gcp-faq-grid">
-            {faqs.map((f, index) => (
-              <details key={index} open={index === 0}>
-                <summary>
-                  {f.q}
-                  <ChevronDown size={18} />
-                </summary>
-                <p>{f.a}</p>
-              </details>
-            ))}
-          </div>
+          <AnimatedFaq
+            className="gcp-faq-grid"
+            items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))}
+          />
         </section>
 
         <section className="gcp-cta">

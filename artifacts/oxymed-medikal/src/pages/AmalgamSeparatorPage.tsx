@@ -3,7 +3,6 @@ import { useListSettings } from "@workspace/api-client-react";
 import {
   ArrowRight,
   Building2,
-  ChevronDown,
   CirclePlus,
   Clock3,
   Droplets,
@@ -19,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import AnimatedFaq from "../components/common/AnimatedFaq";
 import Seo from "../components/common/Seo";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
@@ -181,17 +181,10 @@ export default function AmalgamSeparatorPage() {
             <MessageCircle aria-hidden="true" />
             <h2>{t("ams.faqs.title")}</h2>
           </header>
-          <div className="ams-faq__grid">
-            {faqs.map((item, index) => (
-              <details key={item.q} open={index === 0}>
-                <summary>
-                  <span>{item.q}</span>
-                  <ChevronDown aria-hidden="true" />
-                </summary>
-                <p>{item.a}</p>
-              </details>
-            ))}
-          </div>
+          <AnimatedFaq
+            className="ams-faq__grid"
+            items={faqs.map((faq) => ({ question: faq.q, answer: faq.a }))}
+          />
         </section>
 
         <section className="ams-quote-strip">

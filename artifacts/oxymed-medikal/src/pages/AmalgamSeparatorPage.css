@@ -395,6 +395,8 @@
 }
 
 .ams-faq {
+  --oxy-faq-accent: #2c7fd7;
+  --oxy-faq-accent-soft: rgba(44, 127, 215, 0.1);
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 24px 28px;
@@ -429,51 +431,6 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 13px 34px;
   margin-top: 18px;
-}
-
-.ams-faq details {
-  min-width: 0;
-  border: 1px solid #d6e0ec;
-  border-radius: 8px;
-  background: #fbfdff;
-}
-
-.ams-faq summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 48px;
-  padding: 0 16px;
-  color: #082653;
-  font-size: 13px;
-  font-weight: 950;
-  cursor: pointer;
-  list-style: none;
-}
-
-.ams-faq summary::-webkit-details-marker {
-  display: none;
-}
-
-.ams-faq summary svg {
-  width: 17px;
-  height: 17px;
-  flex: 0 0 auto;
-  color: #082653;
-  transition: transform 160ms ease;
-}
-
-.ams-faq details[open] summary svg {
-  transform: rotate(180deg);
-}
-
-.ams-faq details p {
-  padding: 0 16px 16px;
-  color: #344960;
-  font-size: 12px;
-  font-weight: 650;
-  line-height: 1.5;
 }
 
 .ams-quote-strip {

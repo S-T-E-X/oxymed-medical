@@ -1,0 +1,132 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #082653;
+  background: #f8fafc;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button {
+  font: inherit;
+}
+
+.faq-preview-shell {
+  min-height: 100vh;
+  padding: 34px;
+  background:
+    radial-gradient(circle at 80% 0%, rgba(44, 127, 215, 0.08), transparent 34%),
+    #f8fafc;
+}
+
+.faq-preview-panel {
+  width: min(100%, 1160px);
+  margin: 0 auto;
+  padding: 28px;
+  border: 1px solid #d6e0ec;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(8, 38, 83, 0.07);
+}
+
+.faq-preview-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.faq-preview-heading__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #eaf3fd;
+  color: #2c7fd7;
+}
+
+.faq-preview-heading__icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.faq-preview-heading h1 {
+  margin: 0;
+  color: #082653;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.faq-preview-heading p {
+  margin: 4px 0 0;
+  color: #6b7d91;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.faq-preview-current-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px 34px;
+}
+
+.faq-preview-current-list details {
+  min-width: 0;
+  border: 1px solid #d6e0ec;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.faq-preview-current-list summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  gap: 18px;
+  padding: 0 16px;
+  color: #082653;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-preview-current-list summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-preview-current-list p {
+  margin: 0;
+  padding: 0 16px 16px;
+  color: #344960;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .faq-preview-shell {
+    padding: 14px;
+  }
+
+  .faq-preview-panel {
+    padding: 18px 14px;
+    border-radius: 13px;
+  }
+
+  .faq-preview-current-list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -18,6 +18,7 @@ import {
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
+import AnimatedFaq from "../components/common/AnimatedFaq";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { DEFAULT_LOCALE, LOCALE_META, SITE_ORIGIN, type Locale } from "../i18n/config";
@@ -175,7 +176,11 @@ export default function ProductDetailPage() {
   const useCases = pd.useCases ?? [];
   const advantages = pd.advantages ?? [];
   const featureTiles = pd.featureTiles ?? [];
-  const faq = pd.faq ?? [];
+  const faq = (pd.faq ?? []).flatMap((item) => (
+    item.question
+      ? [{ question: item.question, answer: item.answer ?? "" }]
+      : []
+  ));
   const hiddenSections: SectionKey[] = product.pageData?.hiddenSections ?? [];
   const sectionOrder = normalizeSectionOrder(product.pageData?.sectionOrder);
   const sections: Record<SectionKey, React.ReactNode> = {
@@ -211,7 +216,7 @@ export default function ProductDetailPage() {
       <section key="featureTiles" className="pdp-container pdp-tiles">{featureTiles.map((tile) => <article key={tile.title}><BadgeCheck aria-hidden="true" /><h3>{tile.title}</h3><p>{tile.text}</p></article>)}</section>
     ),
     faq: faq.length > 0 && !hiddenSections.includes("faq") && (
-      <section key="faq" className="pdp-container pdp-faq"><header><HelpCircle aria-hidden="true" /><h2>{t("products.detail.faq")}</h2></header><div className="pdp-faq__grid">{faq.map((item, index) => <details key={item.question} open={index === 0}><summary><span>{item.question}</span></summary><p>{item.answer}</p></details>)}</div></section>
+      <section key="faq" className="pdp-container pdp-faq"><header><HelpCircle aria-hidden="true" /><h2>{t("products.detail.faq")}</h2></header><AnimatedFaq items={faq} className="pdp-faq__grid" /></section>
     ),
   };
 
