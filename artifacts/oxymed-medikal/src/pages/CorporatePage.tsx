@@ -102,9 +102,9 @@ function CorporateStats() {
   return (
     <section className="bg-oxynavy-900 text-white">
       {isError && <div className="bg-red-900/40 px-4 py-2 text-center text-xs text-red-100">İstatistikler yüklenemedi; varsayılan değerler gösteriliyor.</div>}
-      <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-white/12 px-4 sm:grid-cols-2 sm:divide-x sm:divide-y-0 sm:px-6 lg:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-white/12 px-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6 lg:px-8">
         {stats.map(({ value, label, Icon }) => (
-          <div key={label} className="flex items-center gap-5 py-8 sm:px-6">
+          <div key={label} className="flex items-center justify-center gap-5 py-8 sm:px-6">
             <Icon className="h-9 w-9 shrink-0 stroke-[1.4] text-white/86" aria-hidden="true" />
             <div>
               <strong className="block text-3xl font-light leading-none">{value}</strong>
