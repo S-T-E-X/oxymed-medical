@@ -30,7 +30,7 @@ export default function LoginPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    loginMutation.mutate({ data: { email, password } });
+    loginMutation.mutate({ data: { email: email.trim().toLowerCase(), password } });
   }
 
   return (

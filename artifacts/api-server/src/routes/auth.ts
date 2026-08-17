@@ -22,7 +22,8 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
-  const { email, password } = parsed.data;
+  const email = parsed.data.email.trim().toLowerCase();
+  const { password } = parsed.data;
   const [admin] = await db.select().from(adminUsersTable).where(eq(adminUsersTable.email, email));
 
   if (!admin) {
@@ -103,7 +104,8 @@ router.post("/admin/users", requireAuth, async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Geçersiz veri" });
     return;
   }
-  const { name, email, password } = parsed.data;
+  const { name, password } = parsed.data;
+  const email = parsed.data.email.trim().toLowerCase();
   const existing = await db.select({ id: adminUsersTable.id }).from(adminUsersTable).where(eq(adminUsersTable.email, email));
   if (existing.length > 0) {
     res.status(409).json({ error: "Bu e-posta adresi zaten kullanımda" });
