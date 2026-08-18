@@ -1981,14 +1981,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/kataloglar" />
   </url>
   <url>
-    <loc>https://www.oxymed.com.tr/haberler/expomed-eurasia-2024-fuari</loc>
-    <lastmod>2024-04-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="tr" href="https://www.oxymed.com.tr/haberler/expomed-eurasia-2024-fuari" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/haberler/expomed-eurasia-2024-fuari" />
-  </url>
-  <url>
     <loc>https://www.oxymed.com.tr/haberler/medikal-gaz-sistemleri-nedir</loc>
     <lastmod>2024-05-28</lastmod>
     <changefreq>weekly</changefreq>
@@ -2185,6 +2177,38 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://www.oxymed.com.tr/bg/novini/kakvo-predstavlyavat-sistemite-za-medicinski-gazove" />
     <xhtml:link rel="alternate" hreflang="az" href="https://www.oxymed.com.tr/az/xeberler/tibbi-qaz-sistemleri-nedir" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/haberler/medikal-gaz-sistemleri-nedir" />
+  </url>
+  <url>
+    <loc>https://www.oxymed.com.tr/haberler/hastane-medikal-gaz-sistemi-nasil-calisir</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.oxymed.com.tr/haberler/hastane-medikal-gaz-sistemi-nasil-calisir" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/haberler/hastane-medikal-gaz-sistemi-nasil-calisir" />
+  </url>
+  <url>
+    <loc>https://www.oxymed.com.tr/haberler/medikal-gaz-tesisati-projelendirme-kurulum-rehberi</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.oxymed.com.tr/haberler/medikal-gaz-tesisati-projelendirme-kurulum-rehberi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/haberler/medikal-gaz-tesisati-projelendirme-kurulum-rehberi" />
+  </url>
+  <url>
+    <loc>https://www.oxymed.com.tr/haberler/merkezi-medikal-vakum-sistemi-nedir</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.oxymed.com.tr/haberler/merkezi-medikal-vakum-sistemi-nedir" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/haberler/merkezi-medikal-vakum-sistemi-nedir" />
+  </url>
+  <url>
+    <loc>https://www.oxymed.com.tr/haberler/medikal-gaz-sistemlerinde-bakim-test-alarm-yonetimi</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://www.oxymed.com.tr/haberler/medikal-gaz-sistemlerinde-bakim-test-alarm-yonetimi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.oxymed.com.tr/haberler/medikal-gaz-sistemlerinde-bakim-test-alarm-yonetimi" />
   </url>
   <url>
     <loc>https://www.oxymed.com.tr/urunler/yatak-basi-unitesi</loc>
