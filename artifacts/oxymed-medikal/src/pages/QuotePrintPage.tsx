@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Loader2, Download } from "lucide-react";
 import QuoteTemplateView, { type QuoteViewData } from "./QuoteTemplateView";
-import { useAuth } from "../admin/AuthContext";
 import { isQuoteLanguage, type QuoteLanguage } from "../lib/quoteLanguages";
 
 type ApiForm = {
@@ -165,7 +164,6 @@ function toViewData(form: ApiForm): QuoteViewData {
 export default function QuotePrintPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { authFetch, isAuthenticated } = useAuth();
   const [form, setForm] = useState<ApiForm | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -173,14 +171,17 @@ export default function QuotePrintPage() {
 
   useEffect(() => {
     if (!id) return;
-    if (!isAuthenticated) {
-      setError("Bu sayfayı görüntülemek için admin girişi yapmalısınız.");
-      setLoading(false);
-      return;
-    }
-    authFetch(`/api/quote-forms/${id}`)
+    // Auth is decided by the HttpOnly session cookie, so let the API answer:
+    // the headless PDF renderer carries the cookie without any local user
+    // profile, and a browser without a session simply gets the 401 message.
+    // Plain fetch (not authFetch) so a 401 here doesn't trigger the global
+    // logout + redirect while rendering.
+    fetch(`/api/quote-forms/${id}`, { credentials: "include" })
       .then((r) => {
-        if (!r.ok) throw new Error(r.status === 404 ? "Teklif formu bulunamadı" : "Teklif formu yüklenemedi");
+        if (!r.ok) {
+          if (r.status === 401) throw new Error("Bu sayfayı görüntülemek için admin girişi yapmalısınız.");
+          throw new Error(r.status === 404 ? "Teklif formu bulunamadı" : "Teklif formu yüklenemedi");
+        }
         return r.json() as Promise<ApiForm>;
       })
       .then((data) => {
@@ -192,7 +193,7 @@ export default function QuotePrintPage() {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isAuthenticated]);
+  }, [id]);
 
   const handleDownloadPdf = async () => {
     if (!form) return;

@@ -443,9 +443,8 @@ export default function WarrantyDeviceDetailPage() {
   useEffect(() => {
     if (!id || isNaN(id)) return;
     setReportsLoading(true);
-    const token = localStorage.getItem("admin_token");
     fetch(`${BASE}/api/service-reports?deviceId=${id}&limit=100`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
     })
       .then((r) => r.json())
       .then((data: { items: ServiceReport[] }) => setServiceReports(data.items ?? []))

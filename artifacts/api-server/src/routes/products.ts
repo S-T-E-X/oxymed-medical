@@ -300,7 +300,7 @@ router.get("/product-categories", async (req, res): Promise<void> => {
     .orderBy(asc(productCategoriesTable.sortOrder), asc(productCategoriesTable.id));
   // The response differs by credential, so shared caches must not reuse an
   // admin response for an anonymous visitor.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   res.json(rows);
 });
 
@@ -355,7 +355,7 @@ router.get("/products", async (req, res): Promise<void> => {
   // Drafts are admin-only: an anonymous caller always gets the published view,
   // whatever it asks for in the query string. The response therefore varies by
   // credentials and must never be served from a shared cache entry.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   const publishedFilter = isAdmin ? publishedStr : "true";
 
   const conditions = [];
@@ -405,7 +405,7 @@ router.get("/products", async (req, res): Promise<void> => {
   const items = isAdmin ? rows : rows.map(stripPrivate);
   // Hidden-category filtering and privateData stripping both depend on the
   // caller's credentials, so shared caches must not mix the two responses.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   res.json({ items, total: totalRow?.count ?? 0 });
 });
 
@@ -462,7 +462,7 @@ router.get("/products/by-slug/:slug", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   res.json(isAdmin ? product : stripPrivate(product));
 });
 
@@ -478,7 +478,7 @@ router.get("/products/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   res.json(isAdmin ? product : stripPrivate(product));
 });
 

@@ -32,7 +32,7 @@ router.get("/catalogs", async (req, res): Promise<void> => {
   const rows = await db.select().from(catalogsTable).orderBy(asc(catalogsTable.sortOrder));
 
   // Inactive catalogs are unpublished PDFs; only the admin panel may list them.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   const activeOnly = req.query["activeOnly"] === "true" || !(await isAdminRequest(req));
   const language = req.query["language"] as string | undefined;
   const category = req.query["category"] as string | undefined;

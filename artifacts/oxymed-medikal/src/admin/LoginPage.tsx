@@ -13,7 +13,7 @@ export default function LoginPage() {
   const loginMutation = useAdminLogin({
     mutation: {
       onSuccess(data) {
-        login(data.token, data.user);
+        login(data.user);
         navigate("/admin/dashboard", { replace: true });
       },
       onError(err) {

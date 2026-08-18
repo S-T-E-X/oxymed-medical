@@ -1,9 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { setAuthTokenGetter } from "@workspace/api-client-react";
 
-const TOKEN_KEY = "admin_token";
+// The session token now lives exclusively in an HttpOnly cookie set by the
+// API — it is never stored in localStorage and never readable from JS.
+// Only the (non-secret) user profile is kept locally for instant UI state.
+const USER_KEY = "admin_user";
 
 interface AdminUser {
   id: number;
@@ -12,9 +14,8 @@ interface AdminUser {
 }
 
 interface AuthContextValue {
-  token: string | null;
   user: AdminUser | null;
-  login: (token: string, user: AdminUser) => void;
+  login: (user: AdminUser) => void;
   logout: () => void;
   isAuthenticated: boolean;
   authFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
@@ -23,29 +24,27 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [user, setUser] = useState<AdminUser | null>(() => {
-    const raw = localStorage.getItem("admin_user");
+    const raw = localStorage.getItem(USER_KEY);
     try { return raw ? JSON.parse(raw) : null; } catch { return null; }
   });
   const navigate = useNavigate();
 
-  setAuthTokenGetter(() => localStorage.getItem(TOKEN_KEY));
-
   const navigateRef = useRef(navigate);
   useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
-  const login = useCallback((newToken: string, newUser: AdminUser) => {
-    localStorage.setItem(TOKEN_KEY, newToken);
-    localStorage.setItem("admin_user", JSON.stringify(newUser));
-    setToken(newToken);
+  const login = useCallback((newUser: AdminUser) => {
+    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
     setUser(newUser);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem("admin_user");
-    setToken(null);
+    // Clear the HttpOnly session cookie server-side (best-effort — local
+    // state is dropped regardless).
+    void fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+    localStorage.removeItem(USER_KEY);
+    // Clean up token from older localStorage-based sessions.
+    localStorage.removeItem("admin_token");
     setUser(null);
   }, []);
 
@@ -53,12 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { logoutRef.current = logout; }, [logout]);
 
   const authFetch = useCallback(async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
-    const currentToken = localStorage.getItem(TOKEN_KEY);
-    const headers = new Headers(init?.headers);
-    if (currentToken) {
-      headers.set("Authorization", `Bearer ${currentToken}`);
-    }
-    const res = await fetch(input, { ...init, headers });
+    // Auth rides on the HttpOnly session cookie; no Authorization header.
+    const res = await fetch(input, { ...init, credentials: "include" });
     if (res.status === 401) {
       logoutRef.current();
       toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
@@ -68,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated: !!token, authFetch }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, authFetch }}>
       {children}
     </AuthContext.Provider>
   );

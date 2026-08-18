@@ -15,6 +15,26 @@ function getJwtSecret(): string {
 
 // Short-lived sessions limit the damage window of a leaked admin token.
 const JWT_EXPIRES_IN = "8h";
+export const SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000;
+
+// The session token is delivered exclusively via an HttpOnly cookie so it is
+// never readable from JavaScript (XSS cannot exfiltrate it).
+export const SESSION_COOKIE_NAME = "oxymed_admin_session";
+
+export const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: "strict" as const,
+  // Browser always talks to us over HTTPS via the Replit proxy.
+  secure: true,
+  path: "/api",
+};
+
+function getTokenFromRequest(req: Request): string | null {
+  const cookies = (req as Request & { cookies?: Record<string, string> }).cookies;
+  const cookieToken = cookies?.[SESSION_COOKIE_NAME];
+  if (typeof cookieToken === "string" && cookieToken.length > 0) return cookieToken;
+  return null;
+}
 const JWT_ISSUER = "oxymed-api";
 const JWT_AUDIENCE = "oxymed-admin";
 
@@ -47,15 +67,15 @@ export function verifyToken(token: string): JwtPayload {
  * token for a deleted account therefore yields `false` here just as it would
  * be rejected by `requireAuth`.
  *
- * Callers MUST also set `Vary: Authorization` because the response body
+ * Callers MUST also set `Vary: Cookie` because the response body
  * depends on credentials.
  */
 export async function isAdminRequest(req: Request): Promise<boolean> {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) return false;
+  const token = getTokenFromRequest(req);
+  if (!token) return false;
   let payload: JwtPayload;
   try {
-    payload = verifyToken(authHeader.slice(7));
+    payload = verifyToken(token);
   } catch {
     return false;
   }
@@ -76,12 +96,11 @@ export async function requireAuth(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer ")) {
+  const token = getTokenFromRequest(req);
+  if (!token) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const token = authHeader.slice(7);
   let payload: JwtPayload;
   try {
     payload = verifyToken(token);

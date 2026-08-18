@@ -101,7 +101,7 @@ router.get("/sliders", async (req, res): Promise<void> => {
   // Inactive sliders are unpublished content: the admin panel lists them, the
   // public site must not receive them at all — hiding them client-side would
   // still ship their text and imagery to every visitor.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   const activeOnly = req.query["activeOnly"] === "true" || !(await isAdminRequest(req));
   if (activeOnly) {
     rows = rows.filter((r) => r.isActive);

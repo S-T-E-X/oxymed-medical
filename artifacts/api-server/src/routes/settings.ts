@@ -31,7 +31,7 @@ router.get("/settings", async (req, res): Promise<void> => {
   // visitors only get the keys the public site actually renders. The check
   // verifies both JWT signature and DB existence so a deleted admin's token
   // cannot reveal internal settings for up to 8 hours.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   const includeInternal = await isAdminRequest(req);
 
   const map: Record<string, string> = {};

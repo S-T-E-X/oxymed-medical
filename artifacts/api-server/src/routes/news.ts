@@ -158,7 +158,7 @@ router.get("/news", async (req, res): Promise<void> => {
   // Drafts are admin-only: anonymous callers always get the published view,
   // whatever they ask for in the query string. The response therefore differs
   // by credentials, so it must never be served from a shared cache entry.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   const publishedFilter = (await isAdminRequest(req)) ? publishedStr : "true";
 
   if (locale === DEFAULT_LOCALE) {
@@ -268,7 +268,7 @@ router.get("/news/:id", async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
   // Admins see drafts here, anonymous callers do not, so the response varies
   // by credentials and must not be shared between them by a cache.
-  res.setHeader("Vary", "Authorization");
+  res.setHeader("Vary", "Cookie");
   const [item] = await db.select().from(newsTable).where(eq(newsTable.id, id));
   if (!item) {
     res.status(404).json({ error: "News item not found" });

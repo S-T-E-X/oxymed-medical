@@ -25,7 +25,6 @@ export interface AdminUser {
 }
 
 export interface AuthTokenResult {
-  token: string;
   user: AdminUser;
 }
 

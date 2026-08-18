@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, quoteForms, quoteFormItems, quoteGroupTemplates, productionOrdersTable, emailLogsTable, templateBomItemsTable } from "@workspace/db";
 import { eq, desc, like } from "drizzle-orm";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, SESSION_COOKIE_NAME } from "../lib/auth";
 import { parseLimitOffset } from "../lib/security";
 import { sendQuoteFormEmail } from "../lib/mailer";
 import { openai } from "@workspace/integrations-openai-ai-server";
@@ -568,7 +568,10 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
     // proceed without logo
   }
 
-  const rawJwt = (req.headers["authorization"] as string | undefined)?.replace(/^Bearer\s+/i, "") ?? "";
+  // Reuse the caller's HttpOnly session cookie for the headless render — the
+  // token stays out of page JavaScript there too.
+  const sessionToken =
+    (req as typeof req & { cookies?: Record<string, string> }).cookies?.[SESSION_COOKIE_NAME] ?? "";
 
   let pdfBuffer: Buffer | undefined;
   let pdfBrowser: import("puppeteer-core").Browser | undefined;
@@ -582,11 +585,18 @@ router.post("/quote-forms/:id/send-email", requireAuth, async (req, res): Promis
       headless: true,
     });
     const pdfPage = await pdfBrowser.newPage();
-    await pdfPage.evaluateOnNewDocument(
-      (tokenKey: string, token: string) => { localStorage.setItem(tokenKey, token); },
-      "admin_token",
-      rawJwt,
-    );
+    if (sessionToken) {
+      // secure:false because the internal render hop is plain http://localhost.
+      await pdfPage.setCookie({
+        name: SESSION_COOKIE_NAME,
+        value: sessionToken,
+        domain: "localhost",
+        path: "/api",
+        httpOnly: true,
+        secure: false,
+        sameSite: "Strict",
+      });
+    }
     await pdfPage.goto(`http://localhost:80/teklif-goruntule/${id}`, {
       waitUntil: "networkidle2",
       timeout: 60_000,

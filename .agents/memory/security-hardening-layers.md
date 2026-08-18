@@ -53,7 +53,7 @@ description: Summary of what was hardened in the CMS/API security pass and what 
 
 ## Still deferred (tracked as follow-up tasks)
 
-- **Admin token storage**: `localStorage` JWT → HttpOnly + SameSite=Strict cookie (Task #110).
+- **Admin session transport**: the admin JWT lives only in an HttpOnly+Secure+SameSite=Strict cookie; the API accepts no Authorization header. **Why:** XSS must never be able to read the session token. **How to apply:** any new admin-authenticated caller (including server-side headless/PDF renders) must authenticate via that cookie — never reintroduce bearer headers or localStorage tokens; admin-variant public endpoints must send `Vary: Cookie`.
 - **Audit log viewer in admin panel** (Task #111).
 - **Automated tests for draft-visibility guards** (Task #112).
 - **Fine-grained admin role separation**: all authenticated admins have the same privileges; no per-user or per-operation access control beyond "admin or not".

@@ -231,12 +231,11 @@ function DeviceSearch({ onSelect }: { onSelect: (device: Device) => void }) {
   async function handleSearch(q?: string) {
     setLoading(true);
     try {
-      const token = localStorage.getItem("admin_token");
       const search = q !== undefined ? q : query;
       const url = search.trim()
         ? `${BASE}/api/warranty/devices?search=${encodeURIComponent(search)}&limit=20`
         : `${BASE}/api/warranty/devices?limit=20`;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(url, { credentials: "include" });
       const data = await res.json() as { items: Device[] };
       setResults(data.items ?? []);
     } catch {
@@ -410,9 +409,8 @@ export default function ServisRaporuFormPage() {
     if (!deviceIdParam) return;
     const deviceId = parseInt(deviceIdParam, 10);
     if (isNaN(deviceId)) return;
-    const token = localStorage.getItem("admin_token");
     fetch(`${BASE}/api/warranty/devices/${deviceId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Device | null) => {
@@ -447,9 +445,8 @@ export default function ServisRaporuFormPage() {
   async function loadEmailLogs() {
     if (!id) return;
     try {
-      const token = localStorage.getItem("auth_token");
       const res = await fetch(`${BASE}/api/service-reports/${id}/email-logs`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!res.ok) return;
       const data = await res.json() as { items: EmailLog[] };
@@ -461,9 +458,8 @@ export default function ServisRaporuFormPage() {
 
   async function loadReport() {
     try {
-      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!res.ok) { toast.error("Rapor bulunamadı"); navigate("/admin/servis-raporlari"); return; }
       const r = await res.json() as Record<string, unknown> & {
@@ -552,19 +548,18 @@ export default function ServisRaporuFormPage() {
     if (!selectedDevice) { toast.error("Lütfen bir cihaz seçin"); return; }
     setSaving(true);
     try {
-      const token = localStorage.getItem("admin_token");
       const payload = buildPayload(saveStatus);
       let res: Response;
       if (isNew) {
         res = await fetch(`${BASE}/api/service-reports`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          credentials: "include", headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       } else {
         res = await fetch(`${BASE}/api/service-reports/${id}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          credentials: "include", headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       }
@@ -594,10 +589,9 @@ export default function ServisRaporuFormPage() {
     setSendingEmail(true);
     toast.info("Rapor PDF olarak oluşturulup gönderiliyor...");
     try {
-      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${id}/send-email`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        credentials: "include", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: target }),
       });
       const body = await res.json().catch(() => ({})) as { error?: string; detail?: string; success?: boolean };
@@ -619,10 +613,9 @@ export default function ServisRaporuFormPage() {
     setGeneratingPdf(true);
     toast.info("Sunucuda PDF oluşturuluyor...");
     try {
-      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${id}/generate-pdf`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
@@ -652,11 +645,10 @@ export default function ServisRaporuFormPage() {
     setShowPreview(true);
     setPreviewLoading(true);
     try {
-      const token = localStorage.getItem("admin_token");
       const payload = { ...buildTemplateData(), baseHref: window.location.origin };
       const res = await fetch(`${BASE}/api/service-reports/preview-html`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        credentials: "include", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
@@ -916,9 +908,8 @@ export default function ServisRaporuFormPage() {
               setCommissionDate(d.installDate ?? "");
               // Son bakım: o cihazın son servis raporunun tarihi
               try {
-                const token = localStorage.getItem("admin_token");
                 const res = await fetch(`${BASE}/api/service-reports?deviceId=${d.id}&limit=1`, {
-                  headers: { Authorization: `Bearer ${token}` },
+                  credentials: "include",
                 });
                 if (res.ok) {
                   const rData = await res.json() as { items: Array<{ data?: Record<string, unknown> }> };

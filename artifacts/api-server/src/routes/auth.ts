@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { db, adminUsersTable, adminAuditLogsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
-import { signToken, requireAuth } from "../lib/auth";
+import { signToken, requireAuth, SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, SESSION_MAX_AGE_MS } from "../lib/auth";
 import type { JwtPayload } from "../lib/auth";
 import type { Request } from "express";
 import { z } from "zod/v4";
@@ -84,10 +84,22 @@ router.post("/auth/login", loginRateLimiter, async (req, res): Promise<void> => 
       details: { email: admin.email },
     });
   } catch { /* best-effort */ }
+  // The token travels only inside an HttpOnly cookie — never in the JSON body
+  // — so client-side script (and therefore XSS) can never read it.
+  res.cookie(SESSION_COOKIE_NAME, token, {
+    ...SESSION_COOKIE_OPTIONS,
+    maxAge: SESSION_MAX_AGE_MS,
+  });
   res.json({
-    token,
     user: { id: admin.id, email: admin.email, name: admin.name },
   });
+});
+
+router.post("/auth/logout", async (req, res): Promise<void> => {
+  // Clearing must use the same attributes the cookie was set with, or the
+  // browser treats it as a different cookie and keeps the session alive.
+  res.clearCookie(SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS);
+  res.json({ ok: true });
 });
 
 router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {

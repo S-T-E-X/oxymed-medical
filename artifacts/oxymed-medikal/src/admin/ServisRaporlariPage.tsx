@@ -49,11 +49,10 @@ function useServiceReports(search: string, status: string) {
   async function load() {
     setLoading(true);
     try {
-      const token = localStorage.getItem("admin_token");
       const params = new URLSearchParams({ limit: "200" });
       if (status) params.set("status", status);
       const res = await fetch(`${BASE}/api/service-reports?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const data = await res.json() as { items: Report[] };
       setReports(data.items ?? []);
@@ -105,10 +104,9 @@ export default function ServisRaporlariPage() {
     if (!confirm("Bu raporu silmek istediğinize emin misiniz?")) return;
     setDeletingId(id);
     try {
-      const token = localStorage.getItem("admin_token");
       await fetch(`${BASE}/api/service-reports/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       setReports((prev) => prev.filter((r) => r.id !== id));
       toast.success("Rapor silindi");
@@ -123,10 +121,9 @@ export default function ServisRaporlariPage() {
     setGeneratingPdfId(report.id);
     toast.info("PDF oluşturuluyor...");
     try {
-      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${report.id}/generate-pdf`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string; detail?: string };
@@ -166,10 +163,9 @@ export default function ServisRaporlariPage() {
     setSendingEmail(true);
     toast.info("Rapor PDF olarak oluşturulup gönderiliyor...");
     try {
-      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${BASE}/api/service-reports/${emailReportId}/send-email`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        credentials: "include", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: target }),
       });
       const body = await res.json().catch(() => ({})) as { error?: string; detail?: string; success?: boolean };
