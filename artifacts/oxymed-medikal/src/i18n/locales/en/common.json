@@ -99,5 +99,10 @@
     "fallbackDescription": "We provide safe, comfortable and technologically advanced environments with bed head units, pendant systems and medical gas solutions.",
     "ourProducts": "OUR PRODUCTS",
     "slideLabel": "Slide {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Page path",
+    "home": "Home",
+    "products": "Products"
   }
 }

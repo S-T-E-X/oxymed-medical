@@ -3,6 +3,7 @@ import { LOCALE_META, LOCALES, SITE_ORIGIN, type Locale } from "../../i18n/confi
 import { useI18n } from "../../i18n/I18nProvider";
 import { absoluteUrl, alternatesFor, type Alternate } from "../../i18n/seo";
 import type { RouteKey } from "../../i18n/routes";
+import { setJsonLd } from "./jsonLd";
 
 /**
  * Marks every tag this component owns so a navigation can clean up the
@@ -32,19 +33,6 @@ function upsertLink(rel: string, href: string, hreflang?: string) {
   }
   element.setAttribute(OWNED_ATTR, "true");
   element.href = href;
-}
-
-function setJsonLd(id: string, data: unknown | null) {
-  const existing = document.head.querySelector<HTMLScriptElement>(`script[data-seo-jsonld="${id}"]`);
-  if (!data) {
-    existing?.remove();
-    return;
-  }
-  const script = existing ?? document.createElement("script");
-  script.type = "application/ld+json";
-  script.setAttribute("data-seo-jsonld", id);
-  script.textContent = JSON.stringify(data);
-  if (!existing) document.head.appendChild(script);
 }
 
 export type SeoProps = {

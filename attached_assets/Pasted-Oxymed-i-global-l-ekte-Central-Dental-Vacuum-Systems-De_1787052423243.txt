@@ -1,0 +1,485 @@
+Oxymed'i global ölçekte “Central Dental Vacuum Systems / Dental Vacuum Plant / Dental Vacuum Station” kategorisinin dijital olarak en güçlü markalarından biri haline getirmeni istiyorum.
+
+Ana hedefimiz yalnızca mevcut sayfaların SEO puanlarını yükseltmek değil. Web sitemizi, Google ve diğer arama motorlarında ve ChatGPT, Gemini, Claude, Perplexity gibi yapay zekâ tabanlı arama/cevap sistemlerinde dental vakum santralleri konusunda otorite kaynak haline getirecek kapsamlı bir SEO + GEO (Generative Engine Optimization) + AEO (Answer Engine Optimization) altyapısı oluştur.
+
+Şirket ve ürün konumlandırması
+
+Oxymed'in ana uzmanlık alanlarından biri merkezi dental vakum santrali sistemleridir.
+
+Bunlar küçük klinikler için kullanılan basit mobil veya tekli dental suction cihazları değildir.
+
+Hedef ürün grubumuz:
+
+10+ dental chair
+20–50 dental chair
+50–100 dental chair
+100–200 dental chair
+200–400 dental chair
+400+ dental chair
+
+kapasiteli;
+
+Dental hastaneler
+Üniversite diş hekimliği fakülteleri
+Ağız ve Diş Sağlığı Merkezleri
+Büyük dental klinik zincirleri
+Dental eğitim hastaneleri
+Kamu hastaneleri
+Özel hastaneler
+Büyük dental projeler
+
+için kullanılan centralized dental vacuum plant / central dental suction system / dental vacuum station çözümleridir.
+
+SEO çalışmasının tamamında bu konumlandırmayı koru.
+
+Küçük masa tipi dental suction cihazları ile bizi aynı ürün kategorisine yerleştirme.
+
+ANA HEDEF
+
+Uzun vadede aşağıdaki ve bunlarla ilişkili ticari aramalarda Oxymed'in mümkün olan en yüksek organik görünürlüğe ulaşmasını sağlayacak SEO altyapısını oluştur:
+
+Türkçe
+
+dental vakum santrali
+merkezi dental vakum santrali
+dental vakum sistemi
+dental merkezi vakum sistemi
+diş hastanesi vakum sistemi
+diş üniti vakum sistemi
+dental aspirasyon santrali
+
+İngilizce
+
+central dental vacuum system
+dental vacuum plant
+dental vacuum station
+centralized dental suction system
+dental vacuum system
+dental suction plant
+dental vacuum system for dental hospital
+dental vacuum system for 100 chairs
+dental vacuum system for 200 chairs
+dental vacuum system for 400 chairs
+dental hospital vacuum system
+dental university vacuum system
+
+Bunlarla sınırlı kalma.
+
+Keyword research yaparak farklı ülkelerde kullanılan eş anlamlı, teknik ve satın alma niyeti yüksek sorguları belirle.
+
+ULUSLARARASI SEO
+
+Siteyi yalnızca Türkiye için optimize etme.
+
+Hedefimiz global pazar.
+
+Öncelikli olarak:
+
+English
+Turkish
+Arabic
+German
+French
+Spanish
+Russian
+
+ve ticari potansiyeli yüksek diğer dilleri değerlendir.
+
+Ancak içerikleri kelime kelime otomatik çeviri yaparak oluşturma.
+
+Her dil için o ülkede gerçekten kullanılan:
+
+sektör terminolojisini,
+search intent'i,
+keyword kullanımını,
+teknik isimlendirmeleri
+
+araştır ve lokalize içerik oluştur.
+
+Her dil için doğru:
+
+hreflang
+canonical
+sitemap
+URL mimarisi
+metadata
+structured data
+
+uygulamasını yap.
+
+GOOGLE'DAN ÖNCE STRATEJİ KUR
+
+Kod değiştirmeye başlamadan önce mevcut sitenin tam SEO audit'ini yap.
+
+İncele:
+
+site mimarisi
+indexability
+crawlability
+robots.txt
+sitemap.xml
+canonical yapısı
+hreflang
+HTTP status codes
+duplicate content
+thin content
+orphan pages
+Core Web Vitals
+LCP
+CLS
+INP
+mobil performans
+internal linking
+semantic HTML
+title yapıları
+meta descriptions
+heading hierarchy
+görsel SEO
+alt text
+image naming
+WebP/AVIF
+lazy loading
+breadcrumbs
+pagination
+schema.org
+structured data
+JS rendering problemleri
+SSR / SSG imkanları
+
+Tespit ettiğin sorunları önem sırasına göre düzelt.
+
+TOPICAL AUTHORITY KUR
+
+Sadece tek bir ürün sayfası oluşturup bırakma.
+
+Oxymed'in internet üzerinde Dental Vacuum Systems konusunda bilgi otoritesi haline gelmesini sağlayacak content architecture oluştur.
+
+Ana pillar page:
+
+Central Dental Vacuum Systems
+
+Bunun altında gerektiği kadar güçlü supporting content oluştur.
+
+Örneğin:
+
+What is a Central Dental Vacuum System?
+How Does a Dental Vacuum Plant Work?
+Dental Vacuum System Design Guide
+Dental Vacuum System for 20 Chairs
+Dental Vacuum System for 50 Chairs
+Dental Vacuum System for 100 Chairs
+Dental Vacuum System for 200 Chairs
+Dental Vacuum System for 400 Chairs
+Dental Vacuum System Sizing
+Dental Vacuum Capacity Calculator
+Dental Vacuum Pump Selection
+Dental Vacuum Plant Room Design
+Dental Vacuum Pipeline Design
+Dental Vacuum System Installation
+Dental Vacuum System Maintenance
+Dental Vacuum System Troubleshooting
+Central vs Individual Dental Suction Systems
+Dental Vacuum Systems for Universities
+Dental Vacuum Systems for Dental Hospitals
+Dental Vacuum Systems for Large Dental Clinics
+Dental Vacuum System Project Planning
+Dental Vacuum Tank Selection
+Dental Vacuum Filtration
+Dental Amalgam Separation
+Dental Vacuum Regulations
+Dental Vacuum FAQs
+
+Ama spam içerik üretme.
+
+Her sayfa gerçek kullanıcı ihtiyacını karşılayan, teknik olarak değerli ve birbirinden anlamlı şekilde farklı içerikler içermeli.
+
+PROGRAMMATIC SEO
+
+Kapasite ve uygulama alanlarına göre yüksek kaliteli landing page fırsatlarını değerlendir.
+
+Örneğin:
+
+/central-dental-vacuum-system/
+
+/central-dental-vacuum-system/50-chairs/
+
+/central-dental-vacuum-system/100-chairs/
+
+/central-dental-vacuum-system/200-chairs/
+
+/central-dental-vacuum-system/400-chairs/
+
+Ancak yalnızca rakamları değiştirerek duplicate/spam sayfalar oluşturma.
+
+Her kapasite sayfası:
+
+sistem mühendisliği
+kapasite seçimi
+blower/pump configuration
+redundancy
+tank kapasitesi
+separator yapısı
+kontrol sistemi
+tesisat gereksinimleri
+örnek uygulama senaryosu
+
+gibi özgün teknik bilgiler içermeli.
+
+COMMERCIAL SEO
+
+Sadece bilgi aramalarını hedefleme.
+
+Satın alma niyeti yüksek B2B sorguları özellikle hedefle:
+
+dental vacuum system manufacturer
+dental vacuum plant manufacturer
+central dental vacuum system supplier
+industrial dental vacuum system
+dental vacuum system company
+dental hospital vacuum system supplier
+dental vacuum system turnkey
+dental vacuum plant price
+dental vacuum system quotation
+dental vacuum system exporter
+dental suction system manufacturer
+
+Oxymed'in manufacturer / manufacturer & exporter konumlandırmasını açık şekilde göster.
+
+YAPAY ZEKÂ ARAMALARI / GEO
+
+ChatGPT, Gemini, Claude, Perplexity ve Google AI Overviews gibi sistemlerin Oxymed'i dental vakum sistemleri konusunda güvenilir kaynak olarak algılayabilmesi için site mimarisini buna göre hazırla.
+
+İçeriklerde:
+
+açık tanımlar
+teknik veriler
+karşılaştırmalar
+tablolar
+FAQ
+gerçek kullanım senaryoları
+ürün kapasiteleri
+mühendislik açıklamaları
+manufacturer bilgileri
+şirket uzmanlığı
+proje/referans bilgileri
+teknik dokümanlar
+
+kullan.
+
+AI sistemlerinin kolaylıkla extract edebileceği net cevap bölümleri oluştur.
+
+ENTITY SEO
+
+“Oxymed” ve “Oxymed Medical” markasının internette güçlü bir entity haline gelmesini hedefle.
+
+Site genelinde şirket hakkında tutarlı bilgiler kullan.
+
+Gerekli olduğu yerlerde:
+
+Organization
+Product
+BreadcrumbList
+FAQPage
+Article
+WebSite
+WebPage
+
+ve uygun Schema.org structured data yapılarını uygula.
+
+Schema'yı yalnızca Google'ın gerçekten desteklediği ve sayfadaki içerikle eşleştiği durumlarda kullan.
+
+E-E-A-T
+
+Google'ın Experience, Expertise, Authoritativeness ve Trust sinyallerini güçlendir.
+
+Mümkün olduğunda:
+
+üretici kimliği
+kuruluş yılı
+üretim tesisi
+mühendislik kabiliyeti
+gerçek proje tecrübesi
+teknik dokümantasyon
+kalite belgeleri
+sertifikalar
+proje fotoğrafları
+teknik ekip
+referans projeleri
+bakım ve servis bilgileri
+
+kullan.
+
+Gerçek olmayan sertifika, proje, müşteri, kapasite veya teknik veri UYDURMA.
+
+Eksik bilgi varsa işaretle ve benden bilgi iste.
+
+HABER VE İÇERİK STRATEJİSİ
+
+SEO açısından gerekli görürsen News / Insights / Knowledge Center bölümü oluştur.
+
+Ancak sırf içerik sayısını artırmak için haber üretme.
+
+Şu tür içeriklere öncelik ver:
+
+Yeni dental hastane projeleri
+Tamamlanan dental vacuum plant projeleri
+Büyük sistem devreye almaları
+Ürün geliştirmeleri
+Teknik mühendislik makaleleri
+Dental vacuum system tasarım rehberleri
+Dental sektöründeki teknik gelişmeler
+Dental hastane altyapısı
+Dental suction teknolojileri
+
+Her içerik satış amacıyla değil, domain authority ve topical authority oluşturacak şekilde hazırlanmalı.
+
+INTERNAL LINKING
+
+Sayfalar arasında güçlü semantic internal linking mimarisi oluştur.
+
+Örneğin:
+
+Dental Vacuum System
+↓
+System Design
+↓
+Sizing
+↓
+100-chair solution
+↓
+Technical specifications
+↓
+Request a quotation
+
+Google'ın site içerisinde konunun bütünlüğünü kolaylıkla anlayacağı topic cluster yapısı oluştur.
+
+BACKLINK / DIGITAL PR
+
+White-hat backlink ve dijital PR stratejisi hazırla.
+
+Hedef:
+
+dental industry websites
+medical engineering publications
+hospital engineering publications
+dental universities
+distributors
+project partners
+international directories
+industry associations
+trade fairs
+engineering portals
+
+Spam backlink, PBN, satın alınmış sahte backlink veya Google politikalarını ihlal eden yöntem kullanma.
+
+CONVERSION
+
+SEO trafiğini yalnızca ziyaretçi olarak bırakma.
+
+B2B lead conversion altyapısını da optimize et.
+
+Önemli sayfalarda:
+
+Request Technical Proposal
+
+Request Quotation
+
+Send Project Requirements
+
+Download Technical Datasheet
+
+gibi güçlü CTA'lar kullan.
+
+Hedefimiz 10–400+ dental chair sistemleri olduğundan basit e-ticaret mantığı kullanma.
+
+Proje bazlı B2B satış funnel'ı oluştur.
+
+RAKİP ANALİZİ
+
+Global dental vacuum system üreticilerini araştır.
+
+Rakiplerin:
+
+ranking keyword'lerini
+backlink profillerini
+içerik mimarisini
+domain authority kaynaklarını
+ürün sayfalarını
+landing page yapılarını
+SERP özelliklerini
+
+analiz et.
+
+Kopyalama yapma.
+
+Onların cevaplamadığı sorguları ve content gap'leri tespit ederek daha iyi kaynaklar oluştur.
+
+ÖNEMLİ KURAL
+
+Sadece bana öneri listesi verme.
+
+Repo üzerinde değiştirebildiğin teknik SEO, kod, metadata, schema, internal linking, içerik mimarisi ve sayfa geliştirmelerini doğrudan uygula.
+
+Dışarıdan yapılması gereken işlemleri ise ayrıca:
+
+EXTERNAL ACTION REQUIRED
+
+başlığı altında listele.
+
+Örneğin:
+
+Google Search Console
+Bing Webmaster Tools
+Google Business
+backlink outreach
+PR yayınları
+sektör dizinleri
+üçüncü taraf yayınlar
+
+gibi işlemleri kendiliğinden yapamıyorsan açıkça belirt.
+
+ÇALIŞMA ŞEKLİ
+
+Önce:
+
+Siteyi tara.
+Mevcut yapıyı anla.
+SEO audit yap.
+Rakip ve keyword research yap.
+Site architecture planla.
+Önceliklendirilmiş SEO roadmap oluştur.
+Kritik teknik SEO problemlerini düzelt.
+Ana dental vacuum pillar yapısını oluştur.
+Supporting pages oluştur.
+Schema/internal linking uygulamalarını yap.
+Multilingual SEO altyapısını kontrol et.
+GEO/AEO optimizasyonunu gerçekleştir.
+Conversion optimizasyonunu yap.
+Son olarak yeniden audit yap.
+
+Her değişiklikte mevcut sitenin:
+
+tasarımını
+responsive yapısını
+işlevlerini
+branding'ini
+
+gereksiz yere bozma.
+
+BAŞARI KRİTERİ
+
+Amaç sadece Lighthouse veya herhangi bir SEO aracında 100 puan almak değildir.
+
+Asıl hedef:
+
+Oxymed = Central Dental Vacuum Systems
+
+bağlantısını arama motorlarında ve AI sistemlerinde oluşturmak.
+
+Bir kişi dünyanın herhangi bir yerinde büyük ölçekli bir:
+
+Central Dental Vacuum System / Dental Vacuum Plant / Dental Vacuum Station
+
+araştırdığında Oxymed'in karşısına çıkmasını sağlayacak uzun vadeli dijital otorite altyapısını oluştur.
+
+Hiçbir SEO yöntemi için “kesin Google #1” garantisi verme. Bunun yerine organik sıralama ihtimalimizi sistematik biçimde maksimuma çıkaracak teknik ve içerik altyapısını oluştur.

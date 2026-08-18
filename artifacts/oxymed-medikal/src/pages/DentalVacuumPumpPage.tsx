@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
+import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { localizedSetting } from "../i18n/settingsI18n";
@@ -93,6 +94,14 @@ export default function DentalVacuumPumpPage() {
         <section className="dvp-hero">
           <div className="dvp-container dvp-hero__grid">
             <div className="dvp-hero__content">
+              <Breadcrumbs
+                tone="dark"
+                items={[
+                  { label: t("common.breadcrumb.home"), to: path("home") },
+                  { label: t("common.breadcrumb.products"), to: path("products") },
+                  { label: heroTitle || productName },
+                ]}
+              />
               <div className="dvp-eyebrow">{eyebrow}</div>
               <h1>
                 {heroTitle ? (

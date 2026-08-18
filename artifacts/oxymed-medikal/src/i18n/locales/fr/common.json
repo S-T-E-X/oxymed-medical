@@ -99,5 +99,10 @@
     "fallbackDescription": "Nous proposons des environnements sûrs, confortables et technologiques grâce à nos unités tête de lit, systèmes de bras plafonniers et solutions de gaz médicaux.",
     "ourProducts": "NOS PRODUITS",
     "slideLabel": "Diapositive {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Fil d’Ariane",
+    "home": "Accueil",
+    "products": "Produits"
   }
 }

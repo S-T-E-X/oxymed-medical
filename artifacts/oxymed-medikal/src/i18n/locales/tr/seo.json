@@ -1,27 +1,27 @@
 {
   "home": {
-    "title": "Oxymed Medikal | Yatak Başı Ünitesi, Pendant ve Medikal Gaz Sistemleri",
-    "description": "Hastaneler ve klinikler için yatak başı üniteleri, pendant sistemleri, medikal gaz sistemleri ve dental vakum çözümleri. ISO 9001 ve ISO 13485 sertifikalı üretim, 50+ ülkeye ihracat."
+    "title": "Oxymed Medikal | Medikal Gaz ve Hastane Sistemleri",
+    "description": "Hastane ve klinikler için yatak başı üniteleri, pendant sistemleri, medikal gaz ve dental vakum çözümleri. ISO 9001 ve ISO 13485 sertifikalı üretim."
   },
   "products": {
-    "title": "Ürünlerimiz | Medikal Gaz ve Hastane Donanım Sistemleri | Oxymed",
+    "title": "Ürünlerimiz | Medikal Gaz ve Hastane Sistemleri | Oxymed",
     "description": "Yatak başı üniteleri, pendant sistemleri, medikal gaz kontrol panoları, dental vakum pompaları ve amalgam separatör ürün ailemizi inceleyin."
   },
   "gcp": {
-    "title": "Kat Kontrol Panosu (Medikal Gaz Alarm Paneli) | Oxymed Medikal",
-    "description": "Hastane medikal gaz hatları için dijital kat kontrol panosu: oksijen, vakum, basınçlı hava ve azot protoksit için sürekli basınç izleme, sesli ve görsel alarm."
+    "title": "Kat Kontrol Panosu (Medikal Gaz Alarm Paneli) | Oxymed",
+    "description": "Hastane medikal gaz hatları için dijital kat kontrol panosu: oksijen, vakum, basınçlı hava ve azot protoksit için basınç izleme, sesli ve görsel alarm."
   },
   "ams": {
     "title": "Amalgam Separatör | ISO 11143 Uyumlu Dental Ayırıcı | Oxymed",
     "description": "Diş kliniklerinde amalgam atığını %95'in üzerinde tutan, ISO 11143 uyumlu, sessiz ve bakımı kolay amalgam separatör sistemleri."
   },
   "dvp": {
-    "title": "Medikal Vakum Santrali | Merkezi Vakum Çözümleri | Oxymed Medikal",
-    "description": "Hastaneler ve sağlık tesisleri için sessiz, güvenilir ve kesintisiz merkezi medikal vakum santrali çözümleri."
+    "title": "Medikal Vakum Santrali | Merkezi Vakum Sistemi | Oxymed",
+    "description": "Hastaneler ve sağlık tesisleri için sessiz, güvenilir ve kesintisiz merkezi medikal vakum santrali çözümleri. Projeye özel tasarım ve montaj desteği."
   },
   "dvs": {
-    "title": "Dental Vakum Sistemi | Merkezi Aspirasyon Çözümleri | Oxymed",
-    "description": "Çok üniteli diş klinikleri ve ağız diş sağlığı merkezleri için merkezi dental vakum sistemleri, separatör ve kontrol paneli entegrasyonu."
+    "title": "Merkezi Dental Vakum Sistemi | Aspirasyon | Oxymed",
+    "description": "Çok üniteli diş klinikleri, ağız diş sağlığı merkezleri ve üniversiteler için merkezi dental vakum sistemleri, separatör ve kontrol paneli entegrasyonu."
   },
   "service": {
     "title": "Teknik Servis ve Garanti Sorgulama | Oxymed Medikal",
@@ -32,11 +32,11 @@
     "description": "Projeniz için hızlı ve ücretsiz teklif alın. Yatak başı üniteleri, pendant sistemleri, medikal gaz ve dental vakum çözümlerinde uzman desteği."
   },
   "news": {
-    "title": "Haberler | Medikal Gaz ve Hastane Ekipmanları | Oxymed Medikal",
+    "title": "Haberler | Medikal Gaz ve Hastane Ekipmanları | Oxymed",
     "description": "Oxymed Medikal'den sektör haberleri, ürün güncellemeleri ve medikal gaz sistemleri, dental vakum çözümleri ile hastane donanımlarına ilişkin teknik içerikler."
   },
   "catalogs": {
     "title": "Ürün Katalogları | Oxymed Medikal",
-    "description": "Oxymed Medikal ürün ve çözüm gruplarını kataloglarımız üzerinden inceleyin; güncel katalogları görüntüleyin ve indirin."
+    "description": "Oxymed Medikal ürün ve çözüm gruplarını kataloglarımız üzerinden inceleyin; medikal gaz ve dental vakum kataloglarını görüntüleyin ve indirin."
   }
 }

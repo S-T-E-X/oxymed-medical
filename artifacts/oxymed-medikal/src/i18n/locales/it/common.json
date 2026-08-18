@@ -99,5 +99,10 @@
     "fallbackDescription": "Offriamo ambienti sicuri, confortevoli e tecnologicamente avanzati con unità testaletto, sistemi pensili e soluzioni per gas medicali.",
     "ourProducts": "I NOSTRI PRODOTTI",
     "slideLabel": "Slide {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Percorso pagina",
+    "home": "Home",
+    "products": "Prodotti"
   }
 }

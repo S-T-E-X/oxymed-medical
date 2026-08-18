@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
+import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { localizedSetting } from "../i18n/settingsI18n";
@@ -100,6 +101,13 @@ export default function DentalVacuumSystemPage() {
         >
           <div className="dvs-container dvs-hero__grid">
             <div className="dvs-hero__content">
+              <Breadcrumbs
+                items={[
+                  { label: t("common.breadcrumb.home"), to: path("home") },
+                  { label: t("common.breadcrumb.products"), to: path("products") },
+                  { label: heroTitle || productName },
+                ]}
+              />
               <div className="dvs-eyebrow">{eyebrow}</div>
               <h1>
                 {heroTitle ? (

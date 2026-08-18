@@ -99,5 +99,10 @@
     "fallbackDescription": "Yataqbaşı blokları, pendant sistemləri və tibbi qaz həlləri ilə təhlükəsiz, rahat və texnoloji mühitlər təqdim edirik.",
     "ourProducts": "MƏHSULLARIMIZ",
     "slideLabel": "Slayd {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Səhifə yolu",
+    "home": "Ana səhifə",
+    "products": "Məhsullar"
   }
 }

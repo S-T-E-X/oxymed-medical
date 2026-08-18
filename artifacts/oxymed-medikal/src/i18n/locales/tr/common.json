@@ -99,5 +99,10 @@
     "fallbackDescription": "Yatak başı üniteleri, pendant sistemleri ve medikal gaz çözümleri ile güvenli, konforlu ve teknolojik ortamlar sunuyoruz.",
     "ourProducts": "ÜRÜNLERİMİZ",
     "slideLabel": "Slayt {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Sayfa yolu",
+    "home": "Anasayfa",
+    "products": "Ürünler"
   }
 }

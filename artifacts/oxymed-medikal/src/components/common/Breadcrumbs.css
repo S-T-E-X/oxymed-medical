@@ -1,0 +1,79 @@
+.oxy-breadcrumbs {
+  margin: 0 0 1.1rem;
+  padding: 0;
+}
+
+.oxy-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oxy-breadcrumbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.oxy-breadcrumbs a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.oxy-breadcrumbs a:hover,
+.oxy-breadcrumbs a:focus-visible {
+  color: #0f4c81;
+  text-decoration: underline;
+}
+
+.oxy-breadcrumbs [aria-current="page"] {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.oxy-breadcrumbs svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  color: #cbd5e1;
+}
+
+/* Dark hero surfaces (e.g. the vacuum plant page) need an inverted palette. */
+.oxy-breadcrumbs--dark li {
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.oxy-breadcrumbs--dark a {
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.oxy-breadcrumbs--dark a:hover,
+.oxy-breadcrumbs--dark a:focus-visible {
+  color: #ffffff;
+}
+
+.oxy-breadcrumbs--dark [aria-current="page"] {
+  color: #ffffff;
+}
+
+.oxy-breadcrumbs--dark svg {
+  color: rgba(148, 163, 184, 0.6);
+}
+
+@media (max-width: 640px) {
+  .oxy-breadcrumbs {
+    margin-bottom: 0.85rem;
+  }
+
+  .oxy-breadcrumbs li {
+    font-size: 0.68rem;
+  }
+}

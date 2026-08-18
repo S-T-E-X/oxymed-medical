@@ -99,5 +99,10 @@
     "fallbackDescription": "Mit Bettenkopfversorgungseinheiten, Pendelsystemen und medizinischen Gaslösungen schaffen wir sichere, komfortable und technologisch fortschrittliche Umgebungen.",
     "ourProducts": "UNSERE PRODUKTE",
     "slideLabel": "Folie {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Navigationspfad",
+    "home": "Startseite",
+    "products": "Produkte"
   }
 }

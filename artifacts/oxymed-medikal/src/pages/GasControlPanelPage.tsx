@@ -21,6 +21,7 @@ import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import AnimatedFaq from "../components/common/AnimatedFaq";
 import Seo from "../components/common/Seo";
+import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { localizedJsonSetting } from "../i18n/settingsI18n";
@@ -109,6 +110,16 @@ export default function GasControlPanelPage() {
   return (
     <div className="gcp-page">
       <Seo routeKey="gcp" jsonLd={jsonLd} />
+      {/* This page draws its own trail inside the dark hero, so the shared
+          component contributes the structured data only. */}
+      <Breadcrumbs
+        jsonLdOnly
+        items={[
+          { label: t("common.breadcrumb.home"), to: path("home") },
+          { label: t("common.breadcrumb.products"), to: path("products") },
+          { label: hero.title },
+        ]}
+      />
       <Header />
 
       <main>

@@ -20,6 +20,7 @@ import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import AnimatedFaq from "../components/common/AnimatedFaq";
 import Seo from "../components/common/Seo";
+import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { localizedSetting } from "../i18n/settingsI18n";
@@ -83,6 +84,13 @@ export default function AmalgamSeparatorPage() {
         <section className="ams-hero">
           <div className="ams-container ams-hero__grid">
             <div className="ams-hero__content">
+              <Breadcrumbs
+                items={[
+                  { label: t("common.breadcrumb.home"), to: path("home") },
+                  { label: t("common.breadcrumb.products"), to: path("products") },
+                  { label: heroTitle || t("ams.hero.titleLine1") + " " + t("ams.hero.titleLine2") },
+                ]}
+              />
               <div className="ams-eyebrow">{eyebrow}</div>
               <h1>
                 {heroTitle ? heroTitle : <>{t("ams.hero.titleLine1")}<span>{t("ams.hero.titleLine2")}</span></>}
