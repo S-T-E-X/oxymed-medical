@@ -1,3 +1,4 @@
+import { SITE_DOMAIN } from "../i18n/config";
 import {
   BadgeCheck,
   Building2,
@@ -1014,7 +1015,7 @@ function QuoteTopInfo({ data }: { data: QuoteViewData }) {
 
       <div className="qt-contact-strip">
         <span><Phone size={14} /> 0(312)385 49 12</span>
-        <span><Globe2 size={14} /> www.oxymedmedical.com</span>
+        <span><Globe2 size={14} /> {SITE_DOMAIN}</span>
         <span><Mail size={14} /> info@oxymedmedical.com</span>
         <span><MapPin size={15} /> İvedik OSB Mah. Süleyman Şah Cad.<br />No: 47 Yenimahalle / ANKARA</span>
       </div>

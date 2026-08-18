@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "eyebrow": "KURUMSAL",
+    "title": "Sertifikalarımız",
+    "description": "Kalite standartlarımızı ve yetkinlik belgelerimizi buradan inceleyebilir, dilediğiniz sertifikayı indirebilirsiniz."
+  },
+  "error": "Sertifikalar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.",
+  "empty": {
+    "title": "Henüz sertifika eklenmedi",
+    "description": "Sertifikalar yakında burada listelenecek."
+  },
+  "downloadHint": "Dosyayı indirmek için tıklayın"
+}

@@ -17,3 +17,5 @@
 - [DB product page localization](db-product-page-localization.md) — locale overlays must resolve per-locale and fail closed; never leak Turkish into other URLs; CMS text is untrusted at path and HTML sinks.
 - [Media conversion runtime](media-conversion-runtime.md) — server-side raster conversion can use the preinstalled ImageMagick `magick` CLI when native Node packages cannot be installed.
 - [Security hardening layers](security-hardening-layers.md) — what was hardened (rate limits, draft guards, ID parsing, audit logs, storage allowlist) and what is deferred (cookie sessions, audit viewer, tests).
+- [Adding a site locale](adding-a-locale.md) — locale list + slug table are duplicated across app/build/API/DB; root `pnpm run typecheck` is the only one that rebuilds libs.
+- [Renaming a localized URL slug](renaming-localized-slugs.md) — mirror all four slug tables, add legacy redirects before the catch-all, and never confuse URL slug with DB page_slug.

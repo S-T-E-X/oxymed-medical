@@ -1,11 +1,11 @@
 {
   "hero": {
     "eyebrow": "OXY-DVP SERIES",
-    "titleLine1": "POMPE À VIDE",
-    "titleLine2": "DENTAIRE",
-    "desc1": "La pompe à vide dentaire Oxymed offre une solution de vide fiable, silencieuse et continue aux cliniques dentaires et établissements de santé.",
+    "titleLine1": "CENTRALE DE VIDE",
+    "titleLine2": "MÉDICAL",
+    "desc1": "La centrale de vide médical Oxymed offre une solution de vide central fiable, silencieuse et continue aux hôpitaux et établissements de santé.",
     "desc2": "Grâce à son moteur haute performance et à sa conception robuste, elle garantit une utilisation durable, économique et hygiénique.",
-    "visualAriaLabel": "Zone d’image WEBP principale de la pompe à vide dentaire"
+    "visualAriaLabel": "Zone d’image WEBP principale de la centrale de vide médical"
   },
   "heroFeatures": [
     {
@@ -47,7 +47,7 @@
     "rows": [
       [
         "Nom du produit",
-        "Pompe à vide dentaire"
+        "Centrale de vide médical"
       ],
       [
         "Nombre de pompes",
@@ -79,7 +79,7 @@
       ],
       [
         "Domaines d'utilisation",
-        "Cliniques dentaires, polycliniques et hôpitaux"
+        "Hôpitaux, polycliniques et établissements de santé"
       ],
       [
         "Facilité d'entretien",
@@ -95,16 +95,16 @@
   "useCases": {
     "heading": "DOMAINES D'UTILISATION",
     "items": [
-      "Cliniques dentaires",
-      "Centres de santé bucco-dentaire",
+      "Hôpitaux",
+      "Établissements de santé",
       "Polycliniques",
-      "Hôpitaux"
+      "Blocs opératoires"
     ]
   },
   "quickQuote": {
-    "strong": "Obtenez rapidement un devis pour votre pompe à vide dentaire.",
+    "strong": "Obtenez rapidement un devis pour votre centrale de vide médical.",
     "small": "Définissons ensemble la capacité et l'option d'installation adaptées à votre projet.",
     "cta": "DEMANDER UN DEVIS"
   },
-  "category": "Pompe à vide dentaire"
+  "category": "Centrale de vide médical"
 }

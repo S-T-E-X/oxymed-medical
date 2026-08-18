@@ -1,6 +1,6 @@
 import type { Locale } from "./config";
 
-const LOCALE_CODES = new Set<Locale>(["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"]);
+const LOCALE_CODES = new Set<Locale>(["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az", "es"]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);

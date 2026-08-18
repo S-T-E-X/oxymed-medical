@@ -1,0 +1,108 @@
+{
+  "brand": "Oxymed Medikal",
+  "nav": {
+    "home": "INICIO",
+    "corporate": "EMPRESA",
+    "products": "PRODUCTOS",
+    "references": "REFERENCIAS",
+    "news": "NOTICIAS",
+    "service": "SERVICIO",
+    "contact": "CONTACTO",
+    "allProducts": "Todos los Productos",
+    "corporateAbout": "Sobre Nosotros",
+    "corporateCertificates": "Certificados",
+    "mainMenu": "Menú principal",
+    "mobileMenu": "Menú principal móvil",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "language": "Idioma"
+  },
+  "cta": {
+    "getQuote": "SOLICITAR PRESUPUESTO",
+    "reviewDetails": "Ver Detalles",
+    "downloadCatalog": "DESCARGAR CATÁLOGO",
+    "contactUs": "CONTÁCTENOS",
+    "send": "ENVIAR",
+    "sending": "ENVIANDO...",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "close": "Cerrar"
+  },
+  "footer": {
+    "tagline": "Ofrecemos entornos seguros, confortables y tecnológicamente avanzados con unidades de cabecera, sistemas de brazos pendulares y soluciones de gases medicinales.",
+    "contactTitle": "CONTACTO",
+    "copyright": "© 2024 Oxymed Medikal. Todos los derechos reservados.",
+    "kvkk": "KVKK",
+    "privacy": "Política de Privacidad",
+    "terms": "Condiciones de Uso",
+    "columns": {
+      "corporate": {
+        "title": "EMPRESA",
+        "about": "Sobre Nosotros",
+        "vision": "Visión y Misión",
+        "quality": "Certificados de Calidad",
+        "catalogs": "Catálogos"
+      },
+      "products": {
+        "title": "PRODUCTOS",
+        "bedHead": "Unidades de Cabecera",
+        "pendant": "Sistemas de Brazos Pendulares",
+        "medicalGas": "Sistemas de Gases Medicinales",
+        "alarmMonitoring": "Sistemas de Alarma y Monitorización"
+      },
+      "services": {
+        "title": "NUESTROS SERVICIOS",
+        "engineering": "Diseño de Proyectos",
+        "manufacturing": "Fabricación",
+        "installation": "Instalación",
+        "technicalService": "Servicio Técnico"
+      },
+      "references": {
+        "title": "REFERENCIAS",
+        "completed": "Proyectos Finalizados",
+        "public": "Proyectos Públicos",
+        "private": "Proyectos Privados"
+      }
+    }
+  },
+  "status": {
+    "loading": "Cargando...",
+    "genericError": "Se ha producido un error. Inténtelo de nuevo.",
+    "notFound": "No se han encontrado resultados.",
+    "loadingShort": "Cargando",
+    "pageLoading": "Cargando página"
+  },
+  "catalog": {
+    "title": "Descargar Catálogo",
+    "subtitle": "Seleccione un idioma para descargar el catálogo",
+    "empty": "Aún no se ha añadido ningún catálogo.",
+    "trackLabel": "Descargar Catálogo",
+    "pageTitle": "Catálogos de Productos",
+    "pageSubtitle": "Consulte nuestros productos y grupos de soluciones a través de nuestros catálogos.",
+    "pageEyebrow": "CATÁLOGOS DE PRODUCTOS",
+    "preview": "Vista previa de la portada",
+    "download": "Descargar catálogo",
+    "loading": "Cargando catálogos...",
+    "error": "Se ha producido un error al cargar los catálogos. Actualice la página."
+  },
+  "cookies": {
+    "ariaLabel": "Aviso de cookies",
+    "title": "Este sitio web utiliza cookies para mejorar su experiencia.",
+    "description": "Se utilizan cookies necesarias para el funcionamiento del sitio y el análisis del rendimiento. Al continuar, se considera que acepta nuestra política de cookies.",
+    "accept": "Aceptar",
+    "decline": "Rechazar"
+  },
+  "hero": {
+    "fallbackImageAlt": "Unidad de cabecera y sistema de brazo pendular en una habitación hospitalaria moderna",
+    "fallbackTitleLine1": "TECNOLOGÍA",
+    "fallbackTitleLine2": "PARA LA VIDA",
+    "fallbackDescription": "Ofrecemos entornos seguros, confortables y tecnológicamente avanzados con unidades de cabecera, sistemas de brazos pendulares y soluciones de gases medicinales.",
+    "ourProducts": "NUESTROS PRODUCTOS",
+    "slideLabel": "Diapositiva {{index}}"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Ruta de navegación",
+    "home": "Inicio",
+    "products": "Productos"
+  }
+}

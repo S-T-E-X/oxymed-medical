@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVS SERIES",
+    "titleLine1": "SISTEMA CENTRALIZADO",
+    "titleLine2": "DE VACÍO DENTAL",
+    "desc1": "Solución de sistema fiable y de alto rendimiento, diseñada para cubrir las necesidades de vacío centralizado de las clínicas dentales.",
+    "desc2": "Garantiza la máxima eficiencia en los centros sanitarios con una potencia de vacío ininterrumpida, un funcionamiento silencioso y un diseño duradero."
+  },
+  "heroFeatures": [
+    {
+      "title": "ALTA FIABILIDAD",
+      "text": "Configuración de bombas redundantes para una generación de vacío ininterrumpida."
+    },
+    {
+      "title": "SILENCIOSO Y EFICIENTE",
+      "text": "Bajo nivel de ruido y alta eficiencia energética."
+    },
+    {
+      "title": "FÁCIL DE USAR",
+      "text": "Monitorización y gestión en tiempo real mediante un panel de control intuitivo."
+    },
+    {
+      "title": "DISEÑO DURADERO",
+      "text": "Vida útil larga y estable gracias a componentes de alta calidad."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "COLECTOR DE ACERO INOXIDABLE",
+      "text": "Construcción resistente a la corrosión, higiénica y duradera.",
+      "ariaLabel": "Área de imagen WEBP del colector de acero inoxidable"
+    },
+    {
+      "title": "PANEL DE CONTROL INTELIGENTE",
+      "text": "Gestión del estado del sistema, alarmas y automatización.",
+      "ariaLabel": "Área de imagen WEBP del panel de control inteligente"
+    },
+    {
+      "title": "BOMBAS DE ALTO RENDIMIENTO",
+      "text": "Unidades resistentes y silenciosas que ofrecen una potente potencia de vacío.",
+      "ariaLabel": "Área de imagen WEBP de las bombas de alto rendimiento"
+    }
+  ],
+  "specs": {
+    "heading": "ESPECIFICACIONES TÉCNICAS",
+    "rows": [
+      [
+        "Nombre del Producto",
+        "Sistema de Vacío Dental OXY-DVS"
+      ],
+      [
+        "Capacidad de Vacío",
+        "100 - 840 m³/h (opcional)"
+      ],
+      [
+        "Vacío de Trabajo",
+        "-0,6 / -0,8 bar"
+      ],
+      [
+        "Número de Bombas",
+        "2 - 4 unidades (redundantes)"
+      ],
+      [
+        "Potencia del Motor",
+        "2,2 - 4 kW (por bomba)"
+      ],
+      [
+        "Alimentación",
+        "380 VAC - 50 Hz"
+      ],
+      [
+        "Nivel de Ruido",
+        "≤ 70 dB(A)"
+      ],
+      [
+        "Material del Colector",
+        "Acero Inoxidable (AISI 304)"
+      ],
+      [
+        "Diámetro de Conexión",
+        "DN40 - DN65"
+      ],
+      [
+        "Temperatura de Trabajo",
+        "-10 °C / +50 °C"
+      ],
+      [
+        "Grado de Protección",
+        "IP54"
+      ],
+      [
+        "Dimensiones (AlxAnxP)",
+        "1300 x 600 x 1200 mm (ejemplo)"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "PLANO TÉCNICO / DIMENSIONES",
+    "ariaLabel": "Área de imagen WEBP del plano técnico y las dimensiones"
+  },
+  "useCases": {
+    "heading": "ÁREAS DE APLICACIÓN",
+    "items": [
+      "Clínicas Dentales",
+      "Centros de Salud Bucodental",
+      "Hospitales",
+      "Salas de Intervención Quirúrgica",
+      "Laboratorios"
+    ]
+  },
+  "imageStrip": {
+    "ariaLabel": "Áreas de imagen de detalle del producto"
+  },
+  "bottomNote": {
+    "vacuum": "Rendimiento de vacío potente, silencioso y sostenible.",
+    "capacity": "Opciones de capacidad y medidas según las necesidades del proyecto.",
+    "cta": "SOLICITAR PRESUPUESTO"
+  },
+  "category": "Sistema de Vacío Dental Central"
+}

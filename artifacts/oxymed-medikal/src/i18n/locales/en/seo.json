@@ -16,8 +16,8 @@
     "description": "ISO 11143 compliant, quiet and easy-to-maintain amalgam separator systems that retain over 95% of amalgam waste in dental clinics and practices."
   },
   "dvp": {
-    "title": "Dental Vacuum Pump | Dry and Wet System | Oxymed Medikal",
-    "description": "Quiet, energy-efficient and long-lasting dental vacuum pumps for dental clinics. Scalable solutions from single-unit practices to multi-unit clinics."
+    "title": "Medical Vacuum Plant | Central Vacuum System | Oxymed",
+    "description": "Quiet, reliable and uninterrupted central medical vacuum system for hospitals and healthcare facilities. Project-specific design and installation support."
   },
   "dvs": {
     "title": "Central Dental Vacuum System | Suction | Oxymed",
@@ -38,5 +38,17 @@
   "catalogs": {
     "title": "Product Catalogues | Oxymed Medikal",
     "description": "Explore Oxymed Medikal product and solution groups through our catalogues; view and download the latest medical gas and dental vacuum catalogues."
+  },
+  "corporate": {
+    "title": "About Us | 25+ Years of Medical Expertise | Oxymed",
+    "description": "Since 1999 Oxymed Medikal has manufactured medical gas systems and hospital solutions, backed by over 25 years of engineering experience and reliable service."
+  },
+  "certificates": {
+    "title": "Certificates and Quality Documents | Oxymed",
+    "description": "Oxymed Medikal quality management and competence documents. Review our certificates on this page and access them here as they are added and updated."
+  },
+  "references": {
+    "title": "References | 170+ Healthcare Projects | Oxymed",
+    "description": "More than 170 projects completed at public and private healthcare institutions in Turkey and abroad, across over 50 provinces — Oxymed Medikal references."
   }
 }

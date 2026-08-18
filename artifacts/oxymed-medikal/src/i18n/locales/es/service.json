@@ -1,0 +1,100 @@
+{
+  "hero": {
+    "title": "Servicio y Soporte",
+    "subtitle": "Consulte el historial de servicio de su equipo y programe rápidamente una cita de servicio técnico.",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbCurrent": "Servicio y Soporte"
+  },
+  "benefits": [
+    { "title": "Soporte Experto",        "text": "Nuestro experimentado equipo técnico siempre está a su lado." },
+    { "title": "Respuesta Rápida",      "text": "Respondemos lo antes posible tras recibir su solicitud." },
+    { "title": "Repuestos Originales", "text": "Utilizamos piezas originales en todas las intervenciones." },
+    { "title": "Seguro y Garantizado", "text": "Las operaciones están protegidas dentro de la garantía." }
+  ],
+  "query": {
+    "title": "Consulta de Equipo",
+    "subtitle": "Realice la consulta con el número de serie o el código de servicio de su equipo.",
+    "tabsAriaLabel": "Método de consulta",
+    "tabSerial": "Consultar por Número de Serie",
+    "tabServiceCode": "Consultar por Código de Servicio",
+    "labelSerial": "Número de Serie",
+    "labelServiceCode": "Código de Servicio (QR)",
+    "placeholderSerial": "Ej.: OXM-VAC-250-0148",
+    "placeholderServiceCode": "Ej.: abc123xyz",
+    "searchButton": "Consultar",
+    "hint": "Puede ver el número de serie en la etiqueta del equipo.",
+    "techSupportImageAlt": "Especialista de servicio de Oxymed Medikal"
+  },
+  "faultTypes": [
+    "Avería / No Funciona",
+    "Solicitud de Mantenimiento",
+    "Solicitud de Repuestos",
+    "Rendimiento Reducido",
+    "Solicitud de Garantía",
+    "Otro"
+  ],
+  "statusLabels": {
+    "aktif_garanti":     "Garantía Activa",
+    "yakin_bitis":       "A Punto de Vencer",
+    "garanti_disi":      "Fuera de Garantía",
+    "bakim_riskli":      "Requiere Mantenimiento",
+    "yetkisiz_askida":   "En Espera",
+    "uzatilmis_garanti": "Garantía Extendida",
+    "bakim_anlasmasi":   "Contrato de Mantenimiento",
+    "talep_incelemede":  "Solicitud en Revisión",
+    "talep_onaylandi":   "Solicitud Aprobada",
+    "talep_reddedildi":  "Solicitud Rechazada"
+  },
+  "device": {
+    "notFoundTitle": "Equipo no encontrado",
+    "notFoundBody": "No se ha encontrado información de ningún equipo registrado con este número de serie. Compruebe el número de serie o llame a nuestra línea de soporte técnico.",
+    "cardTitle": "Información del Equipo",
+    "imageAlt": "Imagen del equipo",
+    "labels": {
+      "productName": "Tipo de Equipo",
+      "model": "Modelo",
+      "serialNumber": "Número de Serie",
+      "installDate": "Fecha de Instalación",
+      "customerFirm": "Cliente / Institución",
+      "warrantyStatus": "Estado de la Garantía",
+      "warrantyEndDate": "Fin de Garantía",
+      "lastMaintenanceDate": "Último Mantenimiento",
+      "nextMaintenanceDate": "Próximo Mantenimiento"
+    },
+    "historyTitle": "Operaciones Realizadas e Historial de Servicio",
+    "historyEmpty": "Todavía no hay registros de servicio.",
+    "tableDate": "Fecha",
+    "tableServiceType": "Tipo de Operación",
+    "tablePersonnel": "Personal de Servicio",
+    "tableReport": "Informe",
+    "pdfLabel": "PDF"
+  },
+  "form": {
+    "title": "Formulario de Solicitud Rápida de Servicio",
+    "subtitle": "Cree su solicitud de servicio rápidamente y nuestro equipo se pondrá en contacto con usted lo antes posible.",
+    "labelName": "Nombre y Apellidos *",
+    "placeholderName": "Su Nombre y Apellidos",
+    "labelPhone": "Teléfono",
+    "placeholderPhone": "5XX XXX XX XX",
+    "labelEmail": "Correo Electrónico",
+    "placeholderEmail": "ejemplo@correo.com",
+    "labelFirm": "Nombre del Hospital / Institución",
+    "placeholderFirm": "Nombre de la institución",
+    "labelCity": "Su Ciudad",
+    "placeholderCity": "Seleccione una ciudad",
+    "cities": ["Ankara", "İstanbul", "İzmir", "Bursa", "Antalya", "Konya", "Adana", "Otra"],
+    "labelFaultType": "Tipo de Solicitud *",
+    "placeholderFaultType": "Seleccione el tipo de solicitud",
+    "labelDescription": "Descripción *",
+    "placeholderDescription": "Introduzca una breve descripción...",
+    "kvkkConsent": "He leído y acepto la Cláusula Informativa de Protección de Datos Personales.",
+    "submit": "Crear Solicitud",
+    "submitting": "Enviando…",
+    "successTitle": "¡Su Solicitud Ha Sido Recibida!",
+    "successBody": "Nuestro equipo de servicio se pondrá en contacto con usted lo antes posible.",
+    "toastSuccess": "¡Su solicitud de garantía ha sido enviada! Nos pondremos en contacto con usted lo antes posible.",
+    "toastError": "No se ha podido crear la solicitud, inténtelo de nuevo.",
+    "toastValidation": "Complete los campos obligatorios y otorgue el consentimiento de protección de datos personales.",
+    "toastNoDevice": "Consulte primero el equipo."
+  }
+}

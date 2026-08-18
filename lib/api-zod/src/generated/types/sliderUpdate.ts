@@ -60,6 +60,7 @@ export interface SliderUpdate {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  titleEs?: string | null;
   /** @nullable */
   subtitleEn?: string | null;
   /** @nullable */
@@ -80,6 +81,7 @@ export interface SliderUpdate {
   subtitleBg?: string | null;
   /** @nullable */
   subtitleAz?: string | null;
+  subtitleEs?: string | null;
   /** @nullable */
   descriptionEn?: string | null;
   /** @nullable */
@@ -100,6 +102,7 @@ export interface SliderUpdate {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  descriptionEs?: string | null;
   /** @nullable */
   ctaPrimaryTextEn?: string | null;
   /** @nullable */
@@ -120,6 +123,7 @@ export interface SliderUpdate {
   ctaPrimaryTextBg?: string | null;
   /** @nullable */
   ctaPrimaryTextAz?: string | null;
+  ctaPrimaryTextEs?: string | null;
   /** @nullable */
   ctaSecondaryTextEn?: string | null;
   /** @nullable */
@@ -140,4 +144,5 @@ export interface SliderUpdate {
   ctaSecondaryTextBg?: string | null;
   /** @nullable */
   ctaSecondaryTextAz?: string | null;
+  ctaSecondaryTextEs?: string | null;
 }

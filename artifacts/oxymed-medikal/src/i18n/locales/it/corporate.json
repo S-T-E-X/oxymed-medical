@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDIKAL",
+    "title": "Azienda",
+    "description": "Con oltre 25 anni di esperienza, sviluppiamo sistemi affidabili per le strutture sanitarie.",
+    "imageAlt": "Oxymed Medikal"
+  },
+  "about": {
+    "eyebrow": "CHI SIAMO",
+    "title": "Sistemi affidabili per la sanità"
+  },
+  "error": "Si è verificato un errore durante il caricamento dei contenuti aziendali. Aggiorna la pagina.",
+  "stats": {
+    "years": "Anni di esperienza",
+    "projects": "Progetti completati",
+    "exports": "Paesi di esportazione",
+    "error": "Impossibile caricare le statistiche; vengono mostrati i valori predefiniti."
+  }
+}

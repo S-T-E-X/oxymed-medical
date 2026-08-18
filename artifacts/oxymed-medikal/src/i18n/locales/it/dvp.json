@@ -1,11 +1,11 @@
 {
   "hero": {
     "eyebrow": "OXY-DVP SERIES",
-    "titleLine1": "DENTALE",
-    "titleLine2": "POMPA PER VUOTO",
-    "desc1": "La pompa per vuoto dentale Oxymed offre una soluzione di aspirazione affidabile, silenziosa e continua per cliniche dentali e strutture sanitarie.",
+    "titleLine1": "MEDICALE",
+    "titleLine2": "CENTRALE DEL VUOTO",
+    "desc1": "La centrale del vuoto medicale Oxymed offre una soluzione di aspirazione centralizzata affidabile, silenziosa e continua per ospedali e strutture sanitarie.",
     "desc2": "Grazie al motore ad alte prestazioni e al design robusto, garantisce un utilizzo duraturo, economico e igienico.",
-    "visualAriaLabel": "Area immagine WEBP principale della pompa per vuoto dentale"
+    "visualAriaLabel": "Area immagine WEBP principale della centrale del vuoto medicale"
   },
   "heroFeatures": [
     {
@@ -47,7 +47,7 @@
     "rows": [
       [
         "Nome del prodotto",
-        "Pompa per vuoto dentale"
+        "Centrale del vuoto medicale"
       ],
       [
         "Numero di pompe",
@@ -79,7 +79,7 @@
       ],
       [
         "Campo di utilizzo",
-        "Cliniche dentali, poliambulatori e ospedali"
+        "Ospedali, poliambulatori e strutture sanitarie"
       ],
       [
         "Facilità di manutenzione",
@@ -95,16 +95,16 @@
   "useCases": {
     "heading": "CAMPI DI UTILIZZO",
     "items": [
-      "Cliniche dentali",
-      "Centri di salute orale e dentale",
+      "Ospedali",
+      "Strutture sanitarie",
       "Poliambulatori",
-      "Ospedali"
+      "Sale operatorie"
     ]
   },
   "quickQuote": {
-    "strong": "Richiedete un preventivo rapido per la pompa per vuoto dentale.",
+    "strong": "Richiedete un preventivo rapido per la centrale del vuoto medicale.",
     "small": "Definiamo insieme la capacità e l'opzione di installazione più adatte al vostro progetto.",
     "cta": "RICHIEDI UN PREVENTIVO"
   },
-  "category": "Pompa per vuoto dentale"
+  "category": "Centrale del vuoto medicale"
 }

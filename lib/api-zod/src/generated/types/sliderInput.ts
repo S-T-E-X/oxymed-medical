@@ -36,6 +36,7 @@ export interface SliderInput {
   titleKa?: string;
   titleBg?: string;
   titleAz?: string;
+  titleEs?: string;
   subtitleEn?: string;
   subtitleDe?: string;
   subtitleFr?: string;
@@ -46,6 +47,7 @@ export interface SliderInput {
   subtitleKa?: string;
   subtitleBg?: string;
   subtitleAz?: string;
+  subtitleEs?: string;
   descriptionEn?: string;
   descriptionDe?: string;
   descriptionFr?: string;
@@ -56,6 +58,7 @@ export interface SliderInput {
   descriptionKa?: string;
   descriptionBg?: string;
   descriptionAz?: string;
+  descriptionEs?: string;
   ctaPrimaryTextEn?: string;
   ctaPrimaryTextDe?: string;
   ctaPrimaryTextFr?: string;
@@ -66,6 +69,7 @@ export interface SliderInput {
   ctaPrimaryTextKa?: string;
   ctaPrimaryTextBg?: string;
   ctaPrimaryTextAz?: string;
+  ctaPrimaryTextEs?: string;
   ctaSecondaryTextEn?: string;
   ctaSecondaryTextDe?: string;
   ctaSecondaryTextFr?: string;
@@ -76,4 +80,5 @@ export interface SliderInput {
   ctaSecondaryTextKa?: string;
   ctaSecondaryTextBg?: string;
   ctaSecondaryTextAz?: string;
+  ctaSecondaryTextEs?: string;
 }

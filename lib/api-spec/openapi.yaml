@@ -2377,6 +2377,8 @@ components:
           type: ["string", "null"]
         titleAz:
           type: ["string", "null"]
+        titleEs:
+          type: ["string", "null"]
         subtitleEn:
           type: ["string", "null"]
         subtitleDe:
@@ -2396,6 +2398,8 @@ components:
         subtitleBg:
           type: ["string", "null"]
         subtitleAz:
+          type: ["string", "null"]
+        subtitleEs:
           type: ["string", "null"]
         descriptionEn:
           type: ["string", "null"]
@@ -2417,6 +2421,8 @@ components:
           type: ["string", "null"]
         descriptionAz:
           type: ["string", "null"]
+        descriptionEs:
+          type: ["string", "null"]
         ctaPrimaryTextEn:
           type: ["string", "null"]
         ctaPrimaryTextDe:
@@ -2437,6 +2443,8 @@ components:
           type: ["string", "null"]
         ctaPrimaryTextAz:
           type: ["string", "null"]
+        ctaPrimaryTextEs:
+          type: ["string", "null"]
         ctaSecondaryTextEn:
           type: ["string", "null"]
         ctaSecondaryTextDe:
@@ -2456,6 +2464,8 @@ components:
         ctaSecondaryTextBg:
           type: ["string", "null"]
         ctaSecondaryTextAz:
+          type: ["string", "null"]
+        ctaSecondaryTextEs:
           type: ["string", "null"]
         createdAt:
           type: string
@@ -2524,6 +2534,8 @@ components:
           type: string
         titleAz:
           type: string
+        titleEs:
+          type: string
         subtitleEn:
           type: string
         subtitleDe:
@@ -2543,6 +2555,8 @@ components:
         subtitleBg:
           type: string
         subtitleAz:
+          type: string
+        subtitleEs:
           type: string
         descriptionEn:
           type: string
@@ -2564,6 +2578,8 @@ components:
           type: string
         descriptionAz:
           type: string
+        descriptionEs:
+          type: string
         ctaPrimaryTextEn:
           type: string
         ctaPrimaryTextDe:
@@ -2584,6 +2600,8 @@ components:
           type: string
         ctaPrimaryTextAz:
           type: string
+        ctaPrimaryTextEs:
+          type: string
         ctaSecondaryTextEn:
           type: string
         ctaSecondaryTextDe:
@@ -2603,6 +2621,8 @@ components:
         ctaSecondaryTextBg:
           type: string
         ctaSecondaryTextAz:
+          type: string
+        ctaSecondaryTextEs:
           type: string
 
     SliderUpdate:
@@ -2666,6 +2686,8 @@ components:
           type: ["string", "null"]
         titleAz:
           type: ["string", "null"]
+        titleEs:
+          type: ["string", "null"]
         subtitleEn:
           type: ["string", "null"]
         subtitleDe:
@@ -2685,6 +2707,8 @@ components:
         subtitleBg:
           type: ["string", "null"]
         subtitleAz:
+          type: ["string", "null"]
+        subtitleEs:
           type: ["string", "null"]
         descriptionEn:
           type: ["string", "null"]
@@ -2706,6 +2730,8 @@ components:
           type: ["string", "null"]
         descriptionAz:
           type: ["string", "null"]
+        descriptionEs:
+          type: ["string", "null"]
         ctaPrimaryTextEn:
           type: ["string", "null"]
         ctaPrimaryTextDe:
@@ -2726,6 +2752,8 @@ components:
           type: ["string", "null"]
         ctaPrimaryTextAz:
           type: ["string", "null"]
+        ctaPrimaryTextEs:
+          type: ["string", "null"]
         ctaSecondaryTextEn:
           type: ["string", "null"]
         ctaSecondaryTextDe:
@@ -2745,6 +2773,8 @@ components:
         ctaSecondaryTextBg:
           type: ["string", "null"]
         ctaSecondaryTextAz:
+          type: ["string", "null"]
+        ctaSecondaryTextEs:
           type: ["string", "null"]
 
     # CATALOGS
@@ -2894,6 +2924,8 @@ components:
           type: ["string", "null"]
         nameAz:
           type: ["string", "null"]
+        nameEs:
+          type: ["string", "null"]
         imageUrl:
           type: ["string", "null"]
         visible:
@@ -2919,6 +2951,8 @@ components:
         descriptionBg:
           type: ["string", "null"]
         descriptionAz:
+          type: ["string", "null"]
+        descriptionEs:
           type: ["string", "null"]
         createdAt:
           type: string
@@ -2957,6 +2991,8 @@ components:
           type: string
         nameAz:
           type: string
+        nameEs:
+          type: string
         imageUrl:
           type: string
         visible:
@@ -2982,6 +3018,8 @@ components:
         descriptionBg:
           type: string
         descriptionAz:
+          type: string
+        descriptionEs:
           type: string
 
     ProductCategoryUpdate:
@@ -3015,6 +3053,8 @@ components:
           type: ["string", "null"]
         nameAz:
           type: ["string", "null"]
+        nameEs:
+          type: ["string", "null"]
         imageUrl:
           type: ["string", "null"]
         visible:
@@ -3040,6 +3080,8 @@ components:
         descriptionBg:
           type: ["string", "null"]
         descriptionAz:
+          type: ["string", "null"]
+        descriptionEs:
           type: ["string", "null"]
 
     # PRODUCTS
@@ -3250,6 +3292,8 @@ components:
           type: ["string", "null"]
         titleAz:
           type: ["string", "null"]
+        titleEs:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -3319,6 +3363,8 @@ components:
           type: string
         titleAz:
           type: string
+        titleEs:
+          type: string
 
     ProductUpdate:
       type: object
@@ -3382,6 +3428,8 @@ components:
         titleBg:
           type: ["string", "null"]
         titleAz:
+          type: ["string", "null"]
+        titleEs:
           type: ["string", "null"]
 
     ProductListResponse:

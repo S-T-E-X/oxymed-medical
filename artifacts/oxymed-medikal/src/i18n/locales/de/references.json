@@ -1,0 +1,32 @@
+{
+  "breadcrumb": {
+    "home": "Startseite",
+    "current": "Referenzen"
+  },
+  "hero": {
+    "eyebrow": "Was wir umgesetzt haben",
+    "title": "170+ Projekte",
+    "titleSuffix": "Projekte",
+    "description": "Mit Projekten in öffentlichen und privaten Gesundheitseinrichtungen im In- und Ausland schaffen wir Mehrwert für Lebensräume.",
+    "imageAlt": "Referenzprojekt"
+  },
+  "stats": {
+    "projects": "Abgeschlossene Projekte",
+    "public": "Projekte im öffentlichen Sektor",
+    "private": "Projekte im privaten Sektor",
+    "regions": "Provinzen & Regionen",
+    "beds": "Bettenkapazität",
+    "years": "Jahre Erfahrung"
+  },
+  "allCategory": "ALLE PROJEKTE",
+  "empty": "In dieser Kategorie wurden keine Projekte gefunden.",
+  "errors": {
+    "categories": "Projektkategorien konnten nicht geladen werden.",
+    "list": "Beim Laden der Referenzen ist ein Fehler aufgetreten. Bitte laden Sie die Seite neu."
+  },
+  "map": {
+    "title": "In der ganzen Türkei vertrauensvoll gewählt",
+    "description": "In mehr als 50 Provinzen machen wir mit unseren Lösungen in Hunderten von Gesundheitseinrichtungen den Unterschied.",
+    "imageAlt": "Türkei-Referenzkarte"
+  }
+}

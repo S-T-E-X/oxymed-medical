@@ -4,6 +4,7 @@ import { FilePlus, Pencil, Trash2, Eye, Loader2, Mail, X, Copy } from "lucide-re
 import { useAuth } from "./AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { SITE_DOMAIN, SITE_ORIGIN } from "../i18n/config";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -113,7 +114,7 @@ function buildEmailPreviewHtml(quoteNo: string, firmaAdi: string, konu: string, 
             <p style="margin:0;font-size:11px;color:#94a3b8">
               Bu e-posta Oxymed Medikal Gaz Sistemleri tarafından otomatik olarak gönderilmiştir.<br>
               Teklif No: ${escHtml(quoteNo)} | Tarih: ${dateStr}<br>
-              <a href="https://www.oxymedmedical.com" style="color:#64748b;text-decoration:none">www.oxymedmedical.com</a>
+              <a href="${SITE_ORIGIN}" style="color:#64748b;text-decoration:none">${SITE_DOMAIN}</a>
             </p>
           </td>
         </tr>

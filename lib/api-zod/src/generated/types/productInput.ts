@@ -38,4 +38,5 @@ export interface ProductInput {
   titleKa?: string;
   titleBg?: string;
   titleAz?: string;
+  titleEs?: string;
 }

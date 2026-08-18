@@ -2,21 +2,35 @@ import { Award, Download, FileText } from "lucide-react";
 import { useListCertificates } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
+import Seo from "../components/common/Seo";
+import Breadcrumbs from "../components/common/Breadcrumbs";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { resolvePublicDocumentUrl } from "../lib/documentUrl";
 
 export default function CertificatesPage() {
+  const { t } = useI18n();
+  const path = useLocalizedPath();
   const { data: certificates = [], isLoading, isError } = useListCertificates();
 
   return (
     <div className="min-h-screen bg-steel-50 text-oxynavy-950">
+      <Seo routeKey="certificates" />
+      <Breadcrumbs
+        jsonLdOnly
+        items={[
+          { label: t("common.breadcrumb.home"), to: path("home") },
+          { label: t("certificates.hero.title") },
+        ]}
+      />
       <Header />
       <main>
         <section className="bg-oxynavy-950 py-16 text-white sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <p className="text-xs font-extrabold tracking-[0.2em] text-white/65">KURUMSAL</p>
-            <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">Sertifikalarımız</h1>
+            <p className="text-xs font-extrabold tracking-[0.2em] text-white/65">{t("certificates.hero.eyebrow")}</p>
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">{t("certificates.hero.title")}</h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
-              Kalite standartlarımızı ve yetkinlik belgelerimizi buradan inceleyebilir, dilediğiniz sertifikayı indirebilirsiniz.
+              {t("certificates.hero.description")}
             </p>
           </div>
         </section>
@@ -29,13 +43,13 @@ export default function CertificatesPage() {
               </div>
             ) : isError ? (
               <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
-                Sertifikalar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+                {t("certificates.error")}
               </div>
             ) : certificates.length === 0 ? (
               <div className="rounded-2xl border-2 border-dashed border-steel-200 bg-white px-6 py-16 text-center">
                 <Award className="mx-auto h-11 w-11 text-steel-300" aria-hidden="true" />
-                <h2 className="mt-4 text-lg font-bold text-oxynavy-950">Henüz sertifika eklenmedi</h2>
-                <p className="mt-2 text-sm text-steel-600">Sertifikalar yakında burada listelenecek.</p>
+                <h2 className="mt-4 text-lg font-bold text-oxynavy-950">{t("certificates.empty.title")}</h2>
+                <p className="mt-2 text-sm text-steel-600">{t("certificates.empty.description")}</p>
               </div>
             ) : (
               <div className="overflow-hidden rounded-2xl border border-steel-200 bg-white shadow-[0_14px_35px_rgba(2,20,35,0.07)]">
@@ -53,7 +67,7 @@ export default function CertificatesPage() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <strong className="block truncate text-sm text-oxynavy-950 sm:text-base">{certificate.title}</strong>
-                      <span className="mt-1 block text-xs text-steel-500">Dosyayı indirmek için tıklayın</span>
+                      <span className="mt-1 block text-xs text-steel-500">{t("certificates.downloadHint")}</span>
                     </span>
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-steel-200 text-oxynavy-800 transition group-hover:border-oxynavy-800 group-hover:bg-oxynavy-800 group-hover:text-white">
                       <Download className="h-4.5 w-4.5" aria-hidden="true" />

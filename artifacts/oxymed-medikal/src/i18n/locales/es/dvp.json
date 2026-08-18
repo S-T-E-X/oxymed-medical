@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "eyebrow": "OXY-DVP SERIES",
+    "titleLine1": "CENTRAL DE",
+    "titleLine2": "VACÍO MEDICINAL",
+    "desc1": "La Central de Vacío Medicinal Oxymed ofrece una solución de vacío centralizado fiable, silenciosa e ininterrumpida para hospitales y centros sanitarios.",
+    "desc2": "Su motor de alto rendimiento y su construcción resistente garantizan un funcionamiento duradero, económico e higiénico.",
+    "visualAriaLabel": "Área de imagen WEBP principal de la central de vacío medicinal"
+  },
+  "heroFeatures": [
+    {
+      "title": "RENDIMIENTO FIABLE",
+      "text": "Rendimiento de vacío potente e ininterrumpido."
+    },
+    {
+      "title": "FUNCIONAMIENTO SILENCIOSO",
+      "text": "Funcionamiento cómodo con bajos niveles de ruido."
+    },
+    {
+      "title": "CONSTRUCCIÓN RESISTENTE",
+      "text": "Depósito de acero duradero y carcasa robusta."
+    },
+    {
+      "title": "MANTENIMIENTO SENCILLO",
+      "text": "Acceso rápido al servicio gracias a su construcción modular."
+    }
+  ],
+  "imageCards": [
+    {
+      "title": "BOMBAS DE ALTO RENDIMIENTO",
+      "text": "Motor potente y funcionamiento silencioso.",
+      "ariaLabel": "Área de imagen WEBP de las bombas de alto rendimiento"
+    },
+    {
+      "title": "SISTEMA DE CONEXIÓN RESISTENTE",
+      "text": "Accesorios de calidad y válvulas fiables.",
+      "ariaLabel": "Área de imagen WEBP del sistema de conexión resistente"
+    },
+    {
+      "title": "DISEÑO COMPACTO Y MODULAR",
+      "text": "Instalación sencilla, ahorro de espacio y larga vida útil.",
+      "ariaLabel": "Área de imagen WEBP del diseño compacto y modular"
+    }
+  ],
+  "specs": {
+    "heading": "ESPECIFICACIONES TÉCNICAS",
+    "rows": [
+      [
+        "Nombre del Producto",
+        "Central de Vacío Medicinal"
+      ],
+      [
+        "Número de Bombas",
+        "3 Unidades"
+      ],
+      [
+        "Tipo de Depósito",
+        "Depósito de Acero Horizontal"
+      ],
+      [
+        "Construcción de la Carcasa",
+        "Acero, Pintado en Polvo"
+      ],
+      [
+        "Capacidad del Depósito",
+        "270 - 300 L (Opcional)"
+      ],
+      [
+        "Sistema de Funcionamiento",
+        "Sistema de Vacío Sin Aceite"
+      ],
+      [
+        "Vacío Máx.",
+        "-0,85 bar"
+      ],
+      [
+        "Conexiones",
+        "Entrada de Vacío: 1 1/4\" / Purga: 1/2\""
+      ],
+      [
+        "Aplicaciones",
+        "Hospitales, policlínicas y centros sanitarios"
+      ],
+      [
+        "Facilidad de Mantenimiento",
+        "Construcción modular, servicio y mantenimiento sencillos"
+      ]
+    ]
+  },
+  "drawing": {
+    "heading": "PLANO TÉCNICO Y DIMENSIONES",
+    "ariaLabel": "Área de imagen WEBP del plano técnico y las dimensiones",
+    "note": "Las dimensiones son aproximadas."
+  },
+  "useCases": {
+    "heading": "APLICACIONES",
+    "items": [
+      "Hospitales",
+      "Centros Sanitarios",
+      "Policlínicas",
+      "Quirófanos"
+    ]
+  },
+  "quickQuote": {
+    "strong": "Solicite un presupuesto rápido para una central de vacío medicinal.",
+    "small": "Definamos juntos la capacidad y la opción de instalación más adecuadas para su proyecto.",
+    "cta": "SOLICITAR PRESUPUESTO"
+  },
+  "category": "Central de Vacío Medicinal"
+}

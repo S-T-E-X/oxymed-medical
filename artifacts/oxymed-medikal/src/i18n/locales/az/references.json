@@ -1,0 +1,32 @@
+{
+  "breadcrumb": {
+    "home": "Ana səhifə",
+    "current": "Referanslar"
+  },
+  "hero": {
+    "eyebrow": "Tamamladıqlarımız",
+    "title": "170+ layihə",
+    "titleSuffix": "layihə",
+    "description": "Türkiyədə və xaricdə dövlət və özəl səhiyyə müəssisələrində həyata keçirdiyimiz layihələrlə yaşayış məkanlarına dəyər qatırıq.",
+    "imageAlt": "Referans layihə"
+  },
+  "stats": {
+    "projects": "Tamamlanmış layihə",
+    "public": "Dövlət sektoru layihələri",
+    "private": "Özəl sektor layihələri",
+    "regions": "Rayon və bölgələr",
+    "beds": "Çarpayı tutumu",
+    "years": "İllik təcrübə"
+  },
+  "allCategory": "BÜTÜN LAYİHƏLƏR",
+  "empty": "Bu kateqoriyada layihə tapılmadı.",
+  "errors": {
+    "categories": "Layihə kateqoriyaları yüklənə bilmədi.",
+    "list": "Referanslar yüklənərkən xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin."
+  },
+  "map": {
+    "title": "Bütün Türkiyədə etibarla seçilirik",
+    "description": "50-dən çox rayonda həllərimizlə yüzlərlə səhiyyə müəssisəsində fərq yaradırıq.",
+    "imageAlt": "Türkiyə Referans Xəritəsi"
+  }
+}

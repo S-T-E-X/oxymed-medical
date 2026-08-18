@@ -16,8 +16,8 @@
     "description": "Systèmes de séparateurs d'amalgame conformes ISO 11143, silencieux et faciles à entretenir, retenant plus de 95 % des déchets d'amalgame en clinique dentaire."
   },
   "dvp": {
-    "title": "Pompe à vide dentaire | Système sec et humide | Oxymed",
-    "description": "Pompes à vide dentaires silencieuses, écoénergétiques et durables pour cliniques dentaires. Solutions évolutives, du cabinet unique aux cliniques."
+    "title": "Centrale de vide médical | Vide central | Oxymed",
+    "description": "Centrale de vide médical silencieuse, fiable et continue pour hôpitaux et établissements de santé. Conception et installation sur mesure selon le projet."
   },
   "dvs": {
     "title": "Centrale d'aspiration dentaire | Oxymed Medikal",
@@ -38,5 +38,17 @@
   "catalogs": {
     "title": "Catalogues de produits | Oxymed Medikal",
     "description": "Découvrez les gammes de produits et solutions d'Oxymed Medikal à travers nos catalogues ; consultez et téléchargez les catalogues actualisés."
+  },
+  "corporate": {
+    "title": "Entreprise | 25+ ans d'expertise | Oxymed",
+    "description": "Depuis 1999, Oxymed Medikal fabrique des systèmes de gaz médicaux et des solutions hospitalières, fort de plus de 25 ans d'expérience et d'un service fiable."
+  },
+  "certificates": {
+    "title": "Certificats et documents qualité | Oxymed",
+    "description": "Documents de management de la qualité et de compétence d'Oxymed Medikal. Consultez nos certificats sur cette page à mesure qu'ils sont ajoutés et mis à jour."
+  },
+  "references": {
+    "title": "Références | 170+ projets de santé | Oxymed",
+    "description": "Plus de 170 projets réalisés dans des établissements de santé publics et privés, en Turquie et à l'étranger, dans plus de 50 provinces — références Oxymed."
   }
 }

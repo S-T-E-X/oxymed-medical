@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "eyebrow": "UNTERNEHMEN",
+    "title": "Unsere Zertifikate",
+    "description": "Prüfen Sie hier unsere Qualitätsstandards und Kompetenznachweise und laden Sie das gewünschte Zertifikat herunter."
+  },
+  "error": "Beim Laden der Zertifikate ist ein Fehler aufgetreten. Bitte laden Sie die Seite neu.",
+  "empty": {
+    "title": "Noch keine Zertifikate hinzugefügt",
+    "description": "Zertifikate werden hier in Kürze aufgeführt."
+  },
+  "downloadHint": "Zum Herunterladen der Datei klicken"
+}

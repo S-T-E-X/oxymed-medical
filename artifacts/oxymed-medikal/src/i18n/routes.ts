@@ -4,7 +4,7 @@ import { DEFAULT_LOCALE, isLocale, LOCALES, type Locale } from "./config";
  * Pages that exist in every language. Each one has a locale-specific slug so
  * search engines see a native URL per market (e.g. /de/produkte/dental-vakuumpumpe).
  */
-export const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs"] as const;
+export const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs", "corporate", "certificates", "references"] as const;
 
 export type RouteKey = (typeof ROUTE_KEYS)[number];
 
@@ -21,6 +21,7 @@ const PRODUCTS_SLUG: Record<Locale, string> = {
   ka: "produkcia",
   bg: "produkti",
   az: "mehsullar",
+  es: "productos",
 };
 
 const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, string>> = {
@@ -36,6 +37,7 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "gazis-sakontrolo-paneli",
     bg: "panel-za-kontrol-na-gaz",
     az: "qaz-nezaret-panosu",
+    es: "panel-de-control-de-gases-medicinales",
   },
   ams: {
     tr: "amalgam-separator",
@@ -49,19 +51,24 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "amalgamis-separatori",
     bg: "amalgamen-separator",
     az: "amalqam-separatoru",
+    es: "separador-de-amalgama",
   },
+  // Hospital central medical vacuum plant — NOT a dental product. The slugs
+  // used to say "dental vacuum pump", which contradicted the Turkish page and
+  // targeted the wrong buyer; LEGACY_LEAF_SLUGS keeps those URLs redirecting.
   dvp: {
-    tr: "dental-vakum-pompasi",
-    en: "dental-vacuum-pump",
-    de: "dental-vakuumpumpe",
-    fr: "pompe-a-vide-dentaire",
-    it: "pompa-per-vuoto-dentale",
-    ar: "midakhat-tafrigh-alasnan",
-    ru: "stomatologicheskiy-vakuumnyy-nasos",
-    fa: "pomp-vakum-dandanpezeshki",
-    ka: "dentaluri-vakuumis-tumbo",
-    bg: "dentalna-vakuumna-pompa",
-    az: "dental-vakuum-nasosu",
+    tr: "medikal-vakum-santrali",
+    en: "medical-vacuum-plant",
+    de: "medizinische-vakuumzentrale",
+    fr: "centrale-de-vide-medical",
+    it: "centrale-vuoto-medicale",
+    ar: "mahattat-tafrigh-tibbi",
+    ru: "meditsinskaya-vakuumnaya-stanciya",
+    fa: "istgah-vakum-pezeshki",
+    ka: "samedicino-vakuumis-sadguri",
+    bg: "medicinska-vakuumna-stanciya",
+    az: "tibbi-vakuum-stansiyasi",
+    es: "central-de-vacio-medicinal",
   },
   dvs: {
     tr: "dental-vakum-sistemi",
@@ -75,6 +82,7 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "dentaluri-vakuumis-sistema",
     bg: "dentalna-vakuumna-sistema",
     az: "dental-vakuum-sistemi",
+    es: "sistema-de-vacio-dental-central",
   },
   service: {
     tr: "servis",
@@ -88,6 +96,7 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "servisi",
     bg: "serviz",
     az: "servis",
+    es: "servicio-tecnico",
   },
   news: {
     tr: "haberler",
@@ -101,6 +110,7 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "siakhleebi",
     bg: "novini",
     az: "xeberler",
+    es: "noticias",
   },
   quote: {
     tr: "teklif-al",
@@ -114,6 +124,7 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "fasis-motkhovna",
     bg: "zapitvane-za-oferta",
     az: "teklif-al",
+    es: "solicitar-presupuesto",
   },
   catalogs: {
     tr: "kataloglar",
@@ -127,6 +138,50 @@ const LEAF_SLUGS: Record<Exclude<RouteKey, "home" | "products">, Record<Locale, 
     ka: "katalogebi",
     bg: "katalozi",
     az: "kataloqlar",
+    es: "catalogos",
+  },
+  // Top-level trust pages. Turkish keeps its already-indexed bare slugs.
+  corporate: {
+    tr: "kurumsal",
+    en: "about",
+    de: "unternehmen",
+    fr: "entreprise",
+    it: "azienda",
+    ar: "hawlana",
+    ru: "o-kompanii",
+    fa: "darbare-ma",
+    ka: "kompania",
+    bg: "za-nas",
+    az: "haqqimizda",
+    es: "empresa",
+  },
+  certificates: {
+    tr: "sertifikalar",
+    en: "certificates",
+    de: "zertifikate",
+    fr: "certificats",
+    it: "certificazioni",
+    ar: "shahadat",
+    ru: "sertifikaty",
+    fa: "govahinameha",
+    ka: "sertifikatebi",
+    bg: "sertifikati",
+    az: "sertifikatlar",
+    es: "certificados",
+  },
+  references: {
+    tr: "referanslar",
+    en: "references",
+    de: "referenzen",
+    fr: "references",
+    it: "referenze",
+    ar: "maraji",
+    ru: "referensy",
+    fa: "namunekarha",
+    ka: "rekomendaciebi",
+    bg: "referencii",
+    az: "referanslar",
+    es: "referencias",
   },
 };
 
@@ -160,6 +215,50 @@ export function localizedPath(routeKey: RouteKey, locale: Locale, extraSegments:
   const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
   const tail = segments.length > 0 ? `/${segments.join("/")}` : "";
   return `${prefix}${tail}` || "/";
+}
+
+/**
+ * Addresses a page answered on before it was renamed.
+ *
+ * The dvp page was published as a "dental vacuum pump" in every language
+ * before being corrected to a hospital medical vacuum plant. Those URLs may
+ * already be indexed or linked, and an unknown path falls through to the
+ * catch-all that lands on the home page — which reads as a dead end to both
+ * visitors and crawlers. Redirecting instead passes them to the renamed page.
+ */
+const LEGACY_LEAF_SLUGS: Partial<Record<RouteKey, Partial<Record<Locale, string>>>> = {
+  dvp: {
+    tr: "dental-vakum-pompasi",
+    en: "dental-vacuum-pump",
+    de: "dental-vakuumpumpe",
+    fr: "pompe-a-vide-dentaire",
+    it: "pompa-per-vuoto-dentale",
+    ar: "midakhat-tafrigh-alasnan",
+    ru: "stomatologicheskiy-vakuumnyy-nasos",
+    fa: "pomp-vakum-dandanpezeshki",
+    ka: "dentaluri-vakuumis-tumbo",
+    bg: "dentalna-vakuumna-pompa",
+    az: "dental-vakuum-nasosu",
+  },
+};
+
+/** Retired URL -> current URL, for registering redirect routes. */
+export function legacyRoutePaths(): Array<{ from: string; to: string }> {
+  const redirects: Array<{ from: string; to: string }> = [];
+  for (const [key, byLocale] of Object.entries(LEGACY_LEAF_SLUGS)) {
+    const routeKey = key as RouteKey;
+    for (const [loc, retiredLeaf] of Object.entries(byLocale ?? {})) {
+      const locale = loc as Locale;
+      const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+      const segments = NESTED_UNDER_PRODUCTS.has(routeKey)
+        ? [PRODUCTS_SLUG[locale], retiredLeaf]
+        : [retiredLeaf];
+      const from = `${prefix}/${segments.join("/")}`;
+      const to = localizedPath(routeKey, locale);
+      if (from !== to) redirects.push({ from, to });
+    }
+  }
+  return redirects;
 }
 
 export type MatchedRoute = {

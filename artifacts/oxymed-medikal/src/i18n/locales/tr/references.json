@@ -1,0 +1,32 @@
+{
+  "breadcrumb": {
+    "home": "Anasayfa",
+    "current": "Referanslar"
+  },
+  "hero": {
+    "eyebrow": "Tamamladığımız",
+    "title": "170+ Proje",
+    "titleSuffix": "Proje",
+    "description": "Yurt içinde ve yurt dışında, kamu ve özel sağlık kuruluşlarında hayata geçirdiğimiz projelerle yaşam alanlarına değer katıyoruz.",
+    "imageAlt": "Referans proje"
+  },
+  "stats": {
+    "projects": "Tamamlanan Proje",
+    "public": "Kamu Projesi",
+    "private": "Özel Sektör Projesi",
+    "regions": "İl & Bölge",
+    "beds": "Yatak Kapasitesi",
+    "years": "Yıllık Tecrübe"
+  },
+  "allCategory": "TÜM PROJELER",
+  "empty": "Bu kategoride proje bulunamadı.",
+  "errors": {
+    "categories": "Proje kategorileri yüklenemedi.",
+    "list": "Referanslar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
+  },
+  "map": {
+    "title": "Türkiye'nin Dört Bir Yanında Güvenle Tercih Ediliyoruz",
+    "description": "50'den fazla ilde, yüzlerce sağlık kuruluşunda çözümlerimizle fark yaratıyoruz.",
+    "imageAlt": "Türkiye Referans Haritası"
+  }
+}

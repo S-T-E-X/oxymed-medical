@@ -9,7 +9,7 @@ import { z } from "zod/v4";
 const router: IRouter = Router();
 
 /** Mirrors artifacts/oxymed-medikal/src/i18n/config.ts. */
-const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"] as const;
+const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az", "es"] as const;
 type Locale = (typeof LOCALES)[number];
 const DEFAULT_LOCALE: Locale = "tr";
 

@@ -1,11 +1,11 @@
 {
   "hero": {
     "eyebrow": "OXY-DVP SERIES",
-    "titleLine1": "DENTAL",
-    "titleLine2": "VAKUUM POMPASI",
-    "desc1": "Oxymed Dental Vakuum Pompası diş klinikaları və səhiyyə müəssisələrində etibarlı, səssiz və fasiləsiz vakuum həlli təqdim edir.",
+    "titleLine1": "TIBBİ",
+    "titleLine2": "VAKUUM STANSIYASI",
+    "desc1": "Oxymed Tibbi Vakuum Stansiyası xəstəxanalar və səhiyyə müəssisələrində etibarlı, səssiz və fasiləsiz mərkəzi vakuum həlli təqdim edir.",
     "desc2": "Yüksək məhsuldarlıqlı mühərrik quruluşu və dayanıqlı dizaynı ilə uzunömürlü, qənaətcil və gigiyenik istifadə təmin edir.",
-    "visualAriaLabel": "Dental vakuum pompası əsas WEBP təsvir sahəsi"
+    "visualAriaLabel": "Tibbi vakuum stansiyası əsas WEBP təsvir sahəsi"
   },
   "heroFeatures": [
     {
@@ -47,7 +47,7 @@
     "rows": [
       [
         "Məhsulun adı",
-        "Dental Vakuum Pompası"
+        "Tibbi Vakuum Stansiyası"
       ],
       [
         "Pompa sayı",
@@ -79,7 +79,7 @@
       ],
       [
         "İstifadə sahəsi",
-        "Diş klinikaları, poliklinikalar və xəstəxanalar"
+        "Xəstəxanalar, poliklinikalar və səhiyyə müəssisələri"
       ],
       [
         "Texniki xidmət rahatlığı",
@@ -95,16 +95,16 @@
   "useCases": {
     "heading": "İSTİFADƏ SAHƏLƏRİ",
     "items": [
-      "Diş Klinikaları",
-      "Ağız və Diş Sağlamlığı Mərkəzləri",
+      "Xəstəxanalar",
+      "Səhiyyə Müəssisələri",
       "Poliklinikalar",
-      "Xəstəxanalar"
+      "Əməliyyat Otaqları"
     ]
   },
   "quickQuote": {
-    "strong": "Dental vakuum pompası üçün sürətli təklif alın.",
+    "strong": "Tibbi vakuum stansiyası üçün sürətli təklif alın.",
     "small": "Layihənizə uyğun tutumu və quraşdırma seçimini birlikdə dəqiqləşdirək.",
     "cta": "TƏKLİF AL"
   },
-  "category": "Dental Vakuum Pompası"
+  "category": "Tibbi Vakuum Stansiyası"
 }

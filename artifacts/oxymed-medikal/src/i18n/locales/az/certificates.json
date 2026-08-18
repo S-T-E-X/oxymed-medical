@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "eyebrow": "ŞİRKƏT",
+    "title": "Sertifikatlarımız",
+    "description": "Keyfiyyət standartlarımızı və səriştə sənədlərimizi burada nəzərdən keçirin və istədiyiniz sertifikatı yükləyin."
+  },
+  "error": "Sertifikatlar yüklənərkən xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin.",
+  "empty": {
+    "title": "Hələ sertifikat əlavə edilməyib",
+    "description": "Sertifikatlar tezliklə burada siyahıya alınacaq."
+  },
+  "downloadHint": "Faylı yükləmək üçün klikləyin"
+}

@@ -8,4 +8,4 @@ Disallow: /teklif-sablonu
 Disallow: /servis-raporu
 Disallow: /taslak
 
-Sitemap: https://www.oxymed.com.tr/sitemap.xml
+Sitemap: https://www.oxymedmedical.com/sitemap.xml

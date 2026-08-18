@@ -3,7 +3,7 @@
  * the site root (no prefix) so the existing Turkish URLs keep their search
  * ranking, while every other locale is served under its own path prefix.
  */
-export const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"] as const;
+export const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az", "es"] as const;
 
 export type Locale = (typeof LOCALES)[number];
 
@@ -38,6 +38,7 @@ export const LOCALE_META: Record<Locale, LocaleMeta> = {
   ka: { code: "KA", nativeName: "ქართული", htmlLang: "ka", hreflang: "ka", dir: "ltr", englishName: "Georgian", ogLocale: "ka_GE" },
   bg: { code: "BG", nativeName: "Български", htmlLang: "bg", hreflang: "bg", dir: "ltr", englishName: "Bulgarian", ogLocale: "bg_BG" },
   az: { code: "AZ", nativeName: "Azərbaycan", htmlLang: "az", hreflang: "az", dir: "ltr", englishName: "Azerbaijani", ogLocale: "az_AZ" },
+  es: { code: "ES", nativeName: "Español", htmlLang: "es", hreflang: "es", dir: "ltr", englishName: "Spanish", ogLocale: "es_ES" },
 };
 
 export function isLocale(value: string | undefined | null): value is Locale {
@@ -49,5 +50,12 @@ export function isLocale(value: string | undefined | null): value is Locale {
  * VITE_SITE_ORIGIN so the production domain can change without a code edit.
  */
 export const SITE_ORIGIN: string = (
-  (import.meta.env?.["VITE_SITE_ORIGIN"] as string | undefined) ?? "https://www.oxymed.com.tr"
+  (import.meta.env?.["VITE_SITE_ORIGIN"] as string | undefined) ?? "https://www.oxymedmedical.com"
 ).replace(/\/$/, "");
+
+/**
+ * Bare hostname of SITE_ORIGIN, for places that print the domain as text
+ * (quote sheets, PDF footers) rather than linking to it. Derived so a domain
+ * change only has to happen in one place.
+ */
+export const SITE_DOMAIN: string = SITE_ORIGIN.replace(/^https?:\/\//, "");

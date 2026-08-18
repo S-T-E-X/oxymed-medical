@@ -28,6 +28,7 @@ export const CONTENT_LOCALES = [
   "ka",
   "bg",
   "az",
+  "es",
 ] as const;
 
 export type ContentLocale = (typeof CONTENT_LOCALES)[number];

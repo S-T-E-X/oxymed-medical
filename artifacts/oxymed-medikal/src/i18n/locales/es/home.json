@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "imageAlt": "Unidad de cabecera y sistema de brazo pendular en una habitación hospitalaria moderna"
+  },
+  "features": {
+    "production": {
+      "title": "DIRECTO DE FÁBRICA",
+      "description": "Producción de alta calidad y venta directa desde nuestra propia fábrica"
+    },
+    "design": {
+      "title": "DISEÑO MODERNO",
+      "description": "Soluciones estéticas, ergonómicas y funcionales"
+    },
+    "safety": {
+      "title": "SEGURIDAD",
+      "description": "Sistemas seguros conformes con las normas internacionales"
+    },
+    "support": {
+      "title": "SOPORTE TÉCNICO",
+      "description": "Soporte técnico ininterrumpido antes y después de la venta"
+    },
+    "durability": {
+      "title": "LARGA DURACIÓN",
+      "description": "Materiales resistentes y uso de larga duración"
+    }
+  },
+  "productGroups": {
+    "eyebrow": "PRODUCTOS DESTACADOS",
+    "title": "Tecnología Avanzada, Rendimiento Superior",
+    "description": "Nuestros productos seleccionados ofrecen soluciones seguras y eficientes para hospitales, clínicas y centros sanitarios.",
+    "loadError": "Se ha producido un error al cargar los productos.",
+    "fallbackDescription": "Nuestros equipos y soluciones médicas."
+  },
+  "stats": {
+    "eyebrow": "¿POR QUÉ OXYMED?",
+    "description": "Marcamos la diferencia en el sector con nuestro enfoque centrado en el cliente, nuestros estándares de calidad y nuestro equipo experimentado.",
+    "loadError": "No se han podido cargar las estadísticas; se muestran los valores predeterminados.",
+    "imageAlt": "Instalación moderna de fabricación médica",
+    "yearsExperience": "AÑOS DE EXPERIENCIA",
+    "completedProjects": "PROYECTOS FINALIZADOS",
+    "exportCountries": "PAÍSES DE EXPORTACIÓN",
+    "customerSatisfaction": "SATISFACCIÓN DEL CLIENTE"
+  },
+  "references": {
+    "title": "ALGUNAS DE NUESTRAS REFERENCIAS",
+    "loadError": "Se ha producido un error al cargar las referencias."
+  }
+}

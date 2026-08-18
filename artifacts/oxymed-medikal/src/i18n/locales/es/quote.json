@@ -1,0 +1,81 @@
+{
+  "hero": {
+    "title": "SOLICITAR PRESUPUESTO",
+    "subtitle": "Preparemos un presupuesto a medida con las soluciones que mejor se adapten a sus necesidades.",
+    "imageAlt": "Habitación de paciente con unidad de cabecera y sistema de brazo pendular"
+  },
+  "benefits": {
+    "fastResponse": {
+      "title": "RESPUESTA RÁPIDA",
+      "description": "Nuestro equipo de expertos se pondrá en contacto con usted en un plazo máximo de 24 horas tras recibir su solicitud."
+    },
+    "reliable": {
+      "title": "SOLUCIONES FIABLES",
+      "description": "La máxima garantía de calidad gracias a procesos de producción certificados ISO 9001 e ISO 13485."
+    },
+    "expert": {
+      "title": "SOPORTE EXPERTO",
+      "description": "Nuestro experimentado equipo de ingeniería le acompaña desde la planificación del proyecto hasta la instalación."
+    }
+  },
+  "form": {
+    "title": "Formulario de Solicitud de Presupuesto",
+    "subtitle": "Puede enviarnos su solicitud rellenando el siguiente formulario.",
+    "fields": {
+      "fullName": "Nombre y Apellidos *",
+      "fullNamePlaceholder": "Su nombre y apellidos",
+      "email": "Correo Electrónico *",
+      "emailPlaceholder": "ejemplo@correo.com",
+      "phone": "Teléfono *",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "company": "Empresa / Institución",
+      "companyPlaceholder": "Nombre de la empresa o institución",
+      "jobTitle": "Cargo / Puesto",
+      "jobTitlePlaceholder": "Su cargo o puesto",
+      "notes": "Solicitud y Notas",
+      "notesPlaceholder": "Facilite información sobre su proyecto...",
+      "file": "Subir Archivo (Opcional)",
+      "fileButton": "Seleccione o arrastre un archivo",
+      "fileHint": "PDF, DWG, JPG, PNG (Máx. 100MB)"
+    },
+    "validation": {
+      "fullNameRequired": "El nombre y los apellidos son obligatorios.",
+      "emailRequired": "El correo electrónico es obligatorio.",
+      "emailInvalid": "Introduzca una dirección de correo electrónico válida.",
+      "phoneRequired": "El número de teléfono es obligatorio."
+    },
+    "submit": "SOLICITAR PRESUPUESTO",
+    "submitting": "ENVIANDO…",
+    "privacy": "La información que envíe se almacena de forma segura y no se comparte con terceros.",
+    "apiError": "Se ha producido un error al enviar su solicitud de presupuesto. Inténtelo de nuevo."
+  },
+  "success": {
+    "title": "¡Su Solicitud Ha Sido Recibida!",
+    "description": "Su solicitud de presupuesto se ha enviado correctamente. Nuestro equipo de expertos se pondrá en contacto con usted lo antes posible.",
+    "newRequest": "Nueva Solicitud de Presupuesto"
+  },
+  "options": {
+    "projectTypes": {
+      "bedHead": "Unidad de Cabecera",
+      "pendant": "Sistema de Brazo Pendular",
+      "medicalGas": "Sistema de Gases Medicinales",
+      "electrical": "Instalación Eléctrica"
+    },
+    "cities": {
+      "izmir": "İzmir",
+      "ankara": "Ankara",
+      "istanbul": "İstanbul",
+      "bursa": "Bursa",
+      "antalya": "Antalya",
+      "other": "Otra"
+    },
+    "applicationAreas": {
+      "hospital": "Hospital",
+      "clinic": "Clínica",
+      "icu": "Cuidados Intensivos",
+      "operatingRoom": "Quirófano",
+      "emergency": "Servicio de Urgencias",
+      "other": "Otra"
+    }
+  }
+}

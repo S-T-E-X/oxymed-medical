@@ -16,8 +16,8 @@
     "description": "Sistemi separatori di amalgama conformi a ISO 11143, silenziosi e di facile manutenzione, che trattengono oltre il 95% dei residui di amalgama."
   },
   "dvp": {
-    "title": "Pompa per Vuoto Dentale | Sistema Secco e Umido | Oxymed",
-    "description": "Pompe per vuoto dentale silenziose, efficienti e di lunga durata per cliniche dentali. Soluzioni scalabili dalla singola unità alle cliniche multiunità."
+    "title": "Centrale del vuoto medicale | Vuoto centralizzato | Oxymed",
+    "description": "Centrale del vuoto medicale centralizzata, silenziosa, affidabile e continua per ospedali e strutture sanitarie. Progettazione e installazione su misura."
   },
   "dvs": {
     "title": "Sistema di Aspirazione Dentale Centralizzato | Oxymed",
@@ -38,5 +38,17 @@
   "catalogs": {
     "title": "Cataloghi Prodotti | Oxymed Medikal",
     "description": "Scoprite le gamme di prodotti e soluzioni Oxymed Medikal attraverso i nostri cataloghi; visualizzate e scaricate i cataloghi aggiornati."
+  },
+  "corporate": {
+    "title": "Azienda | 25+ anni di esperienza | Oxymed",
+    "description": "Dal 1999 Oxymed Medikal produce sistemi di gas medicali e soluzioni ospedaliere, con oltre 25 anni di esperienza ingegneristica e un servizio affidabile."
+  },
+  "certificates": {
+    "title": "Certificazioni e documenti qualità | Oxymed",
+    "description": "Documenti di gestione della qualità e competenza di Oxymed Medikal. Consulta i nostri certificati in questa pagina man mano che vengono aggiunti e aggiornati."
+  },
+  "references": {
+    "title": "Referenze | 170+ progetti sanitari | Oxymed",
+    "description": "Oltre 170 progetti realizzati presso strutture sanitarie pubbliche e private in Turchia e all'estero, in più di 50 province — referenze Oxymed Medikal."
   }
 }

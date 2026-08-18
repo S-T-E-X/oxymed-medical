@@ -3,7 +3,10 @@ import { BedDouble, Building2, HeartHandshake, Stethoscope, Timer, Users, AlertC
 import { useListReferences, useListSettings } from "@workspace/api-client-react";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
-import { referencesHero, referencesMap } from "../data/references";
+import Seo from "../components/common/Seo";
+import Breadcrumbs from "../components/common/Breadcrumbs";
+import { useI18n } from "../i18n/I18nProvider";
+import { useLocalizedPath } from "../i18n/useLocalizedPath";
 
 const overviewIconMap = [Building2, Stethoscope, Users, HeartHandshake, BedDouble, Timer];
 
@@ -17,8 +20,21 @@ function ErrorMessage({ message }: { message: string }) {
 }
 
 export default function ReferencesPage() {
+  const { t } = useI18n();
+  const path = useLocalizedPath();
+
   return (
     <div className="min-h-screen bg-white text-oxynavy-950">
+      <Seo routeKey="references" />
+      {/* The hero draws its own trail, so the shared component contributes the
+          machine-readable hierarchy only. */}
+      <Breadcrumbs
+        jsonLdOnly
+        items={[
+          { label: t("references.breadcrumb.home"), to: path("home") },
+          { label: t("references.breadcrumb.current") },
+        ]}
+      />
       <Header />
       <main>
         <ReferencesHero />
@@ -32,37 +48,44 @@ export default function ReferencesPage() {
 }
 
 function ReferencesHero() {
+  const { t } = useI18n();
+  const path = useLocalizedPath();
   const { data: refsData } = useListReferences({ limit: 1 });
+
+  const breadcrumb = [
+    { label: t("references.breadcrumb.home"), to: path("home") },
+    { label: t("references.breadcrumb.current") },
+  ];
 
   return (
     <section className="relative isolate overflow-hidden bg-oxynavy-950 text-white">
       <img
         src="/assets/images/corporate-hero-facility.png"
-        alt="Referans proje"
+        alt={t("references.hero.imageAlt")}
         className="absolute inset-0 h-full w-full object-cover opacity-60"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-oxynavy-950 via-oxynavy-950/80 to-oxynavy-950/30" />
       <div className="relative mx-auto min-h-[300px] max-w-7xl px-4 py-12 sm:px-6 lg:min-h-[360px] lg:px-8 lg:py-16">
         <div className="max-w-xl">
           <div className="flex items-center gap-2 text-xs font-medium text-white/78">
-            {referencesHero.breadcrumb.map((item, index) => (
-              <span key={item} className="inline-flex items-center gap-2">
-                {index === 0 ? (
-                  <a href="/" className="hover:text-white transition">{item}</a>
+            {breadcrumb.map((item, index) => (
+              <span key={item.label} className="inline-flex items-center gap-2">
+                {item.to ? (
+                  <a href={item.to} className="hover:text-white transition">{item.label}</a>
                 ) : (
-                  <span>{item}</span>
+                  <span>{item.label}</span>
                 )}
-                {index < referencesHero.breadcrumb.length - 1 ? <span className="text-white/44">›</span> : null}
+                {index < breadcrumb.length - 1 ? <span className="text-white/44">›</span> : null}
               </span>
             ))}
           </div>
-          <p className="mt-7 text-sm font-extrabold text-white/82">{referencesHero.eyebrow}</p>
+          <p className="mt-7 text-sm font-extrabold text-white/82">{t("references.hero.eyebrow")}</p>
           <h1 className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl">
-            {refsData?.total ? `${refsData.total}+ Proje` : referencesHero.title}
+            {refsData?.total ? `${refsData.total}+ ${t("references.hero.titleSuffix")}` : t("references.hero.title")}
           </h1>
           <div className="mt-5 h-1 w-14 bg-white" />
           <p className="mt-7 max-w-[470px] text-sm font-medium leading-7 text-white/88 sm:text-base">
-            {referencesHero.description}
+            {t("references.hero.description")}
           </p>
         </div>
       </div>
@@ -71,17 +94,18 @@ function ReferencesHero() {
 }
 
 function OverviewStats() {
+  const { t } = useI18n();
   const { data: rawSettings } = useListSettings();
   const settings = rawSettings as Record<string, string> | undefined;
   const { data: refsData } = useListReferences({ limit: 1 });
 
   const overviewStats = [
-    { value: refsData?.total ? `${refsData.total}+` : "170+", label: "Tamamlanan Proje" },
-    { value: "120+", label: "Kamu Projesi" },
-    { value: "50+", label: "Özel Sektör Projesi" },
-    { value: settings?.["exportCountries"] ?? "50+", label: "İl & Bölge" },
-    { value: "1.000+", label: "Yatak Kapasitesi" },
-    { value: settings?.["yearsExperience"] ?? "15+", label: "Yıllık Tecrübe" },
+    { value: refsData?.total ? `${refsData.total}+` : "170+", label: t("references.stats.projects") },
+    { value: "120+", label: t("references.stats.public") },
+    { value: "50+", label: t("references.stats.private") },
+    { value: settings?.["exportCountries"] ?? "50+", label: t("references.stats.regions") },
+    { value: "1.000+", label: t("references.stats.beds") },
+    { value: settings?.["yearsExperience"] ?? "15+", label: t("references.stats.years") },
   ];
 
   return (
@@ -103,7 +127,10 @@ function OverviewStats() {
 }
 
 function ProjectsSection() {
+  const { t } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string | undefined>();
+
+  const allCategoryLabel = t("references.allCategory");
 
   const {
     data: allRefsData,
@@ -111,7 +138,7 @@ function ProjectsSection() {
     isError: allError,
   } = useListReferences({ limit: 500 });
   const allRefs = allRefsData?.items ?? [];
-  const categories = ["TÜM PROJELER", ...Array.from(new Set(allRefs.map((r) => r.category).filter(Boolean) as string[]))];
+  const categories = [allCategoryLabel, ...Array.from(new Set(allRefs.map((r) => r.category).filter(Boolean) as string[]))];
 
   const {
     data: filteredData,
@@ -130,7 +157,7 @@ function ProjectsSection() {
           {allLoading
             ? [1, 2, 3, 4].map((i) => <div key={i} className="h-9 w-36 animate-pulse rounded bg-steel-200" />)
             : categories.map((cat) => {
-                const isAll = cat === "TÜM PROJELER";
+                const isAll = cat === allCategoryLabel;
                 const active = isAll ? !activeCategory : activeCategory === cat;
                 return (
                   <button
@@ -148,10 +175,10 @@ function ProjectsSection() {
               })}
         </div>
 
-        {allError && <ErrorMessage message="Proje kategorileri yüklenemedi." />}
+        {allError && <ErrorMessage message={t("references.errors.categories")} />}
 
         {filteredError ? (
-          <ErrorMessage message="Referanslar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin." />
+          <ErrorMessage message={t("references.errors.list")} />
         ) : filteredLoading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -160,7 +187,7 @@ function ProjectsSection() {
           </div>
         ) : displayRefs.length === 0 ? (
           <div className="rounded-xl border-2 border-dashed border-steel-200 py-16 text-center">
-            <p className="text-steel-500">Bu kategoride proje bulunamadı.</p>
+            <p className="text-steel-500">{t("references.empty")}</p>
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -201,17 +228,18 @@ function ProjectsSection() {
 }
 
 function MapSection() {
+  const { t } = useI18n();
   return (
     <section className="bg-oxynavy-950 py-14 text-white lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-2xl font-extrabold sm:text-3xl">{referencesMap.title}</h2>
-          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/78">{referencesMap.description}</p>
+          <h2 className="text-2xl font-extrabold sm:text-3xl">{t("references.map.title")}</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/78">{t("references.map.description")}</p>
         </div>
         <div className="mt-10 flex justify-center overflow-hidden">
           <img
             src="/assets/turkiyeharitasi.webp"
-            alt="Türkiye Referans Haritası"
+            alt={t("references.map.imageAlt")}
             loading="lazy"
             decoding="async"
             className="block h-auto w-auto max-h-[260px] max-w-[260px] shrink-0 object-contain opacity-90"

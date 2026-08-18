@@ -1,11 +1,11 @@
 {
   "hero": {
     "eyebrow": "OXY-DVP SERIES",
-    "titleLine1": "DENTAL",
-    "titleLine2": "VAKUUMPUMPE",
-    "desc1": "Die Oxymed Dental-Vakuumpumpe bietet eine zuverlässige, leise und unterbrechungsfreie Vakuumlösung für Zahnkliniken und Gesundheitseinrichtungen.",
+    "titleLine1": "MEDIZINISCHE",
+    "titleLine2": "VAKUUMZENTRALE",
+    "desc1": "Die Oxymed Medizinische Vakuumzentrale bietet eine zuverlässige, leise und unterbrechungsfreie zentrale Vakuumlösung für Krankenhäuser und Gesundheitseinrichtungen.",
     "desc2": "Mit ihrer leistungsstarken Motorkonstruktion und dem robusten Design ermöglicht sie eine langlebige, wirtschaftliche und hygienische Nutzung.",
-    "visualAriaLabel": "WEBP-Bildbereich der Dental-Vakuumpumpe"
+    "visualAriaLabel": "WEBP-Bildbereich der medizinischen Vakuumzentrale"
   },
   "heroFeatures": [
     {
@@ -47,7 +47,7 @@
     "rows": [
       [
         "Produktbezeichnung",
-        "Dental-Vakuumpumpe"
+        "Medizinische Vakuumzentrale"
       ],
       [
         "Anzahl der Pumpen",
@@ -79,7 +79,7 @@
       ],
       [
         "Einsatzbereich",
-        "Zahnkliniken, Polikliniken und Krankenhäuser"
+        "Krankenhäuser, Polikliniken und Gesundheitseinrichtungen"
       ],
       [
         "Wartungsfreundlichkeit",
@@ -95,16 +95,16 @@
   "useCases": {
     "heading": "EINSATZBEREICHE",
     "items": [
-      "Zahnkliniken",
-      "Mund- und Zahngesundheitszentren",
+      "Krankenhäuser",
+      "Gesundheitseinrichtungen",
       "Polikliniken",
-      "Krankenhäuser"
+      "Operationssäle"
     ]
   },
   "quickQuote": {
-    "strong": "Fordern Sie schnell ein Angebot für die Dental-Vakuumpumpe an.",
+    "strong": "Fordern Sie schnell ein Angebot für die medizinische Vakuumzentrale an.",
     "small": "Lassen Sie uns gemeinsam die passende Kapazität und Installationsoption für Ihr Projekt festlegen.",
     "cta": "ANGEBOT ANFORDERN"
   },
-  "category": "Dental-Vakuumpumpe"
+  "category": "Medizinische Vakuumzentrale"
 }

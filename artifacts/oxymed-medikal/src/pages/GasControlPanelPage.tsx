@@ -67,13 +67,13 @@ function useGCPContent() {
   };
 }
 
-function ImageSlot({ label, size, className = "", image }: { label: string; size: string; className?: string; image?: string }) {
+function ImageSlot({ label, size, className = "", image, width, height }: { label: string; size: string; className?: string; image?: string; width: number; height: number; }) {
   const { t } = useI18n();
   return (
     <div
       className={`gcp-image-slot ${image ? "gcp-image-slot--has-image" : ""} ${className}`}
-      style={image ? { backgroundImage: `url(${image})` } : undefined}
     >
+      {image && <img src={image} alt={label} width={width} height={height} loading="lazy" decoding="async" />}
       {!image && (
         <>
           <span>{label}</span>
@@ -159,9 +159,9 @@ export default function GasControlPanelPage() {
 
             <div
               className={`gcp-hero-photo-slot${heroImage ? " gcp-hero-photo-slot--has-image" : ""}`}
-              style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
               aria-hidden="true"
             >
+              {heroImage && <img src={heroImage} alt={hero.title} width={582} height={640} loading="eager" decoding="async" />}
               {!heroImage && (
                 <>
                   <span>{t("gcp.hero.photoSlot")}</span>
@@ -173,11 +173,12 @@ export default function GasControlPanelPage() {
         </section>
 
         <section className="gcp-container gcp-card-row">
+          <h2 className="gcp-visually-hidden">Detaylar</h2>
           {detailCards.map((card, i) => (
             <article className="gcp-detail-card" key={card.title}>
-              <ImageSlot label={card.title} size="800 x 450 px" image={imgs[i]} />
+              <ImageSlot label={card.title} size="800 x 450 px" image={imgs[i]} width={800} height={450} />
               <div>
-                <h2>{card.title}</h2>
+                <h3>{card.title}</h3>
                 <p>{card.text}</p>
               </div>
             </article>
@@ -199,7 +200,7 @@ export default function GasControlPanelPage() {
 
           <article className="gcp-drawing">
             <h2>{t("gcp.drawing.title")}</h2>
-            <ImageSlot label={t("gcp.drawing.slotLabel")} size={t("gcp.drawing.slotSize")} image={drawingImage} />
+            <ImageSlot label={t("gcp.drawing.slotLabel")} size={t("gcp.drawing.slotSize")} image={drawingImage} width={520} height={360} />
           </article>
 
           <article className="gcp-uses">

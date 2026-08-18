@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type CSSProperties } from "react";
+import { useEffect, useMemo } from "react";
 import { useListSettings } from "@workspace/api-client-react";
 import {
   BadgeCheck,
@@ -64,11 +64,6 @@ export default function DentalVacuumPumpPage() {
 
   const useCaseItems = tv<string[]>("dvp.useCases.items", []);
 
-  const heroVisualStyle = {
-    "--dvp-hero-image": heroImage ? `url(${heroImage})` : "none",
-    "--dvp-hero-mobile-image": `url(${heroMobileImage || heroImage || ""})`,
-  } as CSSProperties;
-
   const productName = t("dvp.hero.titleLine1") + " " + t("dvp.hero.titleLine2");
   const jsonLd = useMemo(
     () => ({
@@ -121,20 +116,34 @@ export default function DentalVacuumPumpPage() {
             <div
               className="dvp-hero__visual"
               aria-label={t("dvp.hero.visualAriaLabel")}
-              style={heroVisualStyle}
             >
-              <div className="dvp-hero-photo-slot" />
+              <div className="dvp-hero-photo-slot">
+                <picture>
+                  {heroMobileImage && <source media="(max-width: 1080px)" srcSet={heroMobileImage} />}
+                  {heroImage && (
+                    <img
+                      src={heroImage}
+                      alt={t("dvp.hero.titleLine1") + " " + t("dvp.hero.titleLine2")}
+                      width={822}
+                      height={738}
+                      loading="eager"
+                      decoding="async"
+                    />
+                  )}
+                </picture>
+              </div>
               <div className="dvp-hero-floor" aria-hidden="true" />
             </div>
           </div>
 
           <div className="dvp-container dvp-feature-row">
+            <h2 className="dvp-visually-hidden">Öne Çıkan Özellikler</h2>
             {heroFeatures.map((feature, i) => {
               const Icon = heroFeatureIcons[i];
               return (
                 <article key={feature.title}>
                   <Icon aria-hidden="true" />
-                  <h2>{feature.title}</h2>
+                  <h3>{feature.title}</h3>
                   <p>{feature.text}</p>
                 </article>
               );
@@ -144,14 +153,25 @@ export default function DentalVacuumPumpPage() {
 
         <section className="dvp-gallery">
           <div className="dvp-container dvp-gallery__grid">
+            <h2 className="dvp-visually-hidden">Galeri</h2>
             {imageCards.map((card, i) => (
               <article key={card.title}>
                 <div
                   className={`dvp-image-slot${galleryImages[i] ? " dvp-image-slot--has-image" : ""}`}
                   aria-label={card.ariaLabel}
-                  style={galleryImages[i] ? { backgroundImage: `url(${galleryImages[i]})` } : undefined}
-                />
-                <h2>{card.title}</h2>
+                >
+                  {galleryImages[i] && (
+                    <img
+                      src={galleryImages[i]}
+                      alt={card.title}
+                      width={800}
+                      height={530}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
+                </div>
+                <h3>{card.title}</h3>
                 <p>{card.text}</p>
               </article>
             ))}
@@ -183,8 +203,18 @@ export default function DentalVacuumPumpPage() {
               <div
                 className={`dvp-drawing-slot${drawingImage ? " dvp-drawing-slot--has-image" : ""}`}
                 aria-label={t("dvp.drawing.ariaLabel")}
-                style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
-              />
+              >
+                {drawingImage && (
+                  <img
+                    src={drawingImage}
+                    alt={`${heroTitle || productName} — ${t("dvp.drawing.heading")}`}
+                    width={800}
+                    height={800}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
             </div>
             <p>{t("dvp.drawing.note")}</p>
           </article>

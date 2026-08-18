@@ -33,6 +33,7 @@ const SUGGESTION_COPY: Record<Locale, { message: string; action: string; dismiss
   ka: { message: "ნახეთ ეს გვერდი ქართულად.", action: "ქართულზე გადართვა", dismiss: "დახურვა" },
   bg: { message: "Вижте тази страница на български.", action: "Превключи на български", dismiss: "Затвори" },
   az: { message: "Bu səhifəni Azərbaycan dilində görün.", action: "Azərbaycan dilinə keç", dismiss: "Bağla" },
+  es: { message: "Vea esta página en español.", action: "Cambiar a español", dismiss: "Cerrar" },
 };
 
 /**

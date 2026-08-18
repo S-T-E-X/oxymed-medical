@@ -38,7 +38,7 @@ export default function Header() {
   const path = useLocalizedPath();
 
   const phone = settings?.["phone"] ?? "+90 232 870 0 222";
-  const email = settings?.["email"] ?? "info@oxymed.com.tr";
+  const email = settings?.["email"] ?? "info@oxymedmedical.com";
 
   const socialLinks = [
     { label: "LinkedIn", href: settings?.["linkedin"] ?? "#" },

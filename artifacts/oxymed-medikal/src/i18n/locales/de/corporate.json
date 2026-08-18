@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDIKAL",
+    "title": "Unternehmen",
+    "description": "Mit über 25 Jahren Erfahrung entwickeln wir zuverlässige Systeme für Gesundheitseinrichtungen.",
+    "imageAlt": "Oxymed Medikal"
+  },
+  "about": {
+    "eyebrow": "ÜBER UNS",
+    "title": "Zuverlässige Systeme für das Gesundheitswesen"
+  },
+  "error": "Beim Laden der Unternehmensinhalte ist ein Fehler aufgetreten. Bitte laden Sie die Seite neu.",
+  "stats": {
+    "years": "Jahre Erfahrung",
+    "projects": "Abgeschlossene Projekte",
+    "exports": "Exportländer",
+    "error": "Statistiken konnten nicht geladen werden; Standardwerte werden angezeigt."
+  }
+}

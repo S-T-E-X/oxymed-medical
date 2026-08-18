@@ -202,7 +202,7 @@ export default function ServisCihazPage() {
           <a href="tel:+902322832020" className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#061b39] py-3.5 text-sm font-bold text-white">
             <Phone className="h-4 w-4" /> +90 232 283 20 20
           </a>
-          <a href="mailto:info@oxymed.com.tr" className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50">
+          <a href="mailto:info@oxymedmedical.com" className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50">
             <Mail className="h-4 w-4" /> E-posta
           </a>
         </div>

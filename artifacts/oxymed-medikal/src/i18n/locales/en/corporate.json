@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDIKAL",
+    "title": "About Us",
+    "description": "With over 25 years of experience, we develop reliable systems for healthcare facilities.",
+    "imageAlt": "Oxymed Medikal"
+  },
+  "about": {
+    "eyebrow": "ABOUT US",
+    "title": "Reliable Systems for Healthcare"
+  },
+  "error": "An error occurred while loading the corporate content. Please refresh the page.",
+  "stats": {
+    "years": "Years of Experience",
+    "projects": "Completed Projects",
+    "exports": "Countries Exported To",
+    "error": "Statistics could not be loaded; default values are shown."
+  }
+}

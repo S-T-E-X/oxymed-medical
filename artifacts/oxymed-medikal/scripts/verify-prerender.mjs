@@ -25,15 +25,16 @@ const NEWS_SEO_FILE = path.join(SITE_DIR, ".news-seo.json");
 /** Same, for the DB-driven generic product detail pages. */
 const PRODUCT_SEO_FILE = path.join(SITE_DIR, ".product-seo.json");
 
-const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymed.com.tr").replace(/\/$/, "");
+const SITE_ORIGIN = (process.env.SITE_ORIGIN ?? "https://www.oxymedmedical.com").replace(/\/$/, "");
 
-const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az"];
+const LOCALES = ["tr", "en", "de", "fr", "it", "ar", "ru", "fa", "ka", "bg", "az", "es"];
 const DEFAULT_LOCALE = "tr";
-const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs"];
+const ROUTE_KEYS = ["home", "products", "gcp", "ams", "dvp", "dvs", "service", "quote", "news", "catalogs", "corporate", "certificates", "references"];
 
 const PRODUCTS_SLUG = {
   tr: "urunler", en: "products", de: "produkte", fr: "produits", it: "prodotti",
   ar: "muntajat", ru: "produkciya", fa: "mahsulat", ka: "produkcia", bg: "produkti", az: "mehsullar",
+  es: "productos",
 };
 
 const LEAF_SLUGS = {
@@ -41,38 +42,61 @@ const LEAF_SLUGS = {
     tr: "kat-kontrol-panosu", en: "gas-control-panel", de: "gas-kontrolltafel", fr: "panneau-de-controle-gaz",
     it: "pannello-controllo-gas", ar: "lawhat-altahakum-bialghaz", ru: "panel-kontrolya-gaza",
     fa: "panel-kontrol-gaz", ka: "gazis-sakontrolo-paneli", bg: "panel-za-kontrol-na-gaz", az: "qaz-nezaret-panosu",
+    es: "panel-de-control-de-gases-medicinales",
   },
   ams: {
     tr: "amalgam-separator", en: "amalgam-separator", de: "amalgamabscheider", fr: "separateur-amalgame",
     it: "separatore-amalgama", ar: "fasil-almalgham", ru: "amalgamnyy-separator",
     fa: "jodakonande-amalgam", ka: "amalgamis-separatori", bg: "amalgamen-separator", az: "amalqam-separatoru",
+    es: "separador-de-amalgama",
   },
   dvp: {
-    tr: "dental-vakum-pompasi", en: "dental-vacuum-pump", de: "dental-vakuumpumpe", fr: "pompe-a-vide-dentaire",
-    it: "pompa-per-vuoto-dentale", ar: "midakhat-tafrigh-alasnan", ru: "stomatologicheskiy-vakuumnyy-nasos",
-    fa: "pomp-vakum-dandanpezeshki", ka: "dentaluri-vakuumis-tumbo", bg: "dentalna-vakuumna-pompa", az: "dental-vakuum-nasosu",
+    tr: "medikal-vakum-santrali", en: "medical-vacuum-plant", de: "medizinische-vakuumzentrale", fr: "centrale-de-vide-medical",
+    it: "centrale-vuoto-medicale", ar: "mahattat-tafrigh-tibbi", ru: "meditsinskaya-vakuumnaya-stanciya",
+    fa: "istgah-vakum-pezeshki", ka: "samedicino-vakuumis-sadguri", bg: "medicinska-vakuumna-stanciya", az: "tibbi-vakuum-stansiyasi",
+    es: "central-de-vacio-medicinal",
   },
   dvs: {
     tr: "dental-vakum-sistemi", en: "dental-vacuum-system", de: "dental-vakuumsystem", fr: "systeme-aspiration-dentaire",
     it: "sistema-aspirazione-dentale", ar: "nizam-tafrigh-alasnan", ru: "stomatologicheskaya-vakuumnaya-sistema",
     fa: "sistem-vakum-dandanpezeshki", ka: "dentaluri-vakuumis-sistema", bg: "dentalna-vakuumna-sistema", az: "dental-vakuum-sistemi",
+    es: "sistema-de-vacio-dental-central",
   },
   service: {
     tr: "servis", en: "service", de: "service", fr: "service", it: "assistenza", ar: "khidmat-alsiyana",
     ru: "servis", fa: "khadamat", ka: "servisi", bg: "serviz", az: "servis",
+    es: "servicio-tecnico",
   },
   news: {
     tr: "haberler", en: "news", de: "nachrichten", fr: "actualites", it: "notizie",
     ar: "akhbar", ru: "novosti", fa: "akhbar", ka: "siakhleebi", bg: "novini", az: "xeberler",
+    es: "noticias",
   },
   quote: {
     tr: "teklif-al", en: "get-a-quote", de: "angebot-anfordern", fr: "demander-un-devis",
     it: "richiedi-preventivo", ar: "talab-arad-siar", ru: "zapros-predlozheniya",
     fa: "darkhast-gheymat", ka: "fasis-motkhovna", bg: "zapitvane-za-oferta", az: "teklif-al",
+    es: "solicitar-presupuesto",
   },
   catalogs: {
     tr: "kataloglar", en: "catalogs", de: "kataloge", fr: "catalogues", it: "cataloghi",
     ar: "katalujat", ru: "katalogi", fa: "katalog-ha", ka: "katalogebi", bg: "katalozi", az: "kataloqlar",
+    es: "catalogos",
+  },
+  corporate: {
+    tr: "kurumsal", en: "about", de: "unternehmen", fr: "entreprise", it: "azienda",
+    ar: "hawlana", ru: "o-kompanii", fa: "darbare-ma", ka: "kompania", bg: "za-nas", az: "haqqimizda",
+    es: "empresa",
+  },
+  certificates: {
+    tr: "sertifikalar", en: "certificates", de: "zertifikate", fr: "certificats", it: "certificazioni",
+    ar: "shahadat", ru: "sertifikaty", fa: "govahinameha", ka: "sertifikatebi", bg: "sertifikati", az: "sertifikatlar",
+    es: "certificados",
+  },
+  references: {
+    tr: "referanslar", en: "references", de: "referenzen", fr: "references", it: "referenze",
+    ar: "maraji", ru: "referensy", fa: "namunekarha", ka: "rekomendaciebi", bg: "referencii", az: "referanslar",
+    es: "referencias",
   },
 };
 

@@ -38,7 +38,7 @@ export default function Footer({ compact = false }: FooterProps) {
   const footerContent = mergeFooterContent(createFooterContent(t), footerConfig[locale]);
 
   const phone = settings?.["phone"] ?? "+90 232 870 0 222";
-  const email = settings?.["email"] ?? "info@oxymed.com.tr";
+  const email = settings?.["email"] ?? "info@oxymedmedical.com";
   const address = settings?.["address"] ?? "10016 Sk. No:5 AOSB Çiğli / İzmir / TÜRKİYE";
 
   const socialLinks = [

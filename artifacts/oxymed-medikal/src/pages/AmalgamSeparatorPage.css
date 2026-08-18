@@ -11,6 +11,17 @@
   margin: 0;
 }
 
+.ams-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 .ams-main {
   overflow: hidden;
   background:
@@ -129,7 +140,7 @@
   stroke-width: 1.7;
 }
 
-.ams-hero-features h2 {
+.ams-hero-features h3 {
   color: #082653;
   font-size: 15px;
   font-weight: 950;
@@ -177,10 +188,15 @@
   inset: 0% -4% -2% -4%;
   border: 0;
   border-radius: 0;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background-color: transparent;
   box-shadow: none;
+}
+
+.ams-hero-photo-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .ams-detail-grid {
@@ -211,13 +227,19 @@
 
 .ams-image-slot--has-image {
   border: 1px solid #d6e0ec;
-  background-color: #eef3f9;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background-color: transparent;
+  padding: 0;
 }
 
-.ams-detail-grid h2 {
+.ams-image-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
+
+.ams-detail-grid h3 {
   margin-top: 13px;
   color: #082653;
   font-size: 15px;
@@ -318,10 +340,16 @@
 
 .ams-drawing-slot--has-image {
   border: 1px solid #d6e0ec;
-  background-color: #eef3f9;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background-color: transparent;
+  padding: 0;
+}
+
+.ams-drawing-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
 }
 
 .ams-drawing p {

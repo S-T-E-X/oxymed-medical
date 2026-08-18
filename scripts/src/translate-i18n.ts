@@ -34,6 +34,7 @@ const TARGETS: Array<{ code: string; englishName: string }> = [
   { code: "ka", englishName: "Georgian" },
   { code: "bg", englishName: "Bulgarian" },
   { code: "az", englishName: "Azerbaijani" },
+  { code: "es", englishName: "Spanish" },
 ];
 
 type Json = string | number | boolean | null | Json[] | { [key: string]: Json };

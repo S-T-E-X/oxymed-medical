@@ -6,8 +6,20 @@
 
 .dvp-page h1,
 .dvp-page h2,
+.dvp-page h3,
 .dvp-page p {
   margin: 0;
+}
+
+.dvp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 .dvp-main {
@@ -117,10 +129,20 @@
 .dvp-hero-photo-slot {
   position: absolute;
   inset: 6px 0 48px;
-  background: var(--dvp-hero-image);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dvp-hero-photo-slot picture {
+  display: contents;
+}
+
+.dvp-hero-photo-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .dvp-hero-floor {
@@ -170,7 +192,7 @@
   stroke-width: 1.45;
 }
 
-.dvp-feature-row h2 {
+.dvp-feature-row h3 {
   color: #77bdff;
   font-size: 16px;
   font-weight: 950;
@@ -215,10 +237,17 @@
 
 .dvp-image-slot--has-image {
   border: 0;
-  background-image: none;
+  background-color: transparent;
 }
 
-.dvp-gallery h2 {
+.dvp-image-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.dvp-gallery h3 {
   margin-top: 15px;
   color: #0b326a;
   font-size: 17px;
@@ -323,10 +352,14 @@
 
 .dvp-drawing-slot--has-image {
   border: 0;
-  background-image: none;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background-color: transparent;
+}
+
+.dvp-drawing-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .dvp-dimensions {
@@ -450,10 +483,6 @@
 
   .dvp-hero__grid {
     min-height: auto;
-  }
-
-  .dvp-hero-photo-slot {
-    background-image: var(--dvp-hero-mobile-image);
   }
 
   .dvp-technical-panel {

@@ -1,0 +1,150 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDİKAL",
+    "titleLine1": "SEPARADOR DE",
+    "titleLine2": "AMALGAMA",
+    "desc1": "El Separador de Amalgama Oxymed separa de forma eficaz las partículas de amalgama generadas por los sistemas de aspiración en las unidades dentales, evitando su liberación al medio ambiente.",
+    "desc2": "Su diseño higiénico, resistente y eficiente proporciona un entorno de trabajo seguro.",
+    "photoSlotAriaLabel": "Área de imagen WEBP principal del separador de amalgama"
+  },
+  "heroFeatures": [
+    {
+      "title": "Cuerpo de Acero Inoxidable",
+      "text": "El material de acero inoxidable de alta calidad garantiza una larga vida útil."
+    },
+    {
+      "title": "Diseño Higiénico",
+      "text": "Su superficie lisa facilita la limpieza y ofrece un uso higiénico."
+    },
+    {
+      "title": "Fácil Integración",
+      "text": "Integración rápida y sencilla con las líneas de vacío existentes."
+    },
+    {
+      "title": "Larga Vida Útil",
+      "text": "Máximo rendimiento incluso en condiciones exigentes gracias a su construcción robusta."
+    }
+  ],
+  "detailGrid": {
+    "ariaLabel": "Áreas de imagen de detalle del producto",
+    "cards": [
+      {
+        "title": "Cuerpo Resistente",
+        "text": "Su cuerpo de acero inoxidable de gran espesor ofrece una resistencia superior a la corrosión."
+      },
+      {
+        "title": "Estructura de Conexión Detallada",
+        "text": "El diseño de la conexión interna mejora la eficiencia del flujo y minimiza el riesgo de obstrucción."
+      },
+      {
+        "title": "Montaje Sencillo",
+        "text": "Los puntos de conexión estándar permiten una instalación rápida y práctica."
+      },
+      {
+        "title": "Superficie Higiénica",
+        "text": "Su superficie interior y exterior lisa facilita la limpieza y la higiene."
+      }
+    ]
+  },
+  "imageSlot": {
+    "webpSuffix": "Área de imagen WEBP"
+  },
+  "specs": {
+    "title": "ESPECIFICACIONES TÉCNICAS",
+    "rows": [
+      {
+        "k": "Nombre del Producto",
+        "v": "Separador de Amalgama"
+      },
+      {
+        "k": "Área de Aplicación",
+        "v": "Unidades dentales y sistemas de vacío"
+      },
+      {
+        "k": "Material del Cuerpo",
+        "v": "Acero Inoxidable (AISI 304)"
+      },
+      {
+        "k": "Estructura de Conexión",
+        "v": "Compatible con líneas de vacío dental estándar"
+      },
+      {
+        "k": "Limpieza / Mantenimiento",
+        "v": "Estructura fácil de desmontar y superficie lisa"
+      },
+      {
+        "k": "Tipo de Montaje",
+        "v": "Montaje vertical"
+      },
+      {
+        "k": "Compatibilidad",
+        "v": "Compatible con todos los sistemas de vacío dental"
+      },
+      {
+        "k": "Estructura de la Superficie",
+        "v": "Lisa, higiénica y resistente a la corrosión"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "PLANO TÉCNICO Y DIMENSIONES",
+    "slotAriaLabel": "Área de imagen WEBP del plano técnico y las dimensiones",
+    "unitNote": "Todas las dimensiones están en mm."
+  },
+  "useCases": {
+    "title": "ÁREAS DE APLICACIÓN",
+    "items": [
+      {
+        "title": "Clínicas Dentales",
+        "text": "Separación segura de los residuos de amalgama en clínicas dentales."
+      },
+      {
+        "title": "Sistemas Dentales",
+        "text": "Funcionamiento totalmente compatible con unidades dentales y sistemas de vacío."
+      },
+      {
+        "title": "Integración con Líneas de Vacío Centralizadas",
+        "text": "Fácil integración con sistemas centralizados y rendimiento óptimo."
+      },
+      {
+        "title": "Aplicaciones de Servicio Técnico",
+        "text": "Un socio de soluciones fiable para aplicaciones de servicio técnico y mantenimiento."
+      },
+      {
+        "title": "Centros Sanitarios",
+        "text": "Una solución ideal para hospitales y centros sanitarios."
+      }
+    ]
+  },
+  "faqs": {
+    "title": "PREGUNTAS FRECUENTES",
+    "items": [
+      {
+        "q": "¿Para qué sirve un separador de amalgama?",
+        "a": "Separa las partículas de amalgama de los sistemas de aspiración, evitando su liberación al medio ambiente y garantizando la recogida segura de los residuos."
+      },
+      {
+        "q": "¿Cómo es el proceso de instalación?",
+        "a": "Se recomienda el montaje vertical. Gracias a los puntos de conexión estándar, se integra rápida y fácilmente en la línea de vacío existente."
+      },
+      {
+        "q": "¿Con qué sistemas es compatible?",
+        "a": "Es compatible con todos los sistemas de vacío dental y las líneas de vacío centralizadas. Cuenta con medidas de conexión estándar."
+      },
+      {
+        "q": "¿Por qué se ha elegido el acero inoxidable?",
+        "a": "El acero inoxidable ofrece una resistencia superior a la corrosión, una larga vida útil y es ideal para un uso higiénico."
+      },
+      {
+        "q": "¿Cómo se realiza el mantenimiento?",
+        "a": "La superficie exterior puede limpiarse con un paño húmedo. La parte interior debe revisarse periódicamente y, cuando sea necesario, limpiarse con facilidad gracias a su diseño desmontable."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Solicite un Presupuesto Rápido",
+    "subtitle": "Póngase en contacto con nosotros para recibir la solución adecuada y un presupuesto para su proyecto.",
+    "btn": "Solicitar Presupuesto"
+  },
+  "category": "Separador de Amalgama"
+}

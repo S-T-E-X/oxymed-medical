@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "title": "Panel de Control de Gases de 3 Gases",
+    "description": "Control seguro, inteligente e ininterrumpido para sus sistemas de gases medicinales. Gestión centralizada de 3 gases medicinales distintos en un solo panel.",
+    "photoSlot": "Área de imagen del producto principal",
+    "photoSlotSize": "1080 x 960 px WEBP"
+  },
+  "breadcrumb": {
+    "ariaLabel": "Ruta de navegación",
+    "products": "Productos"
+  },
+  "heroFeatures": [
+    {
+      "title": "Alta Seguridad",
+      "text": "Máxima seguridad con sistema de alarma y corte automático."
+    },
+    {
+      "title": "Control Inteligente",
+      "text": "Monitorización continua con una unidad de control basada en microprocesador."
+    },
+    {
+      "title": "Sistema de Alarma",
+      "text": "Notificación instantánea mediante avisos visuales y sonoros."
+    },
+    {
+      "title": "Montaje Sencillo",
+      "text": "Instalación rápida y fácil gracias a un práctico sistema de conexión."
+    }
+  ],
+  "detailCards": [
+    {
+      "title": "Unidad de Conexión de Gases",
+      "text": "Sistema de válvulas de alta calidad para las entradas de oxígeno, vacío y aire."
+    },
+    {
+      "title": "Panel de Control Inteligente",
+      "text": "Las presiones de los gases se monitorizan y gestionan en tiempo real con el sistema controlado por microprocesador."
+    },
+    {
+      "title": "Construcción Resistente",
+      "text": "Su carcasa metálica con pintura electrostática garantiza una larga vida útil y resistencia a los impactos."
+    }
+  ],
+  "imageSlot": {
+    "webpLabel": "Área de imagen WEBP"
+  },
+  "specs": {
+    "title": "Especificaciones Técnicas",
+    "rows": [
+      {
+        "k": "Nombre del Producto",
+        "v": "Panel de Control de Gases de 3 Gases"
+      },
+      {
+        "k": "Gases Compatibles",
+        "v": "O2 (Oxígeno) - VAC (Vacío) - AIR (Aire)"
+      },
+      {
+        "k": "Presión de Trabajo",
+        "v": "4 - 6 bar"
+      },
+      {
+        "k": "Tipo de Alarma",
+        "v": "Visual y Sonora"
+      },
+      {
+        "k": "Material de la Carcasa",
+        "v": "Metal con Pintura Electrostática"
+      },
+      {
+        "k": "Alimentación",
+        "v": "220 VAC - 50/60 Hz"
+      },
+      {
+        "k": "Tipo de Montaje",
+        "v": "De Superficie / Empotrado"
+      },
+      {
+        "k": "Temperatura de Trabajo",
+        "v": "-10 °C / +50 °C"
+      },
+      {
+        "k": "Dimensiones (AlxAnxP)",
+        "v": "400 x 320 x 80 mm"
+      }
+    ]
+  },
+  "drawing": {
+    "title": "Dimensiones / Plano Técnico",
+    "slotLabel": "Imagen del plano técnico",
+    "slotSize": "700 x 600 px"
+  },
+  "useCases": {
+    "title": "Aplicaciones",
+    "items": [
+      "Hospitales",
+      "Unidades de Cuidados Intensivos",
+      "Quirófanos",
+      "Clínicas",
+      "Centros Sanitarios"
+    ]
+  },
+  "advantages": {
+    "title": "Ventajas",
+    "items": [
+      "Control centralizado de tres gases distintos en un solo panel",
+      "Sistema de alarma y corte de alta seguridad",
+      "Monitorización sencilla mediante una interfaz intuitiva",
+      "Carcasa metálica duradera y resistente",
+      "Fácil montaje y mantenimiento"
+    ]
+  },
+  "featureTiles": {
+    "title": "Características del Producto",
+    "items": [
+      {
+        "title": "Control Centralizado",
+        "text": "Gestión de 3 gases desde un solo punto"
+      },
+      {
+        "title": "Monitorización en Tiempo Real",
+        "text": "Los valores de presión se monitorizan y registran de forma continua"
+      },
+      {
+        "title": "Alarma Fiable",
+        "text": "Avisos instantáneos mediante alarmas visuales y sonoras"
+      },
+      {
+        "title": "Diseño Modular",
+        "text": "Servicio y mantenimiento sencillos"
+      }
+    ]
+  },
+  "faqs": {
+    "title": "Preguntas Frecuentes",
+    "items": [
+      {
+        "q": "¿Qué gases son compatibles?",
+        "a": "El Panel de Control de Gases de 3 Gases es compatible con los gases Oxígeno (O2), Vacío (VAC) y Aire Medicinal (AIR)."
+      },
+      {
+        "q": "¿Dónde se utiliza?",
+        "a": "Se utiliza en hospitales, unidades de cuidados intensivos, quirófanos y áreas clínicas."
+      },
+      {
+        "q": "¿Cuál es el tipo de montaje?",
+        "a": "Puede instalarse con opciones de montaje de superficie o empotrado."
+      },
+      {
+        "q": "¿Cómo se gestionan las necesidades de mantenimiento y servicio?",
+        "a": "El funcionamiento seguro se mantiene mediante mantenimiento periódico y el soporte del servicio técnico."
+      },
+      {
+        "q": "¿Cómo funciona el sistema de alarma?",
+        "a": "Emite alarmas sonoras y visuales cuando los valores de presión superan los límites establecidos."
+      },
+      {
+        "q": "¿Funciona el sistema durante un corte de energía?",
+        "a": "Pueden implementarse escenarios de alimentación de reserva y alarma según las necesidades del proyecto."
+      }
+    ]
+  },
+  "cta": {
+    "ariaLabel": "Acciones del producto",
+    "title": "Solicite un Presupuesto y Aporte Valor a su Proyecto",
+    "subtitle": "Nuestro equipo de expertos está listo para ofrecerle la solución más adecuada.",
+    "primaryBtn": "Solicitar Presupuesto",
+    "secondaryBtn": "Contáctenos"
+  },
+  "category": "Panel de Control de Gases"
+}

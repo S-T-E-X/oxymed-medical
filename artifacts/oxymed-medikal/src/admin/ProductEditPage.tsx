@@ -76,6 +76,7 @@ const TITLE_LOCALES = [
   { code: "ka", label: "ქართული", field: "titleKa" },
   { code: "bg", label: "Български", field: "titleBg" },
   { code: "az", label: "Azərbaycan", field: "titleAz" },
+  { code: "es", label: "Español", field: "titleEs" },
 ] as const;
 
 type TitleLocaleField = typeof TITLE_LOCALES[number]["field"];
@@ -139,6 +140,7 @@ type ProductEditForm = {
   titleKa: string;
   titleBg: string;
   titleAz: string;
+  titleEs: string;
   description: string;
   imageUrl: string;
   categoryId: number | null;
@@ -182,6 +184,7 @@ const EMPTY_FORM: ProductEditForm = {
   titleKa: "",
   titleBg: "",
   titleAz: "",
+  titleEs: "",
   description: "",
   imageUrl: "",
   categoryId: null,
@@ -228,6 +231,7 @@ function productToForm(p: Product): ProductEditForm {
     titleKa: p.titleKa ?? "",
     titleBg: p.titleBg ?? "",
     titleAz: p.titleAz ?? "",
+    titleEs: p.titleEs ?? "",
     description: p.description ?? "",
     imageUrl: p.imageUrl ?? "",
     categoryId: p.categoryId ?? null,
@@ -630,6 +634,7 @@ export default function ProductEditPage() {
           titleKa: form.titleKa.trim() || undefined,
           titleBg: form.titleBg.trim() || undefined,
           titleAz: form.titleAz.trim() || undefined,
+          titleEs: form.titleEs.trim() || undefined,
         },
       });
     } else {

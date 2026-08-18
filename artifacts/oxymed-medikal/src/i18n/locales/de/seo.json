@@ -16,8 +16,8 @@
     "description": "ISO 11143-konforme, leise und wartungsfreundliche Amalgamabscheidersysteme für Zahnarztpraxen mit einer Abscheiderate von über 95 % für Amalgamabfälle."
   },
   "dvp": {
-    "title": "Dentalvakuumpumpe | Trocken- & Nasssystem | Oxymed",
-    "description": "Leise, energieeffiziente und langlebige Dentalvakuumpumpen für Zahnarztpraxen. Skalierbare Lösungen von Einzelgeräten bis zu Kliniken mit mehreren Einheiten."
+    "title": "Medizinische Vakuumzentrale | Zentralvakuum | Oxymed",
+    "description": "Leise, zuverlässige und unterbrechungsfreie medizinische Vakuumzentrale für Krankenhäuser und Gesundheitseinrichtungen. Planung und Montage nach Projekt."
   },
   "dvs": {
     "title": "Zentrale Dental-Vakuumanlage | Absaugung | Oxymed",
@@ -38,5 +38,17 @@
   "catalogs": {
     "title": "Produktkataloge | Oxymed Medikal",
     "description": "Entdecken Sie die Produkt- und Lösungsgruppen von Oxymed Medikal in unseren Katalogen; aktuelle Kataloge für Gas- und Dentalvakuumtechnik herunterladen."
+  },
+  "corporate": {
+    "title": "Unternehmen | 25+ Jahre Erfahrung | Oxymed",
+    "description": "Seit 1999 fertigt Oxymed Medikal Medizingassysteme und Krankenhauslösungen — mit über 25 Jahren Ingenieurerfahrung und zuverlässigem Service."
+  },
+  "certificates": {
+    "title": "Zertifikate und Qualitätsnachweise | Oxymed",
+    "description": "Qualitätsmanagement- und Kompetenznachweise von Oxymed Medikal. Sehen Sie unsere Zertifikate auf dieser Seite ein, sobald sie ergänzt und aktualisiert werden."
+  },
+  "references": {
+    "title": "Referenzen | 170+ Gesundheitsprojekte | Oxymed",
+    "description": "Über 170 abgeschlossene Projekte bei öffentlichen und privaten Gesundheitseinrichtungen im In- und Ausland, in über 50 Provinzen — Oxymed Medikal Referenzen."
   }
 }

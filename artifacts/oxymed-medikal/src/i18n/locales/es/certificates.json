@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "eyebrow": "EMPRESA",
+    "title": "Nuestros certificados",
+    "description": "Consulte aquí nuestros estándares de calidad y documentos de competencia, y descargue el certificado que necesite."
+  },
+  "error": "Se produjo un error al cargar los certificados. Por favor, actualice la página.",
+  "empty": {
+    "title": "Aún no se han añadido certificados",
+    "description": "Los certificados se mostrarán aquí próximamente."
+  },
+  "downloadHint": "Haga clic para descargar el archivo"
+}

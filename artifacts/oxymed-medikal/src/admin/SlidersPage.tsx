@@ -26,6 +26,7 @@ const SLIDER_LOCALES = [
   { code: "ka", label: "KA" },
   { code: "bg", label: "BG" },
   { code: "az", label: "AZ" },
+  { code: "es", label: "ES" },
 ] as const;
 
 type SliderLocale = (typeof SLIDER_LOCALES)[number]["code"];
@@ -33,15 +34,15 @@ type SliderLocale = (typeof SLIDER_LOCALES)[number]["code"];
 // Locale-specific text fields (excluding TR which uses the base fields)
 type LocaleFields = {
   titleEn: string; titleDe: string; titleFr: string; titleIt: string; titleAr: string;
-  titleRu: string; titleFa: string; titleKa: string; titleBg: string; titleAz: string;
+  titleRu: string; titleFa: string; titleKa: string; titleBg: string; titleAz: string; titleEs: string;
   subtitleEn: string; subtitleDe: string; subtitleFr: string; subtitleIt: string; subtitleAr: string;
-  subtitleRu: string; subtitleFa: string; subtitleKa: string; subtitleBg: string; subtitleAz: string;
+  subtitleRu: string; subtitleFa: string; subtitleKa: string; subtitleBg: string; subtitleAz: string; subtitleEs: string;
   descriptionEn: string; descriptionDe: string; descriptionFr: string; descriptionIt: string; descriptionAr: string;
-  descriptionRu: string; descriptionFa: string; descriptionKa: string; descriptionBg: string; descriptionAz: string;
+  descriptionRu: string; descriptionFa: string; descriptionKa: string; descriptionBg: string; descriptionAz: string; descriptionEs: string;
   ctaPrimaryTextEn: string; ctaPrimaryTextDe: string; ctaPrimaryTextFr: string; ctaPrimaryTextIt: string; ctaPrimaryTextAr: string;
-  ctaPrimaryTextRu: string; ctaPrimaryTextFa: string; ctaPrimaryTextKa: string; ctaPrimaryTextBg: string; ctaPrimaryTextAz: string;
+  ctaPrimaryTextRu: string; ctaPrimaryTextFa: string; ctaPrimaryTextKa: string; ctaPrimaryTextBg: string; ctaPrimaryTextAz: string; ctaPrimaryTextEs: string;
   ctaSecondaryTextEn: string; ctaSecondaryTextDe: string; ctaSecondaryTextFr: string; ctaSecondaryTextIt: string; ctaSecondaryTextAr: string;
-  ctaSecondaryTextRu: string; ctaSecondaryTextFa: string; ctaSecondaryTextKa: string; ctaSecondaryTextBg: string; ctaSecondaryTextAz: string;
+  ctaSecondaryTextRu: string; ctaSecondaryTextFa: string; ctaSecondaryTextKa: string; ctaSecondaryTextBg: string; ctaSecondaryTextAz: string; ctaSecondaryTextEs: string;
 };
 
 type SliderFormData = {
@@ -68,15 +69,15 @@ type SliderFormData = {
 
 const EMPTY_LOCALE_FIELDS: LocaleFields = {
   titleEn: "", titleDe: "", titleFr: "", titleIt: "", titleAr: "",
-  titleRu: "", titleFa: "", titleKa: "", titleBg: "", titleAz: "",
+  titleRu: "", titleFa: "", titleKa: "", titleBg: "", titleAz: "", titleEs: "",
   subtitleEn: "", subtitleDe: "", subtitleFr: "", subtitleIt: "", subtitleAr: "",
-  subtitleRu: "", subtitleFa: "", subtitleKa: "", subtitleBg: "", subtitleAz: "",
+  subtitleRu: "", subtitleFa: "", subtitleKa: "", subtitleBg: "", subtitleAz: "", subtitleEs: "",
   descriptionEn: "", descriptionDe: "", descriptionFr: "", descriptionIt: "", descriptionAr: "",
-  descriptionRu: "", descriptionFa: "", descriptionKa: "", descriptionBg: "", descriptionAz: "",
+  descriptionRu: "", descriptionFa: "", descriptionKa: "", descriptionBg: "", descriptionAz: "", descriptionEs: "",
   ctaPrimaryTextEn: "", ctaPrimaryTextDe: "", ctaPrimaryTextFr: "", ctaPrimaryTextIt: "", ctaPrimaryTextAr: "",
-  ctaPrimaryTextRu: "", ctaPrimaryTextFa: "", ctaPrimaryTextKa: "", ctaPrimaryTextBg: "", ctaPrimaryTextAz: "",
+  ctaPrimaryTextRu: "", ctaPrimaryTextFa: "", ctaPrimaryTextKa: "", ctaPrimaryTextBg: "", ctaPrimaryTextAz: "", ctaPrimaryTextEs: "",
   ctaSecondaryTextEn: "", ctaSecondaryTextDe: "", ctaSecondaryTextFr: "", ctaSecondaryTextIt: "", ctaSecondaryTextAr: "",
-  ctaSecondaryTextRu: "", ctaSecondaryTextFa: "", ctaSecondaryTextKa: "", ctaSecondaryTextBg: "", ctaSecondaryTextAz: "",
+  ctaSecondaryTextRu: "", ctaSecondaryTextFa: "", ctaSecondaryTextKa: "", ctaSecondaryTextBg: "", ctaSecondaryTextAz: "", ctaSecondaryTextEs: "",
 };
 
 const EMPTY: SliderFormData = {
@@ -115,7 +116,7 @@ const FIELD_LABELS: Record<string, string> = {
 function countTranslatedLocales(s: Slider): number {
   const titleKeys: Record<string, string | null | undefined> = {
     en: s.titleEn, de: s.titleDe, fr: s.titleFr, it: s.titleIt, ar: s.titleAr,
-    ru: s.titleRu, fa: s.titleFa, ka: s.titleKa, bg: s.titleBg, az: s.titleAz,
+    ru: s.titleRu, fa: s.titleFa, ka: s.titleKa, bg: s.titleBg, az: s.titleAz, es: s.titleEs,
   };
   return Object.values(titleKeys).filter((v) => v && v.trim()).length;
 }
@@ -625,15 +626,15 @@ export default function SlidersPage() {
       ctaPrimaryBg: s.ctaPrimaryBg ?? "#021423",
       ctaSecondaryBg: s.ctaSecondaryBg ?? "#ffffff",
       titleEn: s.titleEn ?? "", titleDe: s.titleDe ?? "", titleFr: s.titleFr ?? "", titleIt: s.titleIt ?? "", titleAr: s.titleAr ?? "",
-      titleRu: s.titleRu ?? "", titleFa: s.titleFa ?? "", titleKa: s.titleKa ?? "", titleBg: s.titleBg ?? "", titleAz: s.titleAz ?? "",
+      titleRu: s.titleRu ?? "", titleFa: s.titleFa ?? "", titleKa: s.titleKa ?? "", titleBg: s.titleBg ?? "", titleAz: s.titleAz ?? "", titleEs: s.titleEs ?? "",
       subtitleEn: s.subtitleEn ?? "", subtitleDe: s.subtitleDe ?? "", subtitleFr: s.subtitleFr ?? "", subtitleIt: s.subtitleIt ?? "", subtitleAr: s.subtitleAr ?? "",
-      subtitleRu: s.subtitleRu ?? "", subtitleFa: s.subtitleFa ?? "", subtitleKa: s.subtitleKa ?? "", subtitleBg: s.subtitleBg ?? "", subtitleAz: s.subtitleAz ?? "",
+      subtitleRu: s.subtitleRu ?? "", subtitleFa: s.subtitleFa ?? "", subtitleKa: s.subtitleKa ?? "", subtitleBg: s.subtitleBg ?? "", subtitleAz: s.subtitleAz ?? "", subtitleEs: s.subtitleEs ?? "",
       descriptionEn: s.descriptionEn ?? "", descriptionDe: s.descriptionDe ?? "", descriptionFr: s.descriptionFr ?? "", descriptionIt: s.descriptionIt ?? "", descriptionAr: s.descriptionAr ?? "",
-      descriptionRu: s.descriptionRu ?? "", descriptionFa: s.descriptionFa ?? "", descriptionKa: s.descriptionKa ?? "", descriptionBg: s.descriptionBg ?? "", descriptionAz: s.descriptionAz ?? "",
+      descriptionRu: s.descriptionRu ?? "", descriptionFa: s.descriptionFa ?? "", descriptionKa: s.descriptionKa ?? "", descriptionBg: s.descriptionBg ?? "", descriptionAz: s.descriptionAz ?? "", descriptionEs: s.descriptionEs ?? "",
       ctaPrimaryTextEn: s.ctaPrimaryTextEn ?? "", ctaPrimaryTextDe: s.ctaPrimaryTextDe ?? "", ctaPrimaryTextFr: s.ctaPrimaryTextFr ?? "", ctaPrimaryTextIt: s.ctaPrimaryTextIt ?? "", ctaPrimaryTextAr: s.ctaPrimaryTextAr ?? "",
-      ctaPrimaryTextRu: s.ctaPrimaryTextRu ?? "", ctaPrimaryTextFa: s.ctaPrimaryTextFa ?? "", ctaPrimaryTextKa: s.ctaPrimaryTextKa ?? "", ctaPrimaryTextBg: s.ctaPrimaryTextBg ?? "", ctaPrimaryTextAz: s.ctaPrimaryTextAz ?? "",
+      ctaPrimaryTextRu: s.ctaPrimaryTextRu ?? "", ctaPrimaryTextFa: s.ctaPrimaryTextFa ?? "", ctaPrimaryTextKa: s.ctaPrimaryTextKa ?? "", ctaPrimaryTextBg: s.ctaPrimaryTextBg ?? "", ctaPrimaryTextAz: s.ctaPrimaryTextAz ?? "", ctaPrimaryTextEs: s.ctaPrimaryTextEs ?? "",
       ctaSecondaryTextEn: s.ctaSecondaryTextEn ?? "", ctaSecondaryTextDe: s.ctaSecondaryTextDe ?? "", ctaSecondaryTextFr: s.ctaSecondaryTextFr ?? "", ctaSecondaryTextIt: s.ctaSecondaryTextIt ?? "", ctaSecondaryTextAr: s.ctaSecondaryTextAr ?? "",
-      ctaSecondaryTextRu: s.ctaSecondaryTextRu ?? "", ctaSecondaryTextFa: s.ctaSecondaryTextFa ?? "", ctaSecondaryTextKa: s.ctaSecondaryTextKa ?? "", ctaSecondaryTextBg: s.ctaSecondaryTextBg ?? "", ctaSecondaryTextAz: s.ctaSecondaryTextAz ?? "",
+      ctaSecondaryTextRu: s.ctaSecondaryTextRu ?? "", ctaSecondaryTextFa: s.ctaSecondaryTextFa ?? "", ctaSecondaryTextKa: s.ctaSecondaryTextKa ?? "", ctaSecondaryTextBg: s.ctaSecondaryTextBg ?? "", ctaSecondaryTextAz: s.ctaSecondaryTextAz ?? "", ctaSecondaryTextEs: s.ctaSecondaryTextEs ?? "",
     };
   }
 

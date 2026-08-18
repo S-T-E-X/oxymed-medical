@@ -19,6 +19,7 @@ const localeTextFields = {
   titleKa: z.string().optional(),
   titleBg: z.string().optional(),
   titleAz: z.string().optional(),
+  titleEs: z.string().optional(),
   subtitleEn: z.string().optional(),
   subtitleDe: z.string().optional(),
   subtitleFr: z.string().optional(),
@@ -29,6 +30,7 @@ const localeTextFields = {
   subtitleKa: z.string().optional(),
   subtitleBg: z.string().optional(),
   subtitleAz: z.string().optional(),
+  subtitleEs: z.string().optional(),
   descriptionEn: z.string().optional(),
   descriptionDe: z.string().optional(),
   descriptionFr: z.string().optional(),
@@ -39,6 +41,7 @@ const localeTextFields = {
   descriptionKa: z.string().optional(),
   descriptionBg: z.string().optional(),
   descriptionAz: z.string().optional(),
+  descriptionEs: z.string().optional(),
   ctaPrimaryTextEn: z.string().optional(),
   ctaPrimaryTextDe: z.string().optional(),
   ctaPrimaryTextFr: z.string().optional(),
@@ -49,6 +52,7 @@ const localeTextFields = {
   ctaPrimaryTextKa: z.string().optional(),
   ctaPrimaryTextBg: z.string().optional(),
   ctaPrimaryTextAz: z.string().optional(),
+  ctaPrimaryTextEs: z.string().optional(),
   ctaSecondaryTextEn: z.string().optional(),
   ctaSecondaryTextDe: z.string().optional(),
   ctaSecondaryTextFr: z.string().optional(),
@@ -59,6 +63,7 @@ const localeTextFields = {
   ctaSecondaryTextKa: z.string().optional(),
   ctaSecondaryTextBg: z.string().optional(),
   ctaSecondaryTextAz: z.string().optional(),
+  ctaSecondaryTextEs: z.string().optional(),
 };
 
 const SliderBody = z.object({
@@ -173,6 +178,7 @@ const SLIDER_TARGET_LOCALES = [
   { code: "ka", name: "Georgian" },
   { code: "bg", name: "Bulgarian" },
   { code: "az", name: "Azerbaijani" },
+  { code: "es", name: "Spanish" },
 ] as const;
 
 const TranslateFieldsBody = z.object({

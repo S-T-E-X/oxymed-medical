@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "title": "NUESTROS PRODUCTOS",
+    "description": "Soluciones médicas innovadoras y fiables desarrolladas para hospitales, clínicas y centros sanitarios.",
+    "imageAlt": "Imagen del banner de la página de productos"
+  },
+  "features": {
+    "production": {
+      "title": "DIRECTO DE FÁBRICA",
+      "description": "Producción de alta calidad y venta directa desde nuestra propia fábrica"
+    },
+    "certified": {
+      "title": "PRODUCCIÓN CERTIFICADA",
+      "description": "Producción certificada ISO 9001, ISO 13485 y CE"
+    },
+    "modular": {
+      "title": "DISEÑO MODULAR",
+      "description": "Soluciones flexibles y modulares adaptadas a sus necesidades"
+    },
+    "durability": {
+      "title": "LARGA DURACIÓN",
+      "description": "Materiales resistentes y larga vida útil"
+    },
+    "support": {
+      "title": "SOPORTE TÉCNICO 24/7",
+      "description": "Soporte técnico ininterrumpido antes y después de la venta"
+    }
+  },
+  "sidebar": {
+    "allProducts": "Todos los Productos",
+    "categoriesError": "No se han podido cargar las categorías.",
+    "catalogTitle": "Descargue Nuestro Catálogo de Productos",
+    "catalogSize": "PDF / 12,4 MB"
+  },
+  "results": {
+    "allTitle": "Todos los Productos",
+    "allDescription": "Soluciones médicas desarrolladas para hospitales, clínicas y centros sanitarios.",
+    "categoryDescription": "Nuestros productos de la categoría {{category}}.",
+    "counter": "{{count}} productos",
+    "loadError": "Se ha producido un error al cargar los productos. Actualice la página.",
+    "empty": "Todavía no hay productos en esta categoría."
+  },
+  "detail": {
+    "loading": "Cargando producto…",
+    "notFound": "Producto no encontrado.",
+    "backToProducts": "Volver a productos",
+    "brand": "OXYMED MEDIKAL",
+    "productImage": "Imagen del producto {{product}}",
+    "detailImages": "Imágenes de detalle del producto",
+    "technicalSpecifications": "ESPECIFICACIONES TÉCNICAS",
+    "advantages": "VENTAJAS",
+    "applications": "ÁREAS DE APLICACIÓN",
+    "faq": "PREGUNTAS FRECUENTES",
+    "quickQuote": "Solicite un Presupuesto Rápido",
+    "quickQuoteDescription": "Póngase en contacto con nosotros para recibir la solución adecuada y un presupuesto para su proyecto.",
+    "requestQuote": "Solicitar Presupuesto"
+  }
+}

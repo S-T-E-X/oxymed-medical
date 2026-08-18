@@ -84,6 +84,7 @@ const ProductCategoryBody = z.object({
   nameKa: z.string().optional().nullable(),
   nameBg: z.string().optional().nullable(),
   nameAz: z.string().optional().nullable(),
+  nameEs: z.string().optional().nullable(),
   // Locale-specific descriptions
   descriptionEn: z.string().optional().nullable(),
   descriptionDe: z.string().optional().nullable(),
@@ -95,6 +96,7 @@ const ProductCategoryBody = z.object({
   descriptionKa: z.string().optional().nullable(),
   descriptionBg: z.string().optional().nullable(),
   descriptionAz: z.string().optional().nullable(),
+  descriptionEs: z.string().optional().nullable(),
 });
 
 const ProductBody = z.object({
@@ -127,6 +129,7 @@ const ProductBody = z.object({
   titleKa: z.string().optional().nullable(),
   titleBg: z.string().optional().nullable(),
   titleAz: z.string().optional().nullable(),
+  titleEs: z.string().optional().nullable(),
 });
 
 // ---- AI translation of product page content ----
@@ -142,6 +145,7 @@ const PAGE_TRANSLATION_TARGETS = [
   { code: "ka", name: "Georgian" },
   { code: "bg", name: "Bulgarian" },
   { code: "az", name: "Azerbaijani" },
+  { code: "es", name: "Spanish" },
 ] as const;
 
 const TranslatePageContentBody = z.object({

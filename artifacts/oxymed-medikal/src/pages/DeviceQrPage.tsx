@@ -362,8 +362,8 @@ function DeviceQrCard({ device }: {
           <a href="tel:+902322832020" className="qr-contact__btn">
             <Phone size={16} /> <span>+90 232 283 20 20</span>
           </a>
-          <a href="mailto:info@oxymed.com.tr" className="qr-contact__btn">
-            <Mail size={16} /> <span>info@oxymed.com.tr</span>
+          <a href="mailto:info@oxymedmedical.com" className="qr-contact__btn">
+            <Mail size={16} /> <span>info@oxymedmedical.com</span>
           </a>
         </div>
       </main>

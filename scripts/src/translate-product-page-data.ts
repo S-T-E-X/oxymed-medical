@@ -21,6 +21,7 @@ const TARGETS = [
   { code: "ka", name: "Georgian" },
   { code: "bg", name: "Bulgarian" },
   { code: "az", name: "Azerbaijani" },
+  { code: "es", name: "Spanish" },
 ] as const;
 
 const PROMPT = (language: string) => [

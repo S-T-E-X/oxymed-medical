@@ -6,8 +6,20 @@
 
 .dvs-page h1,
 .dvs-page h2,
+.dvs-page h3,
 .dvs-page p {
   margin: 0;
+}
+
+.dvs-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 .dvs-main {
@@ -28,6 +40,17 @@
   height: 770px;
   min-height: 770px;
   background-color: #f7f9fc;
+}
+
+.dvs-hero__bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 1;
 }
 
 .dvs-hero__grid {
@@ -114,7 +137,7 @@
   stroke-width: 1.65;
 }
 
-.dvs-hero-features h2 {
+.dvs-hero-features h3 {
   color: #082653;
   font-size: 14px;
   font-weight: 900;
@@ -156,10 +179,18 @@
 
 .dvs-image-slot--has-image {
   border: 0;
-  background-image: none;
+  background-color: transparent;
+  padding: 0;
 }
 
-.dvs-image-card h2 {
+.dvs-image-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.dvs-image-card h3 {
   margin-top: 12px;
   color: #0b326a;
   font-size: 15px;
@@ -250,10 +281,14 @@
 
 .dvs-drawing-slot--has-image {
   border: 0;
-  background-image: none;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background-color: transparent;
+}
+
+.dvs-drawing-slot--has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .dvs-dimensions {
@@ -337,8 +372,11 @@
   .dvs-hero {
     height: auto;
     min-height: auto;
-    background-image: none !important;
     background-color: #ffffff;
+  }
+
+  .dvs-hero__bg-img {
+    display: none;
   }
 
   .dvs-hero__grid {

@@ -1,0 +1,32 @@
+{
+  "breadcrumb": {
+    "home": "Accueil",
+    "current": "Références"
+  },
+  "hero": {
+    "eyebrow": "Ce que nous avons réalisé",
+    "title": "170+ projets",
+    "titleSuffix": "projets",
+    "description": "Grâce aux projets menés dans des établissements de santé publics et privés en Turquie et à l'étranger, nous valorisons les espaces de vie.",
+    "imageAlt": "Projet de référence"
+  },
+  "stats": {
+    "projects": "Projets réalisés",
+    "public": "Projets du secteur public",
+    "private": "Projets du secteur privé",
+    "regions": "Provinces & régions",
+    "beds": "Capacité en lits",
+    "years": "Années d'expérience"
+  },
+  "allCategory": "TOUS LES PROJETS",
+  "empty": "Aucun projet trouvé dans cette catégorie.",
+  "errors": {
+    "categories": "Les catégories de projets n'ont pas pu être chargées.",
+    "list": "Une erreur s'est produite lors du chargement des références. Veuillez actualiser la page."
+  },
+  "map": {
+    "title": "Choisis en toute confiance partout en Turquie",
+    "description": "Dans plus de 50 provinces, nous faisons la différence dans des centaines d'établissements de santé grâce à nos solutions.",
+    "imageAlt": "Carte des références en Turquie"
+  }
+}

@@ -1,11 +1,11 @@
 {
   "hero": {
     "eyebrow": "OXY-DVP SERIES",
-    "titleLine1": "DENTAL",
-    "titleLine2": "VACUUM PUMP",
-    "desc1": "Oxymed Dental Vacuum Pump provides a reliable, quiet and uninterrupted vacuum solution for dental clinics and healthcare facilities.",
+    "titleLine1": "MEDICAL",
+    "titleLine2": "VACUUM PLANT",
+    "desc1": "The Oxymed Medical Vacuum Plant provides a reliable, quiet and uninterrupted central vacuum solution for hospitals and healthcare facilities.",
     "desc2": "Its high-performance motor design and durable construction ensure long-lasting, economical and hygienic operation.",
-    "visualAriaLabel": "Dental vacuum pump main WEBP image area"
+    "visualAriaLabel": "Medical vacuum plant main WEBP image area"
   },
   "heroFeatures": [
     {
@@ -47,7 +47,7 @@
     "rows": [
       [
         "Product Name",
-        "Dental Vacuum Pump"
+        "Medical Vacuum Plant"
       ],
       [
         "Number of Pumps",
@@ -79,7 +79,7 @@
       ],
       [
         "Applications",
-        "Dental clinics, outpatient clinics and hospitals"
+        "Hospitals, outpatient clinics and healthcare facilities"
       ],
       [
         "Ease of Maintenance",
@@ -95,16 +95,16 @@
   "useCases": {
     "heading": "APPLICATIONS",
     "items": [
-      "Dental Clinics",
-      "Oral and Dental Health Centers",
+      "Hospitals",
+      "Healthcare Facilities",
       "Outpatient Clinics",
-      "Hospitals"
+      "Operating Theatres"
     ]
   },
   "quickQuote": {
-    "strong": "Get a quick quote for a dental vacuum pump.",
+    "strong": "Get a quick quote for a medical vacuum plant.",
     "small": "Let us determine the capacity and installation option best suited to your project.",
     "cta": "GET A QUOTE"
   },
-  "category": "Dental Vacuum Pump"
+  "category": "Medical Vacuum Plant"
 }

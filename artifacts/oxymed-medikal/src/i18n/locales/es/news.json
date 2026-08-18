@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "imageAlt": "Vista general de la planta de producción",
+    "breadcrumb": ["Inicio", "Noticias"],
+    "title": "NOTICIAS",
+    "description": "Siga los últimos avances en tecnologías médicas, nuestros proyectos, nuestros procesos de producción y el sector."
+  },
+  "list": {
+    "allCategories": "TODAS LAS NOTICIAS",
+    "readMore": "Leer Más",
+    "popular": "Contenido Popular",
+    "empty": "No se han encontrado noticias en esta categoría.",
+    "emptyLocale": "Todavía no se han publicado noticias en este idioma.",
+    "errorCategories": "No se han podido cargar las categorías de noticias.",
+    "errorList": "Se ha producido un error al cargar las noticias. Actualice la página.",
+    "errorPopular": "No se ha podido cargar el contenido popular."
+  },
+  "detail": {
+    "notFound": "Noticia no encontrada. Es posible que se haya eliminado o retirado de publicación.",
+    "backAll": "Todas las Noticias",
+    "backList": "Volver a Noticias"
+  }
+}

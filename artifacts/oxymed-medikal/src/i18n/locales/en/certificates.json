@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "eyebrow": "CORPORATE",
+    "title": "Our Certificates",
+    "description": "Review our quality standards and competence documents here, and download any certificate you need."
+  },
+  "error": "An error occurred while loading the certificates. Please refresh the page.",
+  "empty": {
+    "title": "No certificates added yet",
+    "description": "Certificates will be listed here soon."
+  },
+  "downloadHint": "Click to download the file"
+}

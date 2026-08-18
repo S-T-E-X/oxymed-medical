@@ -28,6 +28,7 @@ const LOCALE_LABELS: { code: string; label: string; nameField: string; descField
   { code: "ka", label: "ქართული", nameField: "nameKa", descField: "descriptionKa" },
   { code: "bg", label: "Български", nameField: "nameBg", descField: "descriptionBg" },
   { code: "az", label: "Azərbaycan", nameField: "nameAz", descField: "descriptionAz" },
+  { code: "es", label: "Español", nameField: "nameEs", descField: "descriptionEs" },
 ];
 
 type CategoryFields = Record<string, string | number | boolean | null>;

@@ -1,0 +1,32 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "current": "References"
+  },
+  "hero": {
+    "eyebrow": "What We Have Completed",
+    "title": "170+ Projects",
+    "titleSuffix": "Projects",
+    "description": "With projects delivered at public and private healthcare institutions in Turkey and abroad, we add value to living spaces.",
+    "imageAlt": "Reference project"
+  },
+  "stats": {
+    "projects": "Completed Projects",
+    "public": "Public Sector Projects",
+    "private": "Private Sector Projects",
+    "regions": "Provinces & Regions",
+    "beds": "Bed Capacity",
+    "years": "Years of Experience"
+  },
+  "allCategory": "ALL PROJECTS",
+  "empty": "No projects found in this category.",
+  "errors": {
+    "categories": "Project categories could not be loaded.",
+    "list": "An error occurred while loading the references. Please refresh the page."
+  },
+  "map": {
+    "title": "Trusted Across Turkey",
+    "description": "In more than 50 provinces, we make a difference at hundreds of healthcare institutions with our solutions.",
+    "imageAlt": "Turkey Reference Map"
+  }
+}

@@ -29,6 +29,7 @@ export const productCategoriesTable = pgTable("product_categories", {
   nameKa: text("name_ka"),
   nameBg: text("name_bg"),
   nameAz: text("name_az"),
+  nameEs: text("name_es"),
   // Locale-specific description fields (tr = `description` above)
   descriptionEn: text("description_en"),
   descriptionDe: text("description_de"),
@@ -40,6 +41,7 @@ export const productCategoriesTable = pgTable("product_categories", {
   descriptionKa: text("description_ka"),
   descriptionBg: text("description_bg"),
   descriptionAz: text("description_az"),
+  descriptionEs: text("description_es"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

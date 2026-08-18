@@ -55,7 +55,7 @@ export type PageData = PageDataContent & {
   sectionOrder?: Array<"detailCards" | "technical" | "useCases" | "featureTiles" | "faq">;
   hiddenSections?: Array<"detailCards" | "technical" | "useCases" | "featureTiles" | "faq">;
   /** Locale-specific content for the generic DB-driven detail page. */
-  locales?: Partial<Record<"en" | "de" | "fr" | "it" | "ar" | "ru" | "fa" | "ka" | "bg" | "az", PageDataContent>>;
+  locales?: Partial<Record<"en" | "de" | "fr" | "it" | "ar" | "ru" | "fa" | "ka" | "bg" | "az" | "es", PageDataContent>>;
 };
 export type PrivateData = {
   costPrice?: string;
@@ -96,6 +96,7 @@ export const productsTable = pgTable("products", {
   titleKa: text("title_ka"),
   titleBg: text("title_bg"),
   titleAz: text("title_az"),
+  titleEs: text("title_es"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

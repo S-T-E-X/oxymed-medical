@@ -64,7 +64,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import { I18nProvider } from "./i18n/I18nProvider";
 import LocaleSuggestion from "./i18n/LocaleSuggestion";
 import { LOCALES } from "./i18n/config";
-import { localizedPath, type RouteKey } from "./i18n/routes";
+import { legacyRoutePaths, localizedPath, type RouteKey } from "./i18n/routes";
 
 /** The marketing pages that exist in every language. */
 const TRANSLATED_PAGES: Array<{ routeKey: RouteKey; element: ReactElement }> = [
@@ -80,6 +80,9 @@ const TRANSLATED_PAGES: Array<{ routeKey: RouteKey; element: ReactElement }> = [
   // because they carry a dynamic :slug segment.
   { routeKey: "news", element: <NewsPage /> },
   { routeKey: "catalogs", element: <CatalogsPage /> },
+  { routeKey: "corporate", element: <CorporatePage /> },
+  { routeKey: "certificates", element: <CertificatesPage /> },
+  { routeKey: "references", element: <ReferencesPage /> },
 ];
 
 /**
@@ -133,6 +136,17 @@ function localizedNewsDetailRoutes() {
   ));
 }
 
+/**
+ * Pages that were renamed keep answering on their old address and forward to
+ * the new one, so existing links and search results do not dead-end on the
+ * catch-all redirect to the home page.
+ */
+function legacyRedirectRoutes() {
+  return legacyRoutePaths().map(({ from, to }) => (
+    <Route key={`legacy-${from}`} path={from} element={<Navigate to={to} replace />} />
+  ));
+}
+
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -147,9 +161,7 @@ export default function App() {
           {localizedRoutes()}
           {localizedProductDetailRoutes()}
           {localizedNewsDetailRoutes()}
-          <Route path="/kurumsal" element={<CorporatePage />} />
-           <Route path="/sertifikalar" element={<CertificatesPage />} />
-          <Route path="/referanslar" element={<ReferencesPage />} />
+          {legacyRedirectRoutes()}
           <Route path="/taslak" element={<ServiceReportPageTaslak />} />
           <Route path="/servis/qr/:qrToken" element={<DeviceQrPage />} />
           <Route path="/servis/cihaz/:qrToken" element={<ServisCihazPage />} />

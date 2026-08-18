@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "eyebrow": "AZIENDA",
+    "title": "Le nostre certificazioni",
+    "description": "Consulta qui i nostri standard di qualità e i documenti di competenza e scarica la certificazione che desideri."
+  },
+  "error": "Si è verificato un errore durante il caricamento delle certificazioni. Aggiorna la pagina.",
+  "empty": {
+    "title": "Nessuna certificazione ancora aggiunta",
+    "description": "Le certificazioni saranno elencate qui a breve."
+  },
+  "downloadHint": "Fai clic per scaricare il file"
+}

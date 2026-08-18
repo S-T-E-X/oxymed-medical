@@ -1,0 +1,54 @@
+{
+  "home": {
+    "title": "Oxymed Medikal | Gases Medicinales y Hospital",
+    "description": "Unidades de cabecera, brazos pendulares, gases medicinales y vacío dental para hospitales y clínicas. Fabricación certificada ISO 9001 e ISO 13485."
+  },
+  "products": {
+    "title": "Productos | Gases Medicinales y Hospital | Oxymed",
+    "description": "Explore nuestra gama de unidades de cabecera, brazos pendulares, paneles de gases medicinales, sistemas de vacío dental y separadores de amalgama."
+  },
+  "gcp": {
+    "title": "Panel de Control de Gases Medicinales | Oxymed",
+    "description": "Panel de control de gases medicinales digital para hospitales: monitorización de presión con alarma visual y sonora para oxígeno, vacío y aire."
+  },
+  "ams": {
+    "title": "Separador de Amalgama Dental ISO 11143 | Oxymed",
+    "description": "Separador de amalgama compatible con ISO 11143, silencioso y de fácil mantenimiento, que retiene más del 95% de los residuos en clínicas dentales."
+  },
+  "dvp": {
+    "title": "Central de Vacío Medicinal Hospitalario | Oxymed",
+    "description": "Central de vacío medicinal centralizada, silenciosa y fiable para hospitales y centros sanitarios. Diseño a medida y soporte de instalación por proyecto."
+  },
+  "dvs": {
+    "title": "Sistema Centralizado de Vacío Dental | Oxymed",
+    "description": "Sistemas centralizados de vacío dental para clínicas multiunidad, universidades y centros bucodentales, con integración de separador y panel de control."
+  },
+  "service": {
+    "title": "Servicio Técnico y Garantía | Oxymed Medikal",
+    "description": "Consulta de garantía, solicitud de servicio y soporte de mantenimiento para sus equipos Oxymed. Vea el registro y el historial con su número de serie."
+  },
+  "quote": {
+    "title": "Solicitar Presupuesto | Proyectos | Oxymed Medikal",
+    "description": "Solicite un presupuesto rápido y gratuito para su proyecto. Soporte experto en gases medicinales y vacío dental para hospitales y clínicas."
+  },
+  "news": {
+    "title": "Noticias | Gases Medicinales y Hospital | Oxymed",
+    "description": "Noticias del sector, novedades de productos y contenido técnico de Oxymed Medikal sobre gases medicinales, vacío dental y equipamiento hospitalario."
+  },
+  "catalogs": {
+    "title": "Catálogos de Productos | Oxymed Medikal",
+    "description": "Consulte los grupos de productos y soluciones de Oxymed Medikal en nuestros catálogos; vea y descargue los catálogos de gases medicinales y vacío dental."
+  },
+  "corporate": {
+    "title": "Empresa | 25+ años de experiencia | Oxymed",
+    "description": "Desde 1999 Oxymed Medikal fabrica sistemas de gases medicinales y soluciones hospitalarias, con más de 25 años de experiencia en ingeniería y servicio fiable."
+  },
+  "certificates": {
+    "title": "Certificados y documentos de calidad | Oxymed",
+    "description": "Documentos de gestión de la calidad y de competencia de Oxymed Medikal. Consulta nuestros certificados en esta página a medida que se añaden y actualizan."
+  },
+  "references": {
+    "title": "Referencias | 170+ proyectos de salud | Oxymed",
+    "description": "Más de 170 proyectos realizados en instituciones sanitarias públicas y privadas en Turquía y en el extranjero, en más de 50 provincias — referencias Oxymed."
+  }
+}

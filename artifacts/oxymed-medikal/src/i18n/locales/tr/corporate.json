@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "eyebrow": "OXYMED MEDİKAL",
+    "title": "Kurumsal",
+    "description": "25 yılı aşkın deneyimimizle sağlık tesisleri için güvenilir sistemler geliştiriyoruz.",
+    "imageAlt": "Oxymed Medikal"
+  },
+  "about": {
+    "eyebrow": "HAKKIMIZDA",
+    "title": "Sağlık İçin Güvenilir Sistemler"
+  },
+  "error": "Kurumsal içerik yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.",
+  "stats": {
+    "years": "Yıllık Tecrübe",
+    "projects": "Tamamlanan Proje",
+    "exports": "Ülkeye İhracat",
+    "error": "İstatistikler yüklenemedi; varsayılan değerler gösteriliyor."
+  }
+}

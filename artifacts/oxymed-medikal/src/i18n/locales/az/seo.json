@@ -16,8 +16,8 @@
     "description": "Diş klinikalarında amalgam tullantılarını 95%-dən çox tutan, ISO 11143 uyğun, səssiz və asan texniki xidmətli amalgam separator sistemləri."
   },
   "dvp": {
-    "title": "Dental Vakuum Nasosu | Quru və Yaş Sistem | Oxymed",
-    "description": "Diş klinikaları üçün səssiz, enerji səmərəli və uzunömürlü dental vakuum nasosları. Tək blokdan çox bloklu klinikalara qədər miqyaslana bilən həllər."
+    "title": "Tibbi Vakuum Stansiyası | Mərkəzi Vakuum | Oxymed",
+    "description": "Xəstəxanalar və səhiyyə müəssisələri üçün səssiz, etibarlı və fasiləsiz mərkəzi tibbi vakuum stansiyası həlləri. Layihəyə uyğun dizayn və quraşdırma dəstəyi."
   },
   "dvs": {
     "title": "Mərkəzi Dental Vakuum Sistemi | Aspirasiya | Oxymed",
@@ -38,5 +38,17 @@
   "catalogs": {
     "title": "Məhsul Kataloqları | Oxymed Medikal",
     "description": "Oxymed Medikal məhsul və həll qruplarını kataloqlarımız vasitəsilə nəzərdən keçirin; tibbi qaz və dental vakuum kataloqlarını görüntüləyin və yükləyin."
+  },
+  "corporate": {
+    "title": "Haqqımızda | 25+ illik təcrübə | Oxymed",
+    "description": "1999-cu ildən Oxymed Medikal tibbi qaz sistemləri və xəstəxana həlləri istehsal edir; 25 ildən çox mühəndislik təcrübəsi və etibarlı xidmətlə."
+  },
+  "certificates": {
+    "title": "Sertifikatlar və keyfiyyət sənədləri | Oxymed",
+    "description": "Oxymed Medikal-ın keyfiyyət idarəetməsi və səriştə sənədləri. Sertifikatlarımızı bu səhifədə əlavə və yeniləndikcə nəzərdən keçirə bilərsiniz."
+  },
+  "references": {
+    "title": "Referanslar | 170+ səhiyyə layihəsi | Oxymed",
+    "description": "Türkiyədə və xaricdə dövlət və özəl səhiyyə müəssisələrində, 50-dən çox rayonda tamamlanan 170-dən çox layihə — Oxymed Medikal referansları."
   }
 }

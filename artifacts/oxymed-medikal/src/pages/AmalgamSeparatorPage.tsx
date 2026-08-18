@@ -100,13 +100,14 @@ export default function AmalgamSeparatorPage() {
               <p>{desc2}</p>
 
               <div className="ams-hero-features">
+                <h2 className="ams-visually-hidden">Özellikler</h2>
                 {heroFeatures.map((feature, i) => {
                   const Icon = HERO_FEATURE_ICONS[i] ?? ShieldCheck;
                   return (
                     <article key={feature.title}>
                       <Icon aria-hidden="true" />
                       <div>
-                        <h2>{feature.title}</h2>
+                        <h3>{feature.title}</h3>
                         <span>{feature.text}</span>
                       </div>
                     </article>
@@ -118,21 +119,42 @@ export default function AmalgamSeparatorPage() {
             <div className="ams-hero__visual" aria-label={t("ams.hero.photoSlotAriaLabel")}>
               <div
                 className={`ams-hero-photo-slot${heroImage ? " ams-hero-photo-slot--has-image" : ""}`}
-                style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
-              />
+              >
+                {heroImage && (
+                  <img
+                    src={heroImage}
+                    alt={heroTitle || t("ams.hero.titleLine1") + " " + t("ams.hero.titleLine2")}
+                    width={1086}
+                    height={1448}
+                    loading="eager"
+                    decoding="async"
+                  />
+                )}
+              </div>
             </div>
           </div>
         </section>
 
         <section className="ams-container ams-detail-grid" aria-label={t("ams.detailGrid.ariaLabel")}>
+          <h2 className="ams-visually-hidden">Detaylar</h2>
           {detailCards.map((card, i) => (
             <article key={card.title}>
               <div
                 className={`ams-image-slot${detailImages[i] ? " ams-image-slot--has-image" : ""}`}
                 aria-label={`${card.title} ${t("ams.imageSlot.webpSuffix")}`}
-                style={detailImages[i] ? { backgroundImage: `url(${detailImages[i]})` } : undefined}
-              />
-              <h2>{card.title}</h2>
+              >
+                {detailImages[i] && (
+                  <img
+                    src={detailImages[i]}
+                    alt={card.title}
+                    width={800}
+                    height={530}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
+              <h3>{card.title}</h3>
               <p>{card.text}</p>
             </article>
           ))}
@@ -162,8 +184,18 @@ export default function AmalgamSeparatorPage() {
             <div
               className={`ams-drawing-slot${drawingImage ? " ams-drawing-slot--has-image" : ""}`}
               aria-label={t("ams.drawing.slotAriaLabel")}
-              style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
-            />
+            >
+              {drawingImage && (
+                <img
+                  src={drawingImage}
+                  alt={`${heroTitle || t("ams.hero.titleLine1") + " " + t("ams.hero.titleLine2")} — ${t("ams.drawing.title")}`}
+                  width={800}
+                  height={530}
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+            </div>
             <p>{t("ams.drawing.unitNote")}</p>
           </article>
         </section>

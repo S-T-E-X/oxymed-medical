@@ -83,6 +83,7 @@ export interface Slider {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  titleEs?: string | null;
   /** @nullable */
   subtitleEn?: string | null;
   /** @nullable */
@@ -103,6 +104,7 @@ export interface Slider {
   subtitleBg?: string | null;
   /** @nullable */
   subtitleAz?: string | null;
+  subtitleEs?: string | null;
   /** @nullable */
   descriptionEn?: string | null;
   /** @nullable */
@@ -123,6 +125,7 @@ export interface Slider {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  descriptionEs?: string | null;
   /** @nullable */
   ctaPrimaryTextEn?: string | null;
   /** @nullable */
@@ -143,6 +146,7 @@ export interface Slider {
   ctaPrimaryTextBg?: string | null;
   /** @nullable */
   ctaPrimaryTextAz?: string | null;
+  ctaPrimaryTextEs?: string | null;
   /** @nullable */
   ctaSecondaryTextEn?: string | null;
   /** @nullable */
@@ -163,6 +167,7 @@ export interface Slider {
   ctaSecondaryTextBg?: string | null;
   /** @nullable */
   ctaSecondaryTextAz?: string | null;
+  ctaSecondaryTextEs?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -197,6 +202,7 @@ export interface SliderInput {
   titleKa?: string;
   titleBg?: string;
   titleAz?: string;
+  titleEs?: string;
   subtitleEn?: string;
   subtitleDe?: string;
   subtitleFr?: string;
@@ -207,6 +213,7 @@ export interface SliderInput {
   subtitleKa?: string;
   subtitleBg?: string;
   subtitleAz?: string;
+  subtitleEs?: string;
   descriptionEn?: string;
   descriptionDe?: string;
   descriptionFr?: string;
@@ -217,6 +224,7 @@ export interface SliderInput {
   descriptionKa?: string;
   descriptionBg?: string;
   descriptionAz?: string;
+  descriptionEs?: string;
   ctaPrimaryTextEn?: string;
   ctaPrimaryTextDe?: string;
   ctaPrimaryTextFr?: string;
@@ -227,6 +235,7 @@ export interface SliderInput {
   ctaPrimaryTextKa?: string;
   ctaPrimaryTextBg?: string;
   ctaPrimaryTextAz?: string;
+  ctaPrimaryTextEs?: string;
   ctaSecondaryTextEn?: string;
   ctaSecondaryTextDe?: string;
   ctaSecondaryTextFr?: string;
@@ -237,6 +246,7 @@ export interface SliderInput {
   ctaSecondaryTextKa?: string;
   ctaSecondaryTextBg?: string;
   ctaSecondaryTextAz?: string;
+  ctaSecondaryTextEs?: string;
 }
 
 export interface SliderUpdate {
@@ -293,6 +303,7 @@ export interface SliderUpdate {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  titleEs?: string | null;
   /** @nullable */
   subtitleEn?: string | null;
   /** @nullable */
@@ -313,6 +324,7 @@ export interface SliderUpdate {
   subtitleBg?: string | null;
   /** @nullable */
   subtitleAz?: string | null;
+  subtitleEs?: string | null;
   /** @nullable */
   descriptionEn?: string | null;
   /** @nullable */
@@ -333,6 +345,7 @@ export interface SliderUpdate {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  descriptionEs?: string | null;
   /** @nullable */
   ctaPrimaryTextEn?: string | null;
   /** @nullable */
@@ -353,6 +366,7 @@ export interface SliderUpdate {
   ctaPrimaryTextBg?: string | null;
   /** @nullable */
   ctaPrimaryTextAz?: string | null;
+  ctaPrimaryTextEs?: string | null;
   /** @nullable */
   ctaSecondaryTextEn?: string | null;
   /** @nullable */
@@ -373,6 +387,7 @@ export interface SliderUpdate {
   ctaSecondaryTextBg?: string | null;
   /** @nullable */
   ctaSecondaryTextAz?: string | null;
+  ctaSecondaryTextEs?: string | null;
 }
 
 export interface Catalog {
@@ -468,6 +483,7 @@ export interface ProductCategory {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  nameEs?: string | null;
   /** @nullable */
   imageUrl?: string | null;
   visible?: boolean;
@@ -492,6 +508,7 @@ export interface ProductCategory {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  descriptionEs?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -511,6 +528,7 @@ export interface ProductCategoryInput {
   nameKa?: string;
   nameBg?: string;
   nameAz?: string;
+  nameEs?: string;
   imageUrl?: string;
   visible?: boolean;
   showOnHome?: boolean;
@@ -524,6 +542,7 @@ export interface ProductCategoryInput {
   descriptionKa?: string;
   descriptionBg?: string;
   descriptionAz?: string;
+  descriptionEs?: string;
 }
 
 export interface ProductCategoryUpdate {
@@ -552,6 +571,7 @@ export interface ProductCategoryUpdate {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  nameEs?: string | null;
   /** @nullable */
   imageUrl?: string | null;
   visible?: boolean;
@@ -576,6 +596,7 @@ export interface ProductCategoryUpdate {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  descriptionEs?: string | null;
 }
 
 export interface ProductSpec {
@@ -746,6 +767,7 @@ export interface Product {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  titleEs?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -779,6 +801,7 @@ export interface ProductInput {
   titleKa?: string;
   titleBg?: string;
   titleAz?: string;
+  titleEs?: string;
 }
 
 export interface ProductUpdate {
@@ -829,6 +852,7 @@ export interface ProductUpdate {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  titleEs?: string | null;
 }
 
 export interface ProductListResponse {

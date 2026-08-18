@@ -86,19 +86,16 @@ export default function DentalVacuumSystemPage() {
       <Header />
 
       <main className="dvs-main">
-        <section
-          className="dvs-hero"
-          style={
-            heroImage
-              ? {
-                  backgroundImage: `url(${heroImage})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center top",
-                  backgroundRepeat: "no-repeat",
-                }
-              : undefined
-          }
-        >
+        <section className="dvs-hero">
+            {heroImage && (
+              <img
+                src={heroImage}
+                alt={t("dvs.hero.titleLine1") + " " + t("dvs.hero.titleLine2") + " OXY-DVS dental vakum ünitesi"}
+                width={1280}
+                height={770}
+                className="dvs-hero__bg-img"
+              />
+            )}
           <div className="dvs-container dvs-hero__grid">
             <div className="dvs-hero__content">
               <Breadcrumbs
@@ -130,7 +127,7 @@ export default function DentalVacuumSystemPage() {
                     <article key={feature.title}>
                       <Icon aria-hidden="true" />
                       <div>
-                        <h2>{feature.title}</h2>
+                        <h3>{feature.title}</h3>
                         <span>{feature.text}</span>
                       </div>
                     </article>
@@ -143,6 +140,10 @@ export default function DentalVacuumSystemPage() {
                   <img
                     src={heroMobileImage}
                     alt={heroTitle || productName}
+                    width={800}
+                    height={800}
+                    loading="eager"
+                    decoding="async"
                   />
                 </div>
               )}
@@ -154,14 +155,25 @@ export default function DentalVacuumSystemPage() {
           className="dvs-container dvs-image-strip"
           aria-label={t("dvs.imageStrip.ariaLabel")}
         >
+          <h2 className="dvs-visually-hidden">Galeri</h2>
           {imageCards.map((card, i) => (
             <article key={card.title} className="dvs-image-card">
               <div
                 className={`dvs-image-slot${imageCards_imgs[i] ? " dvs-image-slot--has-image" : ""}`}
                 aria-label={card.ariaLabel}
-                style={imageCards_imgs[i] ? { backgroundImage: `url(${imageCards_imgs[i]})` } : undefined}
-              />
-              <h2>{card.title}</h2>
+              >
+                {imageCards_imgs[i] && (
+                  <img
+                    src={imageCards_imgs[i]}
+                    alt={card.title}
+                    width={800}
+                    height={530}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
+              <h3>{card.title}</h3>
               <p>{card.text}</p>
             </article>
           ))}
@@ -186,8 +198,18 @@ export default function DentalVacuumSystemPage() {
               <div
                 className={`dvs-drawing-slot${drawingImage ? " dvs-drawing-slot--has-image" : ""}`}
                 aria-label={t("dvs.drawing.ariaLabel")}
-                style={drawingImage ? { backgroundImage: `url(${drawingImage})` } : undefined}
-              />
+              >
+                {drawingImage && (
+                  <img
+                    src={drawingImage}
+                    alt={`${heroTitle || productName} — ${t("dvs.drawing.heading")}`}
+                    width={800}
+                    height={800}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
             </div>
           </article>
 

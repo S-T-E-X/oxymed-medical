@@ -38,5 +38,17 @@
   "catalogs": {
     "title": "Ürün Katalogları | Oxymed Medikal",
     "description": "Oxymed Medikal ürün ve çözüm gruplarını kataloglarımız üzerinden inceleyin; medikal gaz ve dental vakum kataloglarını görüntüleyin ve indirin."
+  },
+  "corporate": {
+    "title": "Kurumsal | 25+ Yıllık Medikal Deneyim | Oxymed",
+    "description": "1999'dan bu yana medikal gaz sistemleri ve hastane çözümleri üreten Oxymed Medikal; 25 yılı aşkın mühendislik deneyimi ve güvenilir hizmet anlayışı."
+  },
+  "certificates": {
+    "title": "Sertifikalar ve Kalite Belgeleri | Oxymed Medikal",
+    "description": "Oxymed Medikal kalite yönetimi ve yetkinlik belgeleri. Sertifikalarımızı bu sayfadan inceleyebilir, güncellendikçe belgelerimize buradan ulaşabilirsiniz."
+  },
+  "references": {
+    "title": "Referanslar | 170+ Sağlık Tesisi Projesi | Oxymed",
+    "description": "Yurt içi ve yurt dışında kamu ve özel sağlık kuruluşlarında tamamladığımız 170'ten fazla proje; 50'den fazla ilde Oxymed Medikal referansları."
   }
 }
