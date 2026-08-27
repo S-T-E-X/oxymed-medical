@@ -186,7 +186,7 @@ export default function MediaPage() {
           <p className="text-sm font-bold text-slate-900">
             {uploading ? "Yükleniyor…" : "Görselleri buraya sürükleyin veya tıklayın"}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">PNG, JPG, GIF, WebP desteklenir</p>
+          <p className="mt-0.5 text-xs text-slate-400">PNG, JPG, WebP, AVIF ve PDF desteklenir</p>
         </div>
         <input
           type="file"

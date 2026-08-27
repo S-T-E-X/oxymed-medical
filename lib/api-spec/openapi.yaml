@@ -1328,15 +1328,39 @@ paths:
     post:
       operationId: uploadMedia
       tags: [media]
-      summary: Upload a media file (admin only)
+      summary: Upload a media file directly to server-local storage (admin only)
       security:
         - bearerAuth: []
+      parameters:
+        - name: X-Media-Filename
+          in: header
+          required: true
+          description: Percent-encoded original display filename. It never determines the server disk path.
+          schema:
+            type: string
       requestBody:
         required: true
         content:
-          application/json:
+          image/jpeg:
             schema:
-              $ref: "#/components/schemas/MediaUploadInput"
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+          image/avif:
+            schema:
+              type: string
+              format: binary
+          application/pdf:
+            schema:
+              type: string
+              format: binary
       responses:
         "201":
           description: Uploaded
@@ -1344,27 +1368,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MediaFile"
-
-  /media/request-upload-url:
-    post:
-      operationId: requestMediaUploadUrl
-      tags: [media]
-      summary: Request presigned upload URL for a media file
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PresignedUrlInput"
-      responses:
-        "200":
-          description: Presigned URL
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PresignedUrlResponse"
 
   /media/{id}:
     delete:
@@ -3989,21 +3992,6 @@ components:
         createdAt:
           type: string
 
-    MediaUploadInput:
-      type: object
-      required: [filename, objectPath]
-      properties:
-        filename:
-          type: string
-        objectPath:
-          type: string
-        mimeType:
-          type: string
-        size:
-          type: integer
-        alt:
-          type: string
-
     MediaListResponse:
       type: object
       required: [items, total]
@@ -4063,26 +4051,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MediaConversionItem"
-
-    PresignedUrlInput:
-      type: object
-      required: [name, size, contentType]
-      properties:
-        name:
-          type: string
-        size:
-          type: integer
-        contentType:
-          type: string
-
-    PresignedUrlResponse:
-      type: object
-      required: [uploadURL, objectPath]
-      properties:
-        uploadURL:
-          type: string
-        objectPath:
-          type: string
 
     # WARRANTY
     WarrantyDevice:

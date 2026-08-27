@@ -12,7 +12,8 @@
     "gen-sitemap": "tsx ./src/gen-sitemap.ts",
     "migrate-product-cards": "tsx ./src/migrate-product-cards.ts",
     "translate-product-page-data": "tsx ./src/translate-product-page-data.ts",
-    "translate-eeat-locales": "tsx ./src/translate-eeat-locales.ts"
+    "translate-eeat-locales": "tsx ./src/translate-eeat-locales.ts",
+    "export-media-to-local-disk": "tsx ./src/export-media-to-local-disk.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",

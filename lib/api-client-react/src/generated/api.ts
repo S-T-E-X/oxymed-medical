@@ -61,15 +61,12 @@ import type {
   MediaConversionResponse,
   MediaFile,
   MediaListResponse,
-  MediaUploadInput,
   NewsInput,
   NewsItem,
   NewsListResponse,
   NewsTranslation,
   NewsTranslationInput,
   NewsUpdate,
-  PresignedUrlInput,
-  PresignedUrlResponse,
   Product,
   ProductCategory,
   ProductCategoryInput,
@@ -4467,17 +4464,20 @@ export const getUploadMediaUrl = () => {
 }
 
 /**
- * @summary Upload a media file (admin only)
+ * @summary Upload a media file directly to server-local storage (admin only)
  */
-export const uploadMedia = async (mediaUploadInput: MediaUploadInput, options?: RequestInit): Promise<MediaFile> => {
+export const uploadMedia = async (uploadMediaBody: Blob, options?: RequestInit): Promise<MediaFile> => {
+  const contentType = uploadMediaBody.type;
+  if (!["image/jpeg", "image/png", "image/webp", "image/avif", "application/pdf"].includes(contentType)) {
+    throw new Error("uploadMedia requires a Blob with a supported MIME type.");
+  }
 
   return customFetch<MediaFile>(getUploadMediaUrl(),
   {
     ...options,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      mediaUploadInput,)
+    headers: { 'Content-Type': contentType, ...options?.headers },
+    body: uploadMediaBody
   }
 );}
 
@@ -4485,8 +4485,8 @@ export const uploadMedia = async (mediaUploadInput: MediaUploadInput, options?: 
 
 
 export const getUploadMediaMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMedia>>, TError,{data: BodyType<MediaUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof uploadMedia>>, TError,{data: BodyType<MediaUploadInput>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMedia>>, TError,{data: BodyType<Blob>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadMedia>>, TError,{data: BodyType<Blob>}, TContext> => {
 
 const mutationKey = ['uploadMedia'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -4498,7 +4498,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadMedia>>, {data: BodyType<MediaUploadInput>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadMedia>>, {data: BodyType<Blob>}> = (props) => {
           const {data} = props ?? {};
 
           return  uploadMedia(data,requestOptions)
@@ -4512,92 +4512,21 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UploadMediaMutationResult = NonNullable<Awaited<ReturnType<typeof uploadMedia>>>
-    export type UploadMediaMutationBody = BodyType<MediaUploadInput>
+    export type UploadMediaMutationBody = BodyType<Blob>
     export type UploadMediaMutationError = ErrorType<unknown>
 
     /**
- * @summary Upload a media file (admin only)
+ * @summary Upload a media file directly to server-local storage (admin only)
  */
 export const useUploadMedia = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMedia>>, TError,{data: BodyType<MediaUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMedia>>, TError,{data: BodyType<Blob>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof uploadMedia>>,
         TError,
-        {data: BodyType<MediaUploadInput>},
+        {data: BodyType<Blob>},
         TContext
       > => {
       return useMutation(getUploadMediaMutationOptions(options));
-    }
-
-export const getRequestMediaUploadUrlUrl = () => {
-
-
-
-
-  return `/api/media/request-upload-url`
-}
-
-/**
- * @summary Request presigned upload URL for a media file
- */
-export const requestMediaUploadUrl = async (presignedUrlInput: PresignedUrlInput, options?: RequestInit): Promise<PresignedUrlResponse> => {
-
-  return customFetch<PresignedUrlResponse>(getRequestMediaUploadUrlUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      presignedUrlInput,)
-  }
-);}
-
-
-
-
-export const getRequestMediaUploadUrlMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMediaUploadUrl>>, TError,{data: BodyType<PresignedUrlInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof requestMediaUploadUrl>>, TError,{data: BodyType<PresignedUrlInput>}, TContext> => {
-
-const mutationKey = ['requestMediaUploadUrl'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestMediaUploadUrl>>, {data: BodyType<PresignedUrlInput>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  requestMediaUploadUrl(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RequestMediaUploadUrlMutationResult = NonNullable<Awaited<ReturnType<typeof requestMediaUploadUrl>>>
-    export type RequestMediaUploadUrlMutationBody = BodyType<PresignedUrlInput>
-    export type RequestMediaUploadUrlMutationError = ErrorType<unknown>
-
-    /**
- * @summary Request presigned upload URL for a media file
- */
-export const useRequestMediaUploadUrl = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMediaUploadUrl>>, TError,{data: BodyType<PresignedUrlInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof requestMediaUploadUrl>>,
-        TError,
-        {data: BodyType<PresignedUrlInput>},
-        TContext
-      > => {
-      return useMutation(getRequestMediaUploadUrlMutationOptions(options));
     }
 
 export const getDeleteMediaFileUrl = (id: number,) => {

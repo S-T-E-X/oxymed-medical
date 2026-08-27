@@ -57,3 +57,8 @@ Thumbs.db
 # Generated at build time from the database by gen-sitemap (see scripts/src/gen-sitemap.ts)
 .news-seo.json
 .product-seo.json
+
+# Verified media migration export (contains customer-uploaded files; transfer separately).
+/oxymed-media-export/
+/oxymed-media-export.tar.gz
+/artifacts/api-server/.oxymed-local-media/

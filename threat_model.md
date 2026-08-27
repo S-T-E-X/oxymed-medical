@@ -8,8 +8,8 @@ quote requests and warranty claims. A small number of company staff sign into an
 panel to manage every piece of site content, plus production orders, stock, quote forms,
 service reports and warranty devices.
 
-Stack: React 19 + Vite SPA, Express 5 API, PostgreSQL via Drizzle ORM, Replit Object
-Storage (GCS) for media, SMTP for outbound mail, OpenAI via the Replit AI proxy for
+Stack: React 19 + Vite SPA, Express 5 API, PostgreSQL via Drizzle ORM, server-local
+filesystem storage for media, SMTP for outbound mail, OpenAI via the Replit AI proxy for
 translation. Authentication is JWT bearer tokens issued to admin accounts; there are no
 end-user accounts.
 
@@ -26,12 +26,15 @@ end-user accounts.
 - **Business data** — product catalog, pricing inside quote forms, production orders, BOM
   and material stock, supplier-facing service reports. Exposure would leak commercial
   terms; tampering would corrupt manufacturing records.
-- **Application secrets** — `DATABASE_URL`, `JWT_SECRET`, SMTP credentials, object storage
-  configuration and the AI proxy key. All are supplied as environment secrets and must
-  never reach a response body, a log line, or the client bundle.
-- **Stored media** — uploaded images, catalog PDFs and generated quote/service PDFs in
-  object storage. The private object dir also holds objects that were never intended for
-  publication.
+- **Application secrets** — `DATABASE_URL`, `JWT_SECRET`, SMTP credentials and the AI proxy key.
+  All are supplied as environment secrets and must never reach a response body, a log line, or
+  the client bundle.
+- **Runtime filesystem configuration** — `MEDIA_STORAGE_DIR` selects the absolute persistent
+  directory owned by the API service account. It is not secret, but it must never be supplied
+  by a browser request or point at the deployed code directory.
+- **Stored media** — uploaded images and catalog PDFs on the VPS's persistent disk, plus
+  generated quote/service PDFs. Only the UUID-based public media tree may be read through
+  the API; staging and trash directories are never web-served.
 
 ## Trust Boundaries
 
@@ -43,9 +46,10 @@ end-user accounts.
   `requireAuth`. Draft/unpublished content must not cross this boundary.
 - **API to PostgreSQL** — the API holds full database credentials. All access goes through
   Drizzle's parameterized query builder; there is no string-concatenated SQL.
-- **API to object storage** — the server mints presigned PUT URLs. A presigned URL is a
-  write capability against the project's bucket, so issuing one is an authenticated,
-  rate-limited operation.
+- **API to the local media filesystem** — the API is the only writer to
+  `MEDIA_STORAGE_DIR`. It receives authenticated uploads, validates their content signature,
+  stages them outside the public tree, registers the row, then publishes atomically. The
+  running service account has write access; the reverse proxy has none.
 - **API to external services** — SMTP and the OpenAI proxy are called with secrets held
   server-side. Admin-triggered outbound mail and AI translation are the only paths that
   reach them.
@@ -59,10 +63,11 @@ end-user accounts.
   limits, global rate limit, error handler) and `artifacts/api-server/src/routes/index.ts`
   (route registration).
 - Highest-risk code: `routes/auth.ts` (login, admin user management), `routes/storage.ts`
-  and `routes/media.ts` (upload URLs, object serving, ImageMagick conversion),
+  and `routes/media.ts` (local upload handling and ImageMagick conversion),
   `routes/settings.ts` (key-value site config), `routes/quotes.ts`, `routes/warranty.ts`
   and `routes/service-reports.ts` (anonymous input and public lookups),
-  `lib/auth.ts` (JWT verification), `lib/objectStorage.ts`.
+  `lib/auth.ts` (JWT verification), `lib/localMedia.ts` (UUID path guards, staging,
+  publish/delete recovery and safe filesystem resolution).
 - Public surfaces: content GETs (products, categories, sliders, news, references,
   catalogs, certificates, corporate, settings), `POST /api/quotes`,
   `POST /api/warranty/devices/:id/claims`, `POST /api/analytics/track`, warranty and
@@ -114,18 +119,19 @@ Error responses to anonymous callers MUST be generic: raw Zod parser output and 
 traces reveal internal field structure and MUST NOT be echoed. The global error handler
 MUST convert every unhandled exception into an opaque 500 while logging the detail
 server-side. Request logs MUST redact `authorization` and `cookie` headers. The public
-object route MUST serve private-bucket objects only when the object path is registered in
-`media_files`, so unregistered private objects cannot be reached by guessing a path, and
-path traversal sequences MUST be rejected before reaching the storage layer.
+ object route MUST serve local files only when the UUID object path is registered in
+ `media_files`, so orphaned or manually placed files cannot be reached by guessing a path.
+ Path traversal sequences MUST be rejected before reaching the filesystem, and the row's
+ MIME type—not an extension on the UUID filename—MUST drive the response type.
 
 ### Denial of Service
 
 The API is exposed to the open internet with no CDN in front of it. A global per-IP rate
 limit MUST apply to `/api`, with tighter limits on the paths that cost the most or are the
 most attractive to abuse: login, anonymous form submission, serial/QR enumeration, media
-upload URL issuance, and expensive admin operations (image conversion, SMTP tests).
-Request bodies MUST be capped (1 MB JSON) and uploads validated to a maximum size before a
-presigned URL is issued. Every list endpoint MUST clamp client-supplied `limit`/`offset`
+ raw-media upload, and expensive admin operations (image conversion, SMTP tests).
+ Request bodies MUST be capped (1 MB JSON), while raw uploads have their own strict maximum
+ before being staged. Every list endpoint MUST clamp client-supplied `limit`/`offset`
 so a single request cannot pull an entire table. Free-text fields on public forms MUST
 have explicit maximum lengths.
 
@@ -133,10 +139,11 @@ have explicit maximum lengths.
 
 There is a single admin role: any authenticated admin can perform any admin action. The
 guarantee the system upholds today is narrower — an admin MUST NOT be able to change
-another admin's password (only their own, and only after re-entering their current
-password), and an admin MUST NOT be able to delete the last remaining account. Presigned
-upload URLs MUST be issued only to authenticated callers. Uploaded media MUST be validated
-for declared MIME type, matching file extension, and size, and filenames MUST be rejected
-if they contain path separators or control characters. Server-side image conversion runs
-an external binary against stored objects; its inputs MUST come from registered media rows
-rather than from client-supplied paths.
+ another admin's password (only their own, and only after re-entering their current
+ password), and an admin MUST NOT be able to delete the last remaining account. Local-media
+ upload MUST require authentication. The server, not the caller, MUST generate the UUID path;
+ uploads MUST be validated for declared MIME type, matching file extension, size and file
+ signature, while display filenames reject path separators and control characters. An
+ interrupted upload/delete MUST be recovered from its deterministic staging/trash entry when
+ the API starts, and unregistered filesystem objects must be removed. Server-side image
+ conversion runs an external binary against registered media rows rather than client paths.

@@ -1,0 +1,9 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "bG2ITtLzLod02utC0Q16_"
+uri = "file://oxymed-media-export.tar.gz"
+type = "unspecified"
+title = "Oxymed medya yedeği"
+description = "VPS'e taşınmak üzere doğrulanmış 186 medya dosyası ve SHA-256 manifestini içerir."

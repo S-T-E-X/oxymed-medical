@@ -33,7 +33,7 @@ export function parseLimitOffset(
   return { limit, offset };
 }
 
-const MAX_MEDIA_UPLOAD_BYTES = 15 * 1024 * 1024;
+export const MAX_MEDIA_UPLOAD_BYTES = 15 * 1024 * 1024;
 const MAX_FILENAME_LENGTH = 180;
 
 const allowedMediaTypes = new Set([
@@ -74,6 +74,45 @@ export function validateMediaUploadMetadata(input: {
   }
 
   return { ok: true };
+}
+
+/**
+ * Browser-provided MIME types are not trustworthy. Verify the small set of
+ * supported formats from their file signatures before writing them to disk.
+ */
+export function detectMediaContentType(body: Buffer): string | null {
+  if (
+    body.length >= 3 &&
+    body[0] === 0xff &&
+    body[1] === 0xd8 &&
+    body[2] === 0xff
+  ) {
+    return "image/jpeg";
+  }
+  if (
+    body.length >= 8 &&
+    body.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+  ) {
+    return "image/png";
+  }
+  if (
+    body.length >= 12 &&
+    body.subarray(0, 4).toString("ascii") === "RIFF" &&
+    body.subarray(8, 12).toString("ascii") === "WEBP"
+  ) {
+    return "image/webp";
+  }
+  if (
+    body.length >= 12 &&
+    body.subarray(4, 8).toString("ascii") === "ftyp" &&
+    ["avif", "avis"].includes(body.subarray(8, 12).toString("ascii"))
+  ) {
+    return "image/avif";
+  }
+  if (body.length >= 5 && body.subarray(0, 5).toString("ascii") === "%PDF-") {
+    return "application/pdf";
+  }
+  return null;
 }
 
 /**

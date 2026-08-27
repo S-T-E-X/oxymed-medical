@@ -8,42 +8,24 @@ değiştirin.
 
 ---
 
-## ⚠️ ÖNCE BUNU OKUYUN — Görseller sorunu
+## ⚠️ ÖNCE BUNU OKUYUN — Görsellerin kalıcı diske taşınması
 
-Bu en önemli uyarı. Atlamayın.
+Bu en önemli adımdır. Atlamayın.
 
-Sitenin ürün, slider ve haber görselleri şu anda **Replit'in kendi dosya deposunda**
-(object storage) duruyor. Veritabanında görsel adresleri şöyle kayıtlı:
+Sitenin ürün, slider ve haber görselleri eski Replit kurulumunda object storage’da
+duruyordu. Yeni mimaride görseller VPS’in **kalıcı diskinde** tutulur. Veritabanındaki
+görsel adresleri değişmeden kalır:
 
 ```
 /api/storage/public-objects/objects/uploads/d3ce89b5-...
 ```
 
-Bu adresler çalışırken sunucu, Replit'in içinde çalışan özel bir yardımcı servise
-(`127.0.0.1:1106`) soruyor: "bu dosyayı bana ver." **Bu yardımcı servis sadece Replit'te
-vardır.** Kendi sunucunuzda yoktur ve kurulamaz.
+`/api/storage/public-objects/` yolu, API tarafından güvenli disk kökünden sunulur. Bu nedenle
+eski görseller için bu rehberdeki medya arşivi adımını uygulamanız gerekir. Yeni yüklemeler
+admin panelinden doğrudan bu diske yazılır; istemcinin dosya adı disk yolunu belirlemez ve
+dosya içeriği (JPEG, PNG, WebP, AVIF ve PDF) kaydedilmeden önce imza kontrolünden geçer.
 
-**Sonuç:** Siteyi olduğu gibi kendi sunucunuza taşırsanız:
-
-- ❌ Ürün, slider ve haber görselleri **görünmez** (kırık resim çıkar)
-- ❌ Admin panelinden **yeni görsel yükleyemezsiniz**
-- ❌ Katalog ve sertifika PDF'leri **açılmaz**
-- ✅ Yazılar, menüler, diller, teklif formu, admin paneli, veritabanı — hepsi çalışır
-
-`src/assets/` klasöründeki sabit görseller (örneğin `cerrahi-pendant-hero.jpg`) etkilenmez,
-onlar kodun içinde gelir ve sorunsuz çalışır.
-
-### Üç seçeneğiniz var
-
-| Seçenek | Ne yapmanız gerekir | Zorluk |
-|---|---|---|
-| **1. Replit'te kalmak** | Hiçbir şey. Site zaten çalışıyor. | Kolay |
-| **2. Google Cloud Storage hesabı açmak** | Google Cloud'da bir "bucket" ve "service account" oluşturup anahtar dosyasını sunucuya koymak; bir yazılımcının `objectStorage.ts` dosyasını bu anahtarı kullanacak şekilde 1–2 saatlik düzenlemesi | Orta |
-| **3. Görselleri sunucunun kendi diskinde tutmak** | Bir yazılımcının `objectStorage.ts` dosyasını "dosyaları `/var/www/oxymed/uploads` klasörüne yaz" diyecek şekilde yeniden yazması + mevcut görselleri Replit'ten indirip oraya kopyalaması | Orta |
-
-Bu rehber, **görseller dışındaki her şeyin** kurulumunu anlatır. Kuruluma başlamadan önce
-yukarıdaki seçeneklerden birine karar verin. Kararsızsanız: önce bu rehberle kurun, site
-görselsiz de olsa ayağa kalksın, görselleri sonra çözün.
+`src/assets/` klasöründeki sabit görseller etkilenmez; kodla birlikte gelir.
 
 ---
 
@@ -476,9 +458,10 @@ CHROMIUM_PATH=/usr/bin/google-chrome-stable
 # Üretim modu.
 NODE_ENV=production
 
-# ─── GÖRSEL DEPOLAMA (Replit dışında çalışmaz — en üstteki uyarıya bakın) ──
-PUBLIC_OBJECT_SEARCH_PATHS=/oxymed/public
-PRIVATE_OBJECT_DIR=/oxymed/private
+# ─── KALICI GÖRSEL DEPOLAMA ─────────────────────────────────────────────────
+# Bu dizin deploy/kod dizininden AYRI olmalıdır. Uygulama burada media/files/
+# altına yazar; Nginx yalnızca o public alt dizinini servis eder.
+MEDIA_STORAGE_DIR=/var/lib/oxymed/media
 
 # ─── E-POSTA (teklif ve iletişim formları için) ───────────────────────────
 # Bu bilgileri hosting/e-posta sağlayıcınızdan alın.
@@ -531,13 +514,29 @@ JWT_SECRET=xK9m2Pq7vN3wR8tY5uI1oP4aS6dF9gH2jK5lZ0xC3vB7nM1qW4eR8tY==
 > ⚠️ Bu anahtarı **kimseyle paylaşmayın**. Bir yere not alın; değiştirirseniz tüm admin
 > kullanıcıları oturumdan düşer (yeniden giriş yaparlar, veri kaybı olmaz).
 
-## 3.2 Dosyayı koruyun
+## 3.2 Uygulama kullanıcısını ve kalıcı medya klasörünü hazırlayın
+
+API’yi `root` ile çalıştırmayın. Aşağıdaki komutlar yalnızca site için ayrı bir sistem
+kullanıcısı ve medya dizini oluşturur:
 
 ```bash
+adduser --system --group --home /var/lib/oxymed --shell /usr/sbin/nologin oxymed
+install -d -o oxymed -g oxymed -m 0750 /var/lib/oxymed/media/files
+install -d -o oxymed -g oxymed -m 0750 /var/lib/oxymed/media/.staging
+install -d -o oxymed -g oxymed -m 0750 /var/lib/oxymed/media/.trash
+```
+
+> Medya dizinini **`/var/www/oxymed` içine koymayın.** Kod güncellemesi veya yanlışlıkla
+> klasör temizleme görselleri silmemelidir.
+
+## 3.3 Ayar dosyasını koruyun
+
+```bash
+chown oxymed:oxymed /var/www/oxymed/.env
 chmod 600 /var/www/oxymed/.env
 ```
 
-Bu, `.env` dosyasını sadece `root` kullanıcısının okuyabilmesini sağlar.
+Bu, `.env` dosyasını yalnızca API’nin çalıştığı `oxymed` kullanıcısının okuyabilmesini sağlar.
 
 ---
 
@@ -575,7 +574,19 @@ istiyorsunuz.
 
 ### Yol 1 — Replit'teki mevcut verilerinizi taşıyın (tavsiye edilen)
 
-**Adım 1 — Replit'te yedek alın.**
+**Adım 0 — Görsel arşivini Replit'ten indirin.**
+
+Bu sürümle birlikte oluşturulan `oxymed-media-export.tar.gz` dosyası, kayıtlı **186** medya
+dosyasını ve SHA-256 doğrulama manifestini içerir. Replit dosya listesinden bu dosyayı sağ
+tıklayıp **Download** ile bilgisayarınıza indirin. Bu arşiv kod deposuna eklenmez; ayrıca
+FileZilla ile VPS’e yükleyeceksiniz.
+
+> Başka bir Replit çalışma alanından ilk kez geçiş yapıyorsanız: eski API hâlâ çalışırken
+> Replit Shell’de `pnpm --filter @workspace/scripts run export-media-to-local-disk` komutunu
+> çalıştırın. Ardından `tar -C oxymed-media-export -czf oxymed-media-export.tar.gz files manifest.json`
+> ile arşivi oluşturup indirin. Komut herhangi bir dosya atlanırsa hata vererek durur.
+
+**Adım 1 — Replit'te veritabanı yedeği alın.**
 
 Replit'te projenizi açın, alttaki **Shell** sekmesine tıklayın ve şunu yazın:
 
@@ -590,15 +601,16 @@ Birkaç saniye sürer. Hiçbir çıktı vermezse başarılı demektir.
 Replit'in sol tarafındaki dosya listesinde `oxymed-yedek.sql` dosyasını bulun, üzerine sağ
 tıklayın > **Download**.
 
-**Adım 3 — Sunucuya yükleyin.**
+**Adım 3 — Yedekleri sunucuya yükleyin.**
 
-FileZilla ile bağlanın, sol panelden `oxymed-yedek.sql` dosyasını bulun, sağ paneli
-`/var/www/oxymed` yapın ve dosyayı yükleyin.
+FileZilla ile bağlanın, sol panelden `oxymed-yedek.sql` ve
+`oxymed-media-export.tar.gz` dosyalarını bulun, sağ paneli `/var/www/oxymed` yapın ve
+ikisini de yükleyin.
 
 > GitHub yolunu (Yol A) kullandıysanız ve FileZilla kurmadıysanız, **bilgisayarınızın**
 > terminalinde şu komutla da yükleyebilirsiniz:
 > ```bash
-> scp oxymed-yedek.sql root@SUNUCU_IP:/var/www/oxymed/
+> scp oxymed-yedek.sql oxymed-media-export.tar.gz root@SUNUCU_IP:/var/www/oxymed/
 > ```
 
 **Adım 4 — Sunucuda geri yükleyin.**
@@ -624,7 +636,36 @@ Komut ne yapacağını gösterip onay isteyebilir — ok tuşlarıyla
 `Yes, I want to execute all statements` seçeneğini seçip Enter'a basın.
 `No changes detected` veya `Changes applied` görürseniz tamamdır.
 
-**Adım 6 — Kontrol edin ve yedeği silin.**
+**Adım 6 — Medya arşivini kalıcı diske açın ve doğrulayın.**
+
+```bash
+cd /var/www/oxymed
+tar -xzf oxymed-media-export.tar.gz -C /var/lib/oxymed/media
+chown -R oxymed:oxymed /var/lib/oxymed/media
+node - <<'NODE'
+const fs = require("node:fs");
+const crypto = require("node:crypto");
+const manifest = require("/var/lib/oxymed/media/manifest.json");
+let bad = 0;
+for (const item of manifest.files) {
+  const p = `/var/lib/oxymed/media/files${item.objectPath}`;
+  const bytes = fs.readFileSync(p);
+  const hash = crypto.createHash("sha256").update(bytes).digest("hex");
+  if (bytes.length !== item.size || hash !== item.sha256) {
+    console.error(`HATALI: ${item.objectPath}`);
+    bad++;
+  }
+}
+if (bad) process.exit(1);
+console.log(`Doğrulandı: ${manifest.count} medya dosyası.`);
+NODE
+rm -f oxymed-media-export.tar.gz
+```
+
+Komut `Doğrulandı` mesajını vermeden API’yi yeni sürümle başlatmayın. Arşivin bir kopyasını
+bilgisayarınızda veya ayrı bir yedek alanında saklayın.
+
+**Adım 7 — Kontrol edin ve veritabanı yedeğini silin.**
 
 ```bash
 psql "$DATABASE_URL" -c "select count(*) from products;"
@@ -733,12 +774,19 @@ Requires=postgresql.service
 
 [Service]
 Type=simple
-User=root
+User=oxymed
+Group=oxymed
 WorkingDirectory=/var/www/oxymed/artifacts/api-server
 EnvironmentFile=/var/www/oxymed/.env
 ExecStart=/usr/bin/node --enable-source-maps /var/www/oxymed/artifacts/api-server/dist/index.mjs
 Restart=always
 RestartSec=5
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/oxymed/media
 StandardOutput=journal
 StandardError=journal
 
@@ -805,7 +853,7 @@ server {
     index index.html;
 
     # Yüklenen dosyalar için sınır (görsel/PDF yükleme)
-    client_max_body_size 25M;
+    client_max_body_size 16M;
 
     # Sıkıştırma — sayfalar daha hızlı açılır
     gzip on;
@@ -814,7 +862,9 @@ server {
     gzip_types text/plain text/css text/xml application/json application/javascript
                application/xml+rss image/svg+xml;
 
-    # API isteklerini API sunucusuna ilet
+    # API isteklerini API sunucusuna ilet. Buna diskten sunulan medya da dahildir;
+    # uygulama yalnızca media_files tablosunda kayıtlı dosyaları verir ve doğru MIME
+    # türünü (uzantısız UUID dosya adından bağımsız olarak) ayarlar.
     location /api/ {
         proxy_pass http://127.0.0.1:5000;
         proxy_http_version 1.1;
@@ -924,29 +974,70 @@ Sitenin canonical (asıl) adresi **`https://www.oxymedmedical.com`** olarak ayar
 nano /etc/nginx/sites-available/oxymed
 ```
 
-Dosyanın **en başına** (mevcut `server {` bloğunun üstüne) şu bloğu ekleyin:
+Certbot sertifikayı oluşturduktan sonra dosyanın **tamamını** aşağıdaki nihai yapılandırma
+ile değiştirin. Bu ayar hem yolu hem de sorgu parametrelerini korur; `www` olmayan adres
+hiçbir sayfayı servis etmeden tek bir 301 döndürür.
 
 ```nginx
-# www olmayan adresi www'ye kalıcı olarak yönlendir (SEO için gerekli)
+# http://alanadi.com/* ve http://www.alanadi.com/* → https://www.alanadi.com/*
+server {
+    listen 80;
+    listen [::]:80;
+    server_name oxymedmedical.com www.oxymedmedical.com;
+    return 301 https://www.oxymedmedical.com$request_uri;
+}
+
+# https://alanadi.com/* → https://www.alanadi.com/*
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
     server_name oxymedmedical.com;
+    ssl_certificate     /etc/letsencrypt/live/oxymedmedical.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/oxymedmedical.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    return 301 https://www.oxymedmedical.com$request_uri;
+}
 
+# Tek içerik sunan canonical host
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name www.oxymedmedical.com;
     ssl_certificate     /etc/letsencrypt/live/oxymedmedical.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/oxymedmedical.com/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    return 301 https://www.oxymedmedical.com$request_uri;
+    root /var/www/oxymed/artifacts/oxymed-medikal/dist/public;
+    index index.html;
+    client_max_body_size 16M;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml application/json application/javascript
+               application/xml+rss image/svg+xml;
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+    }
+
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+    location = /sitemap.xml { add_header Cache-Control "no-cache"; }
+    location = /robots.txt  { add_header Cache-Control "no-cache"; }
+    location / { try_files $uri $uri/index.html $uri.html /index.html; }
 }
-```
-
-Sonra dosyada aşağı inin. Certbot'un eklediği `listen 443 ssl;` satırlarını içeren asıl
-bloğu bulun ve onun `server_name` satırını şöyle değiştirin — sadece `www` kalsın:
-
-```nginx
-    server_name www.oxymedmedical.com;
 ```
 
 **`Ctrl+O`** > **Enter** > **`Ctrl+X`** ile kaydedin, sonra:
@@ -958,17 +1049,17 @@ nginx -t && systemctl reload nginx
 ## 8.3 Yönlendirmeyi doğrulayın
 
 ```bash
-curl -sI https://oxymedmedical.com | head -3
+curl -sI http://oxymedmedical.com | grep -Ei 'HTTP/|location:'
+curl -sI 'https://oxymedmedical.com/en/products?x=1' | grep -Ei 'HTTP/|location:'
+curl -sI https://www.oxymedmedical.com/sitemap.xml | head -1
+curl -sI https://www.oxymedmedical.com/robots.txt | head -1
+curl -sI https://www.oxymedmedical.com/en/bilinmeyen-derin-link | head -1
+curl -sI https://www.oxymedmedical.com/api/healthz | head -1
 ```
 
-Şunu görmelisiniz:
-
-```
-HTTP/1.1 301 Moved Permanently
-location: https://www.oxymedmedical.com/
-```
-
-`301` ve `www`'li adres görüyorsanız doğru yapılandırdınız.
+İlk iki komut tek bir `301` ve `https://www.oxymedmedical.com/...` adresini göstermeli.
+İkinci komutta `/en/products?x=1` aynen korunur. Sonraki dört komut `200` döndürmeli;
+sonsuz yönlendirme veya `www` olmayan bir `200` görürseniz yapılandırmayı kontrol edin.
 
 ---
 
@@ -1164,7 +1255,18 @@ free -h
 
 ## Görseller görünmüyor
 
-Beklenen durum. Rehberin **en üstündeki uyarıya** bakın.
+Önce şunları kontrol edin:
+
+```bash
+ls -la /var/lib/oxymed/media/files/objects/uploads | head
+sudo -u oxymed test -r /var/lib/oxymed/media/files/objects/uploads/DOSYA_UUID && echo okunabilir
+nginx -t
+```
+
+Dosya dizinde yoksa medya arşivini tekrar açın ve Bölüm 4.2’deki SHA-256 doğrulamasını
+çalıştırın. Dosya var fakat tarayıcıda açılmıyorsa `systemctl status oxymed-api` ve
+`journalctl -u oxymed-api -n 50 --no-pager` ile API’nin çalıştığını kontrol edin. Medya,
+dosyanın kayıtlı olduğunu ve MIME türünü doğrulayan API rotası üzerinden servis edilir.
 
 ## Teklif/iletişim e-postaları gitmiyor
 
@@ -1212,8 +1314,11 @@ set -a; . /var/www/oxymed/.env; set +a
 TARIH=$(date +%Y-%m-%d)
 pg_dump "$DATABASE_URL" --no-owner --no-privileges \
   | gzip > "/root/yedekler/oxymed-$TARIH.sql.gz"
+# Veritabanı ile birlikte kullanıcı yüklemelerini de yedekle.
+tar -C /var/lib/oxymed/media -czf "/root/yedekler/oxymed-media-$TARIH.tar.gz" files manifest.json
 # 30 günden eski yedekleri sil
 find /root/yedekler -name "oxymed-*.sql.gz" -mtime +30 -delete
+find /root/yedekler -name "oxymed-media-*.tar.gz" -mtime +30 -delete
 EOF
 
 chmod +x /root/yedek-al.sh
@@ -1256,6 +1361,11 @@ Merak edenler için, kurduğunuz şeyin nelerden oluştuğu:
 ├── lib/                     ← İki tarafın da kullandığı ortak kod (veritabanı şeması vb.)
 ├── scripts/                 ← Yardımcı araçlar (sitemap üretimi, örnek veri, çeviri)
 └── .env                     ← Sizin ayarlarınız (parolalar burada — kimseyle paylaşmayın)
+
+/var/lib/oxymed/media/
+├── files/                   ← Nginx’in sunduğu kalıcı, public görseller/PDF’ler
+├── .staging/                ← Yükleme doğrulanırken kullanılan private alan
+└── .trash/                  ← Silme işlemi tamamlanırken kullanılan private alan
 ```
 
 **Nasıl çalışıyor?**
@@ -1268,6 +1378,11 @@ Merak edenler için, kurduğunuz şeyin nelerden oluştuğu:
 5. React'in veriye ihtiyacı olduğunda `/api/products` adresine istek atar
 6. nginx bu isteği `127.0.0.1:5000`'deki **API sunucusuna** iletir
 7. API, **PostgreSQL** veritabanından veriyi okur ve JSON olarak geri döner
+
+Görsel isteği geldiğinde (`/api/storage/public-objects/...`) Nginx isteği API’ye iletir.
+API, önce `media_files` kaydını doğrular, doğru MIME türünü belirler ve dosyayı
+`/var/lib/oxymed/media/files` altındaki kalıcı diskten verir. Bu, yüklemelerin kalıcı olmasını
+sağlar; kayıt dışı veya elle bırakılmış dosyalar dışarıdan okunamaz.
 
 **Neden 172 sayfa önceden HTML olarak üretiliyor?** Çünkü Google ve yapay zeka arama
 motorları JavaScript çalıştırmadan okuyabilsin diye. Sitenin SEO altyapısının temeli budur —

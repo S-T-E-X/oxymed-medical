@@ -2180,29 +2180,10 @@ export const ConvertOpaqueMediaResponse = zod.object({
 
 
 /**
- * @summary Upload a media file (admin only)
+ * @summary Upload a media file directly to server-local storage (admin only)
  */
-export const UploadMediaBody = zod.object({
-  "filename": zod.string(),
-  "objectPath": zod.string(),
-  "mimeType": zod.string().optional(),
-  "size": zod.number().optional(),
-  "alt": zod.string().optional()
-})
-
-
-/**
- * @summary Request presigned upload URL for a media file
- */
-export const RequestMediaUploadUrlBody = zod.object({
-  "name": zod.string(),
-  "size": zod.number(),
-  "contentType": zod.string()
-})
-
-export const RequestMediaUploadUrlResponse = zod.object({
-  "uploadURL": zod.string(),
-  "objectPath": zod.string()
+export const UploadMediaHeader = zod.object({
+  "X-Media-Filename": zod.string().describe('Percent-encoded original display filename. It never determines the server disk path.')
 })
 
 

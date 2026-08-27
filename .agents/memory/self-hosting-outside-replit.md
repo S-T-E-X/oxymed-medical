@@ -1,27 +1,26 @@
 ---
 name: Self-hosting this project outside Replit
-description: What actually breaks when the site is moved to a plain Ubuntu VPS, and which parts are portable. Read before promising a customer that the app can be self-hosted.
+description: The deployment constraints for moving the site to a plain Ubuntu VPS. Read before promising a customer that the app can be self-hosted.
 ---
 
-## The one blocking dependency: object storage
+## Media on a self-hosted VPS
 
 Uploaded media (product/slider/news images, catalog and certificate PDFs) is served
-through the API's object-storage layer, which authenticates and signs URLs against a
-**Replit-only sidecar on `127.0.0.1:1106`**. There is no environment variable that
-redirects it — the host is a constant, and the code raises "make sure you're running on
-Replit" when the sidecar is absent.
+from the application's local persistent media directory. The URL shape remains
+`/api/storage/public-objects/objects/uploads/<UUID>`, so existing database references do
+not need a mass rewrite when the media archive is restored onto the VPS.
 
-Compounding this: image locations are persisted in the DB as `/api/storage/public-objects/...`
-paths (and at least one row holds a full absolute `*.replit.dev` URL). So moving the DB
-moves the broken references with it — **existing** images break, not just new uploads.
+**Rule:** keep this legacy URL routed through the API rather than Nginx directly aliasing the
+media directory.
 
-**Why:** the storage layer was written against the Replit sidecar contract, not against a
-generic S3/GCS client, so it has no credential path of its own.
+**Why:** public object names are extensionless UUIDs, so Nginx cannot infer their response MIME
+type; more importantly, only the API can check the `media_files` registration allowlist. A
+direct alias could expose orphaned/manual files on disk.
 
-**How to apply:** any "can we host this ourselves?" answer must state up front that media
-is the blocker and needs either real GCS credentials wired into the storage layer, a
-local-disk rewrite, or staying on Replit. Everything else — pages, i18n, admin, quotes,
-Postgres, prerendered SEO — is portable with only env vars and a reverse proxy.
+**How to apply:** set `MEDIA_STORAGE_DIR` to an absolute persistent directory outside the
+release tree, restore the verified media archive there, grant write access only to the API
+service user, and proxy `/api/` normally. API startup reconciles interrupted staging/trash
+operations before it accepts traffic.
 
 ## Other Replit couplings worth knowing
 

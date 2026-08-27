@@ -1163,14 +1163,6 @@ export interface MediaFile {
   createdAt: string;
 }
 
-export interface MediaUploadInput {
-  filename: string;
-  objectPath: string;
-  mimeType?: string;
-  size?: number;
-  alt?: string;
-}
-
 export interface MediaListResponse {
   items: MediaFile[];
   total: number;
@@ -1213,17 +1205,6 @@ export interface MediaConversionResponse {
   skipped: number;
   failed: number;
   items: MediaConversionItem[];
-}
-
-export interface PresignedUrlInput {
-  name: string;
-  size: number;
-  contentType: string;
-}
-
-export interface PresignedUrlResponse {
-  uploadURL: string;
-  objectPath: string;
 }
 
 export interface WarrantyDevice {

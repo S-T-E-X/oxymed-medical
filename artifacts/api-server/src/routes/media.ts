@@ -1,15 +1,25 @@
-import { Router, type IRouter } from "express";
+import express, { Router, type IRouter } from "express";
 import { db, mediaFilesTable } from "@workspace/db";
 import { eq, desc, count, inArray } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
-import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 import {
+  detectMediaContentType,
   expensiveAdminRateLimiter,
+  MAX_MEDIA_UPLOAD_BYTES,
   mediaUploadRateLimiter,
   validateMediaUploadMetadata,
 } from "../lib/security";
 import { writeAdminAuditLog } from "../lib/audit";
-import { invalidateCachedMedia } from "../lib/mediaCache";
+import {
+  discardStagedLocalMedia,
+  finalizeLocalMediaDeletion,
+  publishStagedLocalMedia,
+  readLocalMedia,
+  replaceLocalMedia,
+  restoreStagedLocalMediaDeletion,
+  stageLocalMedia,
+  stageLocalMediaDeletion,
+} from "../lib/localMedia";
 import { z } from "zod/v4";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -18,31 +28,7 @@ import { tmpdir } from "node:os";
 import { basename, extname, join } from "node:path";
 
 const router: IRouter = Router();
-const storage = new ObjectStorageService();
 const execFileAsync = promisify(execFile);
-
-/**
- * Media upload flow (two steps):
- *  1. POST /api/media/request-upload-url — request a GCS presigned URL
- *     Client receives { uploadURL, objectPath }
- *  2. Client PUTs file bytes directly to uploadURL (GCS, not this server)
- *  3. POST /api/media/upload — register the uploaded file's metadata in DB
- *     Server verifies the object exists in GCS before saving
- */
-
-const MediaRegisterBody = z.object({
-  filename: z.string().min(1).max(180),
-  objectPath: z.string().min(1).max(512).startsWith("/objects/"),
-  mimeType: z.string().max(120).optional(),
-  size: z.number().int().positive().optional(),
-  alt: z.string().max(500).optional(),
-});
-
-const PresignedUrlBody = z.object({
-  name: z.string().min(1).max(180),
-  size: z.number().int().positive(),
-  contentType: z.string().min(1).max(120),
-});
 
 const MediaConversionBody = z.object({
   ids: z.array(z.number().int().positive()).min(1).optional(),
@@ -66,10 +52,6 @@ type ConversionItem = {
   error: string | null;
 };
 
-/**
- * Clamp client-supplied paging so a single request cannot ask the database for
- * an unbounded result set.
- */
 function parsePagination(
   query: Record<string, unknown>,
   defaultLimit: number,
@@ -82,9 +64,6 @@ function parsePagination(
 }
 
 function parseId(raw: string | string[]): number {
-  // Strict positive-integer parsing: malformed input yields 0, which matches
-  // no serial primary key, so callers fall through to their normal 404 path
-  // instead of passing NaN into a SQL query.
   const str = Array.isArray(raw) ? raw[0] : raw;
   const parsed = Number(str);
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 0;
@@ -97,6 +76,20 @@ function isJpegMedia(filename: string, mimeType?: string | null): boolean {
 function isPngOrWebpMedia(filename: string, mimeType?: string | null): boolean {
   const mime = mimeType?.toLowerCase();
   return mime === "image/png" || mime === "image/webp" || /\.(png|webp)$/i.test(filename);
+}
+
+function mediaFilename(req: express.Request): string | null {
+  const encoded = req.get("x-media-filename");
+  if (!encoded || encoded.length > 600) return null;
+  try {
+    return decodeURIComponent(encoded);
+  } catch {
+    return null;
+  }
+}
+
+function requestContentType(req: express.Request): string {
+  return (req.get("content-type") ?? "").split(";", 1)[0]!.trim().toLowerCase();
 }
 
 async function magickValue(args: string[]): Promise<string> {
@@ -132,8 +125,7 @@ async function convertMediaFile(
   const outputPath = join(tempDir, "converted.jpg");
 
   try {
-    const objectFile = await storage.getObjectEntityFile(media.objectPath);
-    const [sourceBuffer] = await objectFile.download();
+    const sourceBuffer = await readLocalMedia(media.objectPath);
     await writeFile(inputPath, sourceBuffer);
 
     const opaque = (await magickValue([inputPath, "-format", "%[opaque]", "info:"])).toLowerCase() === "true";
@@ -184,16 +176,7 @@ async function convertMediaFile(
 
     const jpegBuffer = await readFile(outputPath);
     const nextFilename = jpgFilename(filename);
-
-    // Keep the object path stable. Existing product, slider, quote, and
-    // settings records store the public URL rather than the media id.
-    await objectFile.save(jpegBuffer, {
-      resumable: false,
-      metadata: {
-        contentType: "image/jpeg",
-        cacheControl: "public, max-age=86400",
-      },
-    });
+    await replaceLocalMedia(media.objectPath, jpegBuffer);
     const [updated] = await db.update(mediaFilesTable)
       .set({
         filename: nextFilename,
@@ -249,8 +232,6 @@ router.post("/media/convert-opaque", requireAuth, expensiveAdminRateLimiter, asy
     const candidates = mediaRows.filter((media) => isPngOrWebpMedia(media.filename, media.mimeType) || isJpegMedia(media.filename, media.mimeType));
     const items: ConversionItem[] = [];
 
-    // Process sequentially so a large media library cannot exhaust memory or
-    // create a burst of concurrent ImageMagick processes.
     for (const media of candidates) {
       items.push(await convertMediaFile(media, parsed.data.dryRun));
     }
@@ -273,75 +254,110 @@ router.post("/media/convert-opaque", requireAuth, expensiveAdminRateLimiter, asy
 });
 
 /**
- * Step 1: Request a GCS presigned upload URL.
- * Returns { uploadURL, objectPath } — client must PUT file bytes to uploadURL.
+ * Receive a single media body directly into server-local storage. The browser
+ * sends the raw bytes with Content-Type and an encoded display filename header;
+ * neither header affects the disk path.
  */
-router.post("/media/request-upload-url", requireAuth, mediaUploadRateLimiter, async (req, res): Promise<void> => {
-  const parsed = PresignedUrlBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-  const validation = validateMediaUploadMetadata(parsed.data);
-  if (!validation.ok) {
-    res.status(400).json({ error: validation.error });
-    return;
-  }
-  const uploadURL = await storage.getObjectEntityUploadURL();
-  const objectPath = storage.normalizeObjectEntityPath(uploadURL);
-  req.log.info({ objectPath }, "Presigned upload URL generated");
-  res.json({ uploadURL, objectPath });
-});
+router.post(
+  "/media/upload",
+  requireAuth,
+  mediaUploadRateLimiter,
+  express.raw({ type: () => true, limit: MAX_MEDIA_UPLOAD_BYTES }),
+  async (req, res): Promise<void> => {
+    const filename = mediaFilename(req);
+    const contentType = requestContentType(req);
+    const body = req.body;
 
-/**
- * Step 3: Register a successfully uploaded file's metadata.
- * Verifies the object exists in GCS before saving to DB.
- * Call this AFTER the client has PUT the file to the presigned URL.
- */
-router.post("/media/upload", requireAuth, async (req, res): Promise<void> => {
-  const parsed = MediaRegisterBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-
-  // Verify the object actually exists in GCS before registering it
-  try {
-    await storage.getObjectEntityFile(parsed.data.objectPath);
-  } catch (err) {
-    if (err instanceof ObjectNotFoundError) {
-      req.log.warn({ objectPath: parsed.data.objectPath }, "Object not found in storage during media registration");
-      res.status(422).json({
-        error: "Object not found in storage. Upload the file to the presigned URL first, then register it.",
-      });
+    if (!filename || !Buffer.isBuffer(body)) {
+      res.status(400).json({ error: "Missing or invalid media upload data" });
       return;
     }
-    throw err;
-  }
 
-  const [media] = await db.insert(mediaFilesTable).values(parsed.data).returning();
-  req.log.info({ mediaId: media.id, objectPath: media.objectPath }, "Media file registered");
-  res.status(201).json(media);
-});
+    const validation = validateMediaUploadMetadata({
+      name: filename,
+      size: body.length,
+      contentType,
+    });
+    if (!validation.ok) {
+      res.status(400).json({ error: validation.error });
+      return;
+    }
+
+    const detectedType = detectMediaContentType(body);
+    if (detectedType !== contentType) {
+      res.status(415).json({ error: "Dosya içeriği belirtilen türle eşleşmiyor" });
+      return;
+    }
+
+    let staged;
+    let media: typeof mediaFilesTable.$inferSelect | undefined;
+    try {
+      staged = await stageLocalMedia(body);
+      [media] = await db.insert(mediaFilesTable).values({
+        filename,
+        objectPath: staged.objectPath,
+        mimeType: contentType,
+        size: body.length,
+      }).returning();
+      await publishStagedLocalMedia(staged);
+    } catch (error) {
+      if (staged) {
+        await discardStagedLocalMedia(staged).catch(() => undefined);
+      }
+      if (media) {
+        await db.delete(mediaFilesTable).where(eq(mediaFilesTable.id, media.id)).catch(() => undefined);
+      }
+      req.log.error({ err: error }, "Local media upload failed");
+      res.status(500).json({ error: "Media upload failed" });
+      return;
+    }
+
+    await writeAdminAuditLog(req, {
+      action: "media.create",
+      targetType: "media_file",
+      targetId: media!.id,
+      details: { objectPath: media!.objectPath, size: media!.size },
+    });
+    res.status(201).json(media);
+  },
+);
 
 router.delete("/media/:id", requireAuth, async (req, res): Promise<void> => {
   const id = parseId(req.params["id"]!);
-  const [deleted] = await db.delete(mediaFilesTable).where(eq(mediaFilesTable.id, id)).returning();
-  if (!deleted) {
+  const [existing] = await db.select().from(mediaFilesTable).where(eq(mediaFilesTable.id, id));
+  if (!existing) {
     res.status(404).json({ error: "Media file not found" });
     return;
   }
-  // The public media route caches bytes on disk keyed by the request path, and
-  // those entries are deliberately long-lived because uploaded objects are
-  // immutable. Deletion is the one event that invalidates them, so drop the
-  // entry here or the file stays servable until the cache ages out.
-  await invalidateCachedMedia(deleted.objectPath.replace(/^\//, ""));
 
+  let stagedDeletion;
+  try {
+    stagedDeletion = await stageLocalMediaDeletion(existing.objectPath);
+    const [deleted] = await db.delete(mediaFilesTable).where(eq(mediaFilesTable.id, id)).returning();
+    if (!deleted) {
+      if (stagedDeletion) await restoreStagedLocalMediaDeletion(stagedDeletion);
+      res.status(404).json({ error: "Media file not found" });
+      return;
+    }
+  } catch (error) {
+    if (stagedDeletion) {
+      await restoreStagedLocalMediaDeletion(stagedDeletion).catch(() => undefined);
+    }
+    req.log.error({ err: error, mediaId: id }, "Local media deletion failed");
+    res.status(500).json({ error: "Media deletion failed" });
+    return;
+  }
+
+  if (stagedDeletion) {
+    await finalizeLocalMediaDeletion(stagedDeletion).catch((error) =>
+      req.log.warn({ err: error, mediaId: id }, "Local media trash cleanup failed"),
+    );
+  }
   await writeAdminAuditLog(req, {
     action: "media.delete",
     targetType: "media_file",
     targetId: id,
-    details: { objectPath: deleted.objectPath },
+    details: { objectPath: existing.objectPath },
   });
   res.sendStatus(204);
 });

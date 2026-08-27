@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { requestMediaUploadUrl, uploadMedia } from "@workspace/api-client-react";
+import { uploadMedia } from "@workspace/api-client-react";
 import { publicMediaUrl } from "./mediaUrl";
 
 interface UploadResult {
@@ -13,29 +13,13 @@ export function useImageUpload() {
   async function uploadFile(file: File): Promise<UploadResult> {
     setUploading(true);
     try {
-      const { uploadURL, objectPath } = await requestMediaUploadUrl({
-        name: file.name,
-        size: file.size,
-        contentType: file.type || "application/octet-stream",
+      const media = await uploadMedia(file, {
+        headers: {
+          "X-Media-Filename": encodeURIComponent(file.name),
+        },
       });
 
-      const putRes = await fetch(uploadURL, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type || "application/octet-stream" },
-      });
-      if (!putRes.ok) {
-        throw new Error(`Upload failed: ${putRes.status} ${putRes.statusText}`);
-      }
-
-      await uploadMedia({
-        filename: file.name,
-        objectPath,
-        mimeType: file.type || undefined,
-        size: file.size,
-      });
-
-      return { objectPath, publicUrl: publicMediaUrl(objectPath) };
+      return { objectPath: media.objectPath, publicUrl: publicMediaUrl(media.objectPath) };
     } finally {
       setUploading(false);
     }
