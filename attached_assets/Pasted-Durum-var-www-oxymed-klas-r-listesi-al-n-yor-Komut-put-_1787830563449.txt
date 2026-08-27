@@ -1,0 +1,49 @@
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-media-export.tar.gz" "/var/www/oxymed/oxymed-media-export.tar.gz"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	C:\Users\ysf\Downloads\oxymed-media-export.tar.gz yüklemesine başlanıyor
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-media-export.tar.gz" "/var/www/oxymed/oxymed-media-export.tar.gz"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Komut:	put "C:\Users\ysf\Downloads\oxymed-yedek.sql" "/var/www/oxymed/oxymed-yedek.sql"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	C:\Users\ysf\Downloads\oxymed-media-export.tar.gz yüklemesine başlanıyor
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-media-export.tar.gz" "/var/www/oxymed/oxymed-media-export.tar.gz"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Durum:	"/var/www/oxymed" klasörleri listelendi
+Durum:	C:\Users\ysf\Downloads\oxymed-yedek.sql yüklemesine başlanıyor
+Durum:	C:\Users\ysf\Downloads\oxymed-media-export.tar.gz yüklemesine başlanıyor
+Komut:	put "C:\Users\ysf\Downloads\oxymed-yedek.sql" "/var/www/oxymed/oxymed-yedek.sql"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	C:\Users\ysf\Downloads\oxymed-yedek.sql yüklemesine başlanıyor
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-media-export.tar.gz" "/var/www/oxymed/oxymed-media-export.tar.gz"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	C:\Users\ysf\Downloads\oxymed-media-export.tar.gz yüklemesine başlanıyor
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-yedek.sql" "/var/www/oxymed/oxymed-yedek.sql"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	C:\Users\ysf\Downloads\oxymed-yedek.sql yüklemesine başlanıyor
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-media-export.tar.gz" "/var/www/oxymed/oxymed-media-export.tar.gz"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	C:\Users\ysf\Downloads\oxymed-media-export.tar.gz yüklemesine başlanıyor
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Komut:	put "C:\Users\ysf\Downloads\oxymed-yedek.sql" "/var/www/oxymed/oxymed-yedek.sql"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Komut:	put "C:\Users\ysf\Downloads\oxymed-media-export.tar.gz" "/var/www/oxymed/oxymed-media-export.tar.gz"
+Hata:	Could not open remote file: Received error SSH_FX_PERMISSION_DENIED with description 'Permission denied'
+Hata:	Dosya aktarılamadı
+Durum:	"/var/www/oxymed" klasör listesi alınıyor...
+Durum:	"/var/www/oxymed" klasörleri listelendi
