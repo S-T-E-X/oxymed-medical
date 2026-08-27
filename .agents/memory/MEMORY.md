@@ -21,3 +21,4 @@
 - [Renaming a localized URL slug](renaming-localized-slugs.md) — mirror all four slug tables, add legacy redirects before the catch-all, and never confuse URL slug with DB page_slug.
 - [Changing the site origin](site-origin-config.md) — origin is duplicated across app config + 3 build scripts + robots.txt; needs both SITE_ORIGIN and VITE_SITE_ORIGIN; 301s are infra-side.
 - [Self-hosting outside Replit](self-hosting-outside-replit.md) — object storage is the hard blocker (Replit-only sidecar, and DB stores its paths); everything else is portable.
+- [AI model upgrades](ai-model-upgrades.md) — translation endpoints fail closed (502) on truncation; replay the real prompt live and check token headroom before shipping a model swap.

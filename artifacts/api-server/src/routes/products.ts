@@ -216,7 +216,7 @@ router.post("/products/translate-page-content", requireAuth, async (req, res): P
   let completion;
   try {
     completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-5.4-mini",
       max_completion_tokens: 16384,
       response_format: { type: "json_object" },
       messages: [

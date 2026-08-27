@@ -216,7 +216,7 @@ router.post("/sliders/translate-fields", requireAuth, async (req, res): Promise<
   const targetList = SLIDER_TARGET_LOCALES.map((l) => `"${l.code}" (${l.name})`).join(", ");
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.4-mini",
     max_completion_tokens: 8192,
     response_format: { type: "json_object" },
     messages: [
