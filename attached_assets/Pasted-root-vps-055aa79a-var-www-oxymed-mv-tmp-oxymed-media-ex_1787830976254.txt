@@ -1,0 +1,473 @@
+root@vps-055aa79a:/var/www/oxymed# mv /tmp/oxymed-media-export.tar.gz /var/www/oxymed/
+mv /tmp/oxymed-yedek.sql /var/www/oxymed/
+root@vps-055aa79a:/var/www/oxymed# chown root:root /var/www/oxymed/oxymed-media-export.tar.gz
+chown root:root /var/www/oxymed/oxymed-yedek.sql
+
+chmod 600 /var/www/oxymed/oxymed-media-export.tar.gz
+chmod 600 /var/www/oxymed/oxymed-yedek.sql
+root@vps-055aa79a:/var/www/oxymed# ls -lh /var/www/oxymed/oxymed-media-export.tar.gz
+ls -lh /var/www/oxymed/oxymed-yedek.sql
+-rw------- 1 root root 62M Aug 27 11:39 /var/www/oxymed/oxymed-media-export.tar.gz
+-rw------- 1 root root 956K Aug 27 11:39 /var/www/oxymed/oxymed-yedek.sql
+root@vps-055aa79a:/var/www/oxymed# cd /var/www/oxymed
+tar -xzf oxymed-media-export.tar.gz -C /var/lib/oxymed/media
+chown -R oxymed:oxymed /var/lib/oxymed/media
+root@vps-055aa79a:/var/www/oxymed# cd /var/www/oxymed
+set -a; source .env; set +a
+psql "$DATABASE_URL" -v ON_ERROR_STOP=0 -f oxymed-yedek.sql
+SET
+SET
+SET
+SET
+SET
+ set_config
+------------
+
+(1 row)
+
+SET
+SET
+SET
+SET
+CREATE EXTENSION
+COMMENT
+SET
+SET
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+CREATE TABLE
+CREATE SEQUENCE
+ALTER SEQUENCE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+COPY 5
+COPY 2
+COPY 1
+COPY 0
+COPY 1
+COPY 17
+COPY 0
+COPY 0
+COPY 0
+COPY 186
+COPY 6
+COPY 10
+COPY 0
+COPY 5
+COPY 0
+COPY 26
+COPY 16
+COPY 8
+COPY 968
+COPY 35
+COPY 25
+COPY 4
+COPY 75
+COPY 3
+COPY 0
+COPY 3
+COPY 3
+COPY 6
+COPY 12
+COPY 6
+COPY 59
+COPY 3
+COPY 0
+COPY 1019
+COPY 0
+COPY 26
+ setval
+--------
+      5
+(1 row)
+
+ setval
+--------
+      2
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      3
+(1 row)
+
+ setval
+--------
+     17
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+    227
+(1 row)
+
+ setval
+--------
+     11
+(1 row)
+
+ setval
+--------
+     16
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      6
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+     26
+(1 row)
+
+ setval
+--------
+     30
+(1 row)
+
+ setval
+--------
+     19
+(1 row)
+
+ setval
+--------
+  14085
+(1 row)
+
+ setval
+--------
+     49
+(1 row)
+
+ setval
+--------
+     32
+(1 row)
+
+ setval
+--------
+     18
+(1 row)
+
+ setval
+--------
+    113
+(1 row)
+
+ setval
+--------
+     32
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+      3
+(1 row)
+
+ setval
+--------
+     10
+(1 row)
+
+ setval
+--------
+     18
+(1 row)
+
+ setval
+--------
+     42
+(1 row)
+
+ setval
+--------
+      6
+(1 row)
+
+ setval
+--------
+     59
+(1 row)
+
+ setval
+--------
+      3
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+   1115
+(1 row)
+
+ setval
+--------
+      1
+(1 row)
+
+ setval
+--------
+     26
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+root@vps-055aa79a:/var/www/oxymed# pnpm --filter @workspace/db run push
+
+> @workspace/db@0.0.0 push /var/www/oxymed/lib/db
+> drizzle-kit push --config ./drizzle.config.ts
+
+Reading config file '/var/www/oxymed/lib/db/drizzle.config.ts'
+Using 'pg' driver for database querying
+[⣷] Pulling schema from database...
+/var/www/oxymed/lib/db:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/db@0.0.0 push: `drizzle-kit push --config ./drizzle.config.ts`
+Exit status 1
