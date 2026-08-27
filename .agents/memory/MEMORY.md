@@ -19,3 +19,5 @@
 - [Security hardening layers](security-hardening-layers.md) — what was hardened (rate limits, draft guards, ID parsing, audit logs, storage allowlist) and what is deferred (cookie sessions, audit viewer, tests).
 - [Adding a site locale](adding-a-locale.md) — locale list + slug table are duplicated across app/build/API/DB; root `pnpm run typecheck` is the only one that rebuilds libs.
 - [Renaming a localized URL slug](renaming-localized-slugs.md) — mirror all four slug tables, add legacy redirects before the catch-all, and never confuse URL slug with DB page_slug.
+- [Changing the site origin](site-origin-config.md) — origin is duplicated across app config + 3 build scripts + robots.txt; needs both SITE_ORIGIN and VITE_SITE_ORIGIN; 301s are infra-side.
+- [Self-hosting outside Replit](self-hosting-outside-replit.md) — object storage is the hard blocker (Replit-only sidecar, and DB stores its paths); everything else is portable.

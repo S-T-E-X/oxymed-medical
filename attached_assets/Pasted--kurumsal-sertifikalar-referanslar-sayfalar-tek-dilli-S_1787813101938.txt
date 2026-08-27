@@ -1,0 +1,80 @@
+/kurumsal, /sertifikalar, /referanslar sayfaları tek dilli, SEO etiketsiz ve sitemap'te hiç yok
+
+Ürün görselleri CSS arka planı olarak yükleniyor Görsel aramada tamamen görünmez, alt metni yok
+
+Kart başlıkları h2, bölüm başlığı yok Başlık hiyerarşisi kırık
+
+Teklif çıktılarında oxymedmedical.com sabit yazılmış Canonical alan adınız oxymed.com.tr — farklı origin'e link
+
+bu sorunu düzelt
+
+alan adımız oxymedmedical.com olacak daha sonra belki oxymed.com.tr yi kullanabiliriz ama şuanda site oxymedmedical.com için tasarlandı
+
+9 days ago
+Auditing website technical SEO issues
+
+Auditing website technical SEO issues
+Dört maddeyi de düzelteceğim. Alan adı kararı diğer her şeyi (canonical, sitemap, hreflang) etkilediği için önce onu netleştiriyorum.
+
+
+
+3 actions
+Her iki host da 200 dönüyor — aralarında yönlendirme yok. Kod tabanındaki mevcut kullanım (e-postalar, servis raporları) www.oxymedmedical.com olduğu için canonical'ı onunla hizalayacağım.
+
+
+
+4 actions
+Alan adını www.oxymedmedical.com olarak çeviriyorum — kod tabanındaki e-posta ve servis raporu şablonları zaten bu adresi kullanıyor, böylece hepsi tutarlı oluyor.
+
+
+
+3 actions
+Alan adı çevrildi. Şimdi teklif çıktısındaki sabit adresi tek kaynaktan besleyip, kalan iki büyük işi paralel başlatıyorum.
+
+
+
+17 actions
+Sitedeki kayıtlı iletişim adresi zaten info@oxymedmedical.com — kodda kalan eski oxymed.com.tr varsayılanlarını da hizalıyorum.
+
+
+
+3 actions
+Her iki iş de bitti. Şimdi bütünü doğruluyorum — bir ajan diğerinin dosyasını yarım görmüştü.
+
+
+
+3 actions
+Typecheck temiz. Teknik çizim görsellerinin alt metni genel ("Teknik Çizim") kalmış — Google Görseller için ürün adını içermeli.
+
+
+
+12 actions
+Build doğrulandı: 172 sayfa, yeni alan adıyla. Şimdi görsel kontrol.
+
+
+
+7 actions
+Hero görselinin sağ tarafı boş görünüyor — ayar dolu olduğuna göre bu bir gerileme olabilir. Ne değiştiğine bakıyorum.
+
+
+
+3 actions
+Babel hatası ajanın yarım kalmış dosyasındandı — sonraki güncellemelerde düzelmiş, typecheck ve build temiz. Hero görseli de aslında yükleniyordu; API'den 4 saniyede geldiği için ekran görüntüsü erken çekilmiş.
+
+
+
+3 actions
+/en/about çalışıyor — çerçeve İngilizce, gövde metni beklendiği gibi veritabanından Türkçe geliyor. Ama DVS hero görseli hâlâ görünmüyor; bu gerçek bir gerileme.
+
+
+
+6 actions
+Görsel 172 KB ama sunucudan gelmesi 4,25 saniye sürüyor — ekran görüntüsü o yüzden boş çıkıyor. Görselin kendisine bakayım.
+
+
+
+Created a directory
+Your payment is past due. Please update your payment method to continue using Replit.
+
+
+Worked for 25 minutes

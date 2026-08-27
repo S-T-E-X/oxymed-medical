@@ -48,6 +48,12 @@ Thumbs.db
 .cache/
 .local/
 
+# Local/server environment files — must never be committed (contain DB password,
+# JWT_SECRET, SMTP password). See kurulum.md.
+.env
+.env.*
+!.env.example
+
 # Generated at build time from the database by gen-sitemap (see scripts/src/gen-sitemap.ts)
 .news-seo.json
 .product-seo.json
