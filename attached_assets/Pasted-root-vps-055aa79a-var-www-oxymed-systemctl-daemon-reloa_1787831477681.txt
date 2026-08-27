@@ -1,0 +1,100 @@
+root@vps-055aa79a:/var/www/oxymed# systemctl daemon-reload
+systemctl enable --now oxymed-api
+systemctl status oxymed-api --no-pager
+Created symlink /etc/systemd/system/multi-user.target.wants/oxymed-api.service → /etc/systemd/system/oxymed-api.service.
+● oxymed-api.service - Oxymed API Server
+     Loaded: loaded (/etc/systemd/system/oxymed-api.service; enabled; preset: enabled)
+     Active: active (running) since Thu 2026-08-27 11:50:28 UTC; 14ms ago
+   Main PID: 26499 ((node))
+      Tasks: 1 (limit: 9255)
+     Memory: 1.4M (peak: 1.6M)
+        CPU: 8ms
+     CGroup: /system.slice/oxymed-api.service
+             └─26499 "[(node)]"
+
+Aug 27 11:50:28 vps-055aa79a systemd[1]: Started oxymed-api.service - Oxymed API Server.
+root@vps-055aa79a:/var/www/oxymed# curl http://localhost:5000/api/healthz
+curl: (7) Failed to connect to localhost port 5000 after 0 ms: Couldn't connect to server
+root@vps-055aa79a:/var/www/oxymed# curl http://localhost:5000/api/healthz
+curl: (7) Failed to connect to localhost port 5000 after 0 ms: Couldn't connect to server
+root@vps-055aa79a:/var/www/oxymed# journalctl -u oxymed-api -n 80 --no-pager
+Aug 27 11:50:44 vps-055aa79a systemd[1]: oxymed-api.service: Scheduled restart job, restart counter is at 3.
+Aug 27 11:50:44 vps-055aa79a systemd[1]: Started oxymed-api.service - Oxymed API Server.
+Aug 27 11:50:44 vps-055aa79a node[26551]: node:internal/modules/cjs/loader:1568
+Aug 27 11:50:44 vps-055aa79a node[26551]:   throw err;
+Aug 27 11:50:44 vps-055aa79a node[26551]:   ^
+Aug 27 11:50:44 vps-055aa79a node[26551]: Error: Cannot find module '/var/www/oxymed/artifacts/api-server/dist/index.mjs'
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at Module._load (node:internal/modules/cjs/loader:1341:5)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+Aug 27 11:50:44 vps-055aa79a node[26551]:     at node:internal/main/run_main_module:33:47 {
+Aug 27 11:50:44 vps-055aa79a node[26551]:   code: 'MODULE_NOT_FOUND',
+Aug 27 11:50:44 vps-055aa79a node[26551]:   requireStack: []
+Aug 27 11:50:44 vps-055aa79a node[26551]: }
+Aug 27 11:50:44 vps-055aa79a node[26551]: Node.js v24.20.0
+Aug 27 11:50:44 vps-055aa79a systemd[1]: oxymed-api.service: Main process exited, code=exited, status=1/FAILURE
+Aug 27 11:50:44 vps-055aa79a systemd[1]: oxymed-api.service: Failed with result 'exit-code'.
+Aug 27 11:50:49 vps-055aa79a systemd[1]: oxymed-api.service: Scheduled restart job, restart counter is at 4.
+Aug 27 11:50:49 vps-055aa79a systemd[1]: Started oxymed-api.service - Oxymed API Server.
+Aug 27 11:50:49 vps-055aa79a node[26562]: node:internal/modules/cjs/loader:1568
+Aug 27 11:50:49 vps-055aa79a node[26562]:   throw err;
+Aug 27 11:50:49 vps-055aa79a node[26562]:   ^
+Aug 27 11:50:49 vps-055aa79a node[26562]: Error: Cannot find module '/var/www/oxymed/artifacts/api-server/dist/index.mjs'
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at Module._load (node:internal/modules/cjs/loader:1341:5)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+Aug 27 11:50:49 vps-055aa79a node[26562]:     at node:internal/main/run_main_module:33:47 {
+Aug 27 11:50:49 vps-055aa79a node[26562]:   code: 'MODULE_NOT_FOUND',
+Aug 27 11:50:49 vps-055aa79a node[26562]:   requireStack: []
+Aug 27 11:50:49 vps-055aa79a node[26562]: }
+Aug 27 11:50:49 vps-055aa79a node[26562]: Node.js v24.20.0
+Aug 27 11:50:49 vps-055aa79a systemd[1]: oxymed-api.service: Main process exited, code=exited, status=1/FAILURE
+Aug 27 11:50:49 vps-055aa79a systemd[1]: oxymed-api.service: Failed with result 'exit-code'.
+Aug 27 11:50:54 vps-055aa79a systemd[1]: oxymed-api.service: Scheduled restart job, restart counter is at 5.
+Aug 27 11:50:54 vps-055aa79a systemd[1]: Started oxymed-api.service - Oxymed API Server.
+Aug 27 11:50:55 vps-055aa79a node[26572]: node:internal/modules/cjs/loader:1568
+Aug 27 11:50:55 vps-055aa79a node[26572]:   throw err;
+Aug 27 11:50:55 vps-055aa79a node[26572]:   ^
+Aug 27 11:50:55 vps-055aa79a node[26572]: Error: Cannot find module '/var/www/oxymed/artifacts/api-server/dist/index.mjs'
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at Module._load (node:internal/modules/cjs/loader:1341:5)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+Aug 27 11:50:55 vps-055aa79a node[26572]:     at node:internal/main/run_main_module:33:47 {
+Aug 27 11:50:55 vps-055aa79a node[26572]:   code: 'MODULE_NOT_FOUND',
+Aug 27 11:50:55 vps-055aa79a node[26572]:   requireStack: []
+Aug 27 11:50:55 vps-055aa79a node[26572]: }
+Aug 27 11:50:55 vps-055aa79a node[26572]: Node.js v24.20.0
+Aug 27 11:50:55 vps-055aa79a systemd[1]: oxymed-api.service: Main process exited, code=exited, status=1/FAILURE
+Aug 27 11:50:55 vps-055aa79a systemd[1]: oxymed-api.service: Failed with result 'exit-code'.
+Aug 27 11:51:00 vps-055aa79a systemd[1]: oxymed-api.service: Scheduled restart job, restart counter is at 6.
+Aug 27 11:51:00 vps-055aa79a systemd[1]: Started oxymed-api.service - Oxymed API Server.
+Aug 27 11:51:00 vps-055aa79a node[26582]: node:internal/modules/cjs/loader:1568
+Aug 27 11:51:00 vps-055aa79a node[26582]:   throw err;
+Aug 27 11:51:00 vps-055aa79a node[26582]:   ^
+Aug 27 11:51:00 vps-055aa79a node[26582]: Error: Cannot find module '/var/www/oxymed/artifacts/api-server/dist/index.mjs'
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at Module._load (node:internal/modules/cjs/loader:1341:5)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+Aug 27 11:51:00 vps-055aa79a node[26582]:     at node:internal/main/run_main_module:33:47 {
+Aug 27 11:51:00 vps-055aa79a node[26582]:   code: 'MODULE_NOT_FOUND',
+Aug 27 11:51:00 vps-055aa79a node[26582]:   requireStack: []
+Aug 27 11:51:00 vps-055aa79a node[26582]: }
+Aug 27 11:51:00 vps-055aa79a node[26582]: Node.js v24.20.0
+Aug 27 11:51:00 vps-055aa79a systemd[1]: oxymed-api.service: Main process exited, code=exited, status=1/FAILURE
+Aug 27 11:51:00 vps-055aa79a systemd[1]: oxymed-api.service: Failed with result 'exit-code'.

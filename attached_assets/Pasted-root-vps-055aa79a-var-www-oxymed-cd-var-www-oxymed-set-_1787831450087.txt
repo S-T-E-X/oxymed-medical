@@ -1,0 +1,64 @@
+root@vps-055aa79a:/var/www/oxymed# cd /var/www/oxymed
+set -a
+source .env
+set +a
+
+psql "$DATABASE_URL" -c "SELECT COUNT(*) AS media_count FROM media_files;"
+ media_count
+-------------
+         186
+(1 row)
+
+root@vps-055aa79a:/var/www/oxymed# find /var/lib/oxymed/media/files/objects/uploads \
+  -maxdepth 1 -type f | wc -l
+186
+root@vps-055aa79a:/var/www/oxymed# systemctl restart oxymed-api
+systemctl status oxymed-api --no-pager
+Failed to restart oxymed-api.service: Unit oxymed-api.service not found.
+Unit oxymed-api.service could not be found.
+root@vps-055aa79a:/var/www/oxymed# cat > /etc/systemd/system/oxymed-api.service <<'EOF'
+[Unit]
+Description=Oxymed API Server
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=oxymed
+Group=oxymed
+WorkingDirectory=/var/www/oxymed/artifacts/api-server
+EnvironmentFile=/var/www/oxymed/.env
+ExecStart=/usr/bin/node --enable-source-maps /var/www/oxymed/artifacts/api-server/dist/index.mjs
+Restart=always
+RestartSec=5
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/oxymed/media
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+root@vps-055aa79a:/var/www/oxymed# systemctl daemon-reload
+systemctl enable --now oxymed-api
+systemctl status oxymed-api --no-pager
+Created symlink /etc/systemd/system/multi-user.target.wants/oxymed-api.service → /etc/systemd/system/oxymed-api.service.
+● oxymed-api.service - Oxymed API Server
+     Loaded: loaded (/etc/systemd/system/oxymed-api.service; enabled; preset: enabled)
+     Active: active (running) since Thu 2026-08-27 11:50:28 UTC; 14ms ago
+   Main PID: 26499 ((node))
+      Tasks: 1 (limit: 9255)
+     Memory: 1.4M (peak: 1.6M)
+        CPU: 8ms
+     CGroup: /system.slice/oxymed-api.service
+             └─26499 "[(node)]"
+
+Aug 27 11:50:28 vps-055aa79a systemd[1]: Started oxymed-api.service - Oxymed API Server.
+root@vps-055aa79a:/var/www/oxymed# curl http://localhost:5000/api/healthz
+curl: (7) Failed to connect to localhost port 5000 after 0 ms: Couldn't connect to server
+root@vps-055aa79a:/var/www/oxymed# curl http://localhost:5000/api/healthz
+curl: (7) Failed to connect to localhost port 5000 after 0 ms: Couldn't connect to server
