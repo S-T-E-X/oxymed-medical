@@ -161,7 +161,7 @@ export default function GasControlPanelPage() {
               className={`gcp-hero-photo-slot${heroImage ? " gcp-hero-photo-slot--has-image" : ""}`}
               aria-hidden="true"
             >
-              {heroImage && <img src={heroImage} alt={hero.title} width={582} height={640} loading="eager" decoding="async" />}
+              {heroImage && <img src={heroImage} alt={hero.title} width={600} height={450} loading="eager" decoding="async" />}
               {!heroImage && (
                 <>
                   <span>{t("gcp.hero.photoSlot")}</span>
