@@ -15,7 +15,11 @@ import {
   putCachedMedia,
   type CachedMedia,
 } from "../lib/mediaCache";
-import { fetchPublicMedia, isSafeMediaPath } from "../lib/publicMedia";
+import {
+  fetchPublicMedia,
+  isSafeMediaPath,
+  normalizeMediaPath,
+} from "../lib/publicMedia";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -76,7 +80,9 @@ router.post(
 router.get("/storage/public-objects/*filePath", async (req: Request, res: Response) => {
   try {
     const raw = req.params.filePath;
-    const filePath = Array.isArray(raw) ? raw.join("/") : raw;
+    // Normalize before anything else so the authorization check, the cache key
+    // and the in-flight dedupe key all agree on one spelling of the path.
+    const filePath = normalizeMediaPath(Array.isArray(raw) ? raw.join("/") : raw);
 
     // Reject traversal attempts before they reach the storage layer.
     if (!isSafeMediaPath(filePath)) {

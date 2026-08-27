@@ -10,6 +10,7 @@ import {
 import { toast } from "sonner";
 import { Check, Copy, ImageIcon, RefreshCw, Trash2, Upload } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+import { publicMediaUrl } from "./mediaUrl";
 
 function formatSize(bytes?: number | null) {
   if (!bytes) return "—";
@@ -137,7 +138,7 @@ export default function MediaPage() {
     }
   }
 
-  const publicUrlOf = (objectPath: string) => `/api/storage/public-objects/${objectPath}`;
+  const publicUrlOf = publicMediaUrl;
 
   return (
     <section className="px-4 py-7 sm:px-6 lg:px-8">

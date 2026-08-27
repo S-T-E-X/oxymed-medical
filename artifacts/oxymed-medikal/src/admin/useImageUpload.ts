@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { requestMediaUploadUrl, uploadMedia } from "@workspace/api-client-react";
+import { publicMediaUrl } from "./mediaUrl";
 
 interface UploadResult {
   objectPath: string;
@@ -34,8 +35,7 @@ export function useImageUpload() {
         size: file.size,
       });
 
-      const publicUrl = `/api/storage/public-objects${objectPath.startsWith("/") ? "" : "/"}${objectPath}`;
-      return { objectPath, publicUrl };
+      return { objectPath, publicUrl: publicMediaUrl(objectPath) };
     } finally {
       setUploading(false);
     }

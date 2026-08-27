@@ -66,3 +66,29 @@ needs hard revocation, it must be deleted from the bucket, not just unregistered
 that adds a new way to serve media, must go through the shared gate and must be
 tested with an unregistered-but-existing object (expected: 404, and nothing written
 to the cache).
+
+## Stored media URLs must be relative and canonical
+
+Media URLs are persisted in the database, so a malformed one is durable and silent.
+Two failure modes have actually occurred, both from admin surfaces building the URL
+string by hand:
+
+- **A doubled slash** (`public-objects//objects/...`) is a *different cache key* from
+  the canonical form. The row still renders, so nothing looks broken — but the
+  warmer, which matches the canonical prefix, never covers it, and every cold hit
+  pays the full multi-second storage round trip. This is invisible unless you time
+  the individual URLs.
+- **An absolute URL embedding the current Replit dev domain** works in the workspace
+  and 404s in production, because that hostname is temporary.
+
+The route now collapses leading slashes before deriving the cache/dedupe/auth key,
+and the admin surfaces share one URL builder instead of concatenating their own.
+
+**Why:** both bugs render fine in the workspace and only surface as "one image is
+slow" or "one image is broken on the live site" — the kind of thing that survives
+for months.
+
+**How to apply:** never build a public media URL inline; use the shared builder. When
+media appears slow, time the *individual* stored URLs rather than the page — a
+single non-canonical row is enough to look like a general regression. A scan for
+`replit.dev` and `public-objects//` across media columns catches both classes.

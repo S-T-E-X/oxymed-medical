@@ -31,6 +31,16 @@ export function isSafeMediaPath(filePath: string): boolean {
   );
 }
 
+/**
+ * Collapse leading slashes so the same object always maps to the same cache
+ * key. A stored URL with a doubled slash (`public-objects//objects/...`) would
+ * otherwise be a distinct key from the canonical form — same bytes, cached
+ * twice, and invisible to the warmer's canonical-form lookups.
+ */
+export function normalizeMediaPath(filePath: string): string {
+  return filePath.replace(/^\/+/, "");
+}
+
 function normalize(filePath: string): string {
   return filePath.startsWith("/") ? filePath : `/${filePath}`;
 }
