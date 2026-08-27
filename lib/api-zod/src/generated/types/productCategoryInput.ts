@@ -21,6 +21,7 @@ export interface ProductCategoryInput {
   nameKa?: string;
   nameBg?: string;
   nameAz?: string;
+  nameEs?: string;
   imageUrl?: string;
   visible?: boolean;
   showOnHome?: boolean;
@@ -34,4 +35,5 @@ export interface ProductCategoryInput {
   descriptionKa?: string;
   descriptionBg?: string;
   descriptionAz?: string;
+  descriptionEs?: string;
 }

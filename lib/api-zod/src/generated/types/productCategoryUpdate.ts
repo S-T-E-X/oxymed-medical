@@ -33,6 +33,8 @@ export interface ProductCategoryUpdate {
   /** @nullable */
   nameAz?: string | null;
   /** @nullable */
+  nameEs?: string | null;
+  /** @nullable */
   imageUrl?: string | null;
   visible?: boolean;
   showOnHome?: boolean;
@@ -56,4 +58,6 @@ export interface ProductCategoryUpdate {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  /** @nullable */
+  descriptionEs?: string | null;
 }

@@ -9,6 +9,7 @@ import {
   validateMediaUploadMetadata,
 } from "../lib/security";
 import { writeAdminAuditLog } from "../lib/audit";
+import { invalidateCachedMedia } from "../lib/mediaCache";
 import { z } from "zod/v4";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -330,6 +331,12 @@ router.delete("/media/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Media file not found" });
     return;
   }
+  // The public media route caches bytes on disk keyed by the request path, and
+  // those entries are deliberately long-lived because uploaded objects are
+  // immutable. Deletion is the one event that invalidates them, so drop the
+  // entry here or the file stays servable until the cache ages out.
+  await invalidateCachedMedia(deleted.objectPath.replace(/^\//, ""));
+
   await writeAdminAuditLog(req, {
     action: "media.delete",
     targetType: "media_file",

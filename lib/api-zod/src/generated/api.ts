@@ -25,7 +25,6 @@ export const AdminLoginBody = zod.object({
 })
 
 export const AdminLoginResponse = zod.object({
-  "token": zod.string(),
   "user": zod.object({
   "id": zod.number(),
   "email": zod.string(),
@@ -209,7 +208,8 @@ export const CreateSliderBody = zod.object({
   "ctaSecondaryTextFa": zod.string().optional(),
   "ctaSecondaryTextKa": zod.string().optional(),
   "ctaSecondaryTextBg": zod.string().optional(),
-  "ctaSecondaryTextAz": zod.string().optional()
+  "ctaSecondaryTextAz": zod.string().optional(),
+  "ctaSecondaryTextEs": zod.string().optional()
 })
 
 
@@ -381,7 +381,8 @@ export const UpdateSliderBody = zod.object({
   "ctaSecondaryTextFa": zod.string().nullish(),
   "ctaSecondaryTextKa": zod.string().nullish(),
   "ctaSecondaryTextBg": zod.string().nullish(),
-  "ctaSecondaryTextAz": zod.string().nullish()
+  "ctaSecondaryTextAz": zod.string().nullish(),
+  "ctaSecondaryTextEs": zod.string().nullish()
 })
 
 export const UpdateSliderResponse = zod.object({
@@ -512,6 +513,20 @@ export const CreateCatalogBody = zod.object({
 
 
 /**
+ * @summary Translate a certificate title into all supported languages
+ */
+export const TranslateCertificateFieldsBody = zod.object({
+  "title": zod.string()
+})
+
+export const TranslateCertificateFieldsResponse = zod.object({
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional()
+}))
+})
+
+
+/**
  * @summary List active certificates
  */
 export const ListCertificatesResponseItem = zod.object({
@@ -520,6 +535,9 @@ export const ListCertificatesResponseItem = zod.object({
   "fileUrl": zod.string(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -537,7 +555,10 @@ export const CreateCertificateBody = zod.object({
   "title": zod.string().min(1),
   "fileUrl": zod.string().min(1),
   "sortOrder": zod.number().optional(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional()
+})).optional()
 })
 
 
@@ -550,6 +571,9 @@ export const ListAdminCertificatesResponseItem = zod.object({
   "fileUrl": zod.string(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -571,7 +595,10 @@ export const UpdateCertificateBody = zod.object({
   "title": zod.string().min(1).optional(),
   "fileUrl": zod.string().min(1).optional(),
   "sortOrder": zod.number().optional(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional()
+})).optional()
 })
 
 export const UpdateCertificateResponse = zod.object({
@@ -580,6 +607,9 @@ export const UpdateCertificateResponse = zod.object({
   "fileUrl": zod.string(),
   "sortOrder": zod.number(),
   "isActive": zod.boolean(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -724,7 +754,8 @@ export const CreateProductCategoryBody = zod.object({
   "descriptionFa": zod.string().optional(),
   "descriptionKa": zod.string().optional(),
   "descriptionBg": zod.string().optional(),
-  "descriptionAz": zod.string().optional()
+  "descriptionAz": zod.string().optional(),
+  "descriptionEs": zod.string().optional()
 })
 
 
@@ -763,7 +794,8 @@ export const UpdateProductCategoryBody = zod.object({
   "descriptionFa": zod.string().nullish(),
   "descriptionKa": zod.string().nullish(),
   "descriptionBg": zod.string().nullish(),
-  "descriptionAz": zod.string().nullish()
+  "descriptionAz": zod.string().nullish(),
+  "descriptionEs": zod.string().nullish()
 })
 
 export const UpdateProductCategoryResponse = zod.object({
@@ -1034,7 +1066,8 @@ export const CreateProductBody = zod.object({
   "titleFa": zod.string().optional(),
   "titleKa": zod.string().optional(),
   "titleBg": zod.string().optional(),
-  "titleAz": zod.string().optional()
+  "titleAz": zod.string().optional(),
+  "titleEs": zod.string().optional()
 })
 
 
@@ -1375,7 +1408,8 @@ export const UpdateProductBody = zod.object({
   "titleFa": zod.string().nullish(),
   "titleKa": zod.string().nullish(),
   "titleBg": zod.string().nullish(),
-  "titleAz": zod.string().nullish()
+  "titleAz": zod.string().nullish(),
+  "titleEs": zod.string().nullish()
 })
 
 export const UpdateProductResponse = zod.object({
@@ -1732,6 +1766,24 @@ export const DeleteNewsTranslationParams = zod.object({
 
 
 /**
+ * @summary Translate reference metadata into all supported languages
+ */
+export const TranslateReferenceFieldsBody = zod.object({
+  "projectType": zod.string(),
+  "capacity": zod.string().optional(),
+  "category": zod.string().optional()
+})
+
+export const TranslateReferenceFieldsResponse = zod.object({
+  "locales": zod.record(zod.string(), zod.object({
+  "projectType": zod.string().optional(),
+  "capacity": zod.string().optional(),
+  "category": zod.string().optional()
+}))
+})
+
+
+/**
  * @summary List reference projects
  */
 export const ListReferencesQueryParams = zod.object({
@@ -1752,6 +1804,11 @@ export const ListReferencesResponse = zod.object({
   "logoUrl": zod.string().nullish(),
   "showInMarquee": zod.boolean(),
   "category": zod.string(),
+  "locales": zod.record(zod.string(), zod.object({
+  "projectType": zod.string().optional(),
+  "capacity": zod.string().optional(),
+  "category": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })),
@@ -1770,7 +1827,12 @@ export const CreateReferenceBody = zod.object({
   "imageUrl": zod.string().optional(),
   "logoUrl": zod.string().optional(),
   "showInMarquee": zod.boolean().optional(),
+  "category": zod.string().optional(),
+  "locales": zod.record(zod.string(), zod.object({
+  "projectType": zod.string().optional(),
+  "capacity": zod.string().optional(),
   "category": zod.string().optional()
+})).optional()
 })
 
 
@@ -1789,7 +1851,12 @@ export const UpdateReferenceBody = zod.object({
   "imageUrl": zod.string().nullish(),
   "logoUrl": zod.string().nullish(),
   "showInMarquee": zod.boolean().optional(),
+  "category": zod.string().optional(),
+  "locales": zod.record(zod.string(), zod.object({
+  "projectType": zod.string().optional(),
+  "capacity": zod.string().optional(),
   "category": zod.string().optional()
+})).optional()
 })
 
 export const UpdateReferenceResponse = zod.object({
@@ -1802,6 +1869,11 @@ export const UpdateReferenceResponse = zod.object({
   "logoUrl": zod.string().nullish(),
   "showInMarquee": zod.boolean(),
   "category": zod.string(),
+  "locales": zod.record(zod.string(), zod.object({
+  "projectType": zod.string().optional(),
+  "capacity": zod.string().optional(),
+  "category": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -1910,6 +1982,24 @@ export const UpdateQuoteStatusResponse = zod.object({
 
 
 /**
+ * @summary Translate corporate content into all supported languages
+ */
+export const TranslateCorporateFieldsBody = zod.object({
+  "title": zod.string().optional(),
+  "subtitle": zod.string().optional(),
+  "content": zod.string().optional()
+})
+
+export const TranslateCorporateFieldsResponse = zod.object({
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional(),
+  "subtitle": zod.string().optional(),
+  "content": zod.string().optional()
+}))
+})
+
+
+/**
  * @summary List all corporate sections
  */
 export const ListCorporateSectionsResponseItem = zod.object({
@@ -1919,6 +2009,11 @@ export const ListCorporateSectionsResponseItem = zod.object({
   "subtitle": zod.string().nullish(),
   "content": zod.string().nullish(),
   "imageUrl": zod.string().nullish(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional(),
+  "subtitle": zod.string().optional(),
+  "content": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -1939,6 +2034,11 @@ export const GetCorporateSectionResponse = zod.object({
   "subtitle": zod.string().nullish(),
   "content": zod.string().nullish(),
   "imageUrl": zod.string().nullish(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional(),
+  "subtitle": zod.string().optional(),
+  "content": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -1955,7 +2055,12 @@ export const UpsertCorporateSectionBody = zod.object({
   "title": zod.string().optional(),
   "subtitle": zod.string().optional(),
   "content": zod.string().optional(),
-  "imageUrl": zod.string().optional()
+  "imageUrl": zod.string().optional(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional(),
+  "subtitle": zod.string().optional(),
+  "content": zod.string().optional()
+})).optional()
 })
 
 export const UpsertCorporateSectionResponse = zod.object({
@@ -1965,6 +2070,11 @@ export const UpsertCorporateSectionResponse = zod.object({
   "subtitle": zod.string().nullish(),
   "content": zod.string().nullish(),
   "imageUrl": zod.string().nullish(),
+  "locales": zod.record(zod.string(), zod.object({
+  "title": zod.string().optional(),
+  "subtitle": zod.string().optional(),
+  "content": zod.string().optional()
+})).optional(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

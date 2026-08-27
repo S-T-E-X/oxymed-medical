@@ -7,10 +7,6 @@
  */
 import type { CorporateSectionLocales } from './corporateSectionLocales';
 
-export interface CorporateSectionInput {
-  title?: string;
-  subtitle?: string;
-  content?: string;
-  imageUrl?: string;
-  locales?: CorporateSectionLocales;
-}
+export type TranslateCorporateFields200 = {
+  locales: CorporateSectionLocales;
+};

@@ -3,6 +3,7 @@ import { db, corporateSectionsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { z } from "zod/v4";
+import { translateLocaleOverlays } from "../lib/translateLocaleOverlays";
 
 const router: IRouter = Router();
 
@@ -11,6 +12,20 @@ const CorporateSectionBody = z.object({
   subtitle: z.string().optional().nullable(),
   content: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
+  locales: z.record(
+    z.string(),
+    z.object({
+      title: z.string().optional(),
+      subtitle: z.string().optional(),
+      content: z.string().optional(),
+    }),
+  ).optional(),
+});
+
+const TranslateCorporateBody = z.object({
+  title: z.string().optional().default(""),
+  subtitle: z.string().optional().default(""),
+  content: z.string().optional().default(""),
 });
 
 router.get("/corporate", async (_req, res): Promise<void> => {
@@ -58,6 +73,19 @@ router.put("/corporate/:sectionKey", requireAuth, async (req, res): Promise<void
       .returning();
   }
   res.json(section);
+});
+
+router.post("/corporate/translate-fields", requireAuth, async (req, res): Promise<void> => {
+  const parsed = TranslateCorporateBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  try {
+    res.json({ locales: await translateLocaleOverlays(parsed.data, "corporate page") });
+  } catch {
+    res.status(502).json({ error: "Çeviri servisi eksik veya geçersiz bir yanıt döndürdü" });
+  }
 });
 
 export default router;

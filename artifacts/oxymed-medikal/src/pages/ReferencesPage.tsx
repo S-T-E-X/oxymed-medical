@@ -6,6 +6,7 @@ import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
+import { pickLocaleOverlay } from "../i18n/pickLocaleOverlay";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 
 const overviewIconMap = [Building2, Stethoscope, Users, HeartHandshake, BedDouble, Timer];
@@ -127,7 +128,7 @@ function OverviewStats() {
 }
 
 function ProjectsSection() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string | undefined>();
 
   const allCategoryLabel = t("references.allCategory");
@@ -169,7 +170,14 @@ function ProjectsSection() {
                         : "border border-steel-200 bg-white text-oxynavy-950 hover:bg-oxynavy-950 hover:text-white"
                     }`}
                   >
-                    {cat}
+                    {isAll
+                      ? cat
+                      : pickLocaleOverlay(
+                          allRefs.find((item) => item.category === cat) ?? {},
+                          "category",
+                          locale,
+                          cat,
+                        )}
                   </button>
                 );
               })}
@@ -209,11 +217,13 @@ function ProjectsSection() {
                   <div className="flex items-center gap-2">
                     {project.projectType && (
                       <span className="rounded bg-oxynavy-50 px-2.5 py-1 text-[11px] font-extrabold text-oxynavy-700">
-                        {project.projectType}
+                        {pickLocaleOverlay(project, "projectType", locale, project.projectType)}
                       </span>
                     )}
                     {project.capacity && (
-                      <span className="text-[11px] font-semibold text-steel-500">{project.capacity}</span>
+                      <span className="text-[11px] font-semibold text-steel-500">
+                        {pickLocaleOverlay(project, "capacity", locale, project.capacity)}
+                      </span>
                     )}
                   </div>
                   <h3 className="mt-3 text-base font-extrabold text-oxynavy-950">{project.title}</h3>

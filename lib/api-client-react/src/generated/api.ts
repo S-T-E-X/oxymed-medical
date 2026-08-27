@@ -31,9 +31,11 @@ import type {
   CatalogUpdate,
   Certificate,
   CertificateInput,
+  CertificateTranslationInput,
   CertificateUpdate,
   CorporateSection,
   CorporateSectionInput,
+  CorporateSectionTranslationInput,
   DashboardStats,
   DeviceServiceHistory,
   DispatchServiceReportEmail200,
@@ -91,6 +93,7 @@ import type {
   ReferenceInput,
   ReferenceItem,
   ReferenceListResponse,
+  ReferenceTranslationInput,
   ReferenceUpdate,
   ServiceRecordInput,
   ServiceRecordItem,
@@ -110,6 +113,9 @@ import type {
   SmtpTestInput,
   SmtpTestResult,
   StartProductionOrder200,
+  TranslateCertificateFields200,
+  TranslateCorporateFields200,
+  TranslateReferenceFields200,
   VisitorEventInput,
   WarrantyAlertListResult,
   WarrantyClaimDecision,
@@ -281,6 +287,76 @@ export const useAdminLogin = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getAdminLoginMutationOptions(options));
+    }
+
+export const getAdminLogoutUrl = () => {
+
+
+
+
+  return `/api/auth/logout`
+}
+
+/**
+ * @summary Admin logout — clears the HttpOnly session cookie
+ */
+export const adminLogout = async ( options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getAdminLogoutUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getAdminLogoutMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof adminLogout>>, TError,void, TContext> => {
+
+const mutationKey = ['adminLogout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminLogout>>, void> = () => {
+
+
+          return  adminLogout(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof adminLogout>>>
+
+    export type AdminLogoutMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Admin logout — clears the HttpOnly session cookie
+ */
+export const useAdminLogout = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof adminLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getAdminLogoutMutationOptions(options));
     }
 
 export const getAdminMeUrl = () => {
@@ -887,6 +963,77 @@ export const useCreateCatalog = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getCreateCatalogMutationOptions(options));
+    }
+
+export const getTranslateCertificateFieldsUrl = () => {
+
+
+
+
+  return `/api/certificates/translate-fields`
+}
+
+/**
+ * @summary Translate a certificate title into all supported languages
+ */
+export const translateCertificateFields = async (certificateTranslationInput: CertificateTranslationInput, options?: RequestInit): Promise<TranslateCertificateFields200> => {
+
+  return customFetch<TranslateCertificateFields200>(getTranslateCertificateFieldsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      certificateTranslationInput,)
+  }
+);}
+
+
+
+
+export const getTranslateCertificateFieldsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateCertificateFields>>, TError,{data: BodyType<CertificateTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof translateCertificateFields>>, TError,{data: BodyType<CertificateTranslationInput>}, TContext> => {
+
+const mutationKey = ['translateCertificateFields'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof translateCertificateFields>>, {data: BodyType<CertificateTranslationInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  translateCertificateFields(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TranslateCertificateFieldsMutationResult = NonNullable<Awaited<ReturnType<typeof translateCertificateFields>>>
+    export type TranslateCertificateFieldsMutationBody = BodyType<CertificateTranslationInput>
+    export type TranslateCertificateFieldsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Translate a certificate title into all supported languages
+ */
+export const useTranslateCertificateFields = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateCertificateFields>>, TError,{data: BodyType<CertificateTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof translateCertificateFields>>,
+        TError,
+        {data: BodyType<CertificateTranslationInput>},
+        TContext
+      > => {
+      return useMutation(getTranslateCertificateFieldsMutationOptions(options));
     }
 
 export const getListCertificatesUrl = () => {
@@ -2890,6 +3037,77 @@ export const useDeleteNewsTranslation = <TError = ErrorType<ErrorResponse>,
       return useMutation(getDeleteNewsTranslationMutationOptions(options));
     }
 
+export const getTranslateReferenceFieldsUrl = () => {
+
+
+
+
+  return `/api/references/translate-fields`
+}
+
+/**
+ * @summary Translate reference metadata into all supported languages
+ */
+export const translateReferenceFields = async (referenceTranslationInput: ReferenceTranslationInput, options?: RequestInit): Promise<TranslateReferenceFields200> => {
+
+  return customFetch<TranslateReferenceFields200>(getTranslateReferenceFieldsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      referenceTranslationInput,)
+  }
+);}
+
+
+
+
+export const getTranslateReferenceFieldsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateReferenceFields>>, TError,{data: BodyType<ReferenceTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof translateReferenceFields>>, TError,{data: BodyType<ReferenceTranslationInput>}, TContext> => {
+
+const mutationKey = ['translateReferenceFields'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof translateReferenceFields>>, {data: BodyType<ReferenceTranslationInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  translateReferenceFields(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TranslateReferenceFieldsMutationResult = NonNullable<Awaited<ReturnType<typeof translateReferenceFields>>>
+    export type TranslateReferenceFieldsMutationBody = BodyType<ReferenceTranslationInput>
+    export type TranslateReferenceFieldsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Translate reference metadata into all supported languages
+ */
+export const useTranslateReferenceFields = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateReferenceFields>>, TError,{data: BodyType<ReferenceTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof translateReferenceFields>>,
+        TError,
+        {data: BodyType<ReferenceTranslationInput>},
+        TContext
+      > => {
+      return useMutation(getTranslateReferenceFieldsMutationOptions(options));
+    }
+
 export const getListReferencesUrl = (params?: ListReferencesParams,) => {
   const normalizedParams = new URLSearchParams();
 
@@ -3489,6 +3707,77 @@ export const useUpdateQuoteStatus = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getUpdateQuoteStatusMutationOptions(options));
+    }
+
+export const getTranslateCorporateFieldsUrl = () => {
+
+
+
+
+  return `/api/corporate/translate-fields`
+}
+
+/**
+ * @summary Translate corporate content into all supported languages
+ */
+export const translateCorporateFields = async (corporateSectionTranslationInput: CorporateSectionTranslationInput, options?: RequestInit): Promise<TranslateCorporateFields200> => {
+
+  return customFetch<TranslateCorporateFields200>(getTranslateCorporateFieldsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      corporateSectionTranslationInput,)
+  }
+);}
+
+
+
+
+export const getTranslateCorporateFieldsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateCorporateFields>>, TError,{data: BodyType<CorporateSectionTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof translateCorporateFields>>, TError,{data: BodyType<CorporateSectionTranslationInput>}, TContext> => {
+
+const mutationKey = ['translateCorporateFields'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof translateCorporateFields>>, {data: BodyType<CorporateSectionTranslationInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  translateCorporateFields(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TranslateCorporateFieldsMutationResult = NonNullable<Awaited<ReturnType<typeof translateCorporateFields>>>
+    export type TranslateCorporateFieldsMutationBody = BodyType<CorporateSectionTranslationInput>
+    export type TranslateCorporateFieldsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Translate corporate content into all supported languages
+ */
+export const useTranslateCorporateFields = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateCorporateFields>>, TError,{data: BodyType<CorporateSectionTranslationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof translateCorporateFields>>,
+        TError,
+        {data: BodyType<CorporateSectionTranslationInput>},
+        TContext
+      > => {
+      return useMutation(getTranslateCorporateFieldsMutationOptions(options));
     }
 
 export const getListCorporateSectionsUrl = () => {

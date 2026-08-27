@@ -12,15 +12,17 @@ import { Check, Edit2, FileUp, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useImageUpload } from "./useImageUpload";
 import { resolvePublicDocumentUrl } from "../lib/documentUrl";
+import { LocaleOverlayFields } from "./LocaleOverlayFields";
 
 type CertificateForm = {
   title: string;
   fileUrl: string;
   sortOrder: number;
   isActive: boolean;
+  locales: Record<string, { title?: string }>;
 };
 
-const EMPTY_FORM: CertificateForm = { title: "", fileUrl: "", sortOrder: 0, isActive: true };
+const EMPTY_FORM: CertificateForm = { title: "", fileUrl: "", sortOrder: 0, isActive: true, locales: {} };
 
 function CertificateModal({
   certificate,
@@ -34,7 +36,13 @@ function CertificateModal({
   const { uploadFile, uploading } = useImageUpload();
   const [form, setForm] = useState<CertificateForm>(
     certificate
-      ? { title: certificate.title, fileUrl: certificate.fileUrl, sortOrder: certificate.sortOrder, isActive: certificate.isActive }
+      ? {
+          title: certificate.title,
+          fileUrl: certificate.fileUrl,
+          sortOrder: certificate.sortOrder,
+          isActive: certificate.isActive,
+          locales: certificate.locales ?? {},
+        }
       : EMPTY_FORM,
   );
   const createMutation = useCreateCertificate({
@@ -82,6 +90,7 @@ function CertificateModal({
       fileUrl: form.fileUrl.trim(),
       sortOrder: form.sortOrder,
       isActive: form.isActive,
+      locales: form.locales,
     };
     if (certificate) {
       updateMutation.mutate({ id: certificate.id, data });
@@ -106,6 +115,13 @@ function CertificateModal({
             <label className="label">Sertifika adı *</label>
             <input className="input" value={form.title} onChange={(event) => set("title", event.target.value)} placeholder="ISO 13485 Sertifikası" />
           </div>
+          <LocaleOverlayFields
+            locales={form.locales}
+            fields={[{ key: "title", label: "Sertifika adı" }]}
+            source={{ title: form.title }}
+            endpoint="/api/certificates/translate-fields"
+            onChange={(locales) => set("locales", locales)}
+          />
           <div>
             <label className="label">Sertifika dosyası *</label>
             <div className="flex gap-2">

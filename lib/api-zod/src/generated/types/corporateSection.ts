@@ -5,6 +5,7 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CorporateSectionLocales } from './corporateSectionLocales';
 
 export interface CorporateSection {
   id: number;
@@ -17,6 +18,7 @@ export interface CorporateSection {
   content?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  locales?: CorporateSectionLocales;
   createdAt: string;
   updatedAt: string;
 }

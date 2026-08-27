@@ -1,6 +1,14 @@
-import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import type { NonTrLocale } from "./corporateSections";
+
+export type ReferenceLocaleContent = {
+  projectType?: string;
+  capacity?: string;
+  category?: string;
+};
+export type ReferenceLocales = Partial<Record<NonTrLocale, ReferenceLocaleContent>>;
 
 export const referencesTable = pgTable("references", {
   id: serial("id").primaryKey(),
@@ -12,6 +20,7 @@ export const referencesTable = pgTable("references", {
   logoUrl: text("logo_url"),
   showInMarquee: boolean("show_in_marquee").notNull().default(false),
   category: text("category").notNull().default("ŞEHİR HASTANELERİ"),
+  locales: jsonb("locales").$type<ReferenceLocales>().default({}),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

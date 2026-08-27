@@ -5,6 +5,7 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CertificateLocales } from './certificateLocales';
 
 export interface Certificate {
   id: number;
@@ -12,6 +13,7 @@ export interface Certificate {
   fileUrl: string;
   sortOrder: number;
   isActive: boolean;
+  locales?: CertificateLocales;
   createdAt: string;
   updatedAt: string;
 }

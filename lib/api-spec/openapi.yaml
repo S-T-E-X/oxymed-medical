@@ -271,6 +271,31 @@ paths:
                 $ref: "#/components/schemas/Catalog"
 
   # CERTIFICATES
+  /certificates/translate-fields:
+    post:
+      operationId: translateCertificateFields
+      tags: [certificates]
+      summary: Translate a certificate title into all supported languages
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateTranslationInput"
+      responses:
+        "200":
+          description: Translated locale overlays
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [locales]
+                properties:
+                  locales:
+                    $ref: "#/components/schemas/CertificateLocales"
+
   /certificates:
     get:
       operationId: listCertificates
@@ -875,6 +900,31 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   # REFERENCES
+  /references/translate-fields:
+    post:
+      operationId: translateReferenceFields
+      tags: [references]
+      summary: Translate reference metadata into all supported languages
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReferenceTranslationInput"
+      responses:
+        "200":
+          description: Translated locale overlays
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [locales]
+                properties:
+                  locales:
+                    $ref: "#/components/schemas/ReferenceLocales"
+
   /references:
     get:
       operationId: listReferences
@@ -1059,6 +1109,31 @@ paths:
                 $ref: "#/components/schemas/QuoteItem"
 
   # CORPORATE
+  /corporate/translate-fields:
+    post:
+      operationId: translateCorporateFields
+      tags: [corporate]
+      summary: Translate corporate content into all supported languages
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CorporateSectionTranslationInput"
+      responses:
+        "200":
+          description: Translated locale overlays
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [locales]
+                properties:
+                  locales:
+                    $ref: "#/components/schemas/CorporateSectionLocales"
+
   /corporate:
     get:
       operationId: listCorporateSections
@@ -2855,6 +2930,8 @@ components:
           type: integer
         isActive:
           type: boolean
+        locales:
+          $ref: "#/components/schemas/CertificateLocales"
         createdAt:
           type: string
         updatedAt:
@@ -2874,6 +2951,8 @@ components:
           type: integer
         isActive:
           type: boolean
+        locales:
+          $ref: "#/components/schemas/CertificateLocales"
 
     CertificateUpdate:
       type: object
@@ -2888,6 +2967,23 @@ components:
           type: integer
         isActive:
           type: boolean
+        locales:
+          $ref: "#/components/schemas/CertificateLocales"
+
+    CertificateLocales:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          title:
+            type: string
+
+    CertificateTranslationInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
 
     # PRODUCT CATEGORIES
     ProductCategory:
@@ -3636,6 +3732,8 @@ components:
           type: boolean
         category:
           type: string
+        locales:
+          $ref: "#/components/schemas/ReferenceLocales"
         createdAt:
           type: string
         updatedAt:
@@ -3661,6 +3759,8 @@ components:
           type: boolean
         category:
           type: string
+        locales:
+          $ref: "#/components/schemas/ReferenceLocales"
 
     ReferenceUpdate:
       type: object
@@ -3679,6 +3779,31 @@ components:
           type: ["string", "null"]
         showInMarquee:
           type: boolean
+        category:
+          type: string
+        locales:
+          $ref: "#/components/schemas/ReferenceLocales"
+
+    ReferenceLocales:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          projectType:
+            type: string
+          capacity:
+            type: string
+          category:
+            type: string
+
+    ReferenceTranslationInput:
+      type: object
+      required: [projectType]
+      properties:
+        projectType:
+          type: string
+        capacity:
+          type: string
         category:
           type: string
 
@@ -3777,6 +3902,8 @@ components:
           type: ["string", "null"]
         imageUrl:
           type: ["string", "null"]
+        locales:
+          $ref: "#/components/schemas/CorporateSectionLocales"
         createdAt:
           type: string
         updatedAt:
@@ -3792,6 +3919,30 @@ components:
         content:
           type: string
         imageUrl:
+          type: string
+        locales:
+          $ref: "#/components/schemas/CorporateSectionLocales"
+
+    CorporateSectionLocales:
+      type: object
+      additionalProperties:
+        type: object
+        properties:
+          title:
+            type: string
+          subtitle:
+            type: string
+          content:
+            type: string
+
+    CorporateSectionTranslationInput:
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        content:
           type: string
 
     # SETTINGS

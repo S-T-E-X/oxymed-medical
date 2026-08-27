@@ -7,12 +7,6 @@
  */
 import type { CertificateLocales } from './certificateLocales';
 
-export interface CertificateInput {
-  /** @minLength 1 */
-  title: string;
-  /** @minLength 1 */
-  fileUrl: string;
-  sortOrder?: number;
-  isActive?: boolean;
-  locales?: CertificateLocales;
-}
+export type TranslateCertificateFields200 = {
+  locales: CertificateLocales;
+};

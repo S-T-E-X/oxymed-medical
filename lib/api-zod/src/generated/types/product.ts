@@ -58,6 +58,7 @@ export interface Product {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  /** @nullable */
   titleEs?: string | null;
   createdAt: string;
   updatedAt: string;

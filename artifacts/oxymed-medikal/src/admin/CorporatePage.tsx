@@ -10,6 +10,7 @@ import {
 import { toast } from "sonner";
 import { Save, Upload, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+import { LocaleOverlayFields } from "./LocaleOverlayFields";
 
 const SECTION_LABELS: Record<string, string> = {
   about: "Hakkımızda",
@@ -33,6 +34,7 @@ type SectionForm = {
   subtitle: string;
   content: string;
   imageUrl: string;
+  locales: Record<string, { title?: string; subtitle?: string; content?: string }>;
 };
 
 function SectionCard({ sectionKey, initialData }: { sectionKey: string; initialData: SectionForm }) {
@@ -45,9 +47,9 @@ function SectionCard({ sectionKey, initialData }: { sectionKey: string; initialD
   useEffect(() => {
     setForm(initialData);
     setDirty(false);
-  }, [initialData.title, initialData.subtitle, initialData.content, initialData.imageUrl]);
+  }, [initialData]);
 
-  function set<K extends keyof SectionForm>(field: K, val: string) {
+  function set<K extends keyof SectionForm>(field: K, val: SectionForm[K]) {
     setForm((f) => ({ ...f, [field]: val }));
     setDirty(true);
   }
@@ -85,6 +87,7 @@ function SectionCard({ sectionKey, initialData }: { sectionKey: string; initialD
         subtitle: form.subtitle || undefined,
         content: form.content || undefined,
         imageUrl: form.imageUrl || undefined,
+        locales: form.locales,
       },
     });
   }
@@ -123,6 +126,17 @@ function SectionCard({ sectionKey, initialData }: { sectionKey: string; initialD
             placeholder={`${label} içerik metni`}
           />
         </div>
+        <LocaleOverlayFields
+          locales={form.locales}
+          fields={[
+            { key: "title", label: "Başlık" },
+            { key: "subtitle", label: "Alt Başlık" },
+            { key: "content", label: "İçerik", multiline: true },
+          ]}
+          source={{ title: form.title, subtitle: form.subtitle, content: form.content }}
+          endpoint="/api/corporate/translate-fields"
+          onChange={(locales) => set("locales", locales)}
+        />
         {showImage && (
           <div>
             <label className="label">Görsel</label>
@@ -417,6 +431,7 @@ export default function CorporatePage() {
                       subtitle: sec?.subtitle ?? "",
                       content: sec?.content ?? (key === "about" ? DEFAULT_ABOUT_CONTENT : ""),
                       imageUrl: sec?.imageUrl ?? "",
+                      locales: sec?.locales ?? {},
                     }}
                   />
                 );

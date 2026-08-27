@@ -5,6 +5,7 @@ import { requireAuth } from "../lib/auth";
 import { parsePageLimit } from "../lib/security";
 import { writeAdminAuditLog } from "../lib/audit";
 import { z } from "zod/v4";
+import { translateLocaleOverlays } from "../lib/translateLocaleOverlays";
 
 const router: IRouter = Router();
 
@@ -17,6 +18,19 @@ const ReferenceBody = z.object({
   logoUrl: z.string().optional().nullable(),
   showInMarquee: z.boolean().optional(),
   category: z.string().optional(),
+  locales: z.record(
+    z.string(),
+    z.object({
+      projectType: z.string().optional(),
+      capacity: z.string().optional(),
+      category: z.string().optional(),
+    }),
+  ).optional(),
+});
+const TranslateReferenceBody = z.object({
+  projectType: z.string().min(1),
+  capacity: z.string().optional().default(""),
+  category: z.string().optional().default(""),
 });
 
 function parseId(raw: string | string[]): number {
@@ -102,6 +116,19 @@ router.delete("/references/:id", requireAuth, async (req, res): Promise<void> =>
     details: { title: deleted.title },
   });
   res.sendStatus(204);
+});
+
+router.post("/references/translate-fields", requireAuth, async (req, res): Promise<void> => {
+  const parsed = TranslateReferenceBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  try {
+    res.json({ locales: await translateLocaleOverlays(parsed.data, "reference projects") });
+  } catch {
+    res.status(502).json({ error: "Çeviri servisi eksik veya geçersiz bir yanıt döndürdü" });
+  }
 });
 
 export default router;

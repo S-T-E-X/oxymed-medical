@@ -5,6 +5,7 @@ import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
+import { pickLocaleOverlay } from "../i18n/pickLocaleOverlay";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 
 // Turkish body prose comes from the database; these are the source-language
@@ -81,11 +82,15 @@ function CorporateHero() {
 }
 
 function CorporateIntro() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { data: sections = [], isLoading, isError } = useListCorporateSections();
   const about = sections.find((section) => section.sectionKey === "about");
-  const content = about?.content || DEFAULT_ABOUT_CONTENT;
-  const title = about?.title || t("corporate.about.title");
+  const content = about
+    ? pickLocaleOverlay(about, "content", locale, about.content || DEFAULT_ABOUT_CONTENT)
+    : DEFAULT_ABOUT_CONTENT;
+  const title = about
+    ? pickLocaleOverlay(about, "title", locale, about.title || t("corporate.about.title"))
+    : t("corporate.about.title");
 
   if (isError) {
     return <section className="bg-white py-16"><div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8"><ErrorMessage message={t("corporate.error")} /></div></section>;

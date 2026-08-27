@@ -57,5 +57,6 @@ export interface ProductUpdate {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  /** @nullable */
   titleEs?: string | null;
 }

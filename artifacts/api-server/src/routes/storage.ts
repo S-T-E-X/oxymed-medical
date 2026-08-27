@@ -1,14 +1,21 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { Readable } from "stream";
+import { once } from "node:events";
 import {
   RequestMediaUploadUrlBody,
   RequestMediaUploadUrlResponse,
 } from "@workspace/api-zod";
-import { db, mediaFilesTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 import { requireAuth } from "../lib/auth";
 import { mediaUploadRateLimiter, validateMediaUploadMetadata } from "../lib/security";
+import {
+  dedupeFetch,
+  getCachedMedia,
+  openCachedMedia,
+  putCachedMedia,
+  type CachedMedia,
+} from "../lib/mediaCache";
+import { fetchPublicMedia, isSafeMediaPath } from "../lib/publicMedia";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -72,59 +79,98 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
     const filePath = Array.isArray(raw) ? raw.join("/") : raw;
 
     // Reject traversal attempts before they reach the storage layer.
-    if (filePath.includes("..") || filePath.includes("\0")) {
+    if (!isSafeMediaPath(filePath)) {
       res.status(400).json({ error: "Invalid path" });
       return;
     }
 
-    // First try the genuinely public search paths.
-    let file = await objectStorageService.searchPublicObject(filePath);
-
-    if (!file) {
-      // Fall back to the private object dir ONLY for objects the admin has
-      // explicitly registered as site media. Without this allowlist the public
-      // route would expose every object in the private bucket to anyone who
-      // can guess a path.
-      const normalizedPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
-      if (normalizedPath.startsWith("/objects/")) {
-        const [registered] = await db
-          .select({ id: mediaFilesTable.id })
-          .from(mediaFilesTable)
-          .where(eq(mediaFilesTable.objectPath, normalizedPath));
-
-        if (registered) {
-          try {
-            file = await objectStorageService.getObjectEntityFile(normalizedPath);
-          } catch {
-            // not found in private dir either
-          }
-        }
-      }
+    // Fast path. A hit here answers the request without touching object storage
+    // at all, which is the whole point: an uncached hit costs 3–4.5s of
+    // time-to-first-byte because every lookup is a separate sidecar round trip.
+    // Only bytes that already passed fetchPublicMedia's authorization check can
+    // be in the cache, so a hit is safe to serve as-is.
+    const cached = await getCachedMedia(filePath);
+    if (cached && (await serveCached(req, res, cached))) {
+      return;
     }
 
-    if (!file) {
+    const fetched = await dedupeFetch(filePath, () => fetchPublicMedia(filePath));
+
+    if (!fetched) {
       res.status(404).json({ error: "File not found" });
       return;
     }
 
-    const response = await objectStorageService.downloadObject(file, undefined, {
-      forcePublic: true,
-    });
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
+    const stored = await putCachedMedia(filePath, fetched.body, fetched.contentType);
+    // If the cache write failed we still have the bytes in hand — serve them
+    // rather than failing the request, just without a strong validator.
+    sendMedia(req, res, fetched.contentType, stored?.etag, fetched.body.length, () =>
+      Readable.from(fetched.body),
+    );
   } catch (error) {
     req.log.error({ err: error }, "Error serving public object");
-    res.status(500).json({ error: "Failed to serve public object" });
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to serve public object" });
+    }
   }
 });
+
+/**
+ * Serve a cache hit, returning false if the cached file turned out to be
+ * unreadable so the caller can fall back to object storage.
+ *
+ * The file handle is acquired BEFORE any header is written: eviction or an
+ * admin deletion can remove an entry between the lookup and the read, and
+ * discovering that mid-response would leave the client with a truncated image
+ * and no way to recover.
+ */
+async function serveCached(
+  req: Request,
+  res: Response,
+  cached: CachedMedia,
+): Promise<boolean> {
+  let stream: NodeJS.ReadableStream;
+  try {
+    stream = openCachedMedia(cached);
+    await once(stream as Readable, "open");
+  } catch {
+    return false;
+  }
+
+  sendMedia(req, res, cached.contentType, cached.etag, cached.size, () => stream);
+  return true;
+}
+
+/**
+ * Emit a media response with a strong validator so repeat requests — including
+ * crawler revalidations, which do not reuse a warm browser cache — cost a 304
+ * instead of a full body.
+ */
+function sendMedia(
+  req: Request,
+  res: Response,
+  contentType: string,
+  etag: string | undefined,
+  size: number,
+  openStream: () => NodeJS.ReadableStream,
+): void {
+  res.setHeader("Content-Type", contentType);
+  // Uploaded objects are content-addressed by a UUID minted at upload time, so
+  // a given URL's bytes never change and can be cached indefinitely.
+  res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+
+  if (etag) {
+    res.setHeader("ETag", etag);
+    const ifNoneMatch = req.headers["if-none-match"];
+    if (ifNoneMatch && ifNoneMatch.split(",").some((tag) => tag.trim() === etag)) {
+      res.status(304).end();
+      return;
+    }
+  }
+
+  res.setHeader("Content-Length", String(size));
+  openStream().pipe(res);
+}
 
 /**
  * GET /storage/objects/*

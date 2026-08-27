@@ -7,9 +7,10 @@ import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { resolvePublicDocumentUrl } from "../lib/documentUrl";
+import { pickLocaleOverlay } from "../i18n/pickLocaleOverlay";
 
 export default function CertificatesPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const path = useLocalizedPath();
   const { data: certificates = [], isLoading, isError } = useListCertificates();
 
@@ -66,7 +67,9 @@ export default function CertificatesPage() {
                       <FileText className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <strong className="block truncate text-sm text-oxynavy-950 sm:text-base">{certificate.title}</strong>
+                      <strong className="block truncate text-sm text-oxynavy-950 sm:text-base">
+                        {pickLocaleOverlay(certificate, "title", locale, certificate.title)}
+                      </strong>
                       <span className="mt-1 block text-xs text-steel-500">{t("certificates.downloadHint")}</span>
                     </span>
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-steel-200 text-oxynavy-800 transition group-hover:border-oxynavy-800 group-hover:bg-oxynavy-800 group-hover:text-white">

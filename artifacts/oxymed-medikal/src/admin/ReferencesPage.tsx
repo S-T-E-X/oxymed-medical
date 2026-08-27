@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import { Edit2, ImageIcon, Plus, Star, Trash2, X } from "lucide-react";
 import { useImageUpload } from "./useImageUpload";
+import { LocaleOverlayFields } from "./LocaleOverlayFields";
 
 type RefForm = {
   title: string;
@@ -21,6 +22,7 @@ type RefForm = {
   logoUrl: string;
   showInMarquee: boolean;
   category: string;
+  locales: Record<string, { projectType?: string; capacity?: string; category?: string }>;
 };
 
 const EMPTY: RefForm = {
@@ -32,6 +34,7 @@ const EMPTY: RefForm = {
   logoUrl: "",
   showInMarquee: false,
   category: "Hastane",
+  locales: {},
 };
 
 const PROJECT_TYPES = ["Hastane", "Klinik", "Sağlık Merkezi", "Endüstriyel", "Diğer"];
@@ -110,6 +113,17 @@ function RefModal({
               </select>
             </div>
           </div>
+          <LocaleOverlayFields
+            locales={form.locales}
+            fields={[
+              { key: "projectType", label: "Proje Türü" },
+              { key: "capacity", label: "Kapasite" },
+              { key: "category", label: "Kategori" },
+            ]}
+            source={{ projectType: form.projectType, capacity: form.capacity, category: form.category }}
+            endpoint="/api/references/translate-fields"
+            onChange={(locales) => set("locales", locales)}
+          />
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label">Şehir</label>
@@ -313,6 +327,7 @@ export default function ReferencesPage() {
             logoUrl: modal.item.logoUrl ?? "",
             showInMarquee: modal.item.showInMarquee,
             category: modal.item.category,
+            locales: modal.item.locales ?? {},
           } : EMPTY}
           onClose={() => setModal({ open: false, item: null })}
           onSave={handleSave}

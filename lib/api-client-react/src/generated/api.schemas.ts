@@ -83,6 +83,7 @@ export interface Slider {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  /** @nullable */
   titleEs?: string | null;
   /** @nullable */
   subtitleEn?: string | null;
@@ -104,6 +105,7 @@ export interface Slider {
   subtitleBg?: string | null;
   /** @nullable */
   subtitleAz?: string | null;
+  /** @nullable */
   subtitleEs?: string | null;
   /** @nullable */
   descriptionEn?: string | null;
@@ -125,6 +127,7 @@ export interface Slider {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  /** @nullable */
   descriptionEs?: string | null;
   /** @nullable */
   ctaPrimaryTextEn?: string | null;
@@ -146,6 +149,7 @@ export interface Slider {
   ctaPrimaryTextBg?: string | null;
   /** @nullable */
   ctaPrimaryTextAz?: string | null;
+  /** @nullable */
   ctaPrimaryTextEs?: string | null;
   /** @nullable */
   ctaSecondaryTextEn?: string | null;
@@ -167,6 +171,7 @@ export interface Slider {
   ctaSecondaryTextBg?: string | null;
   /** @nullable */
   ctaSecondaryTextAz?: string | null;
+  /** @nullable */
   ctaSecondaryTextEs?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -303,6 +308,7 @@ export interface SliderUpdate {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  /** @nullable */
   titleEs?: string | null;
   /** @nullable */
   subtitleEn?: string | null;
@@ -324,6 +330,7 @@ export interface SliderUpdate {
   subtitleBg?: string | null;
   /** @nullable */
   subtitleAz?: string | null;
+  /** @nullable */
   subtitleEs?: string | null;
   /** @nullable */
   descriptionEn?: string | null;
@@ -345,6 +352,7 @@ export interface SliderUpdate {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  /** @nullable */
   descriptionEs?: string | null;
   /** @nullable */
   ctaPrimaryTextEn?: string | null;
@@ -366,6 +374,7 @@ export interface SliderUpdate {
   ctaPrimaryTextBg?: string | null;
   /** @nullable */
   ctaPrimaryTextAz?: string | null;
+  /** @nullable */
   ctaPrimaryTextEs?: string | null;
   /** @nullable */
   ctaSecondaryTextEn?: string | null;
@@ -387,6 +396,7 @@ export interface SliderUpdate {
   ctaSecondaryTextBg?: string | null;
   /** @nullable */
   ctaSecondaryTextAz?: string | null;
+  /** @nullable */
   ctaSecondaryTextEs?: string | null;
 }
 
@@ -428,12 +438,17 @@ export interface CatalogUpdate {
   isActive?: boolean;
 }
 
+export interface CertificateLocales {[key: string]: {
+  title?: string;
+}}
+
 export interface Certificate {
   id: number;
   title: string;
   fileUrl: string;
   sortOrder: number;
   isActive: boolean;
+  locales?: CertificateLocales;
   createdAt: string;
   updatedAt: string;
 }
@@ -445,6 +460,7 @@ export interface CertificateInput {
   fileUrl: string;
   sortOrder?: number;
   isActive?: boolean;
+  locales?: CertificateLocales;
 }
 
 export interface CertificateUpdate {
@@ -454,6 +470,11 @@ export interface CertificateUpdate {
   fileUrl?: string;
   sortOrder?: number;
   isActive?: boolean;
+  locales?: CertificateLocales;
+}
+
+export interface CertificateTranslationInput {
+  title: string;
 }
 
 export interface ProductCategory {
@@ -483,6 +504,7 @@ export interface ProductCategory {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  /** @nullable */
   nameEs?: string | null;
   /** @nullable */
   imageUrl?: string | null;
@@ -508,6 +530,7 @@ export interface ProductCategory {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  /** @nullable */
   descriptionEs?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -571,6 +594,7 @@ export interface ProductCategoryUpdate {
   nameBg?: string | null;
   /** @nullable */
   nameAz?: string | null;
+  /** @nullable */
   nameEs?: string | null;
   /** @nullable */
   imageUrl?: string | null;
@@ -596,6 +620,7 @@ export interface ProductCategoryUpdate {
   descriptionBg?: string | null;
   /** @nullable */
   descriptionAz?: string | null;
+  /** @nullable */
   descriptionEs?: string | null;
 }
 
@@ -767,6 +792,7 @@ export interface Product {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  /** @nullable */
   titleEs?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -852,6 +878,7 @@ export interface ProductUpdate {
   titleBg?: string | null;
   /** @nullable */
   titleAz?: string | null;
+  /** @nullable */
   titleEs?: string | null;
 }
 
@@ -971,6 +998,12 @@ export interface NewsListResponse {
   total: number;
 }
 
+export interface ReferenceLocales {[key: string]: {
+  projectType?: string;
+  capacity?: string;
+  category?: string;
+}}
+
 export interface ReferenceItem {
   id: number;
   title: string;
@@ -985,6 +1018,7 @@ export interface ReferenceItem {
   logoUrl?: string | null;
   showInMarquee: boolean;
   category: string;
+  locales?: ReferenceLocales;
   createdAt: string;
   updatedAt: string;
 }
@@ -998,6 +1032,7 @@ export interface ReferenceInput {
   logoUrl?: string;
   showInMarquee?: boolean;
   category?: string;
+  locales?: ReferenceLocales;
 }
 
 export interface ReferenceUpdate {
@@ -1012,6 +1047,13 @@ export interface ReferenceUpdate {
   /** @nullable */
   logoUrl?: string | null;
   showInMarquee?: boolean;
+  category?: string;
+  locales?: ReferenceLocales;
+}
+
+export interface ReferenceTranslationInput {
+  projectType: string;
+  capacity?: string;
   category?: string;
 }
 
@@ -1060,6 +1102,12 @@ export interface QuoteListResponse {
   total: number;
 }
 
+export interface CorporateSectionLocales {[key: string]: {
+  title?: string;
+  subtitle?: string;
+  content?: string;
+}}
+
 export interface CorporateSection {
   id: number;
   sectionKey: string;
@@ -1071,6 +1119,7 @@ export interface CorporateSection {
   content?: string | null;
   /** @nullable */
   imageUrl?: string | null;
+  locales?: CorporateSectionLocales;
   createdAt: string;
   updatedAt: string;
 }
@@ -1080,6 +1129,13 @@ export interface CorporateSectionInput {
   subtitle?: string;
   content?: string;
   imageUrl?: string;
+  locales?: CorporateSectionLocales;
+}
+
+export interface CorporateSectionTranslationInput {
+  title?: string;
+  subtitle?: string;
+  content?: string;
 }
 
 export interface Setting {
@@ -1757,6 +1813,10 @@ language?: string;
 category?: string;
 };
 
+export type TranslateCertificateFields200 = {
+  locales: CertificateLocales;
+};
+
 export type ListProductsParams = {
 categoryId?: number;
 published?: boolean;
@@ -1776,6 +1836,10 @@ page?: number;
 limit?: number;
 };
 
+export type TranslateReferenceFields200 = {
+  locales: ReferenceLocales;
+};
+
 export type ListReferencesParams = {
 category?: string;
 page?: number;
@@ -1787,6 +1851,10 @@ export type ListQuotesParams = {
 status?: string;
 page?: number;
 limit?: number;
+};
+
+export type TranslateCorporateFields200 = {
+  locales: CorporateSectionLocales;
 };
 
 export type ListMediaFilesParams = {

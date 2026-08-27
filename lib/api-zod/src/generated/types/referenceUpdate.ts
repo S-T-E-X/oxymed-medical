@@ -5,6 +5,7 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ReferenceLocales } from './referenceLocales';
 
 export interface ReferenceUpdate {
   title?: string;
@@ -19,4 +20,5 @@ export interface ReferenceUpdate {
   logoUrl?: string | null;
   showInMarquee?: boolean;
   category?: string;
+  locales?: ReferenceLocales;
 }

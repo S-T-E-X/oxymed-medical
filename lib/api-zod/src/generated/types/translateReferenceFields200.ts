@@ -5,8 +5,8 @@
  * Oxymed Medikal API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminUser } from './adminUser';
+import type { ReferenceLocales } from './referenceLocales';
 
-export interface AuthTokenResult {
-  user: AdminUser;
-}
+export type TranslateReferenceFields200 = {
+  locales: ReferenceLocales;
+};

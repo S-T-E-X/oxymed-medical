@@ -7,8 +7,11 @@ import {
   CreateCertificateBody,
   UpdateCertificateBody,
 } from "@workspace/api-zod";
+import { z } from "zod/v4";
+import { translateLocaleOverlays } from "../lib/translateLocaleOverlays";
 
 const router: IRouter = Router();
+const TranslateCertificateBody = z.object({ title: z.string().min(1) });
 
 function parseId(raw: string | string[]): number {
   // Strict positive-integer parsing: malformed input yields 0, which matches
@@ -77,6 +80,19 @@ router.delete("/certificates/:id", requireAuth, async (req, res): Promise<void> 
     details: { title: certificate.title },
   });
   res.sendStatus(204);
+});
+
+router.post("/certificates/translate-fields", requireAuth, async (req, res): Promise<void> => {
+  const parsed = TranslateCertificateBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  try {
+    res.json({ locales: await translateLocaleOverlays(parsed.data, "certificate list") });
+  } catch {
+    res.status(502).json({ error: "Çeviri servisi eksik veya geçersiz bir yanıt döndürdü" });
+  }
 });
 
 export default router;
