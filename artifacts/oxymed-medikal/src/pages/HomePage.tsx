@@ -8,7 +8,7 @@ import Header from "../components/layout/Header";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white text-oxynavy-950">
+    <div className="min-h-screen bg-oxynavy-950 text-oxynavy-950">
       <Header />
       <main>
         <Hero />

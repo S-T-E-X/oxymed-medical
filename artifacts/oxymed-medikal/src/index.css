@@ -25,7 +25,7 @@
 
 :root {
   color: #041d31;
-  background: #ffffff;
+  background: #021423;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -34,6 +34,7 @@
 
 html {
   scroll-behavior: smooth;
+  background: #021423;
 }
 
 /* Admin sidebar — thin custom scrollbar */
@@ -72,8 +73,13 @@ html {
 body {
   min-width: 320px;
   margin: 0;
-  background: #ffffff;
+  background: #021423;
   font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
+}
+
+#root {
+  min-height: 100%;
+  background: #021423;
 }
 
 img {
