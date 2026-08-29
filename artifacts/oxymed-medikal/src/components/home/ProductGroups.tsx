@@ -4,6 +4,7 @@ import { useListProducts } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
 import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 import { pickLocalizedName } from "../../i18n/pickLocalizedName";
+import { publicMediaUrl } from "../../lib/mediaUrl";
 
 const FALLBACK_IMAGE = "/assets/images/hero-medical-suite.png";
 
@@ -58,7 +59,7 @@ export default function ProductGroups() {
                     >
                       <div className="aspect-[1.35] overflow-hidden bg-steel-100">
                         <img
-                          src={product.imageUrl || FALLBACK_IMAGE}
+                          src={publicMediaUrl(product.imageUrl) ?? FALLBACK_IMAGE}
                           alt={name}
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
                         />

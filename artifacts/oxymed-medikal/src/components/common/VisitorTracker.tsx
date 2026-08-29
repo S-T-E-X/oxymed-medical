@@ -74,7 +74,8 @@ function isTrackablePath(path: string): boolean {
 /**
  * Records an anonymous interaction (e.g. a CTA or product card click).
  * Consent-gated identically to page-view tracking: nothing is sent unless the
- * visitor has accepted cookies. Best-effort — failures are swallowed.
+ * visitor has accepted cookies. Failures never block the visitor, but remain
+ * visible in the browser console so a broken production API is diagnosable.
  */
 export function trackInteraction(label: string): void {
   if (typeof window === "undefined") return;
@@ -90,8 +91,8 @@ export function trackInteraction(label: string): void {
     label,
     referrerSource: getReferrerSource(),
     deviceType: getDeviceType(),
-  }).catch(() => {
-    /* tracking is best-effort; ignore failures */
+  }).catch((error: unknown) => {
+    console.warn("[analytics] interaction could not be recorded", error);
   });
 }
 
@@ -112,8 +113,8 @@ export default function VisitorTracker() {
       eventType: "pageview",
       referrerSource: getReferrerSource(),
       deviceType: getDeviceType(),
-    }).catch(() => {
-      /* tracking is best-effort; ignore failures */
+    }).catch((error: unknown) => {
+      console.warn("[analytics] page view could not be recorded", error);
     });
   };
 

@@ -17,6 +17,7 @@ import {
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { isRtlLanguage, translateQuoteUnit, type QuoteLanguage } from "../lib/quoteLanguages";
 import "./QuoteTemplatePage.css";
+import { publicMediaUrl } from "../lib/mediaUrl";
 
 export type { QuoteLanguage };
 
@@ -1084,7 +1085,7 @@ function ItemsTable({
                   <td className="qt-image-cell">
                     {item.imageUrl ? (
                       <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                        <img src={item.imageUrl} alt={item.title} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain" }} />
+                        <img src={publicMediaUrl(item.imageUrl)} alt={item.title} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain" }} />
                       </div>
                     ) : null}
                   </td>
@@ -1114,7 +1115,7 @@ function ItemsTable({
                 <td className="qt-image-cell">
                   {!isChild && item.imageUrl ? (
                     <div className="qt-product-image-slot" style={{ background: "none", border: "none" }}>
-                      <img src={item.imageUrl} alt={item.title} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain" }} />
+                      <img src={publicMediaUrl(item.imageUrl)} alt={item.title} style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain" }} />
                     </div>
                   ) : null}
                 </td>

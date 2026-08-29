@@ -16,6 +16,7 @@ import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import Seo from "../components/common/Seo";
 import { trackInteraction } from "../components/common/VisitorTracker";
+import { publicMediaUrl } from "../lib/mediaUrl";
 import { productPageFeatures } from "../data/products";
 import { useI18n } from "../i18n/I18nProvider";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
@@ -171,7 +172,7 @@ function ProductsContent() {
                     >
                       <div className="aspect-[4/3] overflow-hidden bg-steel-100">
                         <img
-                          src={product.imageUrl ?? "/assets/images/product-bed-head-unit.png"}
+                          src={publicMediaUrl(product.imageUrl) ?? "/assets/images/product-bed-head-unit.png"}
                           alt={localizedTitle}
                           className="h-full w-full object-cover transition group-hover:scale-105"
                         />

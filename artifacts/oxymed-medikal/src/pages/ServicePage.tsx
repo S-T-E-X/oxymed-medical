@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
+import { publicMediaUrl } from "../lib/mediaUrl";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
@@ -237,7 +238,7 @@ function DeviceFound({ device }: { device: {
           </div>
           <div className="service-device-card__body">
             <img
-              src={device.imageUrl ?? "/assets/images/service-vacuum-system.png"}
+              src={publicMediaUrl(device.imageUrl) ?? "/assets/images/service-vacuum-system.png"}
               alt={t("service.device.imageAlt")}
             />
             <dl>

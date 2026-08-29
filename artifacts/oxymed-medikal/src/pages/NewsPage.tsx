@@ -10,6 +10,7 @@ import { newsDetailPath, localizedPath } from "../i18n/routes";
 import { SITE_ORIGIN, LOCALE_META, LOCALES } from "../i18n/config";
 import { alternatesFor } from "../i18n/seo";
 import type { Alternate } from "../i18n/seo";
+import { publicMediaUrl } from "../lib/mediaUrl";
 
 function formatDate(dateStr: string | null | undefined, locale: string) {
   if (!dateStr) return "";
@@ -187,7 +188,7 @@ function NewsContent({ locale, t }: NewsContentProps) {
                     <Link to={newsDetailPath(locale as Parameters<typeof newsDetailPath>[0], post.slug)} className="block">
                       <div className="aspect-[1.6] overflow-hidden">
                         <img
-                          src={post.imageUrl ?? "/assets/images/product-medical-gas.png"}
+                          src={publicMediaUrl(post.imageUrl) ?? "/assets/images/product-medical-gas.png"}
                           alt={post.title}
                           loading="lazy"
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
@@ -250,7 +251,7 @@ function NewsContent({ locale, t }: NewsContentProps) {
                     >
                       <div className="h-14 w-20 shrink-0 overflow-hidden rounded">
                         <img
-                          src={post.imageUrl ?? "/assets/images/product-medical-gas.png"}
+                          src={publicMediaUrl(post.imageUrl) ?? "/assets/images/product-medical-gas.png"}
                           alt={post.title}
                           loading="lazy"
                           className="h-full w-full object-cover transition group-hover:scale-[1.05]"

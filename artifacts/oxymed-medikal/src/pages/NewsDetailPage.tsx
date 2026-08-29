@@ -11,6 +11,7 @@ import { newsDetailPath, localizedPath } from "../i18n/routes";
 import { SITE_ORIGIN, LOCALE_META, DEFAULT_LOCALE } from "../i18n/config";
 import type { Locale } from "../i18n/config";
 import type { Alternate } from "../i18n/seo";
+import { publicMediaUrl } from "../lib/mediaUrl";
 
 function formatDate(dateStr: string | null | undefined, locale: string) {
   if (!dateStr) return "";
@@ -87,10 +88,11 @@ export default function NewsDetailPage() {
   const articleJsonLd = useMemo(() => {
     if (!news) return null;
     const canonicalUrl = `${SITE_ORIGIN}${newsDetailPath(locale as Locale, news.slug)}`;
-    const imageUrl = news.imageUrl
-      ? news.imageUrl.startsWith("http")
-        ? news.imageUrl
-        : `${SITE_ORIGIN}${news.imageUrl}`
+    const resolvedImage = publicMediaUrl(news.imageUrl);
+    const imageUrl = resolvedImage
+      ? resolvedImage.startsWith("http")
+        ? resolvedImage
+        : `${SITE_ORIGIN}${resolvedImage}`
       : `${SITE_ORIGIN}/assets/images/hero-medical-suite.png`;
 
     const breadcrumbJsonLd = {
@@ -202,7 +204,7 @@ export default function NewsDetailPage() {
             <>
               <div className="w-full bg-oxynavy-950">
                 <img
-                  src={news.imageUrl ?? "/assets/images/product-medical-gas.png"}
+                  src={publicMediaUrl(news.imageUrl) ?? "/assets/images/product-medical-gas.png"}
                   alt={news.title}
                   className="mx-auto block max-h-[520px] w-full max-w-6xl object-cover"
                 />

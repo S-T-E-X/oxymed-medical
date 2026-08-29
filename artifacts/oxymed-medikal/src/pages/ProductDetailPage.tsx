@@ -25,6 +25,7 @@ import { DEFAULT_LOCALE, LOCALE_META, SITE_ORIGIN, type Locale } from "../i18n/c
 import { localizedPath } from "../i18n/routes";
 import type { Alternate } from "../i18n/seo";
 import { getProductIcon } from "../data/productPageIcons";
+import { publicMediaUrl } from "../lib/mediaUrl";
 import {
   availableProductLocales,
   contentForLocale,
@@ -190,7 +191,7 @@ export default function ProductDetailPage() {
           <article key={card.title}>
                 {card.imageUrl ? (
                   <div className="pdp-image-slot">
-                    <img src={card.imageUrl} alt="" loading="lazy" decoding="async" />
+                    <img src={publicMediaUrl(card.imageUrl)} alt="" loading="lazy" decoding="async" />
                   </div>
                 ) : <div className="pdp-image-slot" />}
             <h2>{card.title}</h2><p>{card.text}</p>
@@ -306,7 +307,7 @@ export default function ProductDetailPage() {
 
             <div className="pdp-hero__visual" aria-label={t("products.detail.productImage").replace("{{product}}", localizedTitle)}>
               {product.imageUrl ? (
-                <img src={product.imageUrl} alt={localizedTitle} decoding="async" fetchPriority="high" />
+                <img src={publicMediaUrl(product.imageUrl)} alt={localizedTitle} decoding="async" fetchPriority="high" />
               ) : (
                 <div className="pdp-hero-photo-slot" />
               )}

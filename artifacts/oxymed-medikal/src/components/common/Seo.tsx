@@ -4,6 +4,7 @@ import { useI18n } from "../../i18n/I18nProvider";
 import { absoluteUrl, alternatesFor, type Alternate } from "../../i18n/seo";
 import type { RouteKey } from "../../i18n/routes";
 import { setJsonLd } from "./jsonLd";
+import { publicMediaUrl } from "../../lib/mediaUrl";
 
 /**
  * Marks every tag this component owns so a navigation can clean up the
@@ -93,10 +94,11 @@ export default function Seo({
   const resolvedDescription = description ?? t(`seo.${routeKey}.description`);
   // Explicit canonical wins; otherwise use the standard route-based URL.
   const canonical = canonicalUrl ?? absoluteUrl(routeKey, locale);
-  const shareImage = image
-    ? image.startsWith("http")
-      ? image
-      : `${SITE_ORIGIN}${image}`
+  const resolvedImage = publicMediaUrl(image);
+  const shareImage = resolvedImage
+    ? resolvedImage.startsWith("http")
+      ? resolvedImage
+      : `${SITE_ORIGIN}${resolvedImage}`
     : `${SITE_ORIGIN}/assets/images/hero-medical-suite.png`;
 
   // Use explicit alternates when provided, otherwise generate from the route.

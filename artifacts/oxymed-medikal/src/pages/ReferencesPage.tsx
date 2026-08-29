@@ -8,6 +8,7 @@ import Breadcrumbs from "../components/common/Breadcrumbs";
 import { useI18n } from "../i18n/I18nProvider";
 import { pickLocaleOverlay } from "../i18n/pickLocaleOverlay";
 import { useLocalizedPath } from "../i18n/useLocalizedPath";
+import { publicMediaUrl } from "../lib/mediaUrl";
 
 const overviewIconMap = [Building2, Stethoscope, Users, HeartHandshake, BedDouble, Timer];
 
@@ -206,7 +207,7 @@ function ProjectsSection() {
               >
                 <div className="aspect-[1.6] overflow-hidden">
                   <img
-                    src={project.imageUrl ?? "/assets/images/corporate-hero-facility.png"}
+                    src={publicMediaUrl(project.imageUrl) ?? "/assets/images/corporate-hero-facility.png"}
                     alt={project.title}
                     loading="lazy"
                     decoding="async"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./DeviceQrPage.css";
+import { publicMediaUrl } from "../lib/mediaUrl";
 import {
   useGetWarrantyDeviceByQr,
   useCreateWarrantyClaim,
@@ -289,7 +290,7 @@ function DeviceQrCard({ device }: {
         {/* Device image */}
         <div className="qr-image-wrap">
           <img
-            src={device.imageUrl ?? "/assets/images/product-medical-gas.png"}
+            src={publicMediaUrl(device.imageUrl) ?? "/assets/images/product-medical-gas.png"}
             alt={device.productName}
             className="qr-device-image"
           />

@@ -3,6 +3,7 @@ import { AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useListReferences } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
+import { publicMediaUrl } from "../../lib/mediaUrl";
 
 export default function References() {
   const { data, isLoading, isError } = useListReferences({ showInMarquee: true, limit: 100 });
@@ -121,7 +122,7 @@ function Marquee({ items }: { items: MarqueeItemData[] }) {
           >
             {item.logoUrl ? (
               <img
-                src={item.logoUrl}
+                src={publicMediaUrl(item.logoUrl)}
                 alt={item.title}
                 className="max-h-[120px] max-w-[168px] object-contain"
                 draggable={false}

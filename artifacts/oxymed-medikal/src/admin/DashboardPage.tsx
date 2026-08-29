@@ -77,6 +77,7 @@ function MetricCard({
   color,
   hint,
   trend,
+  hasError,
 }: {
   label: string;
   value: number | undefined;
@@ -84,6 +85,7 @@ function MetricCard({
   color: string;
   hint?: string;
   trend?: number;
+  hasError?: boolean;
 }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -94,7 +96,9 @@ function MetricCard({
         </span>
       </div>
       <p className="mt-4 text-3xl font-bold text-slate-950">
-        {value === undefined ? (
+        {hasError ? (
+          <span className="text-2xl font-bold text-rose-600">—</span>
+        ) : value === undefined ? (
           <span className="inline-block h-8 w-12 animate-pulse rounded bg-slate-100" />
         ) : (
           value.toLocaleString("tr-TR")
@@ -134,11 +138,13 @@ function ChartCard({
   icon: Icon,
   children,
   isEmpty,
+  hasError,
 }: {
   title: string;
   icon: React.ElementType;
   children: React.ReactNode;
   isEmpty?: boolean;
+  hasError?: boolean;
 }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -147,7 +153,11 @@ function ChartCard({
         <h2 className="text-sm font-bold text-slate-900">{title}</h2>
       </div>
       <div className="p-4">
-        {isEmpty ? (
+        {hasError ? (
+          <div className="flex h-64 items-center justify-center text-sm font-semibold text-rose-600">
+            Veri alınamadı
+          </div>
+        ) : isEmpty ? (
           <div className="flex h-64 items-center justify-center text-sm font-medium text-slate-400">
             Henüz veri yok
           </div>
@@ -176,7 +186,15 @@ export default function DashboardPage() {
   const { data: stats } = useGetDashboardStats();
   const { data: quotesData } = useListQuotes({ status: "new", limit: 5 });
   const [days, setDays] = useState(7);
-  const { data: analytics, isLoading: analyticsLoading } = useGetAnalyticsSummary({ days });
+  const {
+    data: analytics,
+    isLoading: analyticsLoading,
+    isError: analyticsError,
+    refetch: refetchAnalytics,
+  } = useGetAnalyticsSummary(
+    { days },
+    { request: { credentials: "include" } },
+  );
 
   const recentQuotes = quotesData?.items ?? [];
 
@@ -252,6 +270,7 @@ export default function DashboardPage() {
           icon={Users}
           color="bg-blue-600"
           hint="Bugün gelen tekil ziyaretçi"
+          hasError={analyticsError}
         />
         <MetricCard
           label="Bugünkü Görüntüleme"
@@ -259,6 +278,7 @@ export default function DashboardPage() {
           icon={Eye}
           color="bg-cyan-600"
           hint="Bugünkü sayfa görüntüleme"
+          hasError={analyticsError}
         />
         <MetricCard
           label={`Ziyaretçi (${days} gün)`}
@@ -266,6 +286,7 @@ export default function DashboardPage() {
           icon={Users}
           color="bg-indigo-600"
           trend={analytics?.visitorChangePct}
+          hasError={analyticsError}
         />
         <MetricCard
           label={`Görüntüleme (${days} gün)`}
@@ -273,8 +294,28 @@ export default function DashboardPage() {
           icon={Eye}
           color="bg-teal-600"
           hint="Toplam sayfa görüntüleme"
+          hasError={analyticsError}
         />
       </div>
+
+      {analyticsError && (
+        <div
+          role="alert"
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+        >
+          <span>
+            Ziyaretçi istatistikleri şu anda alınamıyor. Bu kartlar veri yok anlamına gelmez;
+            API ve veritabanı bağlantısını kontrol edin.
+          </span>
+          <button
+            type="button"
+            onClick={() => void refetchAnalytics()}
+            className="rounded-lg bg-rose-700 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-rose-800"
+          >
+            Tekrar dene
+          </button>
+        </div>
+      )}
 
       {/* Quote conversion */}
       <div className="mt-6">
@@ -289,7 +330,7 @@ export default function DashboardPage() {
                 {analyticsLoading ? (
                   <span className="inline-block h-7 w-10 animate-pulse rounded bg-slate-200" />
                 ) : (
-                  (analytics?.quoteCtaClicks ?? 0).toLocaleString("tr-TR")
+                  analyticsError ? "—" : (analytics?.quoteCtaClicks ?? 0).toLocaleString("tr-TR")
                 )}
               </p>
             </div>
@@ -302,7 +343,7 @@ export default function DashboardPage() {
                 {analyticsLoading ? (
                   <span className="inline-block h-7 w-10 animate-pulse rounded bg-slate-200" />
                 ) : (
-                  (analytics?.quoteConversions ?? 0).toLocaleString("tr-TR")
+                  analyticsError ? "—" : (analytics?.quoteConversions ?? 0).toLocaleString("tr-TR")
                 )}
               </p>
             </div>
@@ -315,7 +356,7 @@ export default function DashboardPage() {
                 {analyticsLoading ? (
                   <span className="inline-block h-7 w-10 animate-pulse rounded bg-blue-200" />
                 ) : (
-                  `%${(analytics?.quoteConversionRate ?? 0).toLocaleString("tr-TR")}`
+                  analyticsError ? "—" : `%${(analytics?.quoteConversionRate ?? 0).toLocaleString("tr-TR")}`
                 )}
               </p>
               <p className="mt-1 text-xs font-medium text-blue-700/70">
@@ -328,7 +369,7 @@ export default function DashboardPage() {
 
       {/* Traffic trend */}
       <div className="mt-6">
-        <ChartCard title="Ziyaretçi ve Görüntüleme Trendi" icon={TrendingUp} isEmpty={!analyticsLoading && !hasSeriesData}>
+        <ChartCard title="Ziyaretçi ve Görüntüleme Trendi" icon={TrendingUp} isEmpty={!analyticsLoading && !hasSeriesData} hasError={analyticsError}>
           <ResponsiveContainer width="100%" height={288}>
             <AreaChart data={timeSeries} margin={{ top: 10, right: 10, left: -18, bottom: 0 }}>
               <defs>
@@ -361,7 +402,7 @@ export default function DashboardPage() {
       {/* Top pages + device breakdown */}
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ChartCard title="En Çok Ziyaret Edilen Sayfalar" icon={FileText} isEmpty={!analyticsLoading && topPages.length === 0}>
+          <ChartCard title="En Çok Ziyaret Edilen Sayfalar" icon={FileText} isEmpty={!analyticsLoading && topPages.length === 0} hasError={analyticsError}>
             <ResponsiveContainer width="100%" height={288}>
               <BarChart data={topPages} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 4 }}>
                 <XAxis type="number" allowDecimals={false} tick={{ fontSize: 12, fill: "#64748b" }} tickLine={false} axisLine={false} />
@@ -384,7 +425,7 @@ export default function DashboardPage() {
           </ChartCard>
         </div>
 
-        <ChartCard title="Cihaz Dağılımı" icon={MonitorSmartphone} isEmpty={!analyticsLoading && deviceData.length === 0}>
+        <ChartCard title="Cihaz Dağılımı" icon={MonitorSmartphone} isEmpty={!analyticsLoading && deviceData.length === 0} hasError={analyticsError}>
           <ResponsiveContainer width="100%" height={288}>
             <PieChart>
               <Pie
@@ -413,7 +454,7 @@ export default function DashboardPage() {
 
       {/* Referrer sources */}
       <div className="mt-6">
-        <ChartCard title="Trafik Kaynakları" icon={Activity} isEmpty={!analyticsLoading && referrerData.length === 0}>
+          <ChartCard title="Trafik Kaynakları" icon={Activity} isEmpty={!analyticsLoading && referrerData.length === 0} hasError={analyticsError}>
           <div className="space-y-3">
             {referrerData.map((r, i) => {
               const max = Math.max(...referrerData.map((x) => x.count), 1);
@@ -445,6 +486,7 @@ export default function DashboardPage() {
           title="En Çok Tıklanan Öğeler"
           icon={MousePointerClick}
           isEmpty={!analyticsLoading && topInteractions.length === 0}
+          hasError={analyticsError}
         >
           <div className="space-y-3">
             {topInteractions.map((r, i) => {

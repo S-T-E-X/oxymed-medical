@@ -1078,7 +1078,9 @@ Sırayla test edin. Her maddeyi işaretleyin:
 | 7 | `https://www.oxymedmedical.com/admin/login` | Giriş ekranı açılıyor |
 | 8 | Admin'e giriş yapabiliyor musunuz? | Panel açılıyor |
 | 9 | Teklif formunu doldurup gönderin | E-posta geliyor |
-| 10 | Görseller görünüyor mu? | ⚠️ En üstteki uyarıya bakın — muhtemelen **hayır** |
+| 10 | Görseller görünüyor mu? | Ürün, slider ve haber görselleri açılıyor |
+| 11 | Çerez onayından sonra analytics isteği | Network'te `POST /api/analytics/track` → `204` |
+| 12 | Admin > Kontrol Paneli | Gerçek ziyaretçi ve görüntüleme değerleri |
 
 Sunucu tarafı kontroller:
 
@@ -1095,6 +1097,79 @@ reboot
 ```
 
 2–3 dakika bekleyip tekrar SSH ile bağlanın ve siteyi açın. Çalışıyorsa kurulum tamamdır.
+
+---
+
+# BÖLÜM 9.1 — Ziyaretçi istatistiklerini doğrulama
+
+İstatistikler yalnızca ziyaretçi çerez bildiriminde **Kabul Et** seçerse toplanır. Admin
+sayfasını açmak tek başına ziyaretçi verisi üretmez; admin ve yazdırma sayfaları özellikle
+izleme dışında bırakılmıştır.
+
+## Tarayıcıdan kontrol
+
+1. Gizli bir tarayıcı penceresinde `https://www.oxymedmedical.com` adresini açın.
+2. Çerez bildiriminde **Kabul Et** düğmesine basın.
+3. Tarayıcı geliştirici araçlarında **Network / Ağ** sekmesini açın ve `analytics/track`
+   diye aratın.
+4. İstek adresi `POST /api/analytics/track` olmalı ve cevap kodu `204` olmalıdır.
+5. Başka bir sayfaya geçin; yeni bir `pageview` isteği görmelisiniz.
+
+İstek görünmüyorsa, sayfada eski `oxymed_cookie_consent` değerini temizleyip tekrar
+**Kabul Et** seçin. İstek `400`, `429` veya `500` dönüyorsa sunucu günlüklerine bakın:
+
+```bash
+journalctl -u oxymed-api -n 100 --no-pager | grep -E 'analytics|500|429|error'
+```
+
+## Veritabanından kontrol
+
+`.env` yüklenmiş bir SSH oturumunda aşağıdaki sorgular anonim event'lerin yazılıp
+yazılmadığını gösterir:
+
+```bash
+cd /var/www/oxymed
+set -a; source .env; set +a
+
+psql "$DATABASE_URL" -c "select count(*) as toplam from visitor_events;"
+psql "$DATABASE_URL" -c "select event_type, count(*) from visitor_events group by event_type order by event_type;"
+psql "$DATABASE_URL" -c "select created_at, event_type, path from visitor_events order by created_at desc limit 10;"
+```
+
+`pageview` sayısı artıyor fakat panelde değerler görünmüyorsa admin oturumunun geçerli
+olduğunu ve API özet isteğinin döndüğünü kontrol edin:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' https://www.oxymedmedical.com/api/healthz
+```
+
+Panel artık API hatasını sıfır gibi göstermemelidir; “Veri alınamadı” ve “Tekrar dene”
+uyarısı görürseniz `systemctl status oxymed-api` ile API'yi, ardından PostgreSQL
+bağlantısını kontrol edin. Çerez kabul edilmemiş ziyaretçiler hiçbir event üretmez;
+bu bir hata değildir.
+
+## Görsel adresini kontrol
+
+Geliştirici araçlarında herhangi bir ürün veya slider görselinin isteğini açın. Adres
+şu yapıda olmalıdır:
+
+```text
+https://www.oxymedmedical.com/api/storage/public-objects/objects/uploads/DOSYA_UUID
+```
+
+`replit.dev`, `replit.app` veya `public-objects//` görürseniz önce güncel kodla web
+build alın ve API'yi yeniden başlatın:
+
+```bash
+cd /var/www/oxymed
+set -a; source .env; set +a
+pnpm --filter @workspace/api-server run build
+PORT=5199 BASE_PATH=/ pnpm --filter @workspace/oxymed-medikal run build
+systemctl restart oxymed-api
+```
+
+Bu komutlar veritabanını silmez. Yine de `DROP DATABASE`, `push-force` veya yedeği tekrar
+yükleme komutlarını çalıştırmayın; bunlar mevcut içerikleri geri dönüşsüz bozabilir.
 
 ---
 

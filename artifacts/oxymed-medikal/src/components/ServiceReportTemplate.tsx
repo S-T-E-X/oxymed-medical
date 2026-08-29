@@ -7,6 +7,7 @@ import ServiceReportBarcode from "./ServiceReportBarcode";
 import ServiceReportQRCode from "./ServiceReportQRCode";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { publicMediaUrl } from "../lib/mediaUrl";
 
 export interface ServiceReportTemplateData {
   id?: number;
@@ -325,7 +326,7 @@ export default function ServiceReportTemplate({ data }: { data: ServiceReportTem
               <DetailRows rows={deviceInfoRows} />
               {device.imageUrl && (
                 <figure className="sr-device-img">
-                  <img src={device.imageUrl} alt={deviceType} />
+                  <img src={publicMediaUrl(device.imageUrl)} alt={deviceType} />
                 </figure>
               )}
             </div>

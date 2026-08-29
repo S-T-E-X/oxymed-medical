@@ -6,6 +6,7 @@ import type { Slider } from "@workspace/api-client-react";
 import { useI18n } from "../../i18n/I18nProvider";
 import { useLocalizedPath } from "../../i18n/useLocalizedPath";
 import type { Locale } from "../../i18n/config";
+import { publicMediaUrl } from "../../lib/mediaUrl";
 
 function hexToRgba(hex: string, pct: number): string {
   try {
@@ -106,8 +107,8 @@ export default function Hero() {
   const heroDescription = hero ? pickSliderText(hero, "description", locale) : null;
   const heroPrimaryText = hero ? pickSliderText(hero, "ctaPrimaryText", locale) : null;
   const heroSecondaryText = hero ? pickSliderText(hero, "ctaSecondaryText", locale) : null;
-  const desktopImageUrl = hero?.imageUrl ?? "/assets/images/hero-medical-suite.png";
-  const mobileImageUrl = hero?.mobileImageUrl ?? desktopImageUrl;
+  const desktopImageUrl = publicMediaUrl(hero?.imageUrl) ?? "/assets/images/hero-medical-suite.png";
+  const mobileImageUrl = publicMediaUrl(hero?.mobileImageUrl) ?? desktopImageUrl;
 
   return (
     <>
