@@ -287,6 +287,7 @@ function NewsCategoriesSection({ currentRaw }: { currentRaw: string }) {
 
 const SETTING_GROUPS: Array<{
   label: string;
+  description?: string;
   keys: Array<{ key: string; label: string; type?: "text" | "url" | "email" | "tel" | "textarea" }>;
 }> = [
   {
@@ -318,11 +319,12 @@ const SETTING_GROUPS: Array<{
   },
   {
     label: "İstatistikler",
+    description: "Ana sayfadaki istatistik kartlarının görünen değerlerini buradan güncelleyebilirsiniz.",
     keys: [
-      { key: "stats_years", label: "Yıl (Tecrübe)" },
-      { key: "stats_projects", label: "Proje Sayısı" },
-      { key: "stats_countries", label: "Ülke Sayısı" },
-      { key: "stats_products", label: "Ürün Sayısı" },
+      { key: "yearsExperience", label: "Yıllık Tecrübe" },
+      { key: "completedProjects", label: "Tamamlanan Proje" },
+      { key: "exportCountries", label: "İhracat Ülkesi" },
+      { key: "customerSatisfaction", label: "Müşteri Memnuniyeti" },
     ],
   },
 ];
@@ -572,6 +574,7 @@ export default function SettingsPage() {
           {SETTING_GROUPS.map((group) => (
             <div key={group.label} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-sm font-bold text-slate-900">{group.label}</h2>
+              {group.description && <p className="-mt-2 mb-4 text-xs leading-5 text-slate-500">{group.description}</p>}
               <div className="grid gap-4 sm:grid-cols-2">
                 {group.keys.map((field) => (
                   <SettingField

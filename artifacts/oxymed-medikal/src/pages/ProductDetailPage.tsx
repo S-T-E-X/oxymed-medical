@@ -24,7 +24,7 @@ import { useLocalizedPath } from "../i18n/useLocalizedPath";
 import { DEFAULT_LOCALE, LOCALE_META, SITE_ORIGIN, type Locale } from "../i18n/config";
 import { localizedPath } from "../i18n/routes";
 import type { Alternate } from "../i18n/seo";
-import { getProductIcon } from "../data/productPageIcons";
+import { getProductIcon, type ProductIconKey } from "../data/productPageIcons";
 import { publicMediaUrl } from "../lib/mediaUrl";
 import {
   availableProductLocales,
@@ -64,6 +64,19 @@ function normalizeSectionOrder(order: string[] | undefined): SectionKey[] {
  */
 function localizedPageData(pageData: PageData | undefined, locale: string): PageDataContent {
   return (contentForLocale(pageData, locale) as PageDataContent | undefined) ?? {};
+}
+
+function inferProductIcon(value: string, fallback: ProductIconKey): ProductIconKey {
+  const normalized = value.toLocaleLowerCase("tr-TR");
+  if (/gaz|oksijen|vakum|hava/.test(normalized)) return "wind";
+  if (/elektrik|priz|data|bağlantı|çağrı/.test(normalized)) return "plug-zap";
+  if (/led|aydınlatma|ışık|okuma/.test(normalized)) return "lightbulb";
+  if (/bakım|servis|dayanıkl|gövde/.test(normalized)) return "wrench";
+  if (/hijyen|temiz/.test(normalized)) return "shield-check";
+  if (/yoğun bakım|hastane|klinik|poliklinik|ameliy/.test(normalized)) return "hospital";
+  if (/yatak|hasta/.test(normalized)) return "bed";
+  if (/modüler|konfigür|proje|ergonomi/.test(normalized)) return "settings";
+  return fallback;
 }
 
 export default function ProductDetailPage() {
@@ -187,13 +200,20 @@ export default function ProductDetailPage() {
   const sections: Record<SectionKey, React.ReactNode> = {
     detailCards: detailCards.length > 0 && !hiddenSections.includes("detailCards") && (
       <section key="detailCards" className="pdp-container pdp-detail-grid" aria-label={t("products.detail.detailImages")}>
-            {detailCards.map((card) => (
+        {detailCards.map((card) => (
           <article key={card.title}>
-                {card.imageUrl ? (
-                  <div className="pdp-image-slot">
-                    <img src={publicMediaUrl(card.imageUrl)} alt="" loading="lazy" decoding="async" />
-                  </div>
-                ) : <div className="pdp-image-slot" />}
+            {card.imageUrl ? (
+              <div className="pdp-image-slot">
+                <img src={publicMediaUrl(card.imageUrl)} alt={card.title} loading="lazy" decoding="async" />
+              </div>
+            ) : (
+              <div className="pdp-card-icon" aria-hidden="true">
+                {(() => {
+                  const Icon = getProductIcon(inferProductIcon(card.title ?? "", "box"), "box");
+                  return <Icon />;
+                })()}
+              </div>
+            )}
             <h2>{card.title}</h2><p>{card.text}</p>
           </article>
         ))}
@@ -218,7 +238,12 @@ export default function ProductDetailPage() {
       </section>
     ),
     featureTiles: featureTiles.length > 0 && !hiddenSections.includes("featureTiles") && (
-      <section key="featureTiles" className="pdp-container pdp-tiles">{featureTiles.map((tile) => <article key={tile.title}><BadgeCheck aria-hidden="true" /><h3>{tile.title}</h3><p>{tile.text}</p></article>)}</section>
+      <section key="featureTiles" className="pdp-container pdp-tiles">
+        {featureTiles.map((tile) => {
+          const Icon = getProductIcon(inferProductIcon(tile.title ?? "", "badge-check"), "badge-check");
+          return <article key={tile.title}><Icon aria-hidden="true" /><h3>{tile.title}</h3><p>{tile.text}</p></article>;
+        })}
+      </section>
     ),
     faq: faq.length > 0 && !hiddenSections.includes("faq") && (
       <section key="faq" className="pdp-container pdp-faq"><header><HelpCircle aria-hidden="true" /><h2>{t("products.detail.faq")}</h2></header><AnimatedFaq items={faq} className="pdp-faq__grid" /></section>
@@ -250,12 +275,18 @@ export default function ProductDetailPage() {
       : []),
   ];
   const seoDescription = heroDescription || pd.heroSubtitle || "";
+  const productMediaPath = publicMediaUrl(product.imageUrl);
+  const productImageUrl = productMediaPath
+    ? productMediaPath.startsWith("http")
+      ? productMediaPath
+      : `${SITE_ORIGIN}${productMediaPath}`
+    : undefined;
   const productLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: localizedTitle,
     ...(seoDescription ? { description: seoDescription } : {}),
-    ...(product.imageUrl ? { image: product.imageUrl } : {}),
+    ...(productImageUrl ? { image: productImageUrl } : {}),
     ...(categoryName ? { category: categoryName } : {}),
     brand: { "@type": "Brand", name: "Oxymed Medikal" },
     url: canonicalUrl,

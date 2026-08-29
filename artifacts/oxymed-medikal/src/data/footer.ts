@@ -91,10 +91,18 @@ export function mergeFooterContent(
     (column) => !base.columns.some((baseColumn) => baseColumn.key === column.key),
   );
 
-  return {
+  const merged = {
     ...base,
     ...override,
     columns: [...columns, ...extraColumns],
+  };
+
+  // A previously saved admin override can outlive the source dictionaries.
+  // Keep the current copyright year consistent without changing any other
+  // editor-authored footer text.
+  return {
+    ...merged,
+    copyright: merged.copyright.replace(/\b2024\b/g, "2026"),
   };
 }
 
