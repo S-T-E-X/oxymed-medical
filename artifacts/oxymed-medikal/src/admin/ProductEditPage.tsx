@@ -652,6 +652,7 @@ export default function ProductEditPage() {
           titleKa: form.titleKa.trim() || null,
           titleBg: form.titleBg.trim() || null,
           titleAz: form.titleAz.trim() || null,
+          titleEs: form.titleEs.trim() || null,
         },
       });
     }
