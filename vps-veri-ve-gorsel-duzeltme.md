@@ -354,7 +354,148 @@ Sonuçların anlamı:
 
 ---
 
-## 9. Replit'teki kodu GitHub'a gönderme
+## 9. Admin panelindeki veriler 0 veya boş görünüyorsa
+
+Admin panelindeki üst kartlar ve ziyaretçi grafikleri farklı endpoint'lerden
+gelir:
+
+| Panel bölümü | API endpoint'i | Veritabanı kaynağı |
+|---|---|---|
+| Ürünler, haberler, referanslar, teklifler | `/api/dashboard/stats` | `products`, `news`, `references`, `quote_requests` |
+| Ziyaretçi ve görüntüleme kartları | `/api/analytics/summary` | `visitor_events` |
+
+### 9.1 VPS'nin doğru veritabanına bağlı olduğunu kontrol edin
+
+Bu komutlar VPS SSH terminalinde ve root yetkisiyle çalıştırılır. Parola
+ekrana yazdırılmaz:
+
+```bash
+cd /var/www/oxymed
+
+set -a
+source .env
+set +a
+
+psql "$DATABASE_URL" -c "
+  select
+    (select count(*) from admin_users) as admin_users,
+    (select count(*) from products) as products,
+    (select count(*) from news) as news,
+    (select count(*) from \"references\") as references_count,
+    (select count(*) from quote_requests) as quote_requests,
+    (select count(*) from media_files) as media_files,
+    (select count(*) from visitor_events) as visitor_events;
+"
+```
+
+`products`, `news`, `references` veya `quote_requests` sayıları beklenenden
+farklıysa sorun frontend'de değildir; VPS `.env` dosyası yanlış PostgreSQL
+veritabanını gösteriyor olabilir. `DATABASE_URL` değerini ekrana basmadan
+kontrol edin:
+
+```bash
+grep -E '^(DATABASE_URL|PORT|NODE_ENV|EnvironmentFile)' /var/www/oxymed/.env \
+  | sed 's#^\(DATABASE_URL=[^:]*://[^:]*\):[^@]*@#\1:***@#'
+```
+
+Systemd servisinin doğru `.env` dosyasını kullandığını kontrol edin:
+
+```bash
+grep -E '^(User|WorkingDirectory|EnvironmentFile|ExecStart)' \
+  /etc/systemd/system/oxymed-api.service
+```
+
+Beklenen satır:
+
+```text
+EnvironmentFile=/var/www/oxymed/.env
+```
+
+### 9.2 Ziyaretçi grafikleri 0 görünüyorsa
+
+`visitor_events` sayısı `0` ise bu tek başına hata değildir. Site analytics
+verisini yalnızca ziyaretçi çerez bildiriminde **Kabul Et** seçildikten sonra
+toplar. Test için:
+
+1. Gizli tarayıcı penceresinde siteyi açın.
+2. Çerez bildiriminde **Kabul Et** seçin.
+3. Tarayıcı geliştirici araçlarında Network/Ağ sekmesini açın.
+4. `POST /api/analytics/track` isteğinin `204` döndüğünü kontrol edin.
+5. Birkaç saniye sonra `visitor_events` sayısını tekrar kontrol edin:
+
+```bash
+cd /var/www/oxymed
+set -a
+source .env
+set +a
+psql "$DATABASE_URL" -c "select count(*) as visitor_events from visitor_events;"
+```
+
+`visitor_events` sayısı artıyor fakat panelde veri görünmüyorsa panelden
+çıkış yapıp tekrar giriş yapın ve API loglarını kontrol edin:
+
+```bash
+journalctl -u oxymed-api --since "15 minutes ago" --no-pager \
+  | grep -E 'dashboard/stats|analytics/summary|500|error|Error'
+```
+
+`/api/auth/me` için giriş yapılmadan `401` dönmesi normaldir; bu endpoint admin
+oturumu gerektirir. Tarayıcıda admin girişi yapıldıktan sonra Network/Ağ
+sekmesinde şu iki isteğin başarılı olduğunu kontrol edin:
+
+```text
+GET /api/dashboard/stats       → 200
+GET /api/analytics/summary     → 200
+```
+
+`500`, `502` veya `503` görürseniz önce API servisini yeniden başlatın:
+
+```bash
+systemctl restart oxymed-api
+systemctl is-active oxymed-api
+journalctl -u oxymed-api -n 100 --no-pager
+```
+
+### 9.3 Admin panelini ve çalışan siteyi yenileme
+
+Sadece tarayıcıdaki eski ekranı yenilemek için:
+
+```text
+Ctrl+F5
+```
+
+VPS'de çalışan API ve web dosyalarını güncel kodla yenilemek için aşağıdaki
+komut bloğunu kullanın. Bu işlem mevcut PostgreSQL verilerini veya kalıcı
+görselleri silmez:
+
+```bash
+cd /var/www/oxymed
+
+git pull --ff-only
+pnpm install --frozen-lockfile
+
+set -a
+source .env
+set +a
+
+pnpm --filter @workspace/api-server run build
+PORT=5199 BASE_PATH=/ \
+  pnpm --filter @workspace/oxymed-medikal run build
+
+systemctl restart oxymed-api
+nginx -t && systemctl reload nginx
+
+systemctl is-active oxymed-api
+systemctl is-active nginx
+```
+
+Build sırasında hata oluşursa servis yeniden başlatma komutuna geçmeyin.
+`git pull --ff-only` conflict verirse `git reset --hard` veya `push-force`
+kullanmayın; önce `git status` ve `git diff` çıktısını inceleyin.
+
+---
+
+## 10. Replit'teki kodu GitHub'a gönderme
 
 Bu bölüm yalnızca Replit Shell'de çalıştırılır:
 
@@ -382,7 +523,7 @@ git push origin main
 
 ---
 
-## 10. VPS'de GitHub'dan yeni kodu çekme ve build alma
+## 11. VPS'de GitHub'dan yeni kodu çekme ve build alma
 
 Bu bölüm VPS SSH terminalinde root olarak çalıştırılır:
 
@@ -425,7 +566,7 @@ değişmişse önce veritabanı yedeği alın ve ayrıca normal `push` komutunu 
 
 ---
 
-## 11. Son kontrol
+## 12. Son kontrol
 
 ```bash
 systemctl is-active oxymed-api
@@ -455,7 +596,7 @@ Tarayıcıda ayrıca şunları kontrol edin:
 
 ---
 
-## 12. İşlem tamamlandıktan sonra
+## 13. İşlem tamamlandıktan sonra
 
 Her şey doğrulandıktan sonra geçici arşivi silebilirsiniz:
 
