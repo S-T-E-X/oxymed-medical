@@ -386,8 +386,20 @@ Sonra aynı eksik dosya kontrolünü tekrar çalıştırın. Beklenen sonuç:
 Eksik medya dosyası: 0
 ```
 
-Arşiv VPS'de yoksa Replit Shell'de mevcut medya kayıtlarından yeni arşiv
-oluşturun:
+Arşiv VPS'de yoksa bu işlemi **VPS terminalinde değil, Replit Shell'de**
+yapın. `root@vps...:/var/www/oxymed#` görünen terminale aşağıdaki Replit
+komutlarını yazmayın; `/home/runner/workspace` yalnızca Replit'te vardır.
+
+Önce Replit Shell'de hazır arşivi kontrol edin:
+
+```bash
+cd /home/runner/workspace
+ls -lh oxymed-media-export.tar.gz
+tar -tzf oxymed-media-export.tar.gz | head -20
+```
+
+Arşiv yoksa yine yalnızca Replit Shell'de mevcut medya kayıtlarından yeni
+arşiv oluşturun:
 
 ```bash
 cd /home/runner/workspace
@@ -396,16 +408,23 @@ tar -C oxymed-media-export -czf oxymed-media-export.tar.gz files manifest.json
 ```
 
 Replit dosya listesinden `oxymed-media-export.tar.gz` dosyasını bilgisayarınıza
-indirin. Ardından kendi bilgisayarınızın terminalinden VPS'ye gönderin:
+indirin. Sonra **kendi bilgisayarınızın** terminalinden, dosyanın indirdiğiniz
+konumunu yazarak VPS'ye gönderin:
 
 ```bash
-scp oxymed-media-export.tar.gz root@SUNUCU_IP:/var/www/oxymed/
+scp "C:\Users\KULLANICI\Downloads\oxymed-media-export.tar.gz" root@SUNUCU_IP:/var/www/oxymed/
 ```
 
-Son olarak VPS'de yukarıdaki `tar -xzf`, `chown` ve eksik dosya kontrolü
-komutlarını çalıştırın. Arşiv oluşturma komutu hata verirse bazı medya kayıtları
-Replit'te de okunamıyor demektir; bu durumda hatada yazan `object_path` değerini
-ayrıca inceleyin.
+Linux/macOS kullanıyorsanız dosya yolu örneği:
+
+```bash
+scp ~/Downloads/oxymed-media-export.tar.gz root@SUNUCU_IP:/var/www/oxymed/
+```
+
+Yükleme tamamlanınca tekrar **VPS terminaline** bağlanıp yukarıdaki `tar -xzf`,
+`chown` ve eksik dosya kontrolü komutlarını çalıştırın. Arşiv oluşturma komutu
+hata verirse bazı medya kayıtları Replit'te de okunamıyor demektir; bu durumda
+hatada yazan `object_path` değerini ayrıca inceleyin.
 
 > `media_files` kayıtlarını silmeyin ve yeni UUID üretip dosya adını
 > değiştirmeyin. API, veritabanındaki `object_path` ile aynı yolu arar.
