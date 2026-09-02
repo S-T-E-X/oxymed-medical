@@ -7,3 +7,18 @@ uri = "file://oxymed-media-export.tar.gz"
 type = "unspecified"
 title = "Oxymed medya yedeği"
 description = "VPS'e aktarılacak 186 medya dosyası ve SHA-256 manifesti."
+logical_id = "f43d8336-3cca-4c86-a3c1-de59d7188ebf"
+
+[[outputs]]
+id = "aPMWabMhkWsokJavd8DxN"
+uri = "file://yatak-basi-unitesi-vps.sql"
+type = "unspecified"
+title = "Yatak Başı Ünitesi VPS aktarım SQL'i"
+description = "Replit veritabanındaki güncel Yatak Başı Ünitesi description ve page_data içeriğini VPS PostgreSQL'e aktaran, yalnızca ürün id=13 satırını güncelleyen SQL dosyası."
+logical_id = "209443cb-d875-4418-b52f-07fa07b01042"
+content_hash = "sha256:375d8cf16bc624a7462b1e03597b587ebbf5972074dc04d7da1e48c24d23354f"
+size = 6250
+mtime_ms = 1788359471400
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:7a9d7cfe-2568-4580-8931-10688e670350/209443cb-d875-4418-b52f-07fa07b01042/15bc95b1-0e7c-4e63-89c8-d7a7712d694b"
+storage_version_token = "1788359484240691"
+content_type = "application/octet-stream"
