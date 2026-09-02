@@ -95,6 +95,89 @@ pnpm install --frozen-lockfile
 `git pull` sırasında conflict veya `not possible to fast-forward` hatası
 alırsanız komutu zorlamayın. Önce mevcut değişiklikleri ve yedekleri kontrol edin.
 
+### 3.1 Replit'ten GitHub'a güncel dosyaları gönderin
+
+Replit Shell'de proje kökünde aşağıdaki komutları çalıştırın. Önce hangi remote'un
+GitHub olduğunu kontrol edin; `origin` adının her Replit projesinde aynı olması
+garanti değildir:
+
+```bash
+cd /home/runner/workspace
+
+# GitHub remote adını bulun ve doğru branch'i kontrol edin
+git remote -v
+git branch --show-current
+git status
+```
+
+Değişikliklerin doğru olduğunu kontrol ettikten sonra:
+
+```bash
+cd /home/runner/workspace
+git add -A
+git commit -m "VPS güncellemesi"
+git push <GITHUB_REMOTE> main
+```
+
+Buradaki `<GITHUB_REMOTE>` yerine `git remote -v` çıktısında GitHub adresinin
+karşısında görünen remote adını yazın. Örneğin remote adı `origin` ise:
+
+```bash
+git push origin main
+```
+
+Çalışma ağacında commit edilecek değişiklik yoksa `git commit` hata verebilir;
+bu durumda yeni dosya değişikliği olmadığını kontrol edip sadece `git push`
+çalıştırabilirsiniz. GitHub parola isterse parolayı veya erişim anahtarını bu
+belgeye yazmayın; Replit'in Git bağlantısını veya SSH deploy key kurulumunu
+kullanın.
+
+### 3.2 VPS'de GitHub'dan dosyaları çekip siteyi güncelleyin
+
+Replit'teki `git push` tamamlandıktan sonra VPS'ye SSH ile bağlanıp aşağıdaki
+komutları çalıştırın. Bu akış mevcut veritabanını veya `/var/lib/oxymed/media/`
+altındaki görselleri silmez:
+
+```bash
+cd /var/www/oxymed
+
+# Sadece hızlı ileri sarmaya izin ver; VPS'teki yerel değişiklikleri ezme
+git pull --ff-only
+
+# Kilit dosyasındaki sürümleri kur
+pnpm install --frozen-lockfile
+
+# VPS ortam değişkenlerini build sırasında kullanılabilir yap
+set -a
+source .env
+set +a
+
+# API'yi derle
+pnpm --filter @workspace/api-server run build
+
+# Web'i, sitemap/SEO ve prerender çıktılarıyla birlikte derle
+PORT=5199 BASE_PATH=/ pnpm --filter @workspace/oxymed-medikal run build
+
+# Yeni API kodunu çalıştır, Nginx'i kesintisiz yeniden yükle
+systemctl restart oxymed-api
+nginx -t && systemctl reload nginx
+
+# Son durumu kontrol et
+systemctl is-active oxymed-api
+systemctl is-active nginx
+```
+
+`git pull --ff-only` conflict veya `not possible to fast-forward` hatası verirse
+zorlayıcı bir komut çalıştırmayın. Önce `git status` ve `git diff` ile VPS'teki
+yerel değişiklikleri inceleyin. Build başarısız olursa `systemctl restart
+oxymed-api` komutunu çalıştırmadan hatayı düzeltin; böylece çalışan API gereksiz
+yere durdurulmaz.
+
+Bu adımlar içerik, tasarım veya frontend kodu değişiklikleri için yeterlidir.
+Veritabanı şeması gerçekten değiştiyse önce yedek alın ve yalnızca o sürüm için
+ayrıca `pnpm --filter @workspace/db run push` çalıştırın; sıradan kod
+güncellemelerinde bu komut gerekli değildir.
+
 ### ZIP ile kurulum yaptıysanız
 
 Yeni ZIP'i `/var/www/oxymed-new` gibi geçici bir klasöre açın. Aşağıdaki dosyaları
