@@ -322,8 +322,8 @@ async function main() {
       }
     }
 
-    if (!html.includes('"@type":"Product"')) {
-      errors.push(`${label} No Product JSON-LD in the prerendered HTML`);
+    if (!html.includes('"@type":"Service"')) {
+      errors.push(`${label} No quote-based Service JSON-LD in the prerendered HTML`);
     }
 
     // The baked hreflang set must be EXACTLY the handoff set — not a superset.

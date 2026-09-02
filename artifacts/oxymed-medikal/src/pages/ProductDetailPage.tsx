@@ -281,14 +281,23 @@ export default function ProductDetailPage() {
       ? productMediaPath
       : `${SITE_ORIGIN}${productMediaPath}`
     : undefined;
+  // These are quote-based B2B offerings, not fixed-price ecommerce listings.
+  // Google requires Product markup to include a real offer, review, or rating;
+  // do not invent a price or rating just to qualify for a rich result.
   const productLd: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "Service",
     name: localizedTitle,
     ...(seoDescription ? { description: seoDescription } : {}),
     ...(productImageUrl ? { image: productImageUrl } : {}),
     ...(categoryName ? { category: categoryName } : {}),
-    brand: { "@type": "Brand", name: "Oxymed Medikal" },
+    serviceType: localizedTitle,
+    provider: {
+      "@type": "Organization",
+      name: "Oxymed Medikal",
+      url: SITE_ORIGIN,
+    },
+    areaServed: { "@type": "Country", name: "Türkiye" },
     url: canonicalUrl,
     ...(specs.length > 0
       ? { additionalProperty: specs.map((s) => ({ "@type": "PropertyValue", name: s.label, value: s.value })) }

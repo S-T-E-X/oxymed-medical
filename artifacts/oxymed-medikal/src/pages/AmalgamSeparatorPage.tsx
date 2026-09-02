@@ -68,10 +68,13 @@ export default function AmalgamSeparatorPage() {
 
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
-    "@type": "Product",
+    // This is a quote-based B2B offering, not a fixed-price ecommerce item.
+    "@type": "Service",
     name: t("ams.hero.titleLine1") + " " + t("ams.hero.titleLine2"),
     description: desc1,
-    brand: { "@type": "Brand", name: "Oxymed Medikal" },
+    serviceType: t("ams.hero.titleLine1") + " " + t("ams.hero.titleLine2"),
+    provider: { "@type": "Organization", name: "Oxymed Medikal" },
+    areaServed: { "@type": "Country", name: "Türkiye" },
     category: t("ams.useCases.title"),
   }), [t, desc1]);
 

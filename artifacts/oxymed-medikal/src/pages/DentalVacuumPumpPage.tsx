@@ -68,13 +68,16 @@ export default function DentalVacuumPumpPage() {
   const jsonLd = useMemo(
     () => ({
       "@context": "https://schema.org",
-      "@type": "Product",
+      // This is a quote-based B2B offering, not a fixed-price ecommerce item.
+      "@type": "Service",
       name: productName,
       description: t("dvp.hero.desc1"),
-      brand: {
-        "@type": "Brand",
+      serviceType: productName,
+      provider: {
+        "@type": "Organization",
         name: "Oxymed Medikal",
       },
+      areaServed: { "@type": "Country", name: "Türkiye" },
       category: t("dvp.category"),
     }),
     [productName, t],

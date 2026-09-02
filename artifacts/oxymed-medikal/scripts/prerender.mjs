@@ -448,17 +448,25 @@ function buildProductHead(product, productsListTitle) {
     .map((l) => `    <meta property="og:locale:alternate" content="${LOCALE_META[l].ogLocale}" />`)
     .join("\n");
 
+  // These are quote-based B2B offerings, not fixed-price ecommerce listings.
+  // Keep Product markup out unless the CMS has a real offer, review, or rating.
   const productLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Product",
+        "@type": "Service",
         "@id": canonical,
         name: product.title,
         ...(description ? { description } : {}),
         image,
         url: canonical,
-        brand: { "@type": "Brand", name: "Oxymed Medikal" },
+        serviceType: product.title,
+        provider: {
+          "@type": "Organization",
+          name: "Oxymed Medikal",
+          url: SITE_ORIGIN,
+        },
+        areaServed: { "@type": "Country", name: "Türkiye" },
       },
       {
         "@type": "BreadcrumbList",

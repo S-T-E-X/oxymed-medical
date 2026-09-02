@@ -96,10 +96,14 @@ export default function GasControlPanelPage() {
 
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
-    "@type": "Product",
+    // This is a quote-based B2B offering, not a fixed-price ecommerce item.
+    // Product rich results require a real offer, review, or aggregate rating.
+    "@type": "Service",
     name: hero.title,
     description: hero.description,
-    brand: { "@type": "Brand", name: "Oxymed Medikal" },
+    serviceType: hero.title,
+    provider: { "@type": "Organization", name: "Oxymed Medikal" },
+    areaServed: { "@type": "Country", name: "Türkiye" },
     category: t("gcp.useCases.title"),
   }), [hero.title, hero.description, t]);
 
