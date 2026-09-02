@@ -22,3 +22,17 @@ mtime_ms = 1788359471400
 storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:7a9d7cfe-2568-4580-8931-10688e670350/209443cb-d875-4418-b52f-07fa07b01042/15bc95b1-0e7c-4e63-89c8-d7a7712d694b"
 storage_version_token = "1788359484240691"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "LQPl3wBSu3ak2YXzGGDkh"
+uri = "file://google-seo-indexleme-rehberi.md"
+type = "text"
+title = "Oxymed Medical Google SEO ve indeksleme rehberi"
+description = "Search Console kaydı, DNS doğrulaması, sitemap gönderimi, URL indeksleme isteği, VPS SEO build adımları, Google Business Profile, Bing Webmaster Tools ve düzenli SEO kontrol listesi."
+logical_id = "91627a6b-6eb5-47b9-9a8b-f9d1e316df01"
+content_hash = "sha256:c4622ed9c530a645a2c36e71735cc15b700f78ac27931daf43664d6c091277d5"
+size = 18801
+mtime_ms = 1788359813371
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:7a9d7cfe-2568-4580-8931-10688e670350/91627a6b-6eb5-47b9-9a8b-f9d1e316df01/f1f7c5b1-b99b-4268-9dd4-7145bb653027"
+storage_version_token = "1788359830034381"
+content_type = "text/markdown"
