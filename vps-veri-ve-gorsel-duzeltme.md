@@ -337,7 +337,7 @@ psql "$DATABASE_URL" -c "
 Dosya aynı UUID ile şu konumda bulunur:
 
 ```text
-/var/lib/oxymed/media/files/550e8400-e29b-41d4-a716-446655440000
+/var/lib/oxymed/media/files/objects/uploads/550e8400-e29b-41d4-a716-446655440000
 ```
 
 Veritabanındaki kayıtların yerel dosyalarıyla eşleşmeyenleri bulmak için:
@@ -345,7 +345,7 @@ Veritabanındaki kayıtların yerel dosyalarıyla eşleşmeyenleri bulmak için:
 ```bash
 missing=0
 while IFS= read -r object_path; do
-  file="/var/lib/oxymed/media/files/${object_path##*/}"
+  file="/var/lib/oxymed/media/files${object_path}"
   if [ ! -f "$file" ]; then
     echo "Eksik dosya: $object_path -> $file"
     missing=$((missing + 1))
@@ -355,9 +355,60 @@ done < <(psql "$DATABASE_URL" -Atc "select object_path from media_files order by
 printf 'Eksik medya dosyası: %s\n' "$missing"
 ```
 
-Eksik dosyalar varsa sadece build almak sorunu çözmez. Medya yedeğinden veya
-orijinal dosyalardan aynı UUID adını koruyarak `/var/lib/oxymed/media/files/`
-altına geri yükleyin. Sonra sahiplik komutlarını tekrar çalıştırın.
+> Önemli: `object_path` `/objects/uploads/UUID` ile başladığı için kontrol yolu
+> `/var/lib/oxymed/media/files/objects/uploads/UUID` olmalıdır. Eski kontrol
+> komutunda yalnızca UUID aranırsa, dosyalar doğru yerde olsa bile 186 dosyanın
+> tamamı eksik görünebilir. Önce yukarıdaki düzeltilmiş komutu çalıştırın.
+
+### 6.1 Gerçekten eksik dosyaları medya arşivinden geri yükleyin
+
+Düzeltilmiş kontrol komutu hâlâ eksik dosya gösteriyorsa önce VPS'de arşivin
+olup olmadığını kontrol edin:
+
+```bash
+cd /var/www/oxymed
+ls -lh oxymed-media-export.tar.gz
+tar -tzf oxymed-media-export.tar.gz | head -20
+```
+
+Arşiv varsa doğru kalıcı klasöre açın:
+
+```bash
+cd /var/www/oxymed
+tar -xzf oxymed-media-export.tar.gz -C /var/lib/oxymed/media
+chown -R oxymed:oxymed /var/lib/oxymed/media
+find /var/lib/oxymed/media/files -type f -exec chmod 0640 {} \;
+```
+
+Sonra aynı eksik dosya kontrolünü tekrar çalıştırın. Beklenen sonuç:
+
+```text
+Eksik medya dosyası: 0
+```
+
+Arşiv VPS'de yoksa Replit Shell'de mevcut medya kayıtlarından yeni arşiv
+oluşturun:
+
+```bash
+cd /home/runner/workspace
+pnpm --filter @workspace/scripts run export-media-to-local-disk
+tar -C oxymed-media-export -czf oxymed-media-export.tar.gz files manifest.json
+```
+
+Replit dosya listesinden `oxymed-media-export.tar.gz` dosyasını bilgisayarınıza
+indirin. Ardından kendi bilgisayarınızın terminalinden VPS'ye gönderin:
+
+```bash
+scp oxymed-media-export.tar.gz root@SUNUCU_IP:/var/www/oxymed/
+```
+
+Son olarak VPS'de yukarıdaki `tar -xzf`, `chown` ve eksik dosya kontrolü
+komutlarını çalıştırın. Arşiv oluşturma komutu hata verirse bazı medya kayıtları
+Replit'te de okunamıyor demektir; bu durumda hatada yazan `object_path` değerini
+ayrıca inceleyin.
+
+> `media_files` kayıtlarını silmeyin ve yeni UUID üretip dosya adını
+> değiştirmeyin. API, veritabanındaki `object_path` ile aynı yolu arar.
 
 ---
 
