@@ -18,6 +18,14 @@
     "closeMenu": "Chiudi menu",
     "language": "Lingua"
   },
+  "notFound": {
+    "metaTitle": "Pagina non trovata | Oxymed Medical",
+    "eyebrow": "Una connessione persa",
+    "title": "Questa pagina non è stata trovata",
+    "description": "Il collegamento potrebbe essere stato modificato, rimosso o digitato in modo errato. Torna alla home o continua a esplorare i nostri prodotti.",
+    "backHome": "Torna alla home",
+    "browseProducts": "Esplora i prodotti"
+  },
   "cta": {
     "getQuote": "RICHIEDI UN PREVENTIVO",
     "reviewDetails": "Scopri i dettagli",

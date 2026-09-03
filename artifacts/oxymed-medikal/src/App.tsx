@@ -61,6 +61,7 @@ import ServiceReportPage from "./pages/ServiceReportPage";
 import GasControlPanelPage from "./pages/GasControlPanelPage";
 import QuoteTemplatePage from "./pages/QuoteTemplatePage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import NotFound from "./pages/not-found";
 import { I18nProvider } from "./i18n/I18nProvider";
 import LocaleSuggestion from "./i18n/LocaleSuggestion";
 import { LOCALES } from "./i18n/config";
@@ -219,7 +220,7 @@ export default function App() {
             <Route path="urunler/dental-vakum-sistemi" element={<DentalVacuumSystemAdminPage />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
       </I18nProvider>

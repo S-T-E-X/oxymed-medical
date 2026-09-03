@@ -18,6 +18,14 @@
     "closeMenu": "Menüyü kapat",
     "language": "Dil"
   },
+  "notFound": {
+    "metaTitle": "Sayfa Bulunamadı | Oxymed Medikal",
+    "eyebrow": "Kaybolan bir bağlantı",
+    "title": "Aradığınız sayfa bulunamadı",
+    "description": "Bağlantı değişmiş, kaldırılmış veya yanlış yazılmış olabilir. Ana sayfaya dönebilir ya da ürünlerimizi incelemeye devam edebilirsiniz.",
+    "backHome": "Ana sayfaya dön",
+    "browseProducts": "Ürünleri incele"
+  },
   "cta": {
     "getQuote": "TEKLİF AL",
     "reviewDetails": "Detaylı İncele",

@@ -18,6 +18,14 @@
     "closeMenu": "Fermer le menu",
     "language": "Langue"
   },
+  "notFound": {
+    "metaTitle": "Page introuvable | Oxymed Medical",
+    "eyebrow": "Une connexion perdue",
+    "title": "Cette page est introuvable",
+    "description": "Le lien a peut-être été modifié, supprimé ou mal saisi. Revenez à l'accueil ou continuez à découvrir nos produits.",
+    "backHome": "Retour à l'accueil",
+    "browseProducts": "Découvrir les produits"
+  },
   "cta": {
     "getQuote": "DEVIS",
     "reviewDetails": "Voir les détails",
