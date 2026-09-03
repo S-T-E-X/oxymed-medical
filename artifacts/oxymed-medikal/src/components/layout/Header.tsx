@@ -149,6 +149,9 @@ export default function Header() {
                       <Link to="/sertifikalar" className="flex px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950" onClick={() => setCorporateOpen(false)}>
                         {t("common.nav.corporateCertificates")}
                       </Link>
+                      <Link to={path("catalogs")} className="flex px-4 py-2.5 text-[13px] text-steel-700 hover:bg-steel-50 hover:text-oxynavy-950" onClick={() => setCorporateOpen(false)}>
+                        {t("common.nav.corporateCatalogs")}
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -250,6 +253,7 @@ export default function Header() {
                     <div className="mb-3 space-y-1 border-s border-steel-200 ps-4">
                       <Link to="/kurumsal" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateAbout")}</Link>
                       <Link to="/sertifikalar" className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateCertificates")}</Link>
+                      <Link to={path("catalogs")} className="block py-2 text-sm font-semibold text-steel-700" onClick={() => setIsOpen(false)}>{t("common.nav.corporateCatalogs")}</Link>
                     </div>
                   </div>
                 );
