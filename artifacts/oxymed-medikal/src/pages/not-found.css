@@ -1,4 +1,6 @@
 .not-found-page {
+  --not-found-mouse-x: 50%;
+  --not-found-mouse-y: 48%;
   position: relative;
   isolation: isolate;
   display: grid;
@@ -10,8 +12,24 @@
   background:
     linear-gradient(rgba(2, 20, 35, 0.026) 1px, transparent 1px),
     linear-gradient(90deg, rgba(2, 20, 35, 0.026) 1px, transparent 1px),
+    radial-gradient(circle 260px at var(--not-found-mouse-x) var(--not-found-mouse-y), rgba(164, 213, 236, 0.32), transparent 72%),
     radial-gradient(circle at 50% 42%, #ffffff 0%, #f7f9fb 68%, #edf5fb 100%);
-  background-size: 42px 42px, 42px 42px, auto;
+  background-size: 42px 42px, 42px 42px, auto, auto;
+  transition: background-position 220ms ease-out;
+}
+
+.not-found-page::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    circle 170px at var(--not-found-mouse-x) var(--not-found-mouse-y),
+    rgba(255, 255, 255, 0.58),
+    transparent 72%
+  );
+  content: "";
+  pointer-events: none;
+  transition: opacity 260ms ease-out;
 }
 
 .not-found-content {
@@ -56,18 +74,43 @@
   backdrop-filter: blur(8px);
 }
 
-.not-found-orbit::before {
+.not-found-orbit-trail {
   position: absolute;
-  inset: -9px;
-  border: 1px dashed rgba(28, 90, 119, 0.22);
-  border-radius: inherit;
-  content: "";
-  animation: not-found-spin 16s linear infinite;
+  inset: -13px;
+  z-index: 0;
+  animation: not-found-spin 5.2s linear infinite;
+}
+
+.not-found-orbit-trail svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.not-found-orbit-track,
+.not-found-orbit-trace {
+  fill: none;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.not-found-orbit-track {
+  stroke: rgba(28, 90, 119, 0.16);
+  stroke-width: 1.1;
+}
+
+.not-found-orbit-trace {
+  stroke: #1c5a77;
+  stroke-dasharray: 0.24 0.76;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 3px rgba(28, 90, 119, 0.25));
 }
 
 .not-found-orbit-dot {
   position: absolute;
-  top: -13px;
+  top: -5px;
   left: 50%;
   width: 9px;
   height: 9px;
@@ -79,6 +122,8 @@
 }
 
 .not-found-pulse {
+  position: relative;
+  z-index: 1;
   width: 70%;
   overflow: visible;
 }
@@ -265,7 +310,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .not-found-orbit,
-  .not-found-orbit::before,
+  .not-found-orbit-trail,
   .not-found-pulse path,
   .not-found-glow {
     animation: none;
