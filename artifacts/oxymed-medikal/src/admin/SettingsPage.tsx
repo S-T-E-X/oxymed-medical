@@ -572,7 +572,11 @@ export default function SettingsPage() {
       ) : (
         <div className="space-y-6">
           {SETTING_GROUPS.map((group) => (
-            <div key={group.label} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div
+              key={group.label}
+              id={group.label === "İstatistikler" ? "istatistikler" : undefined}
+              className="scroll-mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
               <h2 className="mb-4 text-sm font-bold text-slate-900">{group.label}</h2>
               {group.description && <p className="-mt-2 mb-4 text-xs leading-5 text-slate-500">{group.description}</p>}
               <div className="grid gap-4 sm:grid-cols-2">

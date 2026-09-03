@@ -52,6 +52,7 @@ const navItems = [
   { label: "Sertifikalar", icon: Award, to: "/admin/sertifikalar" },
   { label: "Medya", icon: Package, to: "/admin/medya" },
   { label: "Site Ayarları", icon: Settings, to: "/admin/ayarlar" },
+  { label: "Ana Sayfa İstatistikleri", icon: Gauge, to: "/admin/ayarlar#istatistikler" },
   { label: "Kat Kontrol Panosu", icon: Gauge, to: "/admin/kat-kontrol-panosu" },
 ];
 
